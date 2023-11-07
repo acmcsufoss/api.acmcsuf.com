@@ -22,7 +22,7 @@ func main() {
 		os.Exit(1)
 	}()
 
-	s, err := stores.NewSQLite(ctx, ":memory:")
+	s, err := stores.NewSQLite(ctx, "./db.sqlite") // ":memory:")
 	if err != nil {
 		log.Fatalf("Error creating SQLite store: %v", err)
 	}
