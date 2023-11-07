@@ -12,6 +12,36 @@ Generate all the code in this project by running the following command:
 go generate ./...
 ```
 
+### Run
+
+To run the server, run the following command:
+
+```sh
+go run .
+```
+
+### Format
+
+Format the source code by running the following command:
+
+```sh
+go fmt ./...
+```
+
+### Nil panic detection
+
+To detect nil panics, run the following command:
+
+```sh
+go install go.uber.org/nilaway/cmd/nilaway@latest
+```
+
+```sh
+nilaway ./...
+```
+
+### Architecture
+
 Diamond's suggestion outline of the project structure of a Go project that generates sqlc->go and jsonnet->openapi->go.
 
 ```
