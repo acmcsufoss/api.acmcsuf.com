@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/api"
 	"github.com/go-chi/chi/v5"
@@ -31,28 +33,30 @@ func (h *Handler) Serve() error {
 }
 
 func (h *Handler) getEvents(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello, world!"))
+	result, err := h.store.CreateEvent(api.NewCreateEventRequest(
+		"Test Event",
+		"Test Event Content",
+		"https://placekitten.com/200/300",
+		"Test Location",
+		// New Year's 2023
+		time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
+		// 2 hours in milliseconds.
+		2*60*60*1000,
+		false,
+		"Test Host",
+		api.VisibilityPublic,
+	))
+	if err != nil {
+		log.Fatalf("Error creating event: %v", err)
+	}
 
-	/*
-		result, err := s.CreateEvent(api.NewCreateEventRequest(
-			"Test Event",
-			"Test Event Content",
-			"https://placekitten.com/200/300",
-			"Test Location",
-			// New Year's 2023
-			time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC),
-			// 2 hours in milliseconds.
-			2*60*60*1000,
-			false,
-			"Test Host",
-			api.VisibilityPublic,
-		))
-		if err != nil {
-			log.Fatalf("Error creating event: %v", err)
-		}
+	log.Printf("Created event with ID %s and created at %d", result.ID, result.CreatedAt)
+	bytes, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		log.Fatalf("Error marshalling event: %v", err)
+	}
 
-		log.Printf("Created event with ID %s and created at %d", result.ID, result.CreatedAt)
-	*/
+	w.Write(bytes)
 }
 
 // NewHandler creates a new Handler instance.
