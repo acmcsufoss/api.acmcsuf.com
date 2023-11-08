@@ -59,6 +59,21 @@ func (h *Handler) getEvents(w http.ResponseWriter, r *http.Request) {
 	w.Write(bytes)
 }
 
+func (h *Handler) getEvent(w http.ResponseWriter, r *http.Request) {
+	resourceID := chi.URLParam(r, "id")
+	result, err := h.store.Event(resourceID)
+	if err != nil {
+		log.Fatalf("Error getting event: %v", err)
+	}
+
+	bytes, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		log.Fatalf("Error marshalling event: %v", err)
+	}
+
+	w.Write(bytes)
+}
+
 // NewHandler creates a new Handler instance.
 func NewHandler(o HandlerOptions) Handler {
 	h := Handler{
@@ -69,6 +84,7 @@ func NewHandler(o HandlerOptions) Handler {
 	}
 
 	h.router.Get("/events", h.getEvents)
+	h.router.Get("/events/{id}", h.getEvent)
 
 	return h
 }

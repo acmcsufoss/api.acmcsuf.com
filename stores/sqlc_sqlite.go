@@ -91,6 +91,15 @@ func (s sqliteStore) CreateEvent(r api.CreateEventRequest) (*sqlite.Event, error
 	return &event, nil
 }
 
+func (s sqliteStore) Event(id string) (*sqlite.GetEventRow, error) {
+	eventRow, err := s.q.GetEvent(s.ctx, id)
+	if err != nil {
+		return nil, sqliteErr(err)
+	}
+
+	return &eventRow, nil
+}
+
 func (s sqliteStore) DeleteResource(id string) error {
 	if err := s.q.DeleteResource(s.ctx, id); err != nil {
 		return sqliteErr(err)

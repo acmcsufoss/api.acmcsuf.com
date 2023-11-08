@@ -114,3 +114,63 @@ func (q *Queries) DeleteResource(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteResource, id)
 	return err
 }
+
+const getEvent = `-- name: GetEvent :one
+SELECT
+  r.id,
+  r.title,
+  r.content_md,
+  r.image_url,
+  r.resource_type,
+  r.resource_list_id,
+  r.created_at,
+  r.updated_at,
+  e.location,
+  e.start_at,
+  e.duration_ms,
+  e.is_all_day,
+  e.host,
+  e.visibility
+FROM resources r
+INNER JOIN events e ON r.id = e.id
+WHERE r.id = ?
+`
+
+type GetEventRow struct {
+	ID             string         `json:"id"`
+	Title          string         `json:"title"`
+	ContentMd      string         `json:"content_md"`
+	ImageUrl       sql.NullString `json:"image_url"`
+	ResourceType   string         `json:"resource_type"`
+	ResourceListID sql.NullInt64  `json:"resource_list_id"`
+	CreatedAt      int64          `json:"created_at"`
+	UpdatedAt      int64          `json:"updated_at"`
+	Location       string         `json:"location"`
+	StartAt        interface{}    `json:"start_at"`
+	DurationMs     interface{}    `json:"duration_ms"`
+	IsAllDay       bool           `json:"is_all_day"`
+	Host           string         `json:"host"`
+	Visibility     string         `json:"visibility"`
+}
+
+func (q *Queries) GetEvent(ctx context.Context, id string) (GetEventRow, error) {
+	row := q.db.QueryRowContext(ctx, getEvent, id)
+	var i GetEventRow
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.ContentMd,
+		&i.ImageUrl,
+		&i.ResourceType,
+		&i.ResourceListID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Location,
+		&i.StartAt,
+		&i.DurationMs,
+		&i.IsAllDay,
+		&i.Host,
+		&i.Visibility,
+	)
+	return i, err
+}

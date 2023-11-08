@@ -88,6 +88,9 @@ type Store interface {
 	// CreateEvent creates a new event resource.
 	CreateEvent(event CreateEventRequest) (*sqlite.Event, error)
 
+	// Event returns an event resource.
+	Event(id string) (*sqlite.GetEventRow, error)
+
 	// DeleteResource deletes a resource.
 	DeleteResource(id string) error
 }
