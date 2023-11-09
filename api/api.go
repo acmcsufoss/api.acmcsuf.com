@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 
+	// TODO: Remove stores domain from API package.
 	"github.com/acmcsufoss/api.acmcsuf.com/stores/sqlite"
 	"github.com/google/uuid"
 )
