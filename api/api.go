@@ -1,14 +1,8 @@
 package api
 
 import (
-	"context"
 	"errors"
-	"io"
 	"time"
-
-	// TODO: Remove stores domain from API package.
-	"github.com/acmcsufoss/api.acmcsuf.com/stores/sqlite"
-	"github.com/google/uuid"
 )
 
 // ErrNotFound is returned if anything is not found.
@@ -34,31 +28,76 @@ type ResourceType string
 const (
 	// ResourceTypeEvent represents an event resource.
 	ResourceTypeEvent ResourceType = "event"
+
+	// ResourceTypeAnnouncement represents an announcement resource.
+	ResourceTypeAnnouncement ResourceType = "announcement"
 )
 
 // Resource is a base resource struct.
 type Resource struct {
+	ID           string `json:"id"`
 	Title        string `json:"title"`
 	ContentMd    string `json:"content_md"`
 	ImageURL     string `json:"image_url"`
 	ResourceType string `json:"resource_type"`
+	CreatedAt    int64  `json:"created_at"`
+	UpdatedAt    int64  `json:"updated_at"`
 }
+
+// ResourceList is a list of resources.
+type ResourceList []interface{}
 
 // CreateEventRequest is the input for creating a new event.
 type CreateEventRequest struct {
 	Resource
 	Location   string     `json:"location"`
 	StartAt    time.Time  `json:"start_at"`
-	DurationMs int64      `json:"duration_ms"`
+	DurationMs uint64     `json:"duration_ms"`
 	IsAllDay   bool       `json:"is_all_day"`
 	Host       string     `json:"host"`
 	Visibility Visibility `json:"visibility"`
 }
 
+// Event is an event resource.
+type Event struct {
+	Resource
+
+	Location   string     `json:"location"`
+	StartAt    time.Time  `json:"start_at"`
+	DurationMs uint64     `json:"duration_ms"`
+	IsAllDay   bool       `json:"is_all_day"`
+	Host       string     `json:"host"`
+	Visibility Visibility `json:"visibility"`
+}
+
+// CreateAnnouncementRequest is the input for creating a new announcement.
+type CreateAnnouncementRequest struct {
+	Resource
+
+	EventListID      string     `json:"event_list_id"`
+	ApprovedByListID string     `json:"approved_by_list_id"`
+	Visibility       Visibility `json:"visibility"`
+	AnnounceAt       time.Time  `json:"announce_at"`
+	DiscordChannelID string     `json:"discord_channel_id"`
+	DiscordMessageID string     `json:"discord_message_id"`
+}
+
+// Announcement is an announcement resource.
+type Announcement struct {
+	Resource
+
+	EventListID      string     `json:"event_list_id"`
+	ApprovedByListID string     `json:"approved_by_list_id"`
+	Visibility       Visibility `json:"visibility"`
+	AnnounceAt       time.Time  `json:"announce_at"`
+	DiscordChannelID string     `json:"discord_channel_id"`
+	DiscordMessageID string     `json:"discord_message_id"`
+}
+
 // NewCreateEventRequest makes a new CreateEventRequest.
 func NewCreateEventRequest(
 	title, contentMd, imageURL, location string,
-	startAt time.Time, durationMs int64, isAllDay bool,
+	startAt time.Time, durationMs uint64, isAllDay bool,
 	host string, visibility Visibility,
 ) CreateEventRequest {
 	return CreateEventRequest{
@@ -73,35 +112,4 @@ func NewCreateEventRequest(
 		Host:       host,
 		Visibility: visibility,
 	}
-}
-
-// ContainsContext can be embedded by any interface to have an overrideable
-// context.
-type ContainsContext interface {
-	WithContext(context.Context) ContainsContext
-}
-
-// Store describes a Store instance. It combines all smaller stores.
-type Store interface {
-	io.Closer
-	ContainsContext
-
-	// CreateEvent creates a new event resource.
-	CreateEvent(event CreateEventRequest) (*sqlite.Event, error)
-
-	// Event returns an event resource.
-	Event(id string) (*sqlite.GetEventRow, error)
-
-	// DeleteResource deletes a resource.
-	DeleteResource(id string) error
-}
-
-// NewID generates a new resource ID.
-func NewID() string {
-	return uuid.New().String()
-}
-
-// Now generates a timestamp in milliseconds.
-func Now() int64 {
-	return time.Now().Unix() * 1000
 }

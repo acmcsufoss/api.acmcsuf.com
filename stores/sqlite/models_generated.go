@@ -8,6 +8,16 @@ import (
 	"database/sql"
 )
 
+type Announcement struct {
+	ID               string         `json:"id"`
+	EventListID      sql.NullString `json:"event_list_id"`
+	ApprovedByListID sql.NullString `json:"approved_by_list_id"`
+	Visibility       string         `json:"visibility"`
+	AnnounceAt       int64          `json:"announce_at"`
+	DiscordChannelID sql.NullString `json:"discord_channel_id"`
+	DiscordMessageID sql.NullString `json:"discord_message_id"`
+}
+
 type Event struct {
 	ID         string      `json:"id"`
 	Location   string      `json:"location"`
@@ -16,8 +26,6 @@ type Event struct {
 	IsAllDay   bool        `json:"is_all_day"`
 	Host       string      `json:"host"`
 	Visibility string      `json:"visibility"`
-	CreatedAt  int64       `json:"created_at"`
-	UpdatedAt  int64       `json:"updated_at"`
 }
 
 type Meta struct {
@@ -30,22 +38,23 @@ type Resource struct {
 	ContentMd      string         `json:"content_md"`
 	ImageUrl       sql.NullString `json:"image_url"`
 	ResourceType   string         `json:"resource_type"`
-	ResourceListID sql.NullInt64  `json:"resource_list_id"`
+	ResourceListID sql.NullString `json:"resource_list_id"`
 	CreatedAt      int64          `json:"created_at"`
 	UpdatedAt      int64          `json:"updated_at"`
 }
 
 type ResourceList struct {
-	ID        int64  `json:"id"`
+	ID        string `json:"id"`
 	Title     string `json:"title"`
 	CreatedAt int64  `json:"created_at"`
 	UpdatedAt int64  `json:"updated_at"`
 }
 
 type ResourceReference struct {
-	ID             int64  `json:"id"`
+	ID             string `json:"id"`
 	ResourceID     string `json:"resource_id"`
-	ResourceListID int64  `json:"resource_list_id"`
+	ResourceListID string `json:"resource_list_id"`
+	IndexInList    int64  `json:"index_in_list"`
 	CreatedAt      int64  `json:"created_at"`
 	UpdatedAt      int64  `json:"updated_at"`
 }
