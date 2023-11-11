@@ -15,6 +15,9 @@ JOIN resource_lists rl ON rr.resource_list_id = rl.id
 WHERE rl.id = ?
 ORDER BY rr.index_in_list ASC;
 
+-- name: AddResource :exec
+INSERT INTO resource_references (resource_id, resource_list_id, index_in_list, created_at, updated_at) VALUES (?, ?, ?, ?, ?);
+
 -- name: DeleteResource :exec
 DELETE FROM resources WHERE id = ?;
 

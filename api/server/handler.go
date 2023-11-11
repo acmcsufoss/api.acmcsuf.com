@@ -83,6 +83,8 @@ func NewHandler(o HandlerOptions) Handler {
 		router: chi.NewRouter(),
 	}
 
+	// TODO: Test out h.store.AddResource() and h.store.ResourceList() here.
+
 	// TODO: OpenAPI definitions defined here.
 	// Something like https://github.com/go-andiamo/chioas#readme but more frictionless.
 	h.router.Get("/events", h.getEvents)

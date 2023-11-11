@@ -10,6 +10,10 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	millisecondsInSecond = 1000
+)
+
 type sqliteStore struct {
 	q   *sqlite.Queries
 	db  *sql.DB
@@ -118,7 +122,7 @@ func (s sqliteStore) Event(id string) (*api.Event, error) {
 	default:
 		return nil, errors.New("unknown type")
 	case int64:
-		startAt = time.Unix(v/1000, 0)
+		startAt = time.Unix(v/millisecondsInSecond, 0)
 	}
 
 	var durationMs uint64
@@ -159,7 +163,7 @@ func (s sqliteStore) CreateAnnouncement(r api.CreateAnnouncementRequest) (*api.A
 		EventListID:      sql.NullString{String: r.EventListID, Valid: r.EventListID != ""},
 		ApprovedByListID: sql.NullString{String: r.ApprovedByListID, Valid: r.ApprovedByListID != ""},
 		Visibility:       string(r.Visibility),
-		AnnounceAt:       r.AnnounceAt.Unix() * 1000,
+		AnnounceAt:       r.AnnounceAt.Unix() * millisecondsInSecond,
 		DiscordChannelID: sql.NullString{String: r.DiscordChannelID, Valid: r.DiscordChannelID != ""},
 		DiscordMessageID: sql.NullString{String: r.DiscordMessageID, Valid: r.DiscordMessageID != ""},
 	}
@@ -201,7 +205,7 @@ func (s sqliteStore) Announcement(id string) (*api.Announcement, error) {
 		EventListID:      announcementRow.EventListID.String,
 		ApprovedByListID: announcementRow.ApprovedByListID.String,
 		Visibility:       api.Visibility(announcementRow.Visibility),
-		AnnounceAt:       time.Unix(announcementRow.AnnounceAt/1000, 0),
+		AnnounceAt:       time.Unix(announcementRow.AnnounceAt/millisecondsInSecond, 0),
 		DiscordChannelID: announcementRow.DiscordChannelID.String,
 		DiscordMessageID: announcementRow.DiscordMessageID.String,
 	}, nil
@@ -221,6 +225,21 @@ func (s sqliteStore) ResourceList(id string) (*api.ResourceList, error) {
 	return &resourceList, nil
 }
 
+func (s sqliteStore) AddResource(r api.AddResourceRequest) error {
+	now := api.Now()
+	if err := s.q.AddResource(s.ctx, sqlite.AddResourceParams{
+		ResourceID:     r.ResourceID,
+		ResourceListID: r.ResourceListID,
+		IndexInList:    r.Index,
+		CreatedAt:      now,
+		UpdatedAt:      now,
+	}); err != nil {
+		return sqliteErr(err)
+	}
+
+	return nil
+}
+
 func (s sqliteStore) DeleteResource(id string) error {
 	if err := s.q.DeleteResource(s.ctx, id); err != nil {
 		return sqliteErr(err)
@@ -233,5 +252,6 @@ func sqliteErr(err error) error {
 	if errors.Is(err, sql.ErrNoRows) {
 		return api.ErrNotFound
 	}
+
 	return err
 }

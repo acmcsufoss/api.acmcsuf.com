@@ -34,6 +34,9 @@ type Store interface {
 	// ResourceList returns a resource list.
 	ResourceList(id string) (*ResourceList, error)
 
+	// AddResource adds a resource to a resource list.
+	AddResource(r AddResourceRequest) error
+
 	// DeleteResource deletes a resource.
 	DeleteResource(id string) error
 }

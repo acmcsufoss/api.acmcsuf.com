@@ -10,6 +10,29 @@ import (
 	"database/sql"
 )
 
+const addResource = `-- name: AddResource :exec
+INSERT INTO resource_references (resource_id, resource_list_id, index_in_list, created_at, updated_at) VALUES (?, ?, ?, ?, ?)
+`
+
+type AddResourceParams struct {
+	ResourceID     string `json:"resource_id"`
+	ResourceListID string `json:"resource_list_id"`
+	IndexInList    int64  `json:"index_in_list"`
+	CreatedAt      int64  `json:"created_at"`
+	UpdatedAt      int64  `json:"updated_at"`
+}
+
+func (q *Queries) AddResource(ctx context.Context, arg AddResourceParams) error {
+	_, err := q.db.ExecContext(ctx, addResource,
+		arg.ResourceID,
+		arg.ResourceListID,
+		arg.IndexInList,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
+	return err
+}
+
 const createAnnouncement = `-- name: CreateAnnouncement :exec
 INSERT INTO announcements (id, event_list_id, approved_by_list_id, visibility, announce_at, discord_channel_id, discord_message_id) VALUES (?, ?, ?, ?, ?, ?, ?)
 `

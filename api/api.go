@@ -47,6 +47,13 @@ type Resource struct {
 // ResourceList is a list of resources.
 type ResourceList []interface{}
 
+// AddResourceRequest is the input for adding a resource to a resource list.
+type AddResourceRequest struct {
+	ResourceID     string `json:"resource_id"`
+	ResourceListID string `json:"resource_list_id"`
+	Index          int64  `json:"index"`
+}
+
 // CreateEventRequest is the input for creating a new event.
 type CreateEventRequest struct {
 	Resource
