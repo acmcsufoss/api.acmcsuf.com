@@ -1,4 +1,4 @@
-package server
+package openapi
 
 // Copied from:
 // https://pkg.go.dev/github.com/swaggest/rest@v0.2.59/web#example-DefaultService
@@ -35,14 +35,13 @@ func NewOpenAPI(s api.Store) http.Handler {
 
 	// It allows OpenAPI configuration.
 	service.OpenAPISchema().SetTitle("api.acmcsuf.com")
-	service.OpenAPISchema().SetDescription("This is the API server for api.acmcsuf.com.")
+	service.OpenAPISchema().SetDescription("This is api.acmcsuf.com, a data layer for acmcsuf.com.")
 	service.OpenAPISchema().SetVersion("0.0.1-unreleased")
 
 	// Additional middlewares can be added.
 	service.Use(
 		middleware.StripSlashes,
-
-		cors.AllowAll().Handler, // "github.com/rs/cors", 3rd-party CORS middleware can also be configured here.
+		cors.AllowAll().Handler,
 	)
 
 	service.Wrap()
