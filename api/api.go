@@ -44,6 +44,10 @@ type Resource struct {
 	UpdatedAt    int64  `json:"updated_at"`
 }
 
+// TODO: Consider sum type for resource list.
+// Reference:
+// https://zackoverflow.dev/writing/hacking-go-to-give-it-sumtypes/
+
 // ResourceList is a list of resources.
 type ResourceList []interface{}
 

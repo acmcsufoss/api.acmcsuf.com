@@ -25,6 +25,9 @@ type Store interface {
 	// Event returns an event resource.
 	Event(id string) (*Event, error)
 
+	// UpdateEvent updates an event resource.
+	// UpdateEvent(r UpdateEventRequest) (*Event, error)
+
 	// CreateAnnouncement creates a new announcement resource.
 	CreateAnnouncement(r CreateAnnouncementRequest) (*Announcement, error)
 

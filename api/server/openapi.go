@@ -7,9 +7,9 @@ package server
 
 import (
 	"context"
-	"log"
 	"net/http"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/api"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
 	"github.com/swaggest/openapi-go/openapi3"
@@ -18,27 +18,18 @@ import (
 	"github.com/swaggest/usecase"
 )
 
-// album represents data about a record album.
-type album struct {
-	ID     int     `json:"id"`
-	Title  string  `json:"title"`
-	Artist string  `json:"artist"`
-	Price  float64 `json:"price"`
-	Locale string  `query:"locale"`
-}
-
-func postAlbums() usecase.Interactor {
-	u := usecase.NewIOI(new(album), new(album), func(ctx context.Context, input, output interface{}) error {
-		log.Println("Creating album")
+func postEvents(s api.Store) usecase.Interactor {
+	return usecase.NewInteractor(func(ctx context.Context, input api.CreateEventRequest, _ *interface{}) error {
+		_, err := s.CreateEvent(input)
+		if err != nil {
+			return err
+		}
 
 		return nil
 	})
-	u.SetTags("Album")
-
-	return u
 }
 
-func NewOpenAPI() http.Handler {
+func NewOpenAPI(s api.Store) http.Handler {
 	// Service initializes router with required middlewares.
 	service := web.NewService(openapi3.NewReflector())
 
@@ -55,9 +46,9 @@ func NewOpenAPI() http.Handler {
 	)
 
 	service.Wrap()
-
-	// Use cases can be mounted using short syntax .<Method>(...).
-	service.Post("/albums", postAlbums(), nethttp.SuccessStatus(http.StatusCreated))
+	service.Get("/events", postEvents(s), nethttp.SuccessStatus(http.StatusCreated))
+	service.Post("/events", postEvents(s), nethttp.SuccessStatus(http.StatusCreated))
+	// service.Get("/events/{id}", getEvent(), nethttp.SuccessStatus(http.StatusOK))
 
 	return service
 }

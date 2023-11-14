@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -28,20 +29,13 @@ func main() {
 		log.Fatalf("Error creating SQLite store: %v", err)
 	}
 
-	service := server.NewOpenAPI()
+	service := server.NewOpenAPI(s)
 	go func() {
-		if err := http.ListenAndServe("localhost:8080", service); err != nil {
+		fmt.Println("Server started on http://127.0.0.1:8080")
+		if err := http.ListenAndServe(":8080", service); err != nil {
 			log.Fatal(err)
 		}
 	}()
-
-	// h := server.NewHandler(server.HandlerOptions{
-	// 	Ctx:   ctx,
-	// 	Store: s,
-	// 	Port:  ":8080",
-	// })
-
-	// go func() { h.Serve() }()
 
 	<-ctx.Done()
 
