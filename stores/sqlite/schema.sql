@@ -65,3 +65,39 @@ CREATE TABLE IF NOT EXISTS announcements (
     discord_message_id TEXT, -- Discord message ID. If present, the announcement has been posted.
     UNIQUE (id)
 )
+
+-- Create the 'person' table
+CREATE TABLE IF NOT EXISTS person (
+    id TEXT PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
+    display_name TEXT NOT NULL,
+    full_name TEXT NOT NULL,
+    picture_url TEXT, -- URL of their profile picture, if applicable
+    team_id INTEGER REFERENCES team(id),
+    date_joined INTEGER NOT NULL,
+    UNIQUE (id)
+);
+
+-- Create the 'team' table
+CREATE TABLE IF NOT EXISTS team (
+    id INTEGER PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,         
+    name TEXT NOT NULL, -- Name of the team
+    date_created INTEGER NOT NULL, -- UTC milliseconds.
+    UNIQUE (id)
+);
+
+-- Create the 'blog_post' table
+-- Reference used:
+-- https://github.com/EthanThatOneKid/acmcsuf.com/blob/main/src/lib/public/blog/types.ts
+CREATE TABLE IF NOT EXISTS blog_post (
+    id INTEGER PRIMARY KEY REFERENCES resources(resource_id) ON DELETE CASCADE,     
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT REFERENCES person(name),
+    author_id INTEGER REFERENCES person(person_id),
+    author_display_name TEXT REFERENCES person(full_name),
+    date_created INTEGER NOT NULL, -- UTC milliseconds.
+    last_edited INTEGER, -- UTC milliseconds.
+    tags TEXT, -- Array of tags for the blog post separated by a delimiter
+    html TEXT NOT NULL, -- Blog post content in HTML form 
+    UNIQUE (id, author_id)
+);
