@@ -3,6 +3,7 @@ package api
 import (
 	"errors"
 	"time"
+	"unsafe"
 )
 
 // ErrNotFound is returned if anything is not found.
@@ -44,12 +45,65 @@ type Resource struct {
 	UpdatedAt    int64  `json:"updated_at"`
 }
 
-// TODO: Consider sum type for resource list.
-// Reference:
-// https://zackoverflow.dev/writing/hacking-go-to-give-it-sumtypes/
+// ResourceEnvelope is a sum type for resources.
+type ResourceEnvelope struct {
+	tag  int32    // int32 is 4 bytes.
+	data [8]uint8 // 8 bytes to fit the maximum variant.
+}
+
+func (e *ResourceEnvelope) AsEvent() *Event {
+	if e.tag != 0 {
+		return nil
+	}
+
+	return (*Event)(unsafe.Pointer(&e.data))
+}
+
+func (e *ResourceEnvelope) AsAnnouncement() *Announcement {
+	if e.tag != 1 {
+		return nil
+	}
+
+	return (*Announcement)(unsafe.Pointer(&e.data))
+}
+
+func newEventEnvelope(e *Event) ResourceEnvelope {
+	return ResourceEnvelope{
+		tag:  0,
+		data: *(*[8]uint8)(unsafe.Pointer(e)),
+	}
+}
+
+func newAnnouncementEnvelope(a *Announcement) ResourceEnvelope {
+	return ResourceEnvelope{
+		tag:  1,
+		data: *(*[8]uint8)(unsafe.Pointer(a)),
+	}
+}
+
+func NewResourceList(resources []interface{}) (*ResourceList, error) {
+	resourceList := ResourceList{}
+	var resourceEnvelope ResourceEnvelope
+	for _, resource := range resources {
+		switch baseResource := resource.(Resource); baseResource.ResourceType {
+		case string(ResourceTypeEvent):
+			eventResource := resource.(Event)
+			resourceEnvelope = newEventEnvelope(&eventResource)
+		case string(ResourceTypeAnnouncement):
+			announcementResource := resource.(Announcement)
+			resourceEnvelope = newAnnouncementEnvelope(&announcementResource)
+		default:
+			return nil, errors.New("unknown resource type")
+		}
+
+		resourceList = append(resourceList, resourceEnvelope)
+	}
+
+	return &resourceList, nil
+}
 
 // ResourceList is a list of resources.
-type ResourceList []interface{}
+type ResourceList []ResourceEnvelope
 
 // AddResourceRequest is the input for adding a resource to a resource list.
 type AddResourceRequest struct {
@@ -103,24 +157,4 @@ type Announcement struct {
 	AnnounceAt       time.Time  `json:"announce_at"`
 	DiscordChannelID string     `json:"discord_channel_id"`
 	DiscordMessageID string     `json:"discord_message_id"`
-}
-
-// NewCreateEventRequest makes a new CreateEventRequest.
-func NewCreateEventRequest(
-	title, contentMd, imageURL, location string,
-	startAt time.Time, durationMs uint64, isAllDay bool,
-	host string, visibility Visibility,
-) CreateEventRequest {
-	return CreateEventRequest{
-		Resource: Resource{Title: title,
-			ContentMd:    contentMd,
-			ImageURL:     imageURL,
-			ResourceType: string(ResourceTypeEvent)},
-		Location:   location,
-		StartAt:    startAt,
-		DurationMs: durationMs,
-		IsAllDay:   isAllDay,
-		Host:       host,
-		Visibility: visibility,
-	}
 }

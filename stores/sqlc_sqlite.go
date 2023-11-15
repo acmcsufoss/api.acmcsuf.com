@@ -217,12 +217,12 @@ func (s sqliteStore) ResourceList(id string) (*api.ResourceList, error) {
 		return nil, sqliteErr(err)
 	}
 
-	resourceList := make(api.ResourceList, len(resourceRows))
+	castedResourceRows := make([]interface{}, len(resourceRows))
 	for i, resourceRow := range resourceRows {
-		resourceList[i] = resourceRow
+		castedResourceRows[i] = resourceRow
 	}
 
-	return &resourceList, nil
+	return api.NewResourceList(castedResourceRows)
 }
 
 func (s sqliteStore) AddResource(r api.AddResourceRequest) error {
