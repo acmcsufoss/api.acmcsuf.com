@@ -43,11 +43,34 @@ func NewOpenAPI(s api.Store) http.Handler {
 		middleware.StripSlashes,
 		cors.AllowAll().Handler,
 	)
-
 	service.Wrap()
-	service.Get("/events", postEvents(s), nethttp.SuccessStatus(http.StatusCreated))
-	service.Post("/events", postEvents(s), nethttp.SuccessStatus(http.StatusCreated))
-	// service.Get("/events/{id}", getEvent(), nethttp.SuccessStatus(http.StatusOK))
+
+	// crud(service, "/resource-lists", postEvents(s), nil, nil, nil, nil)
+	crud(service, "/events", postEvents(s), nil, nil, nil, nil)
+	// crud(service, "/announcements", postEvents(s), nil, nil, nil, nil)
+	// crud(service, "/blog-posts", createBlogPost(s), readBlogPost(s), updateBlogPost(s), deleteBlogPost(s), listBlogPosts(s))
 
 	return service
+}
+
+func crud(service *web.Service, patternPrefix string, creater, reader, updater, deleter, lister usecase.Interactor) {
+	if creater != nil {
+		service.Post(patternPrefix, creater, nethttp.SuccessStatus(http.StatusCreated))
+	}
+
+	if reader != nil {
+		service.Get(patternPrefix+"/{id}", reader, nethttp.SuccessStatus(http.StatusOK))
+	}
+
+	if updater != nil {
+		service.Post(patternPrefix+"/{id}", updater, nethttp.SuccessStatus(http.StatusOK))
+	}
+
+	if deleter != nil {
+		service.Delete(patternPrefix+"/{id}", deleter, nethttp.SuccessStatus(http.StatusOK))
+	}
+
+	if lister != nil {
+		service.Get(patternPrefix, lister, nethttp.SuccessStatus(http.StatusOK))
+	}
 }
