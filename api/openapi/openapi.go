@@ -1,10 +1,5 @@
 package openapi
 
-// Copied from:
-// https://pkg.go.dev/github.com/swaggest/rest@v0.2.59/web#example-DefaultService
-//
-// TODO: Replace with our own implementation.
-
 import (
 	"context"
 	"net/http"
@@ -13,7 +8,6 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
 	"github.com/swaggest/openapi-go/openapi3"
-	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/web"
 	"github.com/swaggest/usecase"
 )
@@ -46,31 +40,9 @@ func NewOpenAPI(s api.Store) http.Handler {
 	service.Wrap()
 
 	// crud(service, "/resource-lists", postEvents(s), nil, nil, nil, nil)
-	crud(service, "/events", postEvents(s), nil, nil, nil, nil)
+	useCRUDL(service, withPrefix("/events"), withCreater(postEvents(s)))
 	// crud(service, "/announcements", postEvents(s), nil, nil, nil, nil)
 	// crud(service, "/blog-posts", createBlogPost(s), readBlogPost(s), updateBlogPost(s), deleteBlogPost(s), listBlogPosts(s))
 
 	return service
-}
-
-func crud(service *web.Service, patternPrefix string, creater, reader, updater, deleter, lister usecase.Interactor) {
-	if creater != nil {
-		service.Post(patternPrefix, creater, nethttp.SuccessStatus(http.StatusCreated))
-	}
-
-	if reader != nil {
-		service.Get(patternPrefix+"/{id}", reader, nethttp.SuccessStatus(http.StatusOK))
-	}
-
-	if updater != nil {
-		service.Post(patternPrefix+"/{id}", updater, nethttp.SuccessStatus(http.StatusOK))
-	}
-
-	if deleter != nil {
-		service.Delete(patternPrefix+"/{id}", deleter, nethttp.SuccessStatus(http.StatusOK))
-	}
-
-	if lister != nil {
-		service.Get(patternPrefix, lister, nethttp.SuccessStatus(http.StatusOK))
-	}
 }
