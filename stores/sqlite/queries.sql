@@ -67,3 +67,33 @@ FROM resources r
 INNER JOIN announcements a ON r.id = a.id
 WHERE r.id = ?;
 
+-- name: GetPerson :one
+SELECT
+  r.id,
+  r.image_url,
+  r.created_at,
+  p.display_name,
+  p.full_name,
+  p.image_url,
+  p.team_id,
+FROM resources r
+INNER JOIN person p ON p.id = r.id
+WHERE r.id = ?;
+
+-- name: CreatePerson :exec
+INSERT INTO person (id, display_name, full_name, image_url, team_id, created_at) VALUES (?, ?, ?, ?, ?, ?);
+
+-- name: DeletePerson :exec
+DELETE FROM person WHERE id = ?;
+
+-- name: GetTeam :one
+
+-- name: CreateTeam :exec
+
+-- name: DeleteTeam :exec
+
+-- name: GetBlogPost :one
+
+-- name: CreateBlogPost :exec
+
+-- name: DeleteBlogPost :exec
