@@ -1,0 +1,29 @@
+[
+	{
+		"id": "event1",
+		"location": "McCarthy Hall 655",
+		"start_at": 1637372400000,
+		"duration_ms": 3600000,
+		"is_all_day": false,
+		"host": "OSS",
+		"visibility": "public"
+	},
+	{
+		"id": "event2",
+		"location": "CS Building 300",
+		"start_at": 1637458800000,
+		"duration_ms": 7200000,
+		"is_all_day": false,
+		"host": "Dev",
+		"visibility": "private"
+	},
+	{
+		"id": "event3",
+		"location": "McCarthy Hall 464",
+		"start_at": 1637545200000,
+		"duration_ms": 86400000,
+		"is_all_day": true,
+		"host": "algo",
+		"visibility": "public"
+	}
+]
