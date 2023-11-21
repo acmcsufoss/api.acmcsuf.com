@@ -27,31 +27,31 @@ func withPrefix(prefix string) crudlOptionFn {
 	}
 }
 
-func withCreater(creater usecase.Interactor) crudlOptionFn {
+func withCreate(creater usecase.Interactor) crudlOptionFn {
 	return func(o *crudl) {
 		o.creater = creater
 	}
 }
 
-func withReader(reader usecase.Interactor) crudlOptionFn {
+func withRead(reader usecase.Interactor) crudlOptionFn {
 	return func(o *crudl) {
 		o.reader = reader
 	}
 }
 
-func withUpdater(updater usecase.Interactor) crudlOptionFn {
+func withUpdate(updater usecase.Interactor) crudlOptionFn {
 	return func(o *crudl) {
 		o.updater = updater
 	}
 }
 
-func withDeleter(deleter usecase.Interactor) crudlOptionFn {
+func withDelete(deleter usecase.Interactor) crudlOptionFn {
 	return func(o *crudl) {
 		o.deleter = deleter
 	}
 }
 
-func withLister(lister usecase.Interactor) crudlOptionFn {
+func withList(lister usecase.Interactor) crudlOptionFn {
 	return func(o *crudl) {
 		o.lister = lister
 	}

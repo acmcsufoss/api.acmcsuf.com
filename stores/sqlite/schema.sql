@@ -33,13 +33,13 @@ CREATE TABLE IF NOT EXISTS resources (
 
 -- Create the 'resource_references' table.
 CREATE TABLE IF NOT EXISTS resource_references (
-    id TEXT PRIMARY KEY,
     resource_id TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
     resource_list_id TEXT NOT NULL REFERENCES resource_lists(id) ON DELETE CASCADE,
     index_in_list INTEGER NOT NULL, -- The index of the resource in the list.
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
-    UNIQUE (resource_id, resource_list_id)
+    UNIQUE (resource_id, resource_list_id),
+    PRIMARY KEY (resource_id, resource_list_id)
 );
 
 -- Create the 'events' table which is a table of event resources.

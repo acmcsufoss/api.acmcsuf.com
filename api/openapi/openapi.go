@@ -1,7 +1,6 @@
 package openapi
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/api"
@@ -9,19 +8,7 @@ import (
 	"github.com/rs/cors"
 	"github.com/swaggest/openapi-go/openapi3"
 	"github.com/swaggest/rest/web"
-	"github.com/swaggest/usecase"
 )
-
-func postEvents(s api.Store) usecase.Interactor {
-	return usecase.NewInteractor(func(ctx context.Context, input api.CreateEventRequest, _ *interface{}) error {
-		_, err := s.CreateEvent(input)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
-}
 
 func NewOpenAPI(s api.Store) http.Handler {
 	// Service initializes router with required middlewares.
@@ -40,7 +27,7 @@ func NewOpenAPI(s api.Store) http.Handler {
 	service.Wrap()
 
 	// crud(service, "/resource-lists", postEvents(s), nil, nil, nil, nil)
-	useCRUDL(service, withPrefix("/events"), withCreater(postEvents(s)))
+	useEvents(service, s) // GET /events, POST /events, etc.
 	// crud(service, "/announcements", postEvents(s), nil, nil, nil, nil)
 	// crud(service, "/blog-posts", createBlogPost(s), readBlogPost(s), updateBlogPost(s), deleteBlogPost(s), listBlogPosts(s))
 
