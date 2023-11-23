@@ -51,7 +51,7 @@ jobs:
           # You can deploy the generated documentation preview to a hosting service
           # For example, if you're using GitHub Pages:
           mkdir -p docs
-          mv path/to/generated/documentation/* docs/${{ event.base_ref }}
+          mv path/to/generated/documentation/* docs/${{ github.sha }}
           git add docs
           git commit -m "Update documentation preview"
           git push origin HEAD
