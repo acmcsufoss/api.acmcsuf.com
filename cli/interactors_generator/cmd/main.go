@@ -14,6 +14,7 @@ var configFile = flag.String("config", "config.json", "the path to the config fi
 // outputFile is the path to the output file.
 var outputFile = flag.String("output", "output.go", "the path to the output file")
 
+// main is the entry point of the interactors_generator CLI tool.
 func main() {
 	// Parse the CLI flags.
 	flag.Parse()
