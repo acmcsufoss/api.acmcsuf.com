@@ -33,6 +33,7 @@ const (
 	CRUDLMethodList CRUDLMethod = "List"
 )
 
+// String returns the string representation of the CRUDL method.
 func (m CRUDLMethod) String() string {
 	return string(m)
 }
