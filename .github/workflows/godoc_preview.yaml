@@ -27,13 +27,16 @@ jobs:
       - name: Generate Documentation
         run: |
           godoc -http=:6060 & sleep 5
-          curl -sSf http://localhost:6060/pkg/ > path/to/generated/documentation/index.html
+
+          # Generate the documentation
+          mkdir -p _generated_documentation
+          curl -sSf http://localhost:6060/pkg/ > _generated_documentation/index.html
 
       - name: Upload Documentation Preview
         uses: actions/upload-artifact@v2
         with:
           name: documentation-preview
-          path: path/to/generated/documentation
+          path: _generated_documentation
 
   deploy:
     needs: build
@@ -44,13 +47,13 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: documentation-preview
-          path: path/to/generated/documentation
+          path: _generated_documentation
 
       - name: Deploy Documentation Preview
         run: |
           # Deploy the generated documentation preview to the gh-pages branch
           git clone --branch=gh-pages --single-branch https://github.com/${{ github.repository }}.git gh-pages
-          cp -r path/to/generated/documentation/* gh-pages/${{ github.sha }}
+          cp -r _generated_documentation/* docs
 
           cd gh-pages
           git config user.name "${{ github.actor }}"
