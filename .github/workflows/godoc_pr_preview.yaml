@@ -25,7 +25,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
           link="https://godocs.io/$REPO@$version"
-          comment="Documentation for this module: [GoDoc]($link)"
+          comment="Documentation for this module: [![Go Documentation](https://godocs.io/github.com/acmcsufoss/api.acmcsuf.com?status.svg)]($link)"
           echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
           REPO: github.com/${{ github.event.pull_request.base.repo.full_name }}
@@ -37,7 +37,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
-          body-includes: "Documentation for this module: [GoDoc]"
+          body-includes: "Documentation for this module:"
           edit-mode: replace
 
       - name: Create or update comment
