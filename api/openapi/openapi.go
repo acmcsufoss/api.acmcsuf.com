@@ -11,6 +11,7 @@ import (
 	"github.com/swaggest/rest/web"
 )
 
+// NewOpenAPI creates a new OpenAPI handler.
 func NewOpenAPI(s api.Store) http.Handler {
 	// Service initializes router with required middlewares.
 	service := web.NewService(openapi3.NewReflector())
