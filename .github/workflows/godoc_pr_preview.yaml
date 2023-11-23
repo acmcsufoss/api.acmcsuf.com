@@ -20,7 +20,7 @@ jobs:
         id: generate-comment
         run: |
           set -x
-          version=$(go mod download --json $REPO@$version | jq -r .Version)
+          version=$(go mod download --json $REPO@$REV | jq -r .Version)
           echo "Module version: $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
@@ -38,6 +38,7 @@ jobs:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: "Documentation for this module: [GoDoc]"
+          edit-mode: replace
 
       - name: Create or update comment
         if: steps.fc.outputs.comment-id == ''
@@ -45,6 +46,7 @@ jobs:
         with:
           issue-number: ${{ github.event.pull_request.number }}
           body: ${{ steps.generate-comment.outputs.comment }}
+          edit-mode: replace
 
       - name: Update comment
         if: steps.fc.outputs.comment-id != ''
@@ -52,3 +54,4 @@ jobs:
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: ${{ steps.generate-comment.outputs.comment }}
+          edit-mode: replace
