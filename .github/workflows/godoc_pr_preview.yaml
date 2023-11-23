@@ -25,7 +25,7 @@ jobs:
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
           link="https://godocs.io/$REPO@$version"
-          comment="### godoc reference preview ready ✨\n\n[![Go Documentation](https://godocs.io/github.com/acmcsufoss/api.acmcsuf.com?status.svg)]($link)"
+          comment="### godoc reference preview ready ✨<br>[![Go Documentation](https://godocs.io/github.com/acmcsufoss/api.acmcsuf.com?status.svg)]($link)"
           echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
           REPO: github.com/${{ github.event.pull_request.base.repo.full_name }}
