@@ -23,9 +23,9 @@ jobs:
           echo "Module version: $version"
           echo "name=$version" >> "$GITHUB_OUTPUT"
 
-          link="https://pkg.go.dev/$REPO@$version"
+          link="https://godocs.io/$REPO@$version"
           comment="Documentation for this module: [GoDoc]($link)"
-          echo "comment=$(echo \"$comment\" | jq -R .)" >> "$GITHUB_OUTPUT"
+          echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
           REPO: ${{ github.repository.full_name }}
           REV: ${{ github.event.pull_request.base.sha }}
