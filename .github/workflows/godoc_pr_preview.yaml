@@ -19,11 +19,11 @@ jobs:
       - name: Fetch module version
         id: generate-comment
         run: |
-          version=$(go mod download -json "$REPO@$REV" | jq -r .Version)
+          version=$(go mod download --json github.com/$REPO@$version | jq -r .Version)
           echo "Module version: $version"
-          echo "name=$version" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
-          link="https://godocs.io/$REPO@$version"
+          link="https://godocs.io/github.com/$REPO@$version"
           comment="Documentation for this module: [GoDoc]($link)"
           echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
