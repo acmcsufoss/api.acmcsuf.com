@@ -3,13 +3,17 @@
   "storePackageImport": "github.com/acmcsufoss/api.acmcsuf.com/api",
   "storePackage": "api",
   "defaultMethodsMap": {
-    "Create": "Create"
+    "Create": "Create",
+    "Read": "Read",
+    "Update": "Update",
+    "Delete": "Delete",
+    "List": "List"
   },
   "interactors": [
     {
       "pascalName": "Event",
       "camelName": "event",
-      "kabobName": "event"
+      "kabobPluralName": "events"
     }
   ]
 }

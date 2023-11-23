@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/api"
+	"github.com/acmcsufoss/api.acmcsuf.com/api/openapi/interactors"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
 	"github.com/swaggest/openapi-go/openapi3"
@@ -26,10 +27,8 @@ func NewOpenAPI(s api.Store) http.Handler {
 	)
 	service.Wrap()
 
-	// crud(service, "/resource-lists", postEvents(s), nil, nil, nil, nil)
-	// useEvents(service, s) // GET /events, POST /events, etc.
-	// crud(service, "/announcements", postEvents(s), nil, nil, nil, nil)
-	// crud(service, "/blog-posts", createBlogPost(s), readBlogPost(s), updateBlogPost(s), deleteBlogPost(s), listBlogPosts(s))
+	// Register API handler interactors with the service.
+	interactors.UseAll(service, s)
 
 	return service
 }

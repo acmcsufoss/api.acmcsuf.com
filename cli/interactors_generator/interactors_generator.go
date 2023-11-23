@@ -3,6 +3,7 @@ package interactors_generator
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -11,10 +12,6 @@ import (
 
 //go:embed crudl.go.tmpl
 var crudlTemplateString string
-
-const (
-	swaggestPackageImport = "github.com/swaggest/usecase"
-)
 
 // CRUDLMethod is a CRUDL method name.
 type CRUDLMethod string
@@ -40,54 +37,61 @@ func (m CRUDLMethod) String() string {
 	return string(m)
 }
 
-// CRUDLMethodsMap is a map of CRUDL method names to their corresponding store method names.
+// CRUDLMethodsMap is a map of CRUDL methods to store methods.
 type CRUDLMethodsMap map[CRUDLMethod]string
 
-// InteractorConfig is the configuration for a single interactor.
+// InteractorConfig is the configuration for an interactor.
 type InteractorConfig struct {
-	//  PascalName is the name of the interactor in PascalCase.
+	// PascalName is the PascalCase name of the interactor.
 	PascalName string `json:"pascalName"`
 
-	// CamelName is the name of the interactor in camelCase.
+	// PascalPluralName is the PascalCase plural name of the interactor.
+	// PascalPluralName string `json:"pascalPluralName"`
+
+	// CamelName is the camelCase name of the interactor.
 	CamelName string `json:"camelName"`
 
-	// KabobName is the name of the interactor in kabob-case.
-	KabobName string `json:"kabobName"`
+	// CamelPluralName is the camelCase plural name of the interactor.
+	// CamelPluralName string `json:"camelPluralName"`
 
-	// MethodsMap is a map of method names to their corresponding store method names.
+	// KabobName is the kabob-case name of the interactor.
+	// KabobName string `json:"kabobName"`
+
+	// KabobPluralName is the kabob-case plural name of the interactor.
+	KabobPluralName string `json:"kabobPluralName"`
+
+	// MethodsMap is the optional map of CRUDL methods to store methods.
 	MethodsMap CRUDLMethodsMap `json:"methodsMap"`
 }
 
-// Render generates the source code for the interactor.
+// Render renders the interactor configuration to code.
 func (c *InteractorConfig) Render(result *string, storePackage string) error {
 	var b strings.Builder
-	b.WriteString("func use")
+	b.WriteString("// Use")
 	b.WriteString(c.PascalName)
-	b.WriteString("(service *web.Service, store ")
-	b.WriteString(storePackage)
-	b.WriteString(".Store")
-	b.WriteString(") {\n")
+	b.WriteString(" uses a generated ")
+	b.WriteString(c.PascalName)
+	b.WriteString(" interactor.\n")
+	b.WriteString(fmt.Sprintf("func Use%s(service *web.Service, store %s.Store) {\n", c.PascalName, storePackage))
 	b.WriteString("\tuseCRUDL(\n")
 	b.WriteString("\t\tservice,\n")
 	b.WriteString("\t\twithPrefix(\"/")
-	b.WriteString(c.KabobName)
+	b.WriteString(c.KabobPluralName)
 	b.WriteString("\"),\n")
 
-	for methodName, storeMethodName := range c.MethodsMap {
-		b.WriteString("\t\twith")
-		b.WriteString(methodName.String())
-		b.WriteString("(usecase.NewInteractor(func(ctx context.Context, input ")
-		b.WriteString(storePackage)
-		b.WriteString(".")
+	methodNames := []CRUDLMethod{CRUDLMethodCreate, CRUDLMethodRead, CRUDLMethodUpdate, CRUDLMethodDelete, CRUDLMethodList}
+	for _, methodName := range methodNames {
+		storeMethodName, ok := c.MethodsMap[methodName]
+		if !ok {
+			continue
+		}
+
+		b.WriteString(fmt.Sprintf("\t\twith%s(usecase.NewInteractor(func(ctx context.Context, request *%s.%s%sRequest, response *%s.%s%sResponse) (err error) {\n", methodName.String(), storePackage, storeMethodName, c.PascalName, storePackage, storeMethodName, c.PascalName))
+		b.WriteString("\t\t\t*response, err = store.")
 		b.WriteString(storeMethodName)
-		b.WriteString("Input) (output ")
-		b.WriteString(storePackage)
-		b.WriteString(".")
-		b.WriteString(storeMethodName)
-		b.WriteString("Output, err error) {\n")
-		b.WriteString("\t\t\treturn store.")
-		b.WriteString(storeMethodName)
-		b.WriteString("(ctx, input)\n")
+		b.WriteString(c.PascalName)
+		b.WriteString("(request)\n")
+		b.WriteString("\t\t\treturn err\n")
 		b.WriteString("\t\t})),\n")
 	}
 
@@ -100,87 +104,97 @@ func (c *InteractorConfig) Render(result *string, storePackage string) error {
 
 // Config is the configuration for the interactors generator.
 type Config struct {
-	// Package is the package name of the generated file.
+	// Package is the package name.
 	Package string `json:"package"`
 
-	// StorePackageImport is the import path string for the store package e.g. "github.com/example/api.example.com/store".
+	// StorePackageImport is the import path for the store package.
 	StorePackageImport string `json:"storePackageImport"`
 
-	// StorePackage is the package name of the store package e.g. "store".
+	// StorePackage is the package name for the store package.
 	StorePackage string `json:"storePackage"`
 
-	// DefaultMethodsMap is a map of method names to their corresponding store method names.
+	// DefaultMethodsMap is the default map of CRUDL methods to store methods.
 	DefaultMethodsMap CRUDLMethodsMap `json:"defaultMethodsMap"`
 
-	// Interactors is a list of interactors to generate.
+	// Interactors is the list of interactors.
 	Interactors []InteractorConfig `json:"interactors"`
 }
 
-// Render generates the source code for the configured interactors.
+// Render renders the configuration to code.
 func (c *Config) Render(result *string) error {
 	var b strings.Builder
-	b.WriteString("// Code is generated. DO NOT EDIT.\n\n")
+	b.WriteString("// Code is generated. DO NOT EDIT.\n")
 	b.WriteString("package ")
 	b.WriteString(c.Package)
 	b.WriteString("\n\n")
 	b.WriteString("import (\n")
-	b.WriteString("\t\"context\"\n\n")
+	b.WriteString("\t\"context\"\n")
 	b.WriteString("\t\"net/http\"\n\n")
-	b.WriteString("\t\"" + swaggestPackageImport + "/nethttp\"\n")
-	b.WriteString("\t\"" + swaggestPackageImport + "/rest/web\"\n")
-	b.WriteString("\t\"" + swaggestPackageImport + "/usecase\"\n\n")
-	b.WriteString("\t\"")
+	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/nethttp"))
+	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/web"))
+	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/usecase"))
+	b.WriteString("\n\t\"")
 	b.WriteString(c.StorePackageImport)
 	b.WriteString("\"\n")
 	b.WriteString(")\n\n")
 
-	var s string
+	b.WriteString(crudlTemplateString)
+	b.WriteString("\n")
+
 	for _, interactorConfig := range c.Interactors {
-		if interactorConfig.PascalName == "" {
-			return fmt.Errorf("PascalName (example: 'PascalName') is empty")
-		}
-
 		if interactorConfig.CamelName == "" {
-			return fmt.Errorf("CamelName (example: 'camelName') is empty")
+			return fmt.Errorf("interactor %s has no camelName", interactorConfig.PascalName)
 		}
 
-		if interactorConfig.KabobName == "" {
-			return fmt.Errorf("KabobName (example: 'kabob-name') is empty")
+		if interactorConfig.PascalName == "" {
+			return fmt.Errorf("interactor %s has no pascalName", interactorConfig.PascalName)
+		}
+
+		if interactorConfig.KabobPluralName == "" {
+			return fmt.Errorf("interactor %s has no kabobPluralName", interactorConfig.PascalName)
 		}
 
 		if interactorConfig.MethodsMap == nil || len(interactorConfig.MethodsMap) == 0 {
 			interactorConfig.MethodsMap = c.DefaultMethodsMap
 		}
 
-		err := interactorConfig.Render(&s, c.StorePackage)
-		if err != nil {
-			return err
+		s := ""
+		if err := interactorConfig.Render(&s, c.StorePackage); err != nil {
+			log.Fatalf("Error rendering interactor: %v", err)
 		}
 
 		b.WriteString(s)
 		b.WriteString("\n")
 	}
 
-	// Append crudl.go.tmpl to the string builder.
-	b.WriteString("\n")
-	b.WriteString(crudlTemplateString)
+	b.WriteString("// UseAll uses all interactors.\n")
+	b.WriteString("func UseAll(service *web.Service, store ")
+	b.WriteString(c.StorePackage)
+	b.WriteString(".Store) {\n")
+	for _, interactorConfig := range c.Interactors {
+		b.WriteString(fmt.Sprintf("\tUse%s(service, store)\n", interactorConfig.PascalName))
+	}
+	b.WriteString("}\n")
 
-	// Write the generated code to the result.
 	*result = b.String()
 	return nil
 }
 
-// UnmarshalConfig unmarshals the given JSON data into the given Config.
+// UnmarshalConfig unmarshals the configuration.
 func UnmarshalConfig(data []byte, c *Config) error {
 	return json.Unmarshal(data, c)
 }
 
-// ReadConfigFile reads the given file and unmarshals it into the given Config.
+// ReadConfigFile reads the configuration file.
 func ReadConfigFile(path string, c *Config) error {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return err
+		log.Fatalf("Error reading file: %v", err)
 	}
 
-	return UnmarshalConfig(data, c)
+	if err := UnmarshalConfig(data, c); err != nil {
+		log.Fatalf("Error unmarshaling configuration: %v", err)
+	}
+
+	return nil
 }

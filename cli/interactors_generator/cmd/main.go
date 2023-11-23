@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/cli/interactors_generator"
 )
@@ -10,12 +11,15 @@ import (
 // configFile is the path to the config file.
 var configFile = flag.String("config", "config.json", "the path to the config file")
 
+// outputFile is the path to the output file.
+var outputFile = flag.String("output", "output.go", "the path to the output file")
+
 func main() {
 	// Parse the CLI flags.
 	flag.Parse()
 
 	// Read the config file.
-	var config *interactors_generator.Config
+	config := &interactors_generator.Config{}
 	err := interactors_generator.ReadConfigFile(*configFile, config)
 	if err != nil {
 		fmt.Println(err)
@@ -23,13 +27,17 @@ func main() {
 	}
 
 	// Generate the code.
-	var generatedCode *string
-	err = config.Render(generatedCode)
+	generatedCode := ""
+	err = config.Render(&generatedCode)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// Write the generated code to stdout.
-	fmt.Println(generatedCode)
+	// Write the code to the output file.
+	err = os.WriteFile(*outputFile, []byte(generatedCode), 0644)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 }
