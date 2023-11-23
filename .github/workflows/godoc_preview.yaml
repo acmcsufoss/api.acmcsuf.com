@@ -48,10 +48,13 @@ jobs:
 
       - name: Deploy Documentation Preview
         run: |
-          # You can deploy the generated documentation preview to a hosting service
-          # For example, if you're using GitHub Pages:
-          mkdir -p docs
-          mv path/to/generated/documentation/* docs/${{ github.sha }}
-          git add docs
+          # Deploy the generated documentation preview to the gh-pages branch
+          git clone --branch=gh-pages --single-branch https://github.com/${{ github.repository }}.git gh-pages
+          cp -r path/to/generated/documentation/* gh-pages/${{ github.sha }}
+
+          cd gh-pages
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add .
           git commit -m "Update documentation preview"
-          git push origin HEAD
+          git push origin gh-pages
