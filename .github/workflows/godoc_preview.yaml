@@ -30,7 +30,7 @@ jobs:
 
           # Generate the documentation
           mkdir -p _generated_documentation
-          curl -sSf http://localhost:6060/pkg/ > _generated_documentation/index.html
+          curl -sSf http://localhost:6060/pkg/github.com/${{ github.repository }} > _generated_documentation/index.html
 
       - name: Upload Documentation Preview
         uses: actions/upload-artifact@v2
