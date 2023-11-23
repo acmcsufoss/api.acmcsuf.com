@@ -1,0 +1,57 @@
+name: Generate Documentation Preview
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.21"
+
+      - name: Install godoc
+        run: go install -v golang.org/x/tools/cmd/godoc@latest
+
+      - name: Generate Documentation
+        run: |
+          godoc -http=:6060 & sleep 5
+          curl -sSf http://localhost:6060/pkg/ > path/to/generated/documentation/index.html
+
+      - name: Upload Documentation Preview
+        uses: actions/upload-artifact@v2
+        with:
+          name: documentation-preview
+          path: path/to/generated/documentation
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Documentation Preview
+        uses: actions/download-artifact@v2
+        with:
+          name: documentation-preview
+          path: path/to/generated/documentation
+
+      - name: Deploy Documentation Preview
+        run: |
+          # You can deploy the generated documentation preview to a hosting service
+          # For example, if you're using GitHub Pages:
+          mkdir -p docs
+          mv path/to/generated/documentation/* docs/${{ event.base_ref }}
+          git add docs
+          git commit -m "Update documentation preview"
+          git push origin HEAD
