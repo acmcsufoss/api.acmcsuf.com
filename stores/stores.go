@@ -1,6 +1,6 @@
 package stores
 
-//go:generate sqlc generate
+// //go:generate sqlc generate
 
 import (
 	"io"

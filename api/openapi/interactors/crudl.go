@@ -1,4 +1,4 @@
-package openapi
+package interactors
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ import (
 )
 
 // crudl is a helper function for registering create, read, update, delete,
-// and list usecases.
+// and list usecases for a given resource.
 type crudl struct {
 	patternPrefix string
 	creater       usecase.Interactor

@@ -27,7 +27,7 @@ func NewOpenAPI(s api.Store) http.Handler {
 	service.Wrap()
 
 	// crud(service, "/resource-lists", postEvents(s), nil, nil, nil, nil)
-	useEvents(service, s) // GET /events, POST /events, etc.
+	// useEvents(service, s) // GET /events, POST /events, etc.
 	// crud(service, "/announcements", postEvents(s), nil, nil, nil, nil)
 	// crud(service, "/blog-posts", createBlogPost(s), readBlogPost(s), updateBlogPost(s), deleteBlogPost(s), listBlogPosts(s))
 

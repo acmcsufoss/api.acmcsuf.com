@@ -1,13 +1,6 @@
-package openapi
+package interactors
 
-import (
-	"context"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/api"
-	"github.com/swaggest/rest/web"
-	"github.com/swaggest/usecase"
-)
-
+/*
 func useEvents(service *web.Service, store api.Store) {
 	useCRUDL(
 		service,
@@ -54,3 +47,4 @@ func useEvents(service *web.Service, store api.Store) {
 		})),
 	)
 }
+*/
