@@ -16,18 +16,19 @@ jobs:
         with:
           go-version: 1.21
 
-      - name: Fetch module version
+      - name: Generate comment
         id: generate-comment
         run: |
-          version=$(go mod download --json github.com/$REPO@$version | jq -r .Version)
+          set -x
+          version=$(go mod download --json $REPO@$version | jq -r .Version)
           echo "Module version: $version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
-          link="https://godocs.io/github.com/$REPO@$version"
+          link="https://godocs.io/$REPO@$version"
           comment="Documentation for this module: [GoDoc]($link)"
           echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
-          REPO: ${{ github.event.pull_request.base.repo.full_name }}
+          REPO: github.com/${{ github.event.pull_request.base.repo.full_name }}
           REV: ${{ github.event.pull_request.base.sha }}
 
       - name: Update existing issue comment
