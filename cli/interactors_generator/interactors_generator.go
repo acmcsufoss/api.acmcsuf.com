@@ -46,7 +46,7 @@ type InteractorConfig struct {
 	PascalName string `json:"pascalName"`
 
 	// PascalPluralName is the PascalCase plural name of the interactor.
-	// PascalPluralName string `json:"pascalPluralName"`
+	PascalPluralName string `json:"pascalPluralName"`
 
 	// CamelName is the camelCase name of the interactor.
 	CamelName string `json:"camelName"`
@@ -72,7 +72,7 @@ func (c *InteractorConfig) Render(result *string, storePackage string) error {
 	b.WriteString(" uses a generated ")
 	b.WriteString(c.PascalName)
 	b.WriteString(" interactor.\n")
-	b.WriteString(fmt.Sprintf("func Use%s(service *web.Service, store %s.Store) {\n", c.PascalName, storePackage))
+	b.WriteString(fmt.Sprintf("func Use%s(service *web.Service, store %s.Store) {\n", c.PascalPluralName, storePackage))
 	b.WriteString("\tuseCRUDL(\n")
 	b.WriteString("\t\tservice,\n")
 	b.WriteString("\t\twithPrefix(\"/")
@@ -150,6 +150,10 @@ func (c *Config) Render(result *string) error {
 			return fmt.Errorf("interactor %s has no pascalName", interactorConfig.PascalName)
 		}
 
+		if interactorConfig.PascalPluralName == "" {
+			return fmt.Errorf("interactor %s has no pascalPluralName", interactorConfig.PascalName)
+		}
+
 		if interactorConfig.KabobPluralName == "" {
 			return fmt.Errorf("interactor %s has no kabobPluralName", interactorConfig.PascalName)
 		}
@@ -172,7 +176,7 @@ func (c *Config) Render(result *string) error {
 	b.WriteString(c.StorePackage)
 	b.WriteString(".Store) {\n")
 	for _, interactorConfig := range c.Interactors {
-		b.WriteString(fmt.Sprintf("\tUse%s(service, store)\n", interactorConfig.PascalName))
+		b.WriteString(fmt.Sprintf("\tUse%s(service, store)\n", interactorConfig.PascalPluralName))
 	}
 	b.WriteString("}\n")
 

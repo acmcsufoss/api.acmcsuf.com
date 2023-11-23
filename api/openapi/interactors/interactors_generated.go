@@ -89,7 +89,7 @@ func useCRUDL(service *web.Service, optionFns ...crudlOptionFn) {
 }
 
 // UseEvent uses a generated Event interactor.
-func UseEvent(service *web.Service, store api.Store) {
+func UseEvents(service *web.Service, store api.Store) {
 	useCRUDL(
 		service,
 		withPrefix("/events"),
@@ -118,5 +118,5 @@ func UseEvent(service *web.Service, store api.Store) {
 
 // UseAll uses all interactors.
 func UseAll(service *web.Service, store api.Store) {
-	UseEvent(service, store)
+	UseEvents(service, store)
 }

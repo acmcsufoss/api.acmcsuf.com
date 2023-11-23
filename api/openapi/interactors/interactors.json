@@ -12,6 +12,7 @@
   "interactors": [
     {
       "pascalName": "Event",
+      "pascalPluralName": "Events",
       "camelName": "event",
       "kabobPluralName": "events"
     }
