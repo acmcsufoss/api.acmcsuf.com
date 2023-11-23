@@ -28,7 +28,13 @@ func NewOpenAPI(s api.Store) http.Handler {
 	service.Wrap()
 
 	// Register API handler interactors with the service.
-	interactors.UseAll(service, s)
+	useAPIStoreInteractors(service, s)
 
 	return service
+}
+
+// useAPIStoreInteractors registers all generated API handler interactors.
+func useAPIStoreInteractors(service *web.Service, s api.Store) {
+	interactors.UseAll(service, s)
+	// TODO: Register additional interactors here as needed...
 }
