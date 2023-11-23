@@ -27,7 +27,7 @@ jobs:
           comment="Documentation for this module: [GoDoc]($link)"
           echo "comment=$comment" >> "$GITHUB_OUTPUT"
         env:
-          REPO: ${{ github.repository.full_name }}
+          REPO: ${{ github.event.pull_request.base.repo.full_name }}
           REV: ${{ github.event.pull_request.base.sha }}
 
       - name: Update existing issue comment
