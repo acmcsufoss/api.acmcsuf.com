@@ -1,0 +1,83 @@
+{
+	"resource_lists": [
+		{
+			"id": "1",
+			"title": "Title1",
+			"created_at": 123,
+			"updated_at": 0
+		},
+		{
+			"id": "2",
+			"title": "Title2",
+			"created_at": 1,
+			"updated_at": 1
+		},
+		{
+			"id": "3",
+			"title": "Title3",
+			"created_at": 11111,
+			"updated_at": 4928
+		}
+	],
+	"resources": [
+		{
+			"id": "1",
+			"title": "someresourcetitle",
+			"content_md": "mycoolcontent",
+			"image_url": "coolurlhere",
+			"resource_type": "mytype",
+			"resource_list_id": "1",
+			"created_at": 10293,
+			"updated_at": 283829
+		},
+		{
+			"id": "2",
+			"title": "anotherone",
+			"content_md": "content",
+			"image_url": "here",
+			"resource_type": "type",
+			"resource_list_id": "2",
+			"created_at": 10293,
+			"updated_at": 28492942
+		},
+		{
+			"id": "3",
+			"title": "titlelol",
+			"content_md": "morecontent",
+			"image_url": "image_url",
+			"resource_type": "mytype",
+			"resource_list_id": "3",
+			"created_at": 0,
+			"updated_at": 0
+		}
+	],
+	"events": [
+		{
+			"id": "1",
+			"location": "McCarthy Hall 655",
+			"start_at": 1637372400000,
+			"duration_ms": 3600000,
+			"is_all_day": false,
+			"host": "OSS",
+			"visibility": "public"
+		},
+		{
+			"id": "2",
+			"location": "CS Building 300",
+			"start_at": 1637458800000,
+			"duration_ms": 7200000,
+			"is_all_day": false,
+			"host": "Dev",
+			"visibility": "private"
+		},
+		{
+			"id": "3",
+			"location": "McCarthy Hall 464",
+			"start_at": 1637545200000,
+			"duration_ms": 86400000,
+			"is_all_day": true,
+			"host": "algo",
+			"visibility": "public"
+		}
+	]
+}
