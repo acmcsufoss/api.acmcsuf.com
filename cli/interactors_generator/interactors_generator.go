@@ -13,33 +13,55 @@ import (
 //go:embed crudl.go.tmpl
 var crudlTemplateString string
 
-// CRUDLMethod is a CRUDL method name.
-type CRUDLMethod string
+// CRUDLMethodPrefix is the prefix of a CRUDL method name.
+type CRUDLMethodPrefix string
 
 const (
-	// CRUDLMethodCreate is the create method name.
-	CRUDLMethodCreate CRUDLMethod = "Create"
+	// CRUDLMethodPrefixCreate is the create method name.
+	CRUDLMethodPrefixCreate CRUDLMethodPrefix = "Create"
 
-	// CRUDLMethodRead is the read method name.
-	CRUDLMethodRead CRUDLMethod = "Read"
+	// CRUDLMethodPrefixRead is the read method name.
+	CRUDLMethodPrefixRead CRUDLMethodPrefix = "Read"
 
-	// CRUDLMethodUpdate is the update method name.
-	CRUDLMethodUpdate CRUDLMethod = "Update"
+	// CRUDLMethodPrefixUpdate is the update method name.
+	CRUDLMethodPrefixUpdate CRUDLMethodPrefix = "Update"
 
-	// CRUDLMethodDelete is the delete method name.
-	CRUDLMethodDelete CRUDLMethod = "Delete"
+	// CRUDLMethodPrefixDelete is the delete method name.
+	CRUDLMethodPrefixDelete CRUDLMethodPrefix = "Delete"
 
-	// CRUDLMethodList is the list method name.
-	CRUDLMethodList CRUDLMethod = "List"
+	// CRUDLMethodPrefixList is the list method name.
+	CRUDLMethodPrefixList CRUDLMethodPrefix = "List"
 )
 
-// String returns the string representation of the CRUDL method.
-func (m CRUDLMethod) String() string {
+var (
+	crudlMethodPrefixes = []CRUDLMethodPrefix{CRUDLMethodPrefixCreate, CRUDLMethodPrefixRead, CRUDLMethodPrefixUpdate, CRUDLMethodPrefixDelete, CRUDLMethodPrefixList}
+)
+
+// Pascal returns the PascalCase representation of the CRUDL method.
+func (m CRUDLMethodPrefix) Pascal() string {
 	return string(m)
 }
 
-// CRUDLMethodsMap is a map of CRUDL methods to store methods.
-type CRUDLMethodsMap map[CRUDLMethod]string
+// Imperative returns the imperative representation of the CRUDL method.
+func (m CRUDLMethodPrefix) Imperative() string {
+	switch m {
+	case CRUDLMethodPrefixCreate:
+		return "creates"
+	case CRUDLMethodPrefixRead:
+		return "reads"
+	case CRUDLMethodPrefixUpdate:
+		return "updates"
+	case CRUDLMethodPrefixDelete:
+		return "deletes"
+	case CRUDLMethodPrefixList:
+		return "lists"
+	default:
+		return ""
+	}
+}
+
+// CRUDLMethodPrefixesMap is a map of CRUDL methods to store methods.
+type CRUDLMethodPrefixesMap map[CRUDLMethodPrefix]string
 
 // InteractorConfig is the configuration for an interactor.
 type InteractorConfig struct {
@@ -61,37 +83,52 @@ type InteractorConfig struct {
 	// KabobPluralName is the kabob-case plural name of the interactor.
 	KabobPluralName string `json:"kabobPluralName"`
 
-	// MethodsMap is the optional map of CRUDL methods to store methods.
-	MethodsMap CRUDLMethodsMap `json:"methodsMap"`
+	// MethodPrefixesMap is the optional map of CRUDL method prefixes to store method prefixes.
+	MethodPrefixesMap CRUDLMethodPrefixesMap `json:"methodsMap"`
+}
+
+func (c *InteractorConfig) Types(methodPrefix, typesPackage string) (string, string, string) {
+	method := methodPrefix + c.PascalName
+	typePrefix := method
+	if typesPackage != "" {
+		typePrefix = typesPackage + "." + typePrefix
+	}
+	requestType, responseType := typePrefix+"Request", typePrefix+"Response"
+	return method, requestType, responseType
 }
 
 // Render renders the interactor configuration to code.
-func (c *InteractorConfig) Render(result *string, storePackage string) error {
+func (c *InteractorConfig) Render(result *string, typesPackage string) error {
 	var b strings.Builder
 	b.WriteString("// Use")
 	b.WriteString(c.PascalName)
 	b.WriteString(" uses a generated ")
-	b.WriteString(c.PascalName)
+	b.WriteString(c.PascalPluralName)
 	b.WriteString(" interactor.\n")
-	b.WriteString(fmt.Sprintf("func Use%s(service *web.Service, store %s.Store) {\n", c.PascalPluralName, storePackage))
+	b.WriteString(fmt.Sprintf("func Use%s(service *web.Service, store Store) {\n", c.PascalPluralName))
 	b.WriteString("\tuseCRUDL(\n")
 	b.WriteString("\t\tservice,\n")
 	b.WriteString("\t\twithPrefix(\"/")
 	b.WriteString(c.KabobPluralName)
 	b.WriteString("\"),\n")
 
-	methodNames := []CRUDLMethod{CRUDLMethodCreate, CRUDLMethodRead, CRUDLMethodUpdate, CRUDLMethodDelete, CRUDLMethodList}
-	for _, methodName := range methodNames {
-		storeMethodName, ok := c.MethodsMap[methodName]
+	for _, methodPrefix := range crudlMethodPrefixes {
+		storeMethodPrefix, ok := c.MethodPrefixesMap[methodPrefix]
 		if !ok {
 			continue
 		}
 
-		b.WriteString(fmt.Sprintf("\t\twith%s(usecase.NewInteractor(func(ctx context.Context, request *%s.%s%sRequest, response *%s.%s%sResponse) (err error) {\n", methodName.String(), storePackage, storeMethodName, c.PascalName, storePackage, storeMethodName, c.PascalName))
-		b.WriteString("\t\t\t*response, err = store.")
-		b.WriteString(storeMethodName)
-		b.WriteString(c.PascalName)
-		b.WriteString("(request)\n")
+		storeMethod, requestType, responseType := c.Types(storeMethodPrefix, typesPackage)
+		b.WriteString(fmt.Sprintf(
+			"\t\twith%s(usecase.NewInteractor(func(ctx context.Context, request *%s, response *%s) (err error) {\n",
+			methodPrefix.Pascal(),
+			requestType,
+			responseType,
+		))
+		b.WriteString(fmt.Sprintf(
+			"\t\t\t*response, err = store.%s(request)\n",
+			storeMethod,
+		))
 		b.WriteString("\t\t\treturn err\n")
 		b.WriteString("\t\t})),\n")
 	}
@@ -105,17 +142,14 @@ func (c *InteractorConfig) Render(result *string, storePackage string) error {
 
 // Config is the configuration for the interactors generator.
 type Config struct {
-	// Package is the package name.
+	// Package is the package name. Package must have a length greater than 0.
 	Package string `json:"package"`
 
-	// StorePackageImport is the import path for the store package.
-	StorePackageImport string `json:"storePackageImport"`
-
-	// StorePackage is the package name for the store package.
-	StorePackage string `json:"storePackage"`
+	// TypesPackage is the name of the external package containing the request and response types. Default is "".
+	TypesPackage string `json:"typesPackage"`
 
 	// DefaultMethodsMap is the default map of CRUDL methods to store methods.
-	DefaultMethodsMap CRUDLMethodsMap `json:"defaultMethodsMap"`
+	DefaultMethodPrefixesMap CRUDLMethodPrefixesMap `json:"defaultMethodPrefixesMap"`
 
 	// Interactors is the list of interactors.
 	Interactors []InteractorConfig `json:"interactors"`
@@ -123,8 +157,12 @@ type Config struct {
 
 // Render renders the configuration to code.
 func (c *Config) Render(result *string) error {
+	if c.Package == "" {
+		return fmt.Errorf("package must be set")
+	}
+
 	var b strings.Builder
-	b.WriteString("// Code is generated. DO NOT EDIT.\n")
+	b.WriteString("// Code is generated. DO NOT EDIT.\n\n")
 	b.WriteString("package ")
 	b.WriteString(c.Package)
 	b.WriteString("\n\n")
@@ -134,13 +172,44 @@ func (c *Config) Render(result *string) error {
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/nethttp"))
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/web"))
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/usecase"))
-	b.WriteString("\n\t\"")
-	b.WriteString(c.StorePackageImport)
-	b.WriteString("\"\n")
 	b.WriteString(")\n\n")
 
 	b.WriteString(crudlTemplateString)
 	b.WriteString("\n")
+
+	b.WriteString("// ContainsContext can be embedded by any interface to have an overrideable\n")
+	b.WriteString("// context.\n")
+	b.WriteString("type ContainsContext interface {\n")
+	b.WriteString("\tWithContext(context.Context) ContainsContext\n")
+	b.WriteString("}\n\n")
+
+	b.WriteString("// Store is the store interface.\n")
+	b.WriteString("type Store interface {\n")
+	b.WriteString("\tio.Closer\n")
+	b.WriteString("\tContainsContext\n\n")
+	for _, interactorConfig := range c.Interactors {
+		for _, methodPrefix := range crudlMethodPrefixes {
+			storeMethodPrefix, ok := interactorConfig.MethodPrefixesMap[methodPrefix]
+			if !ok {
+				continue
+			}
+
+			storeMethod, requestType, responseType := interactorConfig.Types(storeMethodPrefix, c.TypesPackage)
+			b.WriteString(fmt.Sprintf(
+				"\t// %s %s %s.\n",
+				storeMethod,
+				methodPrefix.Imperative(),
+				interactorConfig.PascalName,
+			))
+			b.WriteString(fmt.Sprintf(
+				"\t%s(r %s) (*%s, error)\n\n",
+				storeMethod,
+				requestType,
+				responseType,
+			))
+		}
+	}
+	b.WriteString("}\n\n")
 
 	for _, interactorConfig := range c.Interactors {
 		if interactorConfig.CamelName == "" {
@@ -159,12 +228,12 @@ func (c *Config) Render(result *string) error {
 			return fmt.Errorf("interactor %s has no kabobPluralName", interactorConfig.PascalName)
 		}
 
-		if interactorConfig.MethodsMap == nil || len(interactorConfig.MethodsMap) == 0 {
-			interactorConfig.MethodsMap = c.DefaultMethodsMap
+		if interactorConfig.MethodPrefixesMap == nil || len(interactorConfig.MethodPrefixesMap) == 0 {
+			interactorConfig.MethodPrefixesMap = c.DefaultMethodPrefixesMap
 		}
 
 		s := ""
-		if err := interactorConfig.Render(&s, c.StorePackage); err != nil {
+		if err := interactorConfig.Render(&s, c.TypesPackage); err != nil {
 			log.Fatalf("Error rendering interactor: %v", err)
 		}
 
@@ -173,9 +242,7 @@ func (c *Config) Render(result *string) error {
 	}
 
 	b.WriteString("// UseAll uses all interactors.\n")
-	b.WriteString("func UseAll(service *web.Service, store ")
-	b.WriteString(c.StorePackage)
-	b.WriteString(".Store) {\n")
+	b.WriteString("func UseAll(service *web.Service, store Store) {\n")
 	for _, interactorConfig := range c.Interactors {
 		b.WriteString(fmt.Sprintf("\tUse%s(service, store)\n", interactorConfig.PascalPluralName))
 	}

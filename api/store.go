@@ -20,7 +20,7 @@ type Store interface {
 	ContainsContext
 
 	// CreateEvent creates a new event resource.
-	CreateEvent(r CreateEventRequest) (*Event, error)
+	CreateEvent(r CreateEventRequest) (*CreateEventResponse, error)
 
 	// Event returns an event resource.
 	Event(id string) (*Event, error)

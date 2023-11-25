@@ -112,8 +112,8 @@ type AddResourceRequest struct {
 	Index          int64  `json:"index"`
 }
 
-// CreateEventRequest is the input for creating a new event.
-type CreateEventRequest struct {
+// Event is an event resource.
+type Event struct {
 	Resource
 	Location   string     `json:"location"`
 	StartAt    time.Time  `json:"start_at"`
@@ -123,16 +123,14 @@ type CreateEventRequest struct {
 	Visibility Visibility `json:"visibility"`
 }
 
-// Event is an event resource.
-type Event struct {
-	Resource
+// CreateEventRequest is the input for creating a new event.
+type CreateEventRequest struct {
+	Event
+}
 
-	Location   string     `json:"location"`
-	StartAt    time.Time  `json:"start_at"`
-	DurationMs uint64     `json:"duration_ms"`
-	IsAllDay   bool       `json:"is_all_day"`
-	Host       string     `json:"host"`
-	Visibility Visibility `json:"visibility"`
+// CreateEventResponse is the output for creating a new event.
+type CreateEventResponse struct {
+	Event
 }
 
 // CreateAnnouncementRequest is the input for creating a new announcement.
