@@ -1,13 +1,21 @@
-// crudl is a helper function for registering create, read, update, delete,
-// and list usecases for a given resource.
-type crudl struct {
+// crud is a helper struct for registering create, read, update, delete,
+// and batch usecases for a given resource.
+type crud struct {
 	patternPrefix string
 	creater       usecase.Interactor
+	batchCreater  usecase.Interactor
 	reader        usecase.Interactor
+	batchReader   usecase.Interactor
 	updater       usecase.Interactor
+	batchUpdater  usecase.Interactor
 	deleter       usecase.Interactor
-	lister        usecase.Interactor
+	batchDeleter  usecase.Interactor
 }
+
+// TODO: Replace instances of 'crudl' with 'crud'.
+
+// TODO: Split up the functions into templates so they are included in the
+// generated code only if they are used.
 
 type crudlOptionFn func(*crudl)
 

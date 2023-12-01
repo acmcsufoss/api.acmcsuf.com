@@ -3,7 +3,6 @@ package openapi
 import (
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/api"
 	"github.com/acmcsufoss/api.acmcsuf.com/api/openapi/interactors"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/rs/cors"
@@ -12,7 +11,7 @@ import (
 )
 
 // NewOpenAPI creates a new OpenAPI handler.
-func NewOpenAPI(s api.Store) http.Handler {
+func NewOpenAPI(s interactors.Store) http.Handler {
 	// Service initializes router with required middlewares.
 	service := web.NewService(openapi3.NewReflector())
 
@@ -35,7 +34,7 @@ func NewOpenAPI(s api.Store) http.Handler {
 }
 
 // useAPIStoreInteractors registers all generated API handler interactors.
-func useAPIStoreInteractors(service *web.Service, s api.Store) {
+func useAPIStoreInteractors(service *web.Service, s interactors.Store) {
 	interactors.UseAll(service, s)
 	// TODO: Register additional interactors here as needed...
 }
