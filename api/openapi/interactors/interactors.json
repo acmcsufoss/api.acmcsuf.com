@@ -1,0 +1,20 @@
+{
+  "package": "interactors",
+  "storePackageImport": "github.com/acmcsufoss/api.acmcsuf.com/api",
+  "storePackage": "api",
+  "defaultMethodsMap": {
+    "Create": "Create",
+    "Read": "Read",
+    "Update": "Update",
+    "Delete": "Delete",
+    "List": "List"
+  },
+  "interactors": [
+    {
+      "pascalName": "Event",
+      "pascalPluralName": "Events",
+      "camelName": "event",
+      "kabobPluralName": "events"
+    }
+  ]
+}
