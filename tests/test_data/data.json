@@ -79,5 +79,34 @@
 			"host": "algo",
 			"visibility": "public"
 		}
+	],
+	"announcements": [
+		{
+			"id": "1",
+			"event_list_id": "1",
+			"approved_by_list_id": "1",
+			"visibility": "public",
+			"announce_at": 1672531200000,
+			"discord_channel_id": "discord_channel_1",
+			"discord_message_id": "discord_message_1"
+		},
+		{
+			"id": "2",
+			"event_list_id": "2",
+			"approved_by_list_id": "2",
+			"visibility": "private",
+			"announce_at": 1672617600000,
+			"discord_channel_id": null,
+			"discord_message_id": null
+		},
+		{
+			"id": "3",
+			"event_list_id": "3",
+			"approved_by_list_id": "3",
+			"visibility": "public",
+			"announce_at": 1672704000000,
+			"discord_channel_id": "discord_channel_2",
+			"discord_message_id": "discord_message_2"
+		}
 	]
 }
