@@ -1,15 +1,15 @@
 // Code is generated. DO NOT EDIT.
+
 package interactors
 
 import (
 	"context"
+	"io"
 	"net/http"
 
 	"github.com/swaggest/rest/nethttp"
 	"github.com/swaggest/rest/web"
 	"github.com/swaggest/usecase"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/api"
 )
 
 // crudl is a helper function for registering create, read, update, delete,
@@ -88,35 +88,28 @@ func useCRUDL(service *web.Service, optionFns ...crudlOptionFn) {
 	}
 }
 
-// UseEvent uses a generated Event interactor.
-func UseEvents(service *web.Service, store api.Store) {
+// ContainsContext can be embedded by any interface to have an overrideable
+// context.
+type ContainsContext interface {
+	WithContext(context.Context) ContainsContext
+}
+
+// Store is the store interface.
+type Store interface {
+	io.Closer
+	ContainsContext
+
+}
+
+// UseEvents uses a generated Events interactor.
+func UseEvents(service *web.Service, store Store) {
 	useCRUDL(
 		service,
 		withPrefix("/events"),
-		withCreate(usecase.NewInteractor(func(ctx context.Context, request *api.CreateEventRequest, response *api.CreateEventResponse) (err error) {
-			*response, err = store.CreateEvent(request)
-			return err
-		})),
-		withRead(usecase.NewInteractor(func(ctx context.Context, request *api.ReadEventRequest, response *api.ReadEventResponse) (err error) {
-			*response, err = store.ReadEvent(request)
-			return err
-		})),
-		withUpdate(usecase.NewInteractor(func(ctx context.Context, request *api.UpdateEventRequest, response *api.UpdateEventResponse) (err error) {
-			*response, err = store.UpdateEvent(request)
-			return err
-		})),
-		withDelete(usecase.NewInteractor(func(ctx context.Context, request *api.DeleteEventRequest, response *api.DeleteEventResponse) (err error) {
-			*response, err = store.DeleteEvent(request)
-			return err
-		})),
-		withList(usecase.NewInteractor(func(ctx context.Context, request *api.ListEventRequest, response *api.ListEventResponse) (err error) {
-			*response, err = store.ListEvent(request)
-			return err
-		})),
 	)
 }
 
 // UseAll uses all interactors.
-func UseAll(service *web.Service, store api.Store) {
+func UseAll(service *web.Service, store Store) {
 	UseEvents(service, store)
 }

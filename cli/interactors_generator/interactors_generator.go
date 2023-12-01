@@ -101,7 +101,7 @@ func (c *InteractorConfig) Types(methodPrefix, typesPackage string) (string, str
 func (c *InteractorConfig) Render(result *string, typesPackage string) error {
 	var b strings.Builder
 	b.WriteString("// Use")
-	b.WriteString(c.PascalName)
+	b.WriteString(c.PascalPluralName)
 	b.WriteString(" uses a generated ")
 	b.WriteString(c.PascalPluralName)
 	b.WriteString(" interactor.\n")
@@ -148,6 +148,9 @@ type Config struct {
 	// TypesPackage is the name of the external package containing the request and response types. Default is "".
 	TypesPackage string `json:"typesPackage"`
 
+	// TypesPackageImport is the import path of the external package containing the request and response types. Default is "".
+	TypesPackageImport string `json:"typesPackageImport"`
+
 	// DefaultMethodsMap is the default map of CRUDL methods to store methods.
 	DefaultMethodPrefixesMap CRUDLMethodPrefixesMap `json:"defaultMethodPrefixesMap"`
 
@@ -161,6 +164,10 @@ func (c *Config) Render(result *string) error {
 		return fmt.Errorf("package must be set")
 	}
 
+	if c.Package == c.TypesPackage {
+		return fmt.Errorf("package and typesPackage must be different")
+	}
+
 	var b strings.Builder
 	b.WriteString("// Code is generated. DO NOT EDIT.\n\n")
 	b.WriteString("package ")
@@ -168,10 +175,18 @@ func (c *Config) Render(result *string) error {
 	b.WriteString("\n\n")
 	b.WriteString("import (\n")
 	b.WriteString("\t\"context\"\n")
+	b.WriteString("\t\"io\"\n")
 	b.WriteString("\t\"net/http\"\n\n")
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/nethttp"))
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/rest/web"))
 	b.WriteString(fmt.Sprintf("\t\"%s\"\n", "github.com/swaggest/usecase"))
+	if c.TypesPackage != "" {
+		if c.TypesPackageImport == "" {
+			return fmt.Errorf("typesPackageImport must be set if typesPackage is set")
+		}
+
+		b.WriteString(fmt.Sprintf("\t%s \"%s\"\n", c.TypesPackageImport, c.TypesPackage))
+	}
 	b.WriteString(")\n\n")
 
 	b.WriteString(crudlTemplateString)
@@ -211,6 +226,7 @@ func (c *Config) Render(result *string) error {
 	}
 	b.WriteString("}\n\n")
 
+	s := ""
 	for _, interactorConfig := range c.Interactors {
 		if interactorConfig.CamelName == "" {
 			return fmt.Errorf("interactor %s has no camelName", interactorConfig.PascalName)
@@ -232,11 +248,9 @@ func (c *Config) Render(result *string) error {
 			interactorConfig.MethodPrefixesMap = c.DefaultMethodPrefixesMap
 		}
 
-		s := ""
 		if err := interactorConfig.Render(&s, c.TypesPackage); err != nil {
 			log.Fatalf("Error rendering interactor: %v", err)
 		}
-
 		b.WriteString(s)
 		b.WriteString("\n")
 	}
