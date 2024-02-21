@@ -7,6 +7,8 @@ import (
 	swgui "github.com/swaggest/swgui/v5emb"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/events"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/resources"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 )
 
@@ -34,8 +36,8 @@ func New(q *sqlite.Queries) *web.Service {
 }
 
 func useAll(s *web.Service, q *sqlite.Queries) {
-	use("/resources", services.NewResourcesService(q), s)
-	use("/events", services.NewEventsService(q), s)
+	use("/resources", resources.New(q), s)
+	use("/events", events.New(q), s)
 }
 
 func use(path string, s services.Service, ss *web.Service) {
