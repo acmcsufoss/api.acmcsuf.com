@@ -1,0 +1,12 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    schema: "sqlite/schema.sql"
+    queries: "sqlite/queries.sql"
+    gen:
+      go:
+        package: sqlite
+        out: ./sqlite
+        json_tags_id_uppercase: true
+        emit_json_tags: true
+        output_models_file_name: ./schema.go
