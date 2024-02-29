@@ -1,13 +1,21 @@
 -- Language: sqlite
 
 -- Create the 'resource_mappings' table.
-CREATE TABLE IF NOT EXISTS resource_mappings (
-    uuid TEXT PRIMARY KEY,
-    resource_map_uuid TEXT NOT NULL REFERENCES resources(uuid) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS resource_group_mapping (
+    resource_uuid TEXT PRIMARY KEY REFERENCES resources(uuid),
+    group_uuid TEXT NOT NULL REFERENCES group_resource_list_mapping(uuid) ON DELETE CASCADE,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+);
+
+CREATE TABLE IF NOT EXISTS group_resource_list_mapping (
+    group_uuid TEXT,
+    resource_uuid TEXT NOT NULL REFERENCES resources(uuid) ON DELETE CASCADE,
     index_in_list INTEGER NOT NULL,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
 );
+
 
 -- Create the 'resources' table.
 CREATE TABLE IF NOT EXISTS resources (
