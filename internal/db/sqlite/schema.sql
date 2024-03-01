@@ -4,16 +4,16 @@
 CREATE TABLE IF NOT EXISTS resource_group_mapping (
     resource_uuid TEXT REFERENCES resources(uuid),
     group_uuid TEXT NOT NULL REFERENCES group_resource_list_mapping(uuid),
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 CREATE TABLE IF NOT EXISTS group_resource_list_mapping (
     group_uuid TEXT,
     resource_uuid TEXT NOT NULL REFERENCES resources(uuid),
     index_in_list INTEGER NOT NULL,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS resources (
     content_md TEXT NOT NULL,
     image_url TEXT,
     resource_type TEXT NOT NULL,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 -- Create the 'events' table which is a table of event resources.
