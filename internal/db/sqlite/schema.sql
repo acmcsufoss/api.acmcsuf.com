@@ -1,7 +1,7 @@
 -- Language: sqlite
 
 -- Create the 'resource_mappings' table.
-CREATE TABLE IF NOT EXISTS resource_group_mapping (
+CREATE TABLE IF NOT EXISTS resource_id_group_id_mapping (
     resource_uuid TEXT REFERENCES resource(uuid),
     group_uuid TEXT NOT NULL REFERENCES group_resource_list_mapping(uuid),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS resource_group_mapping (
     deleted_at TIMESTAMP DEFAULT NULL,
 );
 
-CREATE TABLE IF NOT EXISTS group_resource_list_mapping (
+CREATE TABLE IF NOT EXISTS group_id_resource_list_mapping (
     group_uuid TEXT,
     resource_uuid TEXT NOT NULL REFERENCES resource(uuid),
     index_in_list INTEGER NOT NULL,
@@ -17,7 +17,6 @@ CREATE TABLE IF NOT EXISTS group_resource_list_mapping (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT NULL,
 );
-
 
 -- Create the 'resources' table.
 CREATE TABLE IF NOT EXISTS resource (
@@ -47,8 +46,8 @@ CREATE TABLE IF NOT EXISTS announcement (
     uuid TEXT PRIMARY KEY REFERENCES resource(uuid),
     -- no it is not resource list by uuid because one uuid may have more than one list.
     -- in this case, we have 2. One has people, one has events.
-    event_list_uuid TEXT REFERENCES resource_group_mapping(resource_uuid),
-    approved_by_list_uuid TEXT REFERENCES resource_person_mapping(uuid),
+    event_groups_group_uuid TEXT REFERENCES resource_group_mapping(resource_uuid),  --[1,2,3] , [4,5,6] , [6,7,8]
+    approved_by_list_uuid TEXT REFERENCES resource_person_mapping(uuid), -- [1:user_1,1:user_2,1:user_3]
     visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
     announce_at INTEGER NOT NULL, -- UTC milliseconds.
     discord_channel_id TEXT, -- Discord channel ID. If present, the announcement has been posted.
@@ -57,7 +56,7 @@ CREATE TABLE IF NOT EXISTS announcement (
 )
 
 -- Create the 'persons' table which is a table of person resources.
-CREATE TABLE IF NOT EXISTS resource_person_mapping (
+CREATE TABLE IF NOT EXISTS person (
     uuid TEXT REFERENCES resource(uuid),
     person_uuid TEXT REFERENCES event(uuid),
 )
