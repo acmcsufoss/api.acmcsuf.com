@@ -3,7 +3,6 @@ module github.com/acmcsufoss/api.acmcsuf.com
 go 1.21.3
 
 require (
-	github.com/pkg/errors v0.9.1
 	github.com/swaggest/openapi-go v0.2.45
 	github.com/swaggest/rest v0.2.61
 	github.com/swaggest/swgui v1.8.0

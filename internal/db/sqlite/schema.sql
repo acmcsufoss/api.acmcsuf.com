@@ -1,58 +1,64 @@
 -- Language: sqlite
 
--- Create the 'resource_lists' table.
-CREATE TABLE IF NOT EXISTS resource_lists (
-    id TEXT PRIMARY KEY,
-    title TEXT NOT NULL,
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    UNIQUE (id)
+-- Create the 'resource_mapping' table.
+CREATE TABLE IF NOT EXISTS resource_id_group_id_mapping (
+    resource_uuid TEXT REFERENCES resource(uuid),
+    group_uuid TEXT NOT NULL REFERENCES group_resource_list_mapping(uuid),
+    type TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
 );
 
--- Create the 'resources' table.
-CREATE TABLE IF NOT EXISTS resources (
-    id TEXT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS group_id_resource_list_mapping (
+    group_uuid TEXT,
+    resource_uuid TEXT NOT NULL REFERENCES resource(uuid),
+    index_in_list INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
+);
+
+-- Create the 'resource' table.
+CREATE TABLE IF NOT EXISTS resource (
+    uuid TEXT PRIMARY KEY,
     title TEXT NOT NULL,
     content_md TEXT NOT NULL,
     image_url TEXT,
     resource_type TEXT NOT NULL,
-    resource_list_id TEXT REFERENCES resource_lists(id), -- Related resources are added to this list.
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    UNIQUE (id, resource_list_id)
-);
-
--- Create the 'resource_references' table.
-CREATE TABLE IF NOT EXISTS resource_references (
-    resource_id TEXT NOT NULL REFERENCES resources(id) ON DELETE CASCADE,
-    resource_list_id TEXT NOT NULL REFERENCES resource_lists(id) ON DELETE CASCADE,
-    index_in_list INTEGER NOT NULL, -- The index of the resource in the list.
-    created_at INTEGER NOT NULL,
-    updated_at INTEGER NOT NULL,
-    UNIQUE (resource_id, resource_list_id),
-    PRIMARY KEY (resource_id, resource_list_id)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP DEFAULT NULL,
 );
 
 -- Create the 'events' table which is a table of event resources.
-CREATE TABLE IF NOT EXISTS events (
-    id TEXT PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
+CREATE TABLE IF NOT EXISTS event (
+    uuid TEXT PRIMARY KEY REFERENCES resource(uuid),
     location TEXT NOT NULL,
     start_at NUMBER NOT NULL, -- Start time in UTC milliseconds.
-    duration_ms NUMBER NOT NULL,
+    end_at NUMBER NOT NULL,
     is_all_day BOOLEAN NOT NULL,
     host TEXT NOT NULL, -- Accepts team ID or plain text.
     visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
-    UNIQUE (id)
 )
 
--- Create the 'announcements' table which is a table of announcement resources.
-CREATE TABLE IF NOT EXISTS announcements (
-    id TEXT PRIMARY KEY REFERENCES resources(id) ON DELETE CASCADE,
-    event_list_id TEXT REFERENCES resource_lists(id) ON DELETE CASCADE,
-    approved_by_list_id TEXT REFERENCES resource_lists(id) ON DELETE CASCADE,
+-- Create the 'person' table which is a table of person resources.
+CREATE TABLE IF NOT EXISTS person (
+    uuid TEXT REFERENCES resource(uuid),
+    name TEXT,
+    preferred_pronoun TEXT
+)
+
+-- Create the 'announcement' table which is a table of announcement resources.
+CREATE TABLE IF NOT EXISTS announcement (
+    uuid TEXT PRIMARY KEY REFERENCES resource(uuid),
+    event_groups_group_uuid TEXT REFERENCES resource_group_mapping(resource_uuid),  
+    approved_by_list_uuid TEXT REFERENCES group_id_resource_list_mapping(uuid), 
     visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
     announce_at INTEGER NOT NULL, -- UTC milliseconds.
-    discord_channel_id TEXT, -- Discord channel ID. If present, the announcement has been posted.
+    discord_channel_id TEXT, -- Discord channel ID.
     discord_message_id TEXT, -- Discord message ID. If present, the announcement has been posted.
     UNIQUE (id)
 )
+
+
