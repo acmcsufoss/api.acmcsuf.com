@@ -18,10 +18,10 @@ type Service interface {
 	// Resource gets a single resource resource.
 	Resource() usecase.IOInteractor
 
-	// PostResource creates a new resource resource.
+	// PostResource updates a single resource resource.
 	PostResource() usecase.IOInteractor
 
-	// BatchPostResource creates multiple new resource resources.
+	// BatchPostResource updates multiple resource resources.
 	BatchPostResource() usecase.IOInteractor
 
 	// DeleteResource deletes a single resource resource.
