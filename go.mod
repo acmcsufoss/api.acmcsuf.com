@@ -12,10 +12,17 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/go-chi/chi/v5 v5.0.10 // indirect
+	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/mattn/go-sqlite3 v1.14.22 // indirect
+	github.com/ravener/discord-oauth2 v0.0.0-20230514095040-ae65713199b3 // indirect
 	github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 // indirect
 	github.com/swaggest/form/v5 v5.1.1 // indirect
 	github.com/swaggest/jsonschema-go v0.3.64 // indirect
 	github.com/swaggest/refl v1.3.0 // indirect
 	github.com/vearutop/statigz v1.4.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/oauth2 v0.18.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
