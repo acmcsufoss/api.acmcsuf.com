@@ -76,7 +76,7 @@ VALUES
 -- name: DeleteResource :exec
 DELETE FROM resource
 WHERE
-    id = ?;
+    uuid = ?;
 
 -- name: GetResource :exec
 SELECT
@@ -153,6 +153,6 @@ SELECT
     discord_channel_id,
     discord_message_id
 from
-    announcements
+    announcement
 where
     uuid = ?;

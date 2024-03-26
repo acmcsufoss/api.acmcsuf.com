@@ -1,6 +1,6 @@
 module github.com/acmcsufoss/api.acmcsuf.com
 
-go 1.21.3
+go 1.23
 
 require (
 	github.com/swaggest/openapi-go v0.2.45
