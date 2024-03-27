@@ -7,7 +7,7 @@ CREATE TABLE
         type TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP DEFAULT NULL,
+        deleted_at TIMESTAMP DEFAULT NULL
     );
 
 CREATE TABLE
@@ -17,7 +17,7 @@ CREATE TABLE
         index_in_list INTEGER NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP DEFAULT NULL,
+        deleted_at TIMESTAMP DEFAULT NULL
     );
 
 -- Create the 'resource' table.
@@ -30,7 +30,7 @@ CREATE TABLE
         resource_type TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        deleted_at TIMESTAMP DEFAULT NULL,
+        deleted_at TIMESTAMP DEFAULT NULL
     );
 
 -- Create the 'events' table which is a table of event resources.
@@ -42,7 +42,7 @@ CREATE TABLE
         end_at NUMBER NOT NULL,
         is_all_day BOOLEAN NOT NULL,
         host TEXT NOT NULL, -- Accepts team ID or plain text.
-        visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
+        visibility TEXT NOT NULL -- Accepts 'public' or 'private'.
     )
     -- Create the 'person' table which is a table of person resources.
 CREATE TABLE
