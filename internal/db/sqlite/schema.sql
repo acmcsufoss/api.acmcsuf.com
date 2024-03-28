@@ -43,14 +43,14 @@ CREATE TABLE
         is_all_day BOOLEAN NOT NULL,
         host TEXT NOT NULL, -- Accepts team ID or plain text.
         visibility TEXT NOT NULL -- Accepts 'public' or 'private'.
-    )
+    );
     -- Create the 'person' table which is a table of person resources.
 CREATE TABLE
     IF NOT EXISTS person (
         uuid TEXT REFERENCES resource (uuid),
         name TEXT,
         preferred_pronoun TEXT
-    )
+    );
     -- Create the 'announcement' table which is a table of announcement resources.
 CREATE TABLE
     IF NOT EXISTS announcement (
@@ -61,5 +61,5 @@ CREATE TABLE
         announce_at INTEGER NOT NULL, -- UTC milliseconds.
         discord_channel_id TEXT, -- Discord channel ID.
         discord_message_id TEXT, -- Discord message ID. If present, the announcement has been posted.
-        UNIQUE (id)
-    )
+        UNIQUE (uuid)
+    );

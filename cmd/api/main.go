@@ -12,6 +12,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -28,12 +29,12 @@ func main() {
 	}()
 
 	// Set up the database connection.
-	uri, ok := os.LookupEnv("DATABASE_URL")
-	if !ok {
-		log.Fatal("DATABASE_URL must be set")
-	}
+	// _, ok := os.LookupEnv("DATABASE_URL")
+	// if !ok {
+	// 	log.Fatal("DATABASE_URL must be set")
+	// }
 
-	d, err := sql.Open("sqlite", uri)
+	d, err := sql.Open("sqlite3", "../../api.db")
 	if err != nil {
 		log.Fatalf("Error opening SQLite database: %v", err)
 	}

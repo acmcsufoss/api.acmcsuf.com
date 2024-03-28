@@ -78,7 +78,7 @@ DELETE FROM resource
 WHERE
     uuid = ?;
 
--- name: GetResource :exec
+-- name: GetResource :one
 SELECT
     uuid,
     title,
@@ -93,7 +93,7 @@ from
 where
     uuid = ?;
 
--- name: GetEvent :exec
+-- name: GetEvent :one
 SELECT
     uuid,
     location,
@@ -107,7 +107,7 @@ from
 where
     uuid = ?;
 
--- name: GetPerson :exec
+-- name: GetPerson :one
 SELECT
     uuid,
     name,
@@ -117,7 +117,7 @@ from
 where
     uuid = ?;
 
--- name: GetResourceGroupMapping :exec
+-- name: GetResourceGroupMapping :many
 SELECT
     resource_uuid,
     group_uuid,
@@ -130,7 +130,7 @@ from
 where
     resource_uuid = ?;
 
--- name: GetGroupResourceMapping :exec
+-- name: GetGroupResourceMapping :many
 SELECT
     group_uuid,
     resource_uuid,
@@ -143,7 +143,7 @@ from
 where
     group_uuid = ?;
 
--- name: GetAnnouncement :exec
+-- name: GetAnnouncement :one
 SELECT
     uuid,
     event_groups_group_uuid,

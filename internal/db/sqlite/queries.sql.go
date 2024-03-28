@@ -226,7 +226,7 @@ func (q *Queries) DeleteResource(ctx context.Context, uuid string) error {
 	return err
 }
 
-const getAnnouncement = `-- name: GetAnnouncement :exec
+const getAnnouncement = `-- name: GetAnnouncement :one
 SELECT
     uuid,
     event_groups_group_uuid,
@@ -241,12 +241,22 @@ where
     uuid = ?
 `
 
-func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getAnnouncement, uuid)
-	return err
+func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) (Announcement, error) {
+	row := q.db.QueryRowContext(ctx, getAnnouncement, uuid)
+	var i Announcement
+	err := row.Scan(
+		&i.Uuid,
+		&i.EventGroupsGroupUuid,
+		&i.ApprovedByListUuid,
+		&i.Visibility,
+		&i.AnnounceAt,
+		&i.DiscordChannelID,
+		&i.DiscordMessageID,
+	)
+	return i, err
 }
 
-const getEvent = `-- name: GetEvent :exec
+const getEvent = `-- name: GetEvent :one
 SELECT
     uuid,
     location,
@@ -261,12 +271,22 @@ where
     uuid = ?
 `
 
-func (q *Queries) GetEvent(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getEvent, uuid)
-	return err
+func (q *Queries) GetEvent(ctx context.Context, uuid string) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEvent, uuid)
+	var i Event
+	err := row.Scan(
+		&i.Uuid,
+		&i.Location,
+		&i.StartAt,
+		&i.EndAt,
+		&i.IsAllDay,
+		&i.Host,
+		&i.Visibility,
+	)
+	return i, err
 }
 
-const getGroupResourceMapping = `-- name: GetGroupResourceMapping :exec
+const getGroupResourceMapping = `-- name: GetGroupResourceMapping :many
 SELECT
     group_uuid,
     resource_uuid,
@@ -280,12 +300,37 @@ where
     group_uuid = ?
 `
 
-func (q *Queries) GetGroupResourceMapping(ctx context.Context, groupUuid sql.NullString) error {
-	_, err := q.db.ExecContext(ctx, getGroupResourceMapping, groupUuid)
-	return err
+func (q *Queries) GetGroupResourceMapping(ctx context.Context, groupUuid sql.NullString) ([]GroupIDResourceListMapping, error) {
+	rows, err := q.db.QueryContext(ctx, getGroupResourceMapping, groupUuid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GroupIDResourceListMapping
+	for rows.Next() {
+		var i GroupIDResourceListMapping
+		if err := rows.Scan(
+			&i.GroupUuid,
+			&i.ResourceUuid,
+			&i.IndexInList,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
-const getPerson = `-- name: GetPerson :exec
+const getPerson = `-- name: GetPerson :one
 SELECT
     uuid,
     name,
@@ -296,12 +341,14 @@ where
     uuid = ?
 `
 
-func (q *Queries) GetPerson(ctx context.Context, uuid sql.NullString) error {
-	_, err := q.db.ExecContext(ctx, getPerson, uuid)
-	return err
+func (q *Queries) GetPerson(ctx context.Context, uuid sql.NullString) (Person, error) {
+	row := q.db.QueryRowContext(ctx, getPerson, uuid)
+	var i Person
+	err := row.Scan(&i.Uuid, &i.Name, &i.PreferredPronoun)
+	return i, err
 }
 
-const getResource = `-- name: GetResource :exec
+const getResource = `-- name: GetResource :one
 SELECT
     uuid,
     title,
@@ -317,12 +364,23 @@ where
     uuid = ?
 `
 
-func (q *Queries) GetResource(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getResource, uuid)
-	return err
+func (q *Queries) GetResource(ctx context.Context, uuid string) (Resource, error) {
+	row := q.db.QueryRowContext(ctx, getResource, uuid)
+	var i Resource
+	err := row.Scan(
+		&i.Uuid,
+		&i.Title,
+		&i.ContentMd,
+		&i.ImageUrl,
+		&i.ResourceType,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
 }
 
-const getResourceGroupMapping = `-- name: GetResourceGroupMapping :exec
+const getResourceGroupMapping = `-- name: GetResourceGroupMapping :many
 SELECT
     resource_uuid,
     group_uuid,
@@ -336,7 +394,32 @@ where
     resource_uuid = ?
 `
 
-func (q *Queries) GetResourceGroupMapping(ctx context.Context, resourceUuid sql.NullString) error {
-	_, err := q.db.ExecContext(ctx, getResourceGroupMapping, resourceUuid)
-	return err
+func (q *Queries) GetResourceGroupMapping(ctx context.Context, resourceUuid sql.NullString) ([]ResourceIDGroupIDMapping, error) {
+	rows, err := q.db.QueryContext(ctx, getResourceGroupMapping, resourceUuid)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ResourceIDGroupIDMapping
+	for rows.Next() {
+		var i ResourceIDGroupIDMapping
+		if err := rows.Scan(
+			&i.ResourceUuid,
+			&i.GroupUuid,
+			&i.Type,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

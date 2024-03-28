@@ -27,7 +27,7 @@ func New(q *sqlite.Queries) *web.Service {
 
 	// Add use case handler to router.
 	// s.Get("/hello/{name}", helloWorld())
-	useAll(s, q)
+	//useAll(s, q)
 
 	// Swagger UI endpoint at /docs.
 	s.Docs("/docs", swgui.New)
