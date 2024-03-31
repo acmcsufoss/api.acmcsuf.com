@@ -12,9 +12,9 @@ import (
 
 var _ services.Service = EventsService{}
 
-// type EventsService struct {
-// 	q *sqlite.Queries
-// }
+type EventsService struct {
+	q *sqlite.Queries
+}
 
 func New(q *sqlite.Queries) *EventsService {
 	return &EventsService{q}
