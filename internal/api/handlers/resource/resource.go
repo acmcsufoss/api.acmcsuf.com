@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/db/sqlite"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 	"github.com/swaggest/usecase"
 	"github.com/swaggest/usecase/status"
 )
@@ -28,14 +28,6 @@ func New(q *sqlite.Queries) *ResourcesService {
 	return &ResourcesService{q}
 }
 
-type resourceInput struct {
-	Title          string `json:"title"`
-	ContentMd      string `json:"content_md"`
-	ImageUrl       string `json:"image_url"`
-	ResourceType   string `json:"resource_type"`
-	ResourceListID string `json:"resource_list_id"`
-}
-
 type resourceOutput sqlite.Resource
 
 func (s ResourcesService) Resources() usecase.IOInteractor {
@@ -51,9 +43,9 @@ func (s ResourcesService) BatchPostResources() usecase.IOInteractor {
 	panic("implement me")
 }
 
-func (s ResourcesService) Resource() usecase.IOInteractor {
+func (s ResourcesService) GetResource() usecase.IOInteractor {
 	// Create use case interactor with references to input/output types and interaction function.
-	u := usecase.NewIOI(new(resourceInput), new(resourceOutput), func(ctx context.Context, input, output interface{}) error {
+	u := usecase.NewIOI(new(rdesourceInput), new(db.resourceOutput), func(ctx context.Context, input, output interface{}) error {
 		// var (
 		// 	in  = input.(*resourceInput)
 		// 	out = output.(*resourceOutput)

@@ -1,17 +1,20 @@
 package events
 
 import (
+	"context"
+
 	"github.com/swaggest/usecase"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 )
 
 var _ services.Service = EventsService{}
 
-type EventsService struct {
-	q *sqlite.Queries
-}
+// type EventsService struct {
+// 	q *sqlite.Queries
+// }
 
 func New(q *sqlite.Queries) *EventsService {
 	return &EventsService{q}
@@ -30,8 +33,14 @@ func (s EventsService) BatchPostResources() usecase.IOInteractor {
 	panic("implement me")
 }
 
-func (s EventsService) Resource() usecase.IOInteractor {
-	panic("implement me")
+func (s EventsService) GetResource(uuid string) (*models.Resource, error) {
+	res, err := s.q.GetResource(context.Background(), uuid)
+	if err != nil {
+		return nil, err
+	}
+	val := interface{}(res).(models.Resource)
+	return &val, nil
+
 }
 
 func (s EventsService) PostResource() usecase.IOInteractor {
