@@ -2,75 +2,88 @@ package resource
 
 import (
 	"context"
-	"fmt"
+	"encoding/json"
+	"log"
+	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/swaggest/usecase"
-	"github.com/swaggest/usecase/status"
 )
 
 type Resource struct {
 	s services.Service
 }
 
-func NewResourceHandler(s services.Service) *Resource {
-	return &Resource{s: s}
+func NewResourceHandler(s services.Service) *ResourceHandler {
+	return &ResourceHandler{s: s}
 }
 
-var _ services.Service = ResourcesService{}
+var _ handlers.Handler = ResourceHandler{}
 
-type ResourcesService struct {
-	q *sqlite.Queries
+type ResourceHandler struct {
+	s services.Service
 }
 
-func New(q *sqlite.Queries) *ResourcesService {
-	return &ResourcesService{q}
+func New(s services.Service) *ResourceHandler {
+	return &ResourceHandler{s}
 }
 
 type resourceOutput sqlite.Resource
 
-func (s ResourcesService) Resources() usecase.IOInteractor {
-	res := s.q.GetResource(context.TODO(), "1")
-	fmt.Println(res)
+// func (s ResourcesService) Resources() usecase.IOInteractor {
+// 	res := s.q.GetResource(context.TODO(), "1")
+// 	fmt.Println(res)
+// }
+
+// func (s ResourcesService) PostResources() usecase.IOInteractor {
+// 	panic("implement me")
+// }
+
+// func (s ResourcesService) BatchPostResources() usecase.IOInteractor {
+// 	panic("implement me")
+// }
+
+// func (s ResourceHandler) GetResource(w http.ResponseWriter, r *http.Request) usecase.IOInteractor {
+
+// 	// Create use case interactor with references to input/output types and interaction function.
+// 	u := usecase.NewIOI(new(rdesourceInput), new(db.resourceOutput), func(ctx context.Context, input, output interface{}) error {
+// 		// var (
+// 		// 	in  = input.(*resourceInput)
+// 		// 	out = output.(*resourceOutput)
+// 		// )
+
+// 		// TODO: Get resource by ID from database.
+
+// 		return nil
+// 	})
+
+// 	// Describe use case interactor.
+// 	u.SetTitle("GetResource")
+// 	u.SetDescription("Gets a single base resource.")
+// 	u.SetExpectedErrors(status.InvalidArgument)
+// 	return u
+// }
+
+func (re ResourceHandler) GetResource(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	res, err := re.s.GetResource(context.Background(), id)
+	if err != nil {
+		log.Println("There was an error processing your request. %v", err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(res)
 }
 
-func (s ResourcesService) PostResources() usecase.IOInteractor {
-	panic("implement me")
-}
+// func (s ResourcesService) PostResource() usecase.IOInteractor {
+// 	panic("implement me")
+// }
 
-func (s ResourcesService) BatchPostResources() usecase.IOInteractor {
-	panic("implement me")
-}
+// func (s ResourcesService) BatchPostResource() usecase.IOInteractor {
+// 	panic("implement me")
+// }
 
-func (s ResourcesService) GetResource() usecase.IOInteractor {
-	// Create use case interactor with references to input/output types and interaction function.
-	u := usecase.NewIOI(new(rdesourceInput), new(db.resourceOutput), func(ctx context.Context, input, output interface{}) error {
-		// var (
-		// 	in  = input.(*resourceInput)
-		// 	out = output.(*resourceOutput)
-		// )
-
-		// TODO: Get resource by ID from database.
-
-		return nil
-	})
-
-	// Describe use case interactor.
-	u.SetTitle("GetResource")
-	u.SetDescription("Gets a single base resource.")
-	u.SetExpectedErrors(status.InvalidArgument)
-	return u
-}
-
-func (s ResourcesService) PostResource() usecase.IOInteractor {
-	panic("implement me")
-}
-
-func (s ResourcesService) BatchPostResource() usecase.IOInteractor {
-	panic("implement me")
-}
-
-func (s ResourcesService) DeleteResource() usecase.IOInteractor {
-	panic("implement me")
-}
+// func (s ResourcesService) DeleteResource() usecase.IOInteractor {
+// 	panic("implement me")
+// }

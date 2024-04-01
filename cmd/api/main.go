@@ -11,7 +11,9 @@ import (
 	"syscall"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers/resource"
+	resourceServ "github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/resources"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -34,7 +36,7 @@ func main() {
 	// 	log.Fatal("DATABASE_URL must be set")
 	// }
 
-	d, err := sql.Open("sqlite3", "../../api.db")
+	d, err := sql.Open("sqlite3", "../internal/api/db/sqlite/api.db")
 	if err != nil {
 		log.Fatalf("Error opening SQLite database: %v", err)
 	}
@@ -59,12 +61,16 @@ func main() {
 		}
 	}()
 
+	serviceObj := resourceServ.New(q)
 	// Initialize and start the HTTP server.
 	handler := api.New(q)
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
 		port = "8080"
 	}
+
+	resourceHandler := resource.NewResourceHandler(serviceObj)
+	http.HandleFunc("/resource", resourceHandler.GetResource)
 
 	serverAddr := fmt.Sprintf(":%s", port)
 	go func() {
