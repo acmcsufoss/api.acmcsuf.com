@@ -44,11 +44,12 @@ func (s ResourcesService) BatchPostResources() usecase.IOInteractor {
 
 func (s ResourcesService) Resource() usecase.IOInteractor {
 	// Create use case interactor with references to input/output types and interaction function.
+	// Input should just be the ID of the resource.
 	u := usecase.NewIOI(new(resourceInput), new(resourceOutput), func(ctx context.Context, input, output interface{}) error {
-		// var (
-		// 	in  = input.(*resourceInput)
-		// 	out = output.(*resourceOutput)
-		// )
+		var (
+			in  = input.(*resourceInput)
+			out = output.(*resourceOutput)
+		)
 
 		// TODO: Get resource by ID from database.
 
@@ -63,7 +64,21 @@ func (s ResourcesService) Resource() usecase.IOInteractor {
 }
 
 func (s ResourcesService) PostResource() usecase.IOInteractor {
-	panic("implement me")
+	u := usecase.NewIOI(new(resourceInput), new(resourceOutput), func(ctx context.Context, input, output interface{}) error {
+		var (
+			in  = input.(*resourceInput)
+			out = output.(*resourceOutput)
+		)
+
+		// TODO: Save resource to database.
+		return nil
+	})
+
+	// Describe use case interactor.
+	u.SetTitle("GetResource")
+	u.SetDescription("Gets a single base resource.")
+	u.SetExpectedErrors(status.InvalidArgument)
+	return u
 }
 
 func (s ResourcesService) BatchPostResource() usecase.IOInteractor {
