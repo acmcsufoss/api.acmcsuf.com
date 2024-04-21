@@ -2,6 +2,8 @@ package oauth
 
 import (
 	"context"
+	"crypto/rand"
+	"encoding/base64"
 	"io"
 	"net/http"
 
@@ -12,7 +14,8 @@ import (
 // Utilized this resource to get started with the OAuth2 implementation:
 // https://github.com/ravener/discord-oauth2/blob/master/example/main.go
 
-var state = GenerateState()
+var stateSize = 32
+var state, stateErr = GenerateState(stateSize)
 
 func CreateDiscordOAuth() {
 	// How would we set up the secrets? .env file?
@@ -26,14 +29,16 @@ func CreateDiscordOAuth() {
 	}
 
 	CreateOAuthEndpoints(*conf)
-
 }
 
 func CreateOAuthEndpoints(c oauth2.Config) {
+	if stateErr != nil {
+		panic("state is null")
+	}
 
 	// Login page that redirects to Discord's auth page
 	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, c.AuthCodeURL(GenerateState()), http.StatusTemporaryRedirect)
+		http.Redirect(w, r, c.AuthCodeURL(state), http.StatusTemporaryRedirect)
 	})
 
 	// Callback endpoint that Discord redirects to
@@ -79,13 +84,17 @@ func CreateOAuthEndpoints(c oauth2.Config) {
 
 }
 
-func GenerateState() string {
-	// Generate a random string for OAuth2 state
-	// TODO: Implement state generation
-	panic("Not implemented...yet.")
+// Generate a random string for OAuth2 state
+// Source: https://stackoverflow.com/a/35558869
+func GenerateState(n int) (string, error) {
+	data := make([]byte, n)
+	if _, err := io.ReadFull(rand.Reader, data); err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(data), nil
 }
 
+// Gets the URL for the Discord API user endpoint
 func GetDiscordUserEndpointURL() string {
-	// Gets the URL for the Discord API user endpoint
 	return "https://discord.com/api/users/@me"
 }
