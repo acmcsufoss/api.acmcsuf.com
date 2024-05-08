@@ -1,5 +1,4 @@
 -- Language: sqlite
--- Create the 'resource_mapping' table.
 CREATE TABLE
     IF NOT EXISTS resource_id_group_id_mapping (
         resource_uuid TEXT REFERENCES resource (uuid),
@@ -20,7 +19,6 @@ CREATE TABLE
         deleted_at TIMESTAMP DEFAULT NULL
     );
 
--- Create the 'resource' table.
 CREATE TABLE
     IF NOT EXISTS resource (
         uuid TEXT PRIMARY KEY,
@@ -33,7 +31,6 @@ CREATE TABLE
         deleted_at TIMESTAMP DEFAULT NULL
     );
 
--- Create the 'events' table which is a table of event resources.
 CREATE TABLE
     IF NOT EXISTS event (
         uuid TEXT PRIMARY KEY REFERENCES resource (uuid),
@@ -42,17 +39,15 @@ CREATE TABLE
         end_at NUMBER NOT NULL,
         is_all_day BOOLEAN NOT NULL,
         host TEXT NOT NULL, -- Accepts team ID or plain text.
-    )
+    );
 
--- Create the 'person' table which is a table of person resources.
 CREATE TABLE
     IF NOT EXISTS person (
         uuid TEXT REFERENCES resource (uuid),
         name TEXT,
         preferred_pronoun TEXT
-    )
+    );
 
--- Create the 'announcement' table which is a table of announcement resources.
 CREATE TABLE
     IF NOT EXISTS announcement (
         uuid TEXT PRIMARY KEY REFERENCES resource (uuid),
@@ -63,6 +58,4 @@ CREATE TABLE
         discord_channel_id TEXT, -- Discord channel ID.
         discord_message_id TEXT, -- Discord message ID. If present, the announcement has been posted.
         UNIQUE (id)
-    )
-
--- TODO: Create a table for access tokens for the API.
+    );
