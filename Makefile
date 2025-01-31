@@ -3,7 +3,7 @@
 GENERATE_DEPS := $(wildcard internal/db/sqlite/*.sql) $(wildcard internal/db/sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt vet run build clean test
+.PHONY:fmt vet run build check test clean
 
 fmt:
 	@go fmt ./...
@@ -23,7 +23,10 @@ run: vet generate
 build: vet generate
 	go build cmd/api/main.go
 
-test: vet
+check: vet
+	nilaway ./...
+
+test: check
 	go test ./...
 
 clean:
