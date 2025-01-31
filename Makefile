@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := run
 
-GENERATE_DEPS := $(wildcard sql/*.sql) sqlc.yaml
+GENERATE_DEPS := $(wildcard internal/db/sqlite/*.sql) $(wildcard internal/db/sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
 .PHONY:fmt vet run build clean test
