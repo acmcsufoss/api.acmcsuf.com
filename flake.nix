@@ -24,7 +24,6 @@
             sqlc # compiles SQL queries to Go code
             sqlfluff # SQL linter
             gnumake
-            pre-commit
           ];
 
           shellHook = ''
