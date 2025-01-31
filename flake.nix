@@ -15,6 +15,10 @@
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
       in {
+        # could use
+        # packages.default = pkgs.buildGoModule {...};
+        # in the future to package this
+
         devShells.default = pkgs.mkShell {
           packages = with pkgs; [
             go
