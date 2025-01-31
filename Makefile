@@ -3,7 +3,7 @@
 GENERATE_DEPS := $(wildcard internal/db/sqlite/*.sql) $(wildcard internal/db/sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt vet run build check test clean
+.PHONY:fmt vet run build check test sql-check sql-fix clean
 
 fmt:
 	@go fmt ./...
@@ -28,6 +28,13 @@ check: vet
 
 test: check
 	go test ./...
+
+sql-check:
+	sqlfluff lint --dialect sqlite
+
+sql-fix:
+	sqlfluff format --dialect sqlite
+	sqlfluff fix --dialect sqlite
 
 clean:
 	go clean
