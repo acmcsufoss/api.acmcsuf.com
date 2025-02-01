@@ -21,11 +21,12 @@ event (
     start_at,
     end_at,
     is_all_day,
-    host,
-    visibility
+    host
+    -- the following doens't exist in schema
+    -- visibility
 )
 VALUES
-(?, ?, ?, ?, ?, ?, ?);
+(?, ?, ?, ?, ?, ?);
 
 -- name: CreatePerson :exec
 INSERT INTO
@@ -100,8 +101,9 @@ SELECT
     start_at,
     end_at,
     is_all_day,
-    host,
-    visibility
+    host
+    -- the following does not exist in schema
+    -- visibility
 FROM
     event
 WHERE
