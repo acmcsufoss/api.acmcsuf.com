@@ -17,10 +17,10 @@ generate: fmt $(GENERATE_MARKER)
 vet: fmt
 	go vet ./...
 
-run: vet generate
+run: generate
 	go run cmd/api/main.go
 
-build: vet generate
+build: generate
 	go build cmd/api/main.go
 
 check: vet
