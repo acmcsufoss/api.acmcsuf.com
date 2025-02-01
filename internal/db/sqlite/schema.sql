@@ -50,13 +50,15 @@ CREATE TABLE IF NOT EXISTS person (
 -- Create the 'announcement' table which is a table of announcement resources.
 CREATE TABLE IF NOT EXISTS announcement (
     uuid TEXT PRIMARY KEY REFERENCES resource (uuid),
-    event_groups_group_uuid TEXT REFERENCES resource_group_mapping (resource_uuid),
+    event_groups_group_uuid TEXT REFERENCES
+    resource_group_mapping (resource_uuid),
     approved_by_list_uuid TEXT REFERENCES group_id_resource_list_mapping (uuid),
     visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
     announce_at INTEGER NOT NULL, -- UTC milliseconds.
     discord_channel_id TEXT, -- Discord channel ID.
-    discord_message_id TEXT, -- Discord message ID. If present, the announcement has been posted.
-    UNIQUE (id)
+    -- Discord message ID. If present, the announcement has been posted.
+    discord_message_id TEXT UNIQUE
+    -- UNIQUE (id) Not sure what this is for, assuming the unique is for above
 );
 
 -- TODO: Create a table for access tokens for the API.
