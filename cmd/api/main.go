@@ -12,6 +12,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
