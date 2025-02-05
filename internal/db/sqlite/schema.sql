@@ -3,7 +3,7 @@
 -- Create the 'events' table which is a table of event resources.
 CREATE TABLE
     IF NOT EXISTS event (
-        uuid TEXT PRIMARY KEY REFERENCES resource (uuid),
+        uuid TEXT PRIMARY KEY,
         location TEXT NOT NULL,
         start_at NUMBER NOT NULL, -- Start time in UTC milliseconds.
         end_at NUMBER NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE
 -- Create the 'person' table which is a table of person resources.
 CREATE TABLE
     IF NOT EXISTS person (
-        uuid TEXT REFERENCES resource (uuid),
+        uuid TEXT PRIMARY KEY,
         name TEXT,
         preferred_pronoun TEXT
     )
@@ -22,9 +22,7 @@ CREATE TABLE
 -- Create the 'announcement' table which is a table of announcement resources.
 CREATE TABLE
     IF NOT EXISTS announcement (
-        uuid TEXT PRIMARY KEY REFERENCES resource (uuid),
-        event_groups_group_uuid TEXT REFERENCES resource_group_mapping (resource_uuid),
-        approved_by_list_uuid TEXT REFERENCES group_id_resource_list_mapping (uuid),
+        uuid TEXT PRIMARY KEY,
         visibility TEXT NOT NULL, -- Accepts 'public' or 'private'.
         announce_at INTEGER NOT NULL, -- UTC milliseconds.
         discord_channel_id TEXT, -- Discord channel ID.

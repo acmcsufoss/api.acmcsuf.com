@@ -10,8 +10,6 @@ import (
 
 type Announcement struct {
 	Uuid                 string         `json:"uuid"`
-	EventGroupsGroupUuid sql.NullString `json:"event_groups_group_uuid"`
-	ApprovedByListUuid   sql.NullString `json:"approved_by_list_uuid"`
 	Visibility           string         `json:"visibility"`
 	AnnounceAt           int64          `json:"announce_at"`
 	DiscordChannelID     sql.NullString `json:"discord_channel_id"`

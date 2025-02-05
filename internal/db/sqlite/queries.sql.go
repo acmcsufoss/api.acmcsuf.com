@@ -14,8 +14,6 @@ const createAnnouncement = `-- name: CreateAnnouncement :exec
 INSERT INTO
     announcement (
         uuid,
-        event_groups_group_uuid,
-        approved_by_list_uuid,
         visibility,
         announce_at,
         discord_channel_id,
@@ -27,8 +25,6 @@ VALUES
 
 type CreateAnnouncementParams struct {
 	Uuid                 string         `json:"uuid"`
-	EventGroupsGroupUuid sql.NullString `json:"event_groups_group_uuid"`
-	ApprovedByListUuid   sql.NullString `json:"approved_by_list_uuid"`
 	Visibility           string         `json:"visibility"`
 	AnnounceAt           int64          `json:"announce_at"`
 	DiscordChannelID     sql.NullString `json:"discord_channel_id"`
@@ -38,8 +34,6 @@ type CreateAnnouncementParams struct {
 func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
 	_, err := q.db.ExecContext(ctx, createAnnouncement,
 		arg.Uuid,
-		arg.EventGroupsGroupUuid,
-		arg.ApprovedByListUuid,
 		arg.Visibility,
 		arg.AnnounceAt,
 		arg.DiscordChannelID,
@@ -107,8 +101,6 @@ func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) erro
 const getAnnouncement = `-- name: GetAnnouncement :exec
 SELECT
     uuid,
-    event_groups_group_uuid,
-    approved_by_list_uuid,
     visibility,
     announce_at,
     discord_channel_id,

@@ -22,8 +22,6 @@ VALUES
 INSERT INTO
     announcement (
         uuid,
-        event_groups_group_uuid,
-        approved_by_list_uuid,
         visibility,
         announce_at,
         discord_channel_id,
@@ -59,8 +57,6 @@ where
 -- name: GetAnnouncement :exec
 SELECT
     uuid,
-    event_groups_group_uuid,
-    approved_by_list_uuid,
     visibility,
     announce_at,
     discord_channel_id,
