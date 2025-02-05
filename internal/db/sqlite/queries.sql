@@ -1,18 +1,3 @@
--- name: CreateResource :exec
-INSERT INTO
-    resource (
-        uuid,
-        title,
-        content_md,
-        image_url,
-        resource_type,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?);
-
 -- name: CreateEvent :exec
 INSERT INTO
     event (
@@ -33,32 +18,6 @@ INSERT INTO
 VALUES
     (?, ?, ?);
 
--- name: CreateResourceGroupMapping :exec
-INSERT INTO
-    resource_id_group_id_mapping (
-        resource_uuid,
-        group_uuid,
-        type,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?);
-
--- name: CreateGroupResourceMapping :exec
-INSERT INTO
-    group_id_resource_list_mapping (
-        group_uuid,
-        resource_uuid,
-        index_in_list,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?);
-
 -- name: CreateAnnouncement :exec
 INSERT INTO
     announcement (
@@ -72,26 +31,6 @@ INSERT INTO
     )
 VALUES
     (?, ?, ?, ?, ?, ?, ?);
-
--- name: DeleteResource :exec
-DELETE FROM resource
-WHERE
-    uuid = ?;
-
--- name: GetResource :exec
-SELECT
-    uuid,
-    title,
-    content_md,
-    image_url,
-    resource_type,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    resource
-where
-    uuid = ?;
 
 -- name: GetEvent :exec
 SELECT
@@ -116,32 +55,6 @@ from
     person
 where
     uuid = ?;
-
--- name: GetResourceGroupMapping :exec
-SELECT
-    resource_uuid,
-    group_uuid,
-    type,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    resource_id_group_id_mapping
-where
-    resource_uuid = ?;
-
--- name: GetGroupResourceMapping :exec
-SELECT
-    group_uuid,
-    resource_uuid,
-    index_in_list,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    group_id_resource_list_mapping
-where
-    group_uuid = ?;
 
 -- name: GetAnnouncement :exec
 SELECT

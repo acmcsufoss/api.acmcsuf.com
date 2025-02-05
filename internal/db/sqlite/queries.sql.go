@@ -86,41 +86,6 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) error 
 	return err
 }
 
-const createGroupResourceMapping = `-- name: CreateGroupResourceMapping :exec
-INSERT INTO
-    group_id_resource_list_mapping (
-        group_uuid,
-        resource_uuid,
-        index_in_list,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?)
-`
-
-type CreateGroupResourceMappingParams struct {
-	GroupUuid    sql.NullString `json:"group_uuid"`
-	ResourceUuid string         `json:"resource_uuid"`
-	IndexInList  int64          `json:"index_in_list"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
-	DeletedAt    sql.NullTime   `json:"deleted_at"`
-}
-
-func (q *Queries) CreateGroupResourceMapping(ctx context.Context, arg CreateGroupResourceMappingParams) error {
-	_, err := q.db.ExecContext(ctx, createGroupResourceMapping,
-		arg.GroupUuid,
-		arg.ResourceUuid,
-		arg.IndexInList,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-		arg.DeletedAt,
-	)
-	return err
-}
-
 const createPerson = `-- name: CreatePerson :exec
 INSERT INTO
     person (uuid, name, preferred_pronoun)
@@ -136,93 +101,6 @@ type CreatePersonParams struct {
 
 func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) error {
 	_, err := q.db.ExecContext(ctx, createPerson, arg.Uuid, arg.Name, arg.PreferredPronoun)
-	return err
-}
-
-const createResource = `-- name: CreateResource :exec
-INSERT INTO
-    resource (
-        uuid,
-        title,
-        content_md,
-        image_url,
-        resource_type,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?, ?, ?)
-`
-
-type CreateResourceParams struct {
-	Uuid         string         `json:"uuid"`
-	Title        string         `json:"title"`
-	ContentMd    string         `json:"content_md"`
-	ImageUrl     sql.NullString `json:"image_url"`
-	ResourceType string         `json:"resource_type"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
-	DeletedAt    sql.NullTime   `json:"deleted_at"`
-}
-
-func (q *Queries) CreateResource(ctx context.Context, arg CreateResourceParams) error {
-	_, err := q.db.ExecContext(ctx, createResource,
-		arg.Uuid,
-		arg.Title,
-		arg.ContentMd,
-		arg.ImageUrl,
-		arg.ResourceType,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-		arg.DeletedAt,
-	)
-	return err
-}
-
-const createResourceGroupMapping = `-- name: CreateResourceGroupMapping :exec
-INSERT INTO
-    resource_id_group_id_mapping (
-        resource_uuid,
-        group_uuid,
-        type,
-        created_at,
-        updated_at,
-        deleted_at
-    )
-VALUES
-    (?, ?, ?, ?, ?, ?)
-`
-
-type CreateResourceGroupMappingParams struct {
-	ResourceUuid sql.NullString `json:"resource_uuid"`
-	GroupUuid    string         `json:"group_uuid"`
-	Type         sql.NullString `json:"type"`
-	CreatedAt    sql.NullTime   `json:"created_at"`
-	UpdatedAt    sql.NullTime   `json:"updated_at"`
-	DeletedAt    sql.NullTime   `json:"deleted_at"`
-}
-
-func (q *Queries) CreateResourceGroupMapping(ctx context.Context, arg CreateResourceGroupMappingParams) error {
-	_, err := q.db.ExecContext(ctx, createResourceGroupMapping,
-		arg.ResourceUuid,
-		arg.GroupUuid,
-		arg.Type,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-		arg.DeletedAt,
-	)
-	return err
-}
-
-const deleteResource = `-- name: DeleteResource :exec
-DELETE FROM resource
-WHERE
-    uuid = ?
-`
-
-func (q *Queries) DeleteResource(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, deleteResource, uuid)
 	return err
 }
 
@@ -266,25 +144,6 @@ func (q *Queries) GetEvent(ctx context.Context, uuid string) error {
 	return err
 }
 
-const getGroupResourceMapping = `-- name: GetGroupResourceMapping :exec
-SELECT
-    group_uuid,
-    resource_uuid,
-    index_in_list,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    group_id_resource_list_mapping
-where
-    group_uuid = ?
-`
-
-func (q *Queries) GetGroupResourceMapping(ctx context.Context, groupUuid sql.NullString) error {
-	_, err := q.db.ExecContext(ctx, getGroupResourceMapping, groupUuid)
-	return err
-}
-
 const getPerson = `-- name: GetPerson :exec
 SELECT
     uuid,
@@ -298,45 +157,5 @@ where
 
 func (q *Queries) GetPerson(ctx context.Context, uuid sql.NullString) error {
 	_, err := q.db.ExecContext(ctx, getPerson, uuid)
-	return err
-}
-
-const getResource = `-- name: GetResource :exec
-SELECT
-    uuid,
-    title,
-    content_md,
-    image_url,
-    resource_type,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    resource
-where
-    uuid = ?
-`
-
-func (q *Queries) GetResource(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getResource, uuid)
-	return err
-}
-
-const getResourceGroupMapping = `-- name: GetResourceGroupMapping :exec
-SELECT
-    resource_uuid,
-    group_uuid,
-    type,
-    created_at,
-    updated_at,
-    deleted_at
-from
-    resource_id_group_id_mapping
-where
-    resource_uuid = ?
-`
-
-func (q *Queries) GetResourceGroupMapping(ctx context.Context, resourceUuid sql.NullString) error {
-	_, err := q.db.ExecContext(ctx, getResourceGroupMapping, resourceUuid)
 	return err
 }
