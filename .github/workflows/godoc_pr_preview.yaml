@@ -40,14 +40,6 @@ jobs:
           body-includes: "### godoc reference preview ready ✨"
           edit-mode: replace
 
-      - name: Create or update comment
-        if: steps.fc.outputs.comment-id == ''
-        uses: peter-evans/create-or-update-comment@v1
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: ${{ steps.generate_comment.outputs.comment }}
-          edit-mode: replace
-
       - name: Update comment
         if: steps.fc.outputs.comment-id != ''
         uses: peter-evans/create-or-update-comment@v1
