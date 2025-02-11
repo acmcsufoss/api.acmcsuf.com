@@ -20,3 +20,7 @@
 # Go workspace file
 go.work
 *.sqlite
+
+.direnv/
+# build artifact generated my Makefile
+.generate.marker

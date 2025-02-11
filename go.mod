@@ -12,6 +12,7 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/go-chi/chi/v5 v5.0.10 // indirect
+	github.com/mattn/go-sqlite3 v1.14.24 // indirect
 	github.com/santhosh-tekuri/jsonschema/v3 v3.1.0 // indirect
 	github.com/swaggest/form/v5 v5.1.1 // indirect
 	github.com/swaggest/jsonschema-go v0.3.64 // indirect

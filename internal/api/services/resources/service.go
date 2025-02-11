@@ -47,8 +47,8 @@ func (s ResourcesService) Resource() usecase.IOInteractor {
 	// Input should just be the ID of the resource.
 	u := usecase.NewIOI(new(resourceInput), new(resourceOutput), func(ctx context.Context, input, output interface{}) error {
 		var (
-			in  = input.(*resourceInput)
-			out = output.(*resourceOutput)
+		// in  = input.(*resourceInput)
+		// out = output.(*resourceOutput)
 		)
 
 		// TODO: Get resource by ID from database.
@@ -66,8 +66,8 @@ func (s ResourcesService) Resource() usecase.IOInteractor {
 func (s ResourcesService) PostResource() usecase.IOInteractor {
 	u := usecase.NewIOI(new(resourceInput), new(resourceOutput), func(ctx context.Context, input, output interface{}) error {
 		var (
-			in  = input.(*resourceInput)
-			out = output.(*resourceOutput)
+		// in  = input.(*resourceInput)
+		// out = output.(*resourceOutput)
 		)
 
 		// TODO: Save resource to database.
