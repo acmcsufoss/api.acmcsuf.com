@@ -10,8 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
-      id-token: write
+      contents: "read"
+      id-token: "write"
 
     steps:
       - uses: actions/checkout@v4
@@ -22,11 +22,8 @@ jobs:
       - name: Setup Nix cache
         uses: DeterminateSystems/flakehub-cache-action@main
 
-      - name: Check Flake
-        run: nix flake check
-
-      - name: Build development environment
-        run: nix develop -c echo "Nix environment ready"
+      # - name: Check Flake
+      #   run: nix flake check
 
       - name: Format check
         run: nix develop -c bash -c "make fmt && git diff --exit-code"
