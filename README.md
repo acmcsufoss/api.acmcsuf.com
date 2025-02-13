@@ -30,6 +30,28 @@ go fmt ./...
 
 ---
 
+## Or use the Makefile instead
+
+### Start API server
+
+```sh
+make run
+```
+
+### Run checks and tests
+
+```sh
+make test
+```
+
+### Format and fix SQL files
+
+```sh
+make sql-fix
+```
+
+---
+
 ## To use the Nix dev shell
 
 1. [Install nix](https://determinate.systems/nix-installer/) and [direnv](https://direnv.net/docs/installation.html) if you don't already have them
