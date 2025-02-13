@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - name: Setup Nix cache
+        uses: DeterminateSystems/flakehub-cache-action@main
+
+      # - name: Check Flake
+      #   run: nix flake check
+
+      - name: Format check
+        run: nix develop -c bash -c "make fmt && git diff --exit-code"
+
+      - name: Check
+        run: nix develop -c make check
+
+      - name: Sql check
+        run: nix develop -c make sql-check
+
+      - name: Build
+        run: nix develop -c make build
+
+      - name: Test
+        run: nix develop -c make test
+
