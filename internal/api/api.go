@@ -8,7 +8,6 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/events"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/resources"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 )
 
@@ -36,16 +35,19 @@ func New(q *sqlite.Queries) *web.Service {
 }
 
 func useAll(s *web.Service, q *sqlite.Queries) {
-	use("/resources", resources.New(q), s)
 	use("/events", events.New(q), s)
 }
 
 func use(path string, s services.Service, ss *web.Service) {
-	ss.Get(path, s.Resources())
-	ss.Post(path, s.PostResources())
-	ss.Post(path, s.BatchPostResources())
-	ss.Get(path+"/{id}", s.Resource())
-	ss.Post(path+"/{id}", s.PostResource())
-	ss.Post(path+"/{id}", s.BatchPostResource())
-	ss.Delete(path+"/{id}", s.DeleteResource())
+	/*
+		Resource function calls might be replaced
+
+		ss.Get(path, s.Resources())
+		ss.Post(path, s.PostResources())
+		ss.Post(path, s.BatchPostResources())
+		ss.Get(path+"/{id}", s.Resource())
+		ss.Post(path+"/{id}", s.PostResource())
+		ss.Post(path+"/{id}", s.BatchPostResource())
+		ss.Delete(path+"/{id}", s.DeleteResource())
+	*/
 }
