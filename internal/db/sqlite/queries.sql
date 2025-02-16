@@ -21,15 +21,15 @@ VALUES
 
 -- name: CreateAnnouncement :exec
 INSERT INTO
-    announcement (
-        uuid,
-        visibility,
-        announce_at,
-        discord_channel_id,
-        discord_message_id
-    )
+announcement (
+    uuid,
+    visibility,
+    announce_at,
+    discord_channel_id,
+    discord_message_id
+)
 VALUES
-(?, ?, ?, ?, ?, ?, ?);
+(?, ?, ?, ?, ?);
 
 -- name: GetEvent :exec
 SELECT
