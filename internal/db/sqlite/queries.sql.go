@@ -24,11 +24,11 @@ VALUES
 `
 
 type CreateAnnouncementParams struct {
-	Uuid                 string         `json:"uuid"`
-	Visibility           string         `json:"visibility"`
-	AnnounceAt           int64          `json:"announce_at"`
-	DiscordChannelID     sql.NullString `json:"discord_channel_id"`
-	DiscordMessageID     sql.NullString `json:"discord_message_id"`
+	Uuid             string         `json:"uuid"`
+	Visibility       string         `json:"visibility"`
+	AnnounceAt       int64          `json:"announce_at"`
+	DiscordChannelID sql.NullString `json:"discord_channel_id"`
+	DiscordMessageID sql.NullString `json:"discord_message_id"`
 }
 
 func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
