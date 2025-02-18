@@ -1,5 +1,5 @@
 {
-  description = "Generic Dev Environment";
+  description = "Go Dev Environment for api.acmcsuf.com";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -26,6 +26,7 @@
             gotools
             gopls # Go langauge server
             nilaway # Go static analysis tool
+            delve # Go debugger
             sqlc # compiles SQL queries to Go code
             sqlfluff # SQL linter
             gnumake
@@ -33,7 +34,8 @@
 
           shellHook = ''
             export DATABASE_URL="file:dev.db?cache=shared&mode=rwc"
-              echo "Loaded dev shell."
+            export CGO_ENABLED=0  # cgo compiler flags cause issues with delve when using Nix
+            echo "Loaded dev shell."
           '';
         };
       }
