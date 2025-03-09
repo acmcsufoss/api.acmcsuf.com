@@ -70,7 +70,6 @@ WHERE
 
 
 -- name: GetBoard :exec
-
 SELECT
     name,
     branch,
@@ -79,7 +78,7 @@ SELECT
     year,
     experiences,
     interests 
-
-    FROM board
+FROM 
+    board
 WHERE 
     name = ?;
