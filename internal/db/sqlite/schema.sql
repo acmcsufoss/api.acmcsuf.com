@@ -27,4 +27,14 @@ CREATE TABLE IF NOT EXISTS announcement (
     --UNIQUE (id)
 );
 
+CREATE TABLE IF NOT EXISTS board (
+    name TEXT PRIMARY KEY,
+    branch TEXT NOT NULL,
+    github TEXT,
+    discord TEXT,
+    year INT,
+    experiences TEXT,
+    interests TEXT
+);
+
 -- TODO: Create a table for access tokens for the API.

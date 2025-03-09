@@ -67,3 +67,19 @@ FROM
     announcement
 WHERE
     uuid = ?;
+
+
+-- name: GetBoard :exec
+
+SELECT
+    name,
+    branch,
+    github,
+    discord,
+    year,
+    experiences,
+    interests 
+
+    FROM board
+WHERE 
+    name = ?;
