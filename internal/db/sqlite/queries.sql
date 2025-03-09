@@ -77,8 +77,8 @@ SELECT
     discord,
     year,
     experiences,
-    interests 
-FROM 
+    interests
+FROM
     board
-WHERE 
+WHERE
     name = ?;
