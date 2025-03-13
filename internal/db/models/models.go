@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.28.0
 
-package sqlite
+package models
 
 import (
 	"database/sql"
@@ -26,7 +26,7 @@ type Event struct {
 }
 
 type Person struct {
-	Uuid             sql.NullString `json:"uuid"`
+	Uuid             string         `json:"uuid"`
 	Name             sql.NullString `json:"name"`
 	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
 }

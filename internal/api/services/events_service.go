@@ -10,7 +10,6 @@ type EventsService struct {
 	q *sqlite.Queries
 }
 
-
 func NewEventsService(q *sqlite.Queries) *EventsService {
 	return &EventsService{q}
 }
@@ -19,8 +18,7 @@ func GetEvent(q *sqlite.Queries) sqlite.Event {
 	// I think this is the wrong way to implement since this only returns error
 	// and passes around a context
 	// error := q.GetEvent(ctx context.Context, uuid string)
-	return sqlite.Event{
-	}
+	return sqlite.Event{}
 }
 
 func (s EventsService) Resources() usecase.IOInteractor {

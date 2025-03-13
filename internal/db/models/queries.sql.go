@@ -3,7 +3,7 @@
 //   sqlc v1.28.0
 // source: queries.sql
 
-package sqlite
+package models
 
 import (
 	"context"
@@ -12,15 +12,15 @@ import (
 
 const createAnnouncement = `-- name: CreateAnnouncement :exec
 INSERT INTO
-    announcement (
-        uuid,
-        visibility,
-        announce_at,
-        discord_channel_id,
-        discord_message_id
-    )
+announcement (
+    uuid,
+    visibility,
+    announce_at,
+    discord_channel_id,
+    discord_message_id
+)
 VALUES
-(?, ?, ?, ?, ?, ?, ?)
+(?, ?, ?, ?, ?)
 `
 
 type CreateAnnouncementParams struct {
@@ -87,7 +87,7 @@ VALUES
 `
 
 type CreatePersonParams struct {
-	Uuid             sql.NullString `json:"uuid"`
+	Uuid             string         `json:"uuid"`
 	Name             sql.NullString `json:"name"`
 	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
 }
@@ -147,7 +147,7 @@ WHERE
     uuid = ?
 `
 
-func (q *Queries) GetPerson(ctx context.Context, uuid sql.NullString) error {
+func (q *Queries) GetPerson(ctx context.Context, uuid string) error {
 	_, err := q.db.ExecContext(ctx, getPerson, uuid)
 	return err
 }

@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(router *gin.Engine, eventService *services.EventsService) {
