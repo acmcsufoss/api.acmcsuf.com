@@ -6,8 +6,6 @@ import (
 	"github.com/swaggest/rest/web"
 	swgui "github.com/swaggest/swgui/v5emb"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services/events"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 )
 
@@ -24,30 +22,8 @@ func New(q *sqlite.Queries) *web.Service {
 		gzip.Middleware, // Response compression with support for direct gzip pass through.
 	)
 
-	// Add use case handler to router.
-	// s.Get("/hello/{name}", helloWorld())
-	useAll(s, q)
-
 	// Swagger UI endpoint at /docs.
 	s.Docs("/docs", swgui.New)
 
 	return s
-}
-
-func useAll(s *web.Service, q *sqlite.Queries) {
-	use("/events", events.New(q), s)
-}
-
-func use(path string, s services.Service, ss *web.Service) {
-	/*
-		Resource function calls might be replaced
-
-		ss.Get(path, s.Resources())
-		ss.Post(path, s.PostResources())
-		ss.Post(path, s.BatchPostResources())
-		ss.Get(path+"/{id}", s.Resource())
-		ss.Post(path+"/{id}", s.PostResource())
-		ss.Post(path+"/{id}", s.BatchPostResource())
-		ss.Delete(path+"/{id}", s.DeleteResource())
-	*/
 }

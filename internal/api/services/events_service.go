@@ -1,25 +1,30 @@
-package events
+package services
 
 import (
 	"github.com/swaggest/usecase"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
 )
-
-var _ services.Service = EventsService{}
 
 type EventsService struct {
 	q *sqlite.Queries
 }
 
-func New(q *sqlite.Queries) *EventsService {
+
+func NewEventsService(q *sqlite.Queries) *EventsService {
 	return &EventsService{q}
+}
+
+func GetEvent(q *sqlite.Queries) sqlite.Event {
+	// I think this is the wrong way to implement since this only returns error
+	// and passes around a context
+	// error := q.GetEvent(ctx context.Context, uuid string)
+	return sqlite.Event{
+	}
 }
 
 func (s EventsService) Resources() usecase.IOInteractor {
 	panic("implement me")
-	// s.q.GetResourceList(context.TODO(), "")
 }
 
 func (s EventsService) PostResources() usecase.IOInteractor {
