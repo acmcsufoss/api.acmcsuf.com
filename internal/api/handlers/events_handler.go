@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
 )
 

@@ -6,7 +6,7 @@ import (
 	"github.com/swaggest/rest/web"
 	swgui "github.com/swaggest/swgui/v5emb"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 )
 
 func New(q *sqlite.Queries) *web.Service {

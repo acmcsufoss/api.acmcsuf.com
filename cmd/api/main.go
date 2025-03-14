@@ -13,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	// "github.com/acmcsufoss/api.acmcsuf.com/internal/api"
-	// "github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	// "github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	_ "modernc.org/sqlite"
 )
 

@@ -3,7 +3,7 @@ package services
 import (
 	"github.com/swaggest/usecase"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/sqlite"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 )
 
 type EventsService struct {
