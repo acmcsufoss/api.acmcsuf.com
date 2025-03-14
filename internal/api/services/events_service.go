@@ -7,18 +7,18 @@ import (
 )
 
 type EventsService struct {
-	q *sqlite.Queries
+	q *models.Queries
 }
 
-func NewEventsService(q *sqlite.Queries) *EventsService {
+func NewEventsService(q *models.Queries) *EventsService {
 	return &EventsService{q}
 }
 
-func GetEvent(q *sqlite.Queries) sqlite.Event {
+func GetEvent(q *models.Queries) models.Event {
 	// I think this is the wrong way to implement since this only returns error
 	// and passes around a context
 	// error := q.GetEvent(ctx context.Context, uuid string)
-	return sqlite.Event{}
+	return models.Event{}
 }
 
 func (s EventsService) Resources() usecase.IOInteractor {
