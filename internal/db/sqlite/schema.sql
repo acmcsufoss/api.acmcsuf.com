@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS announcement (
     --UNIQUE (id)
 );
 
-CREATE TABLE IF NOT EXISTS boardMember (
+CREATE TABLE IF NOT EXISTS board_member (
     id CHAR(4) PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     branch VARCHAR(20) NOT NULL,
@@ -41,13 +41,13 @@ CREATE TABLE IF NOT EXISTS branch (
     name VARCHAR(20) PRIMARY KEY
 );
 
-CREATE TABLE IF NOT EXISTS memberOf (
+CREATE TABLE IF NOT EXISTS member_of (
     bmid CHAR(4) NOT NULL,
     bname VARCHAR(20) NOT NULL,
     PRIMARY KEY (bmid, bname),
 
-    CONSTRAINT fk_board FOREIGN KEY (bmid) REFERENCES boardMember(id),
-    CONSTRAINT fk_branch FOREIGN KEY (bname) REFERENCES branch(name)
+    CONSTRAINT fk_board FOREIGN KEY (bmid) REFERENCES board_member (id),
+    CONSTRAINT fk_branch FOREIGN KEY (bname) REFERENCES branch (name)
 );
 
 -- TODO: Create a table for access tokens for the API.
