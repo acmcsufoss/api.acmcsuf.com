@@ -68,7 +68,6 @@ FROM
 WHERE
     uuid = ?;
 
-
 -- name: GetBoard :exec
 SELECT
     id,
@@ -81,4 +80,4 @@ SELECT
 FROM
     board_member
 WHERE
-    id = ?
+    id = ?;
