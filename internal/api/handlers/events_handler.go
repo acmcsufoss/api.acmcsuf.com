@@ -47,13 +47,17 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 
 // TODO: implement the following handlers
 func (h *EventsHandler) GetEvents(c *gin.Context) {
+	panic("implement me")
 }
 
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
+	panic("implement me")
 }
 
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
+	panic("implement me")
 }
 
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
+	panic("implement me")
 }

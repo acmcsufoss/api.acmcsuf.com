@@ -9,11 +9,10 @@ import (
 func SetupRoutes(router *gin.Engine, eventService *services.EventsService) {
 	eventsHandler := handlers.NewEventHandler(eventService)
 
-	// TODO: implement functions in events_handler.go and uncomment these
-
-	// router.GET("/events", eventsHandler.GetEvents)
+	// NOTE: Only GetEvent implemented so far
+	router.GET("/events", eventsHandler.GetEvents)
 	router.GET("/events/:id", eventsHandler.GetEvent)
-	// router.POST("/events", eventsHandler.CreateEvent)
-	// router.POST("/events/:id", eventsHandler.UpdateEvent)
-	// router.DELETE("/events/:id", eventsHandler.DeleteEvent)
+	router.POST("/events", eventsHandler.CreateEvent)
+	router.POST("/events/:id", eventsHandler.UpdateEvent)
+	router.DELETE("/events/:id", eventsHandler.DeleteEvent)
 }
