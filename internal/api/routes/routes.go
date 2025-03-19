@@ -9,17 +9,10 @@ import (
 func SetupRoutes(router *gin.Engine, eventService *services.EventsService) {
 	eventsHandler := handlers.NewEventHandler(eventService)
 
-	router.GET("/events")
-	router.GET("/events/:id")
-	router.POST("/events")
-	router.POST("/events/:id")
-	router.DELETE("/events/:id")
-	// ss.Get(path, s.Resources())
-	// ss.Post(path, s.PostResources())
-	// ss.Post(path, s.BatchPostResources())
-	// ss.Get(path+"/{id}", s.Resource())
-	// ss.Post(path+"/{id}", s.PostResource())
-	// ss.Post(path+"/{id}", s.BatchPostResource())
-	// ss.Delete(path+"/{id}", s.DeleteResource())
-
+	// NOTE: Only GetEvent implemented so far
+	router.GET("/events", eventsHandler.GetEvents)
+	router.GET("/events/:id", eventsHandler.GetEvent)
+	router.POST("/events", eventsHandler.CreateEvent)
+	router.POST("/events/:id", eventsHandler.UpdateEvent)
+	router.DELETE("/events/:id", eventsHandler.DeleteEvent)
 }

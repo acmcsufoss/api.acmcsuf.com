@@ -115,7 +115,7 @@ func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) error {
 	return err
 }
 
-const getEvent = `-- name: GetEvent :exec
+const getEvent = `-- name: GetEvent :one
 SELECT
     uuid,
     location,
@@ -123,17 +123,24 @@ SELECT
     end_at,
     is_all_day,
     host
-    -- the following does not exist in schema
-    -- visibility
 FROM
     event
 WHERE
     uuid = ?
 `
 
-func (q *Queries) GetEvent(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getEvent, uuid)
-	return err
+func (q *Queries) GetEvent(ctx context.Context, uuid string) (Event, error) {
+	row := q.db.QueryRowContext(ctx, getEvent, uuid)
+	var i Event
+	err := row.Scan(
+		&i.Uuid,
+		&i.Location,
+		&i.StartAt,
+		&i.EndAt,
+		&i.IsAllDay,
+		&i.Host,
+	)
+	return i, err
 }
 
 const getPerson = `-- name: GetPerson :exec

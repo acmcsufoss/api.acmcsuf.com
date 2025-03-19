@@ -1,32 +1,64 @@
 package main
 
 import (
-	// "context"
-	// "database/sql"
-	// "fmt"
+	"context"
+	"database/sql"
+	"fmt"
 	"log"
-	// "net/http"
-	// "os"
-	// "os/signal"
-	// "syscall"
+	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
-
-	// "github.com/acmcsufoss/api.acmcsuf.com/internal/api"
-	// "github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	_ "modernc.org/sqlite"
 )
 
 func main() {
-	router := gin.Default()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	router.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-signalChan
+		log.Println("Shutting down the server...")
+		cancel()
+	}()
 
-	if err := router.Run(":8080"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
+	// Setup SQLite database & make sure we can connect to it
+	uri := os.Getenv("DATABASE_URL")
+	if uri == "" {
+		log.Fatal("DATABASE_URL must be set")
 	}
+	db, err := sql.Open("sqlite", uri)
+	if err != nil {
+		log.Fatalf("Error opening SQLite database: %vl, err")
+	}
+	defer db.Close()
+	if err := db.PingContext(ctx); err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+
+	// Now we init services & gin router, and then start the server
+	queries := models.New(db)
+	eventsService := services.NewEventsService(queries)
+	router := gin.Default()
+	routes.SetupRoutes(router, eventsService)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	serverAddr := fmt.Sprintf(":%s", port)
+	go func() {
+		log.Printf("Server startd on http://127.0.0.1%s\n", serverAddr)
+		if err := router.Run(serverAddr); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+		}
+	}()
+
+	<-ctx.Done()
+	log.Println("Server shut down.")
 }
