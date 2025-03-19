@@ -1,4 +1,4 @@
-// Package services implements the bulk of the business logic
+// Package events implements the bulk of the business logic for events
 package services
 
 import (
