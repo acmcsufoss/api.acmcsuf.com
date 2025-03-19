@@ -27,7 +27,7 @@ func (s *EventsService) GetEvent(ctx context.Context, uuid string) (models.Event
 }
 
 // TODO: implement the following services
-// note that these are just copy-pasted from GetEvent and need to have their interface modified
+// NOTE: these are just copy-pasted from GetEvent and need to have their interfaces modified
 func (s *EventsService) GetEvents(ctx context.Context, uuid string) (models.Event, error) {
 	panic("implement me")
 }
