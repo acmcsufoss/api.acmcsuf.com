@@ -35,7 +35,7 @@ func main() {
 	}
 	db, err := sql.Open("sqlite", uri)
 	if err != nil {
-		log.Fatalf("Error opening SQLite database: %vl, err")
+		log.Fatalf("Error opening SQLite database: %vl", err)
 	}
 	defer db.Close()
 	if err := db.PingContext(ctx); err != nil {
