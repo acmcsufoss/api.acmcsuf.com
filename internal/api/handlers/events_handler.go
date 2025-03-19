@@ -9,7 +9,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 type EventsHandler struct {
 	eventsService *services.EventsService
 }

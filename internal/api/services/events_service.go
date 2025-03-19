@@ -7,7 +7,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 )
 
-
 type EventsService struct {
 	q *models.Queries
 }
@@ -43,4 +42,3 @@ func (s *EventsService) UpdateEvent(ctx context.Context, uuid string) (models.Ev
 func (s *EventsService) DeleteEvent(ctx context.Context, uuid string) (models.Event, error) {
 	panic("implement me")
 }
-
