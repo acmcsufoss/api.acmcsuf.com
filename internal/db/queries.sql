@@ -31,7 +31,7 @@ announcement (
 VALUES
 (?, ?, ?, ?, ?);
 
--- name: GetEvent :exec
+-- name: GetEvent :one
 SELECT
     uuid,
     location,
@@ -39,8 +39,6 @@ SELECT
     end_at,
     is_all_day,
     host
-    -- the following does not exist in schema
-    -- visibility
 FROM
     event
 WHERE
