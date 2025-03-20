@@ -115,6 +115,26 @@ func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) error {
 	return err
 }
 
+const getBoard = `-- name: GetBoard :exec
+SELECT
+    id,
+    name,
+    branch,
+    github,
+    discord,
+    year,
+    bio
+FROM
+    board_member
+WHERE
+    id = ?
+`
+
+func (q *Queries) GetBoard(ctx context.Context, id interface{}) error {
+	_, err := q.db.ExecContext(ctx, getBoard, id)
+	return err
+}
+
 const getEvent = `-- name: GetEvent :one
 SELECT
     uuid,

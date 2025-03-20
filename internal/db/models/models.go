@@ -16,6 +16,20 @@ type Announcement struct {
 	DiscordMessageID sql.NullString `json:"discord_message_id"`
 }
 
+type BoardMember struct {
+	ID      interface{}    `json:"id"`
+	Name    string         `json:"name"`
+	Branch  string         `json:"branch"`
+	Github  sql.NullString `json:"github"`
+	Discord sql.NullString `json:"discord"`
+	Year    sql.NullInt64  `json:"year"`
+	Bio     sql.NullString `json:"bio"`
+}
+
+type Branch struct {
+	Name string `json:"name"`
+}
+
 type Event struct {
 	Uuid     string      `json:"uuid"`
 	Location string      `json:"location"`
@@ -23,6 +37,11 @@ type Event struct {
 	EndAt    interface{} `json:"end_at"`
 	IsAllDay bool        `json:"is_all_day"`
 	Host     string      `json:"host"`
+}
+
+type MemberOf struct {
+	Bmid  interface{} `json:"bmid"`
+	Bname string      `json:"bname"`
 }
 
 type Person struct {
