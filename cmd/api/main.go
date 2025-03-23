@@ -47,6 +47,9 @@ func main() {
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
 	router := gin.Default()
+	router.SetTrustedProxies([]string{
+		"127.0.0.1/32",
+	})
 	routes.SetupRoutes(router, eventsService)
 	port := os.Getenv("PORT")
 	if port == "" {
