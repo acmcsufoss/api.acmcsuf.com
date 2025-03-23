@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createAnnouncement = `-- name: CreateAnnouncement :exec
+const createAnnouncement = `-- name: CreateAnnouncement :one
 INSERT INTO
 announcement (
     uuid,
@@ -21,6 +21,7 @@ announcement (
 )
 VALUES
 (?, ?, ?, ?, ?)
+RETURNING uuid, visibility, announce_at, discord_channel_id, discord_message_id
 `
 
 type CreateAnnouncementParams struct {
@@ -31,15 +32,23 @@ type CreateAnnouncementParams struct {
 	DiscordMessageID sql.NullString `json:"discord_message_id"`
 }
 
-func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
-	_, err := q.db.ExecContext(ctx, createAnnouncement,
+func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) (Announcement, error) {
+	row := q.db.QueryRowContext(ctx, createAnnouncement,
 		arg.Uuid,
 		arg.Visibility,
 		arg.AnnounceAt,
 		arg.DiscordChannelID,
 		arg.DiscordMessageID,
 	)
-	return err
+	var i Announcement
+	err := row.Scan(
+		&i.Uuid,
+		&i.Visibility,
+		&i.AnnounceAt,
+		&i.DiscordChannelID,
+		&i.DiscordMessageID,
+	)
+	return i, err
 }
 
 const createEvent = `-- name: CreateEvent :exec
@@ -56,6 +65,7 @@ event (
 )
 VALUES
 (?, ?, ?, ?, ?, ?)
+RETURNING uuid, location, start_at, end_at, is_all_day, host
 `
 
 type CreateEventParams struct {
@@ -79,11 +89,12 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) error 
 	return err
 }
 
-const createPerson = `-- name: CreatePerson :exec
+const createPerson = `-- name: CreatePerson :one
 INSERT INTO
 person (uuid, name, preferred_pronoun)
 VALUES
 (?, ?, ?)
+RETURNING uuid, name, preferred_pronoun
 `
 
 type CreatePersonParams struct {
@@ -92,12 +103,14 @@ type CreatePersonParams struct {
 	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
 }
 
-func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) error {
-	_, err := q.db.ExecContext(ctx, createPerson, arg.Uuid, arg.Name, arg.PreferredPronoun)
-	return err
+func (q *Queries) CreatePerson(ctx context.Context, arg CreatePersonParams) (Person, error) {
+	row := q.db.QueryRowContext(ctx, createPerson, arg.Uuid, arg.Name, arg.PreferredPronoun)
+	var i Person
+	err := row.Scan(&i.Uuid, &i.Name, &i.PreferredPronoun)
+	return i, err
 }
 
-const getAnnouncement = `-- name: GetAnnouncement :exec
+const getAnnouncement = `-- name: GetAnnouncement :one
 SELECT
     uuid,
     visibility,
@@ -110,12 +123,20 @@ WHERE
     uuid = ?
 `
 
-func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getAnnouncement, uuid)
-	return err
+func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) (Announcement, error) {
+	row := q.db.QueryRowContext(ctx, getAnnouncement, uuid)
+	var i Announcement
+	err := row.Scan(
+		&i.Uuid,
+		&i.Visibility,
+		&i.AnnounceAt,
+		&i.DiscordChannelID,
+		&i.DiscordMessageID,
+	)
+	return i, err
 }
 
-const getBoard = `-- name: GetBoard :exec
+const getBoard = `-- name: GetBoard :one
 SELECT
     id,
     name,
@@ -130,9 +151,19 @@ WHERE
     id = ?
 `
 
-func (q *Queries) GetBoard(ctx context.Context, id interface{}) error {
-	_, err := q.db.ExecContext(ctx, getBoard, id)
-	return err
+func (q *Queries) GetBoard(ctx context.Context, id interface{}) (BoardMember, error) {
+	row := q.db.QueryRowContext(ctx, getBoard, id)
+	var i BoardMember
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Branch,
+		&i.Github,
+		&i.Discord,
+		&i.Year,
+		&i.Bio,
+	)
+	return i, err
 }
 
 const getEvent = `-- name: GetEvent :one
@@ -163,7 +194,7 @@ func (q *Queries) GetEvent(ctx context.Context, uuid string) (Event, error) {
 	return i, err
 }
 
-const getPerson = `-- name: GetPerson :exec
+const getPerson = `-- name: GetPerson :one
 SELECT
     uuid,
     name,
@@ -174,7 +205,9 @@ WHERE
     uuid = ?
 `
 
-func (q *Queries) GetPerson(ctx context.Context, uuid string) error {
-	_, err := q.db.ExecContext(ctx, getPerson, uuid)
-	return err
+func (q *Queries) GetPerson(ctx context.Context, uuid string) (Person, error) {
+	row := q.db.QueryRowContext(ctx, getPerson, uuid)
+	var i Person
+	err := row.Scan(&i.Uuid, &i.Name, &i.PreferredPronoun)
+	return i, err
 }

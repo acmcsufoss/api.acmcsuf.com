@@ -11,15 +11,17 @@ event (
     -- visibility
 )
 VALUES
-(?, ?, ?, ?, ?, ?);
+(?, ?, ?, ?, ?, ?)
+RETURNING *;
 
--- name: CreatePerson :exec
+-- name: CreatePerson :one
 INSERT INTO
 person (uuid, name, preferred_pronoun)
 VALUES
-(?, ?, ?);
+(?, ?, ?)
+RETURNING *;
 
--- name: CreateAnnouncement :exec
+-- name: CreateAnnouncement :one
 INSERT INTO
 announcement (
     uuid,
@@ -29,7 +31,8 @@ announcement (
     discord_message_id
 )
 VALUES
-(?, ?, ?, ?, ?);
+(?, ?, ?, ?, ?)
+RETURNING *;
 
 -- name: GetEvent :one
 SELECT
@@ -44,7 +47,7 @@ FROM
 WHERE
     uuid = ?;
 
--- name: GetPerson :exec
+-- name: GetPerson :one
 SELECT
     uuid,
     name,
@@ -54,7 +57,7 @@ FROM
 WHERE
     uuid = ?;
 
--- name: GetAnnouncement :exec
+-- name: GetAnnouncement :one
 SELECT
     uuid,
     visibility,
@@ -66,7 +69,7 @@ FROM
 WHERE
     uuid = ?;
 
--- name: GetBoard :exec
+-- name: GetBoard :one
 SELECT
     id,
     name,
