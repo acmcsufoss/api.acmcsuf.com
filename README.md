@@ -2,52 +2,29 @@
 
 ACM at CSUF club API for managing events, announcements, forms, and other services!
 
-## Develop
-
-### Start API server
-
-```sh
-go run cmd/api/main.go
-```
-
-### Generate code
-
-```sh
-go generate ./...
-```
-
-### Run tests
-
-```sh
-go test ./...
-```
-
-### Format code
-
-```sh
-go fmt ./...
-```
-
 ---
 
-## Or use the Makefile instead
+This project requires that you have Go, sqlc, and GNU Make installed. We recommend using the
+provided Nix development environment, see below.
 
 ### Start API server
 
 ```sh
-make run
+make # Compile program
+./bin/api # Run program
+```
+OR
+```sh
+make run # This compiles & runs the program without creating a binary
 ```
 
-### Run checks and tests
+### Other useful commands from the Makefile
 
 ```sh
-make test
-```
-
-### Format and fix SQL files
-
-```sh
-make sql-fix
+make check # Run checks
+make test # Run tests (None yet)
+make sql-fix # Format and fix SQL files
+make clean # Removes all build artifacts
 ```
 
 ---
