@@ -1,6 +1,6 @@
 .DEFAULT_GOAL := run
 
-GENERATE_DEPS := $(wildcard internal/db/*.sql) $(wildcard internal/db/sqlc.yaml)
+GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
 .PHONY:fmt vet run build check test sql-check sql-fix clean
