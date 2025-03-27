@@ -1,6 +1,9 @@
-.DEFAULT_GOAL := run
+.DEFAULT_GOAL := build
 
-GENERATE_DEPS := $(wildcard internal/db/*.sql) $(wildcard internal/db/sqlc.yaml)
+BIN_DIR := bin
+APP_NAME := api
+
+GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
 .PHONY:fmt vet run build check test sql-check sql-fix clean
@@ -18,10 +21,11 @@ vet: fmt
 	go vet ./...
 
 run: generate
-	go run cmd/api/main.go
+	go run ./cmd/api
 
 build: generate
-	go build cmd/api/main.go
+	mkdir -p $(BIN_DIR)
+	go build -o $(BIN_DIR)/$(APP_NAME) ./cmd/api
 
 check: vet
 	nilaway ./...
@@ -39,3 +43,4 @@ sql-fix:
 clean:
 	go clean
 	rm -f $(GENERATE_MARKER)
+	rm -rf $(BIN_DIR)
