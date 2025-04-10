@@ -27,27 +27,29 @@ CREATE TABLE IF NOT EXISTS announcement (
     --UNIQUE (id)
 );
 
-CREATE TABLE IF NOT EXISTS board_member (
-    id CHAR(4) PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    branch VARCHAR(20) NOT NULL,
-    github VARCHAR(39),
-    discord VARCHAR(32),
-    year INT,
-    bio TEXT
+CREATE TABLE IF NOT EXISTS officers (
+    uuid CHAR(4) PRIMARY KEY,
+    full_name VARCHAR(30) NOT NULL,
+    picture VARCHAR(37),
+    github VARCHAR(64),
+    discord VARCHAR(32)
 );
 
-CREATE TABLE IF NOT EXISTS branch (
-    name VARCHAR(20) PRIMARY KEY
+CREATE TABLE IF NOT EXISTS tiers (
+    tier INT PRIMARY KEY,
+    title VARCHAR(40),
+    t_index INT,
+    team VARCHAR(20)
 );
 
-CREATE TABLE IF NOT EXISTS member_of (
-    bmid CHAR(4) NOT NULL,
-    bname VARCHAR(20) NOT NULL,
-    PRIMARY KEY (bmid, bname),
+CREATE TABLE IF NOT EXISTS positions (
+    oid CHAR(4) NOT NULL,
+    semester CHAR(3) NOT NULL,
+    tier INT NOT NULL,
+    PRIMARY KEY (oid, semester, tier),
 
-    CONSTRAINT fk_board FOREIGN KEY (bmid) REFERENCES board_member (id),
-    CONSTRAINT fk_branch FOREIGN KEY (bname) REFERENCES branch (name)
+    CONSTRAINT fk_officers FOREIGN KEY (oid) REFERENCES officer (uuid),
+    CONSTRAINT fk_tiers FOREIGN KEY (tier) REFERENCES branch (tier)
 );
 
 -- TODO: Create a table for access tokens for the API.
