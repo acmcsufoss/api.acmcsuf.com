@@ -1,13 +1,22 @@
 -- name: GetBoard :one
 SELECT
-    id,
-    name,
-    branch,
-    github,
-    discord,
-    year,
-    bio
+    fullName,
+    picture,
+    discord
 FROM
-    board_member
+    officers
 WHERE
-    id = ?;
+    uuid = ?;
+
+-- name: GetPositions :one
+SELECT
+    tiers.title,
+    tiers.team,
+    positions.semester
+FROM
+    officers
+INNER JOIN positions
+    ON officers.uuid = positions.oid
+INNER JOIN tiers
+    ON positions.tier = tiers.tier
+WHERE officers.fullName = ?
