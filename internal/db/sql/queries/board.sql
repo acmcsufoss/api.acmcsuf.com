@@ -1,6 +1,6 @@
 -- name: GetBoard :one
 SELECT
-    fullName,
+    full_name,
     picture,
     discord
 FROM
@@ -19,4 +19,4 @@ INNER JOIN positions
     ON officers.uuid = positions.oid
 INNER JOIN tiers
     ON positions.tier = tiers.tier
-WHERE officers.fullName = ?
+WHERE officers.full_name = ?
