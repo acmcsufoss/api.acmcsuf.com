@@ -4,11 +4,16 @@ ACM at CSUF club API for managing events, announcements, forms, and other servic
 
 ---
 
-This project requires that you have Go, sqlc, and GNU Make installed. We recommend using the
+This project requires that you have Go, sqlc, GNU Make, and optionally Air installed. We recommend using the
 provided Nix development environment, see below.
 
 ### Start API server
+Air will recompile the project on the fly so you don't have to restart the server when you make changes.
+```sh
+air
+```
 
+To compile and run manually, you can use one of the following:
 ```sh
 make # Compile program
 ./bin/api # Run program
