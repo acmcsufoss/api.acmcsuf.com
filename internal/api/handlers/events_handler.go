@@ -49,7 +49,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body" + err.Error(),
+			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
@@ -64,7 +64,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	err := h.eventsService.CreateEvent(ctx, params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create event" + err.Error(),
+			"error": "Failed to create event. " + err.Error(),
 		})
 		return
 	}
