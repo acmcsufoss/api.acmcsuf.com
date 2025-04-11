@@ -7,34 +7,166 @@ package models
 
 import (
 	"context"
+	"database/sql"
 )
 
-const getBoard = `-- name: GetBoard :one
-SELECT
-    id,
-    name,
-    branch,
+const createOfficer = `-- name: CreateOfficer :one
+INSERT INTO
+officers (
+    uuid,
+    full_name,
+    picture,
     github,
-    discord,
-    year,
-    bio
-FROM
-    board_member
-WHERE
-    id = ?
+    discord
+)
+VALUES
+(?, ?, ?, ?, ?)
+RETURNING uuid, full_name, picture, github, discord
 `
 
-func (q *Queries) GetBoard(ctx context.Context, id interface{}) (BoardMember, error) {
-	row := q.db.QueryRowContext(ctx, getBoard, id)
-	var i BoardMember
+type CreateOfficerParams struct {
+	Uuid     interface{}    `json:"uuid"`
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
+	Discord  sql.NullString `json:"discord"`
+}
+
+func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (Officer, error) {
+	row := q.db.QueryRowContext(ctx, createOfficer,
+		arg.Uuid,
+		arg.FullName,
+		arg.Picture,
+		arg.Github,
+		arg.Discord,
+	)
+	var i Officer
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Branch,
+		&i.Uuid,
+		&i.FullName,
+		&i.Picture,
 		&i.Github,
 		&i.Discord,
-		&i.Year,
-		&i.Bio,
 	)
+	return i, err
+}
+
+const createPosition = `-- name: CreatePosition :one
+INSERT INTO
+positions (
+    oid,
+    semester,
+    tier
+)
+VALUES
+(?, ?, ?)
+RETURNING oid, semester, tier
+`
+
+type CreatePositionParams struct {
+	Oid      interface{} `json:"oid"`
+	Semester interface{} `json:"semester"`
+	Tier     int64       `json:"tier"`
+}
+
+func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
+	row := q.db.QueryRowContext(ctx, createPosition, arg.Oid, arg.Semester, arg.Tier)
+	var i Position
+	err := row.Scan(&i.Oid, &i.Semester, &i.Tier)
+	return i, err
+}
+
+const createTier = `-- name: CreateTier :one
+INSERT INTO
+tiers (
+    tier,
+    title,
+    t_index,
+    team
+)
+VALUES
+(?, ?, ?, ?)
+RETURNING tier, title, t_index, team
+`
+
+type CreateTierParams struct {
+	Tier   int64          `json:"tier"`
+	Title  sql.NullString `json:"title"`
+	TIndex sql.NullInt64  `json:"t_index"`
+	Team   sql.NullString `json:"team"`
+}
+
+func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) (Tier, error) {
+	row := q.db.QueryRowContext(ctx, createTier,
+		arg.Tier,
+		arg.Title,
+		arg.TIndex,
+		arg.Team,
+	)
+	var i Tier
+	err := row.Scan(
+		&i.Tier,
+		&i.Title,
+		&i.TIndex,
+		&i.Team,
+	)
+	return i, err
+}
+
+const getOfficer = `-- name: GetOfficer :one
+SELECT
+    full_name,
+    picture,
+    github,
+    discord
+FROM
+    officers
+WHERE
+    uuid = ?
+`
+
+type GetOfficerRow struct {
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
+	Discord  sql.NullString `json:"discord"`
+}
+
+func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerRow, error) {
+	row := q.db.QueryRowContext(ctx, getOfficer, uuid)
+	var i GetOfficerRow
+	err := row.Scan(
+		&i.FullName,
+		&i.Picture,
+		&i.Github,
+		&i.Discord,
+	)
+	return i, err
+}
+
+const getPositions = `-- name: GetPositions :one
+SELECT
+    positions.semester,
+    tiers.title,
+    tiers.team
+FROM
+    officers
+INNER JOIN positions
+    ON officers.uuid = positions.oid
+INNER JOIN tiers
+    ON positions.tier = tiers.tier
+WHERE officers.full_name = ?
+`
+
+type GetPositionsRow struct {
+	Semester interface{}    `json:"semester"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
+}
+
+func (q *Queries) GetPositions(ctx context.Context, fullName string) (GetPositionsRow, error) {
+	row := q.db.QueryRowContext(ctx, getPositions, fullName)
+	var i GetPositionsRow
+	err := row.Scan(&i.Semester, &i.Title, &i.Team)
 	return i, err
 }
