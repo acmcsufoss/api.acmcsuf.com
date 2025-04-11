@@ -25,8 +25,8 @@ func (s *AnnouncementService) GetAnnouncement(ctx context.Context, uuid string) 
 }
 
 func (s *AnnouncementService) CreateAnnouncement(ctx context.Context, arg models.CreateAnnouncementParams) (models.Announcement, error) {
-	if err := s.q.CreateAnnouncement(ctx, params); err != nil {
-		return err
+	if announcement, err := s.q.CreateAnnouncement(ctx, arg); err != nil {
+		return announcement, err
 	}
-	return nil
+	return models.Announcement{}, nil
 }
