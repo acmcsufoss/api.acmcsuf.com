@@ -1,13 +1,59 @@
--- name: GetBoard :one
-SELECT
-    id,
-    name,
-    branch,
+-- name: CreateOfficer :one
+INSERT INTO
+officers (
+    uuid,
+    full_name,
+    picture,
     github,
-    discord,
-    year,
-    bio
+    discord
+)
+VALUES
+(?, ?, ?, ?, ?)
+RETURNING *;
+
+-- name: CreateTier :one
+INSERT INTO
+tiers (
+    tier,
+    title,
+    t_index,
+    team
+)
+VALUES
+(?, ?, ?, ?)
+RETURNING *;
+
+-- name: CreatePosition :one
+INSERT INTO
+positions (
+    oid,
+    semester,
+    tier
+)
+VALUES
+(?, ?, ?)
+RETURNING *;
+
+-- name: GetOfficer :one
+SELECT
+    full_name,
+    picture,
+    github,
+    discord
 FROM
-    board_member
+    officers
 WHERE
-    id = ?;
+    uuid = ?;
+
+-- name: GetPositions :one
+SELECT
+    positions.semester,
+    tiers.title,
+    tiers.team
+FROM
+    officers
+INNER JOIN positions
+    ON officers.uuid = positions.oid
+INNER JOIN tiers
+    ON positions.tier = tiers.tier
+WHERE officers.full_name = ?

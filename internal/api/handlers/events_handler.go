@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -42,12 +43,39 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
-// TODO: implement the following handlers
-func (h *EventsHandler) GetEvents(c *gin.Context) {
-	panic("implement me")
+func (h *EventsHandler) CreateEvent(c *gin.Context) {
+	ctx := c.Request.Context()
+	var params models.CreateEventParams
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+		return
+	}
+
+	if params.Location == "" || params.Host == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Location and Host are required fields",
+		})
+		return
+	}
+
+	err := h.eventsService.CreateEvent(ctx, params)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create event. " + err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Event created successfully",
+		"uuid":    params.Uuid,
+	})
 }
 
-func (h *EventsHandler) CreateEvent(c *gin.Context) {
+// TODO: implement the following handlers
+func (h *EventsHandler) GetEvents(c *gin.Context) {
 	panic("implement me")
 }
 

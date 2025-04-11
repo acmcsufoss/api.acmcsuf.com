@@ -16,20 +16,6 @@ type Announcement struct {
 	DiscordMessageID sql.NullString `json:"discord_message_id"`
 }
 
-type BoardMember struct {
-	ID      interface{}    `json:"id"`
-	Name    string         `json:"name"`
-	Branch  string         `json:"branch"`
-	Github  sql.NullString `json:"github"`
-	Discord sql.NullString `json:"discord"`
-	Year    sql.NullInt64  `json:"year"`
-	Bio     sql.NullString `json:"bio"`
-}
-
-type Branch struct {
-	Name string `json:"name"`
-}
-
 type Event struct {
 	Uuid     string      `json:"uuid"`
 	Location string      `json:"location"`
@@ -39,13 +25,29 @@ type Event struct {
 	Host     string      `json:"host"`
 }
 
-type MemberOf struct {
-	Bmid  interface{} `json:"bmid"`
-	Bname string      `json:"bname"`
+type Officer struct {
+	Uuid     interface{}    `json:"uuid"`
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
+	Discord  sql.NullString `json:"discord"`
 }
 
 type Person struct {
 	Uuid             string         `json:"uuid"`
 	Name             sql.NullString `json:"name"`
 	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
+}
+
+type Position struct {
+	Oid      interface{} `json:"oid"`
+	Semester interface{} `json:"semester"`
+	Tier     int64       `json:"tier"`
+}
+
+type Tier struct {
+	Tier   int64          `json:"tier"`
+	Title  sql.NullString `json:"title"`
+	TIndex sql.NullInt64  `json:"t_index"`
+	Team   sql.NullString `json:"team"`
 }

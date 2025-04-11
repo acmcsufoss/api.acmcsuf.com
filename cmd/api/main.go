@@ -42,6 +42,15 @@ func main() {
 		log.Fatalf("Error connecting to database: %v", err)
 	}
 
+	schemaBytes, err := os.ReadFile("internal/db/sql/schemas/schema.sql")
+	if err != nil {
+		log.Fatalf("Error reading schema file: %v", err)
+	}
+
+	if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
+		log.Fatalf("Error initializing db schema: %v", err)
+	}
+
 	// Now we init services & gin router, and then start the server
 	// Should this be moved to the routes module??
 	queries := models.New(db)

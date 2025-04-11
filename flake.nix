@@ -51,8 +51,12 @@
             nilaway # Go static analysis tool
             delve # Go debugger
             sqlc # compiles SQL queries to Go code
+            air # run dev server with hot reload
             sqlfluff # SQL linter
             gnumake
+            curl
+            xh
+            jq
           ];
 
           shellHook = ''
