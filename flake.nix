@@ -54,6 +54,9 @@
             air # run dev server with hot reload
             sqlfluff # SQL linter
             gnumake
+            curl
+            xh
+            jq
           ];
 
           shellHook = ''
