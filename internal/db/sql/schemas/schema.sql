@@ -48,8 +48,8 @@ CREATE TABLE IF NOT EXISTS positions (
     tier INT NOT NULL,
     PRIMARY KEY (oid, semester, tier),
 
-    CONSTRAINT fk_officers FOREIGN KEY (oid) REFERENCES officer (uuid),
-    CONSTRAINT fk_tiers FOREIGN KEY (tier) REFERENCES branch (tier)
+CONSTRAINT fk_officers FOREIGN KEY (oid) REFERENCES officers (uuid),
+    CONSTRAINT fk_tiers FOREIGN KEY (tier) REFERENCES tiers (tier)
 );
 
 -- TODO: Create a table for access tokens for the API.
