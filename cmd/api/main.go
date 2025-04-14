@@ -55,11 +55,12 @@ func main() {
 	// Should this be moved to the routes module??
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
+	announcementService := services.NewAnnouncementService(queries)
 	router := gin.Default()
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupRoutes(router, eventsService)
+	routes.SetupRoutes(router, eventsService, announcementService)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
