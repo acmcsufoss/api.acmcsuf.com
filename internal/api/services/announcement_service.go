@@ -24,8 +24,9 @@ func (s *AnnouncementService) GetAnnouncement(ctx context.Context, uuid string) 
 	return announcement, nil
 }
 
-// TODO: implement the following services
-// NOTE: these are just copy-pasted from GetEvent and need to have their interfaces modified
 func (s *AnnouncementService) CreateAnnouncement(ctx context.Context, arg models.CreateAnnouncementParams) (models.Announcement, error) {
-	panic("implement me")
+	if announcement, err := s.q.CreateAnnouncement(ctx, arg); err != nil {
+		return announcement, err
+	}
+	return models.Announcement{}, nil
 }
