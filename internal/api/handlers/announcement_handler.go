@@ -56,7 +56,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Event created successfully",
+		"message": "Announcement created successfully",
 		"uuid":    params.Uuid,
 	})
 }
