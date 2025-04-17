@@ -24,7 +24,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
-	event, err := h.eventsService.GetEvent(ctx, id)
+	event, err := h.eventsService.Get(ctx, id)
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
@@ -61,7 +61,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	err := h.eventsService.CreateEvent(ctx, params)
+	err := h.eventsService.Create(ctx, params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
