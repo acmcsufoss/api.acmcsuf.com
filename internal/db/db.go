@@ -4,10 +4,10 @@ package db
 
 import (
 	"context"
-	"os"
 	"database/sql"
 	"errors"
 	"fmt"
+	"os"
 
 	_ "modernc.org/sqlite"
 )
