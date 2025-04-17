@@ -46,7 +46,10 @@ type HostFilter struct {
 	Host string
 }
 
-func (f HostFilter) Apply(events []models.Event) []models.Event {
+// Ensure HostFilter implements EventFilter
+var _ EventFilter = (*HostFilter)(nil)
+
+func (f *HostFilter) Apply(events []models.Event) []models.Event {
 	if f.Host == "" {
 		return events
 	}
@@ -77,9 +80,9 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]models.Even
 }
 
 func (s *EventsService) Update(ctx context.Context, uuid string, params models.UpdateEventParams) error {
-	panic("implement me")
+	panic("implement me (EventsService Update)")
 }
 
 func (s *EventsService) Delete(ctx context.Context, uuid string) error {
-	panic("implement me")
+	panic("implement me (EventsService Delete)")
 }

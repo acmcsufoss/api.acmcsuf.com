@@ -8,7 +8,6 @@ import (
 
 func SetupRoutes(router *gin.Engine, eventService *services.EventsService, announcementService *services.AnnouncementService) {
 	eventsHandler := handlers.NewEventHandler(eventService)
-	// NOTE: Only GetEvent implemented so far
 	router.GET("/events", eventsHandler.GetEvents)
 	router.GET("/events/:id", eventsHandler.GetEvent)
 	router.POST("/events", eventsHandler.CreateEvent)

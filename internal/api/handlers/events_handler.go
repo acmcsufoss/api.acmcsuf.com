@@ -80,7 +80,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 	filters := []any{}
 
 	if host != "" {
-		filters = append(filters, services.HostFilter{Host: host})
+		filters = append(filters, &services.HostFilter{Host: host})
 	}
 
 	events, err := h.eventsService.List(ctx, filters...)
@@ -96,9 +96,9 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// var params models.UpdateEventParams
-	panic("implement me")
+	panic("implement me (EventsHandler UpdateEvent)")
 }
 
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
-	panic("implement me")
+	panic("implement me (EventsHandler DeleteEvent")
 }
