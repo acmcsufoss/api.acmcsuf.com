@@ -100,5 +100,5 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 }
 
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
-	panic("implement me (EventsHandler DeleteEvent")
+	panic("implement me (EventsHandler DeleteEvent)")
 }
