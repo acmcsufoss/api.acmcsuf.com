@@ -22,7 +22,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
-	announcement, err := h.announcementService.GetAnnouncement(ctx, id)
+	announcement, err := h.announcementService.Get(ctx, id)
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
@@ -50,15 +50,13 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	announcement, err := h.announcementService.CreateAnnouncement(ctx, params)
-	if err != nil {
+	if err := h.announcementService.Create(ctx, params); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Not implemented",
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Event created successfully",
+		"message": "Announcement created successfully",
 		"uuid":    params.Uuid,
 	})
-	c.JSON(http.StatusOK, announcement)
 }

@@ -20,7 +20,7 @@ make # Compile program
 ```
 OR
 ```sh
-make run # This compiles & runs the program without creating a binary
+make run
 ```
 
 ### Other useful commands from the Makefile
