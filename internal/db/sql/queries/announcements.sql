@@ -46,4 +46,4 @@ FROM
 
 -- name: DeleteAnnouncement :exec
 DELETE FROM announcement
-where uuid = ?;
+WHERE uuid = ?;
