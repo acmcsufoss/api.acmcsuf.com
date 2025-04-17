@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createAnnouncement = `-- name: CreateAnnouncement :one
+const createAnnouncement = `-- name: CreateAnnouncement :exec
 INSERT INTO
 announcement (
     uuid,
@@ -32,23 +32,25 @@ type CreateAnnouncementParams struct {
 	DiscordMessageID sql.NullString `json:"discord_message_id"`
 }
 
-func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) (Announcement, error) {
-	row := q.db.QueryRowContext(ctx, createAnnouncement,
+func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
+	_, err := q.db.ExecContext(ctx, createAnnouncement,
 		arg.Uuid,
 		arg.Visibility,
 		arg.AnnounceAt,
 		arg.DiscordChannelID,
 		arg.DiscordMessageID,
 	)
-	var i Announcement
-	err := row.Scan(
-		&i.Uuid,
-		&i.Visibility,
-		&i.AnnounceAt,
-		&i.DiscordChannelID,
-		&i.DiscordMessageID,
-	)
-	return i, err
+	return err
+}
+
+const deleteAnnouncement = `-- name: DeleteAnnouncement :exec
+DELETE FROM announcement
+where uuid = ?
+`
+
+func (q *Queries) DeleteAnnouncement(ctx context.Context, uuid string) error {
+	_, err := q.db.ExecContext(ctx, deleteAnnouncement, uuid)
+	return err
 }
 
 const getAnnouncement = `-- name: GetAnnouncement :one
@@ -75,4 +77,75 @@ func (q *Queries) GetAnnouncement(ctx context.Context, uuid string) (Announcemen
 		&i.DiscordMessageID,
 	)
 	return i, err
+}
+
+const getAnnouncements = `-- name: GetAnnouncements :many
+SELECT
+    uuid,
+    visibility,
+    announce_at,
+    discord_channel_id,
+    discord_message_id
+FROM
+    announcement
+`
+
+func (q *Queries) GetAnnouncements(ctx context.Context) ([]Announcement, error) {
+	rows, err := q.db.QueryContext(ctx, getAnnouncements)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Announcement
+	for rows.Next() {
+		var i Announcement
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.Visibility,
+			&i.AnnounceAt,
+			&i.DiscordChannelID,
+			&i.DiscordMessageID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateAnnouncement = `-- name: UpdateAnnouncement :exec
+UPDATE announcement
+SET
+    visibility = COALESCE(?1, visibility),
+    announce_at = COALESCE(?2, announce_at),
+    discord_channel_id = COALESCE(?3, discord_channel_id),
+    discord_message_id = COALESCE(?4, discord_message_id)
+
+WHERE
+    uuid = ?5
+`
+
+type UpdateAnnouncementParams struct {
+	Visibility       sql.NullString `json:"visibility"`
+	AnnounceAt       sql.NullInt64  `json:"announce_at"`
+	DiscordChannelID sql.NullString `json:"discord_channel_id"`
+	DiscordMessageID sql.NullString `json:"discord_message_id"`
+	Uuid             string         `json:"uuid"`
+}
+
+func (q *Queries) UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncementParams) error {
+	_, err := q.db.ExecContext(ctx, updateAnnouncement,
+		arg.Visibility,
+		arg.AnnounceAt,
+		arg.DiscordChannelID,
+		arg.DiscordMessageID,
+		arg.Uuid,
+	)
+	return err
 }
