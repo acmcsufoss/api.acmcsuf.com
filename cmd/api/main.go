@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/gin-gonic/gin"
 	_ "modernc.org/sqlite"
 )
@@ -28,28 +28,11 @@ func main() {
 		cancel()
 	}()
 
-	// Setup SQLite database & make sure we can connect to it
-	uri := os.Getenv("DATABASE_URL")
-	if uri == "" {
-		log.Fatal("DATABASE_URL must be set")
-	}
-	db, err := sql.Open("sqlite", uri)
+	db, err := db.New(ctx)
 	if err != nil {
-		log.Fatalf("Error opening SQLite database: %vl", err)
+		log.Fatal(err)
 	}
 	defer db.Close()
-	if err := db.PingContext(ctx); err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
-	}
-
-	schemaBytes, err := os.ReadFile("internal/db/sql/schemas/schema.sql")
-	if err != nil {
-		log.Fatalf("Error reading schema file: %v", err)
-	}
-
-	if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
-		log.Fatalf("Error initializing db schema: %v", err)
-	}
 
 	// Now we init services & gin router, and then start the server
 	// Should this be moved to the routes module??
