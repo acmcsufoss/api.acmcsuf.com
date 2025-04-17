@@ -74,12 +74,28 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	})
 }
 
-// TODO: implement the following handlers
 func (h *EventsHandler) GetEvents(c *gin.Context) {
-	panic("implement me")
+	ctx := c.Request.Context()
+	host := c.Query("host")
+	filters := []any{}
+
+	if host != "" {
+		filters = append(filters, services.HostFilter{Host: host})
+	}
+
+	events, err := h.eventsService.List(ctx, filters...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve events",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, events)
 }
 
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
+	// ctx := c.Request.Context()
+	// var params models.UpdateEventParams
 	panic("implement me")
 }
 
