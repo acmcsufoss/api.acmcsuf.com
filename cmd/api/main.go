@@ -14,6 +14,10 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
 	_ "modernc.org/sqlite"
+
+	docs "github.com/go-project-name/docs"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -55,6 +59,9 @@ func main() {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
+
+	//Setup swagger
+	// TODO: Implement swagger documentation
 
 	<-ctx.Done()
 	log.Println("Server shut down.")

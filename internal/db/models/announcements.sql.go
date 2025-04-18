@@ -45,7 +45,7 @@ func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncement
 
 const deleteAnnouncement = `-- name: DeleteAnnouncement :exec
 DELETE FROM announcement
-where uuid = ?
+WHERE uuid = ?
 `
 
 func (q *Queries) DeleteAnnouncement(ctx context.Context, uuid string) error {
