@@ -13,11 +13,12 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/tools/refactor/eg"
 	_ "modernc.org/sqlite"
 
-	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/acmcsufoss/api.acmcsuf.com/docs"
+	"github.com/swaggo/files"
+	"github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -44,6 +45,7 @@ func main() {
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
 	router := gin.Default()
+
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
@@ -59,7 +61,6 @@ func main() {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
-
 	//Setup swagger
 	// TODO: Implement swagger documentation
 	// Info:
@@ -68,7 +69,13 @@ func main() {
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-
+	documentation := router.Group("/")
+	{
+		eg := documentation.Group("/")
+		//This is supposed to grab the information from the api services if i'm not mistaken.
+		eg.GET("/events_handler")
+		eg.GET("/announcement_handler") //might be wrong here, just place holders
+	}
 	// Gin swagger serves api docs, or something like that
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
