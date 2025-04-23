@@ -13,7 +13,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/tools/refactor/eg"
 	_ "modernc.org/sqlite"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/docs"
