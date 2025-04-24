@@ -24,7 +24,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
-	event, err := h.eventsService.GetEvent(ctx, id)
+	event, err := h.eventsService.Get(ctx, id)
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
@@ -61,7 +61,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	err := h.eventsService.CreateEvent(ctx, params)
+	err := h.eventsService.Create(ctx, params)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
@@ -74,15 +74,31 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	})
 }
 
-// TODO: implement the following handlers
 func (h *EventsHandler) GetEvents(c *gin.Context) {
-	panic("implement me")
+	ctx := c.Request.Context()
+	host := c.Query("host")
+	filters := []any{}
+
+	if host != "" {
+		filters = append(filters, &services.HostFilter{Host: host})
+	}
+
+	events, err := h.eventsService.List(ctx, filters...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve events",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, events)
 }
 
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
-	panic("implement me")
+	// ctx := c.Request.Context()
+	// var params models.UpdateEventParams
+	panic("implement me (EventsHandler UpdateEvent)")
 }
 
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
-	panic("implement me")
+	panic("implement me (EventsHandler DeleteEvent)")
 }

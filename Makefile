@@ -20,8 +20,8 @@ generate: fmt $(GENERATE_MARKER)
 vet: fmt
 	go vet ./...
 
-run: generate
-	go run ./cmd/api
+run: build
+	./$(BIN_DIR)/$(APP_NAME)
 
 build: generate
 	mkdir -p $(BIN_DIR)
