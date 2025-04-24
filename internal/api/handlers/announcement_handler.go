@@ -14,6 +14,15 @@ type AnnouncementHandler struct {
 	announcementService *services.AnnouncementService
 }
 
+// NewAnnoucmentHandler godoc
+//
+//	@Summary		Get an announcement by ID
+//	@Description	Retrieves a single announcement from the database
+//	@Tags			Announcements
+//	@Accept			json
+//	@Produce		json
+//	@Param			id path string true "Announcement ID"
+//	@Router			/announcements/{id} [get]
 func NewAnnouncementHandler(announcementService *services.AnnouncementService) *AnnouncementHandler {
 	return &AnnouncementHandler{announcementService: announcementService}
 }
