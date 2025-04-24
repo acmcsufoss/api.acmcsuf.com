@@ -45,7 +45,18 @@ FROM
 WHERE
     uuid = ?;
 
--- name: GetPositions :one
+-- name: GetTier :one
+SELECT
+    tier,
+    title,
+    t_index,
+    team
+FROM
+    tiers
+WHERE
+    tier = ?
+
+-- name: GetPosition :one
 SELECT
     positions.semester,
     tiers.title,
