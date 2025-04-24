@@ -54,7 +54,7 @@ SELECT
 FROM
     tiers
 WHERE
-    tier = ?
+    tier = ?;
 
 -- name: GetPosition :one
 SELECT
