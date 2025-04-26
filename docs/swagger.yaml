@@ -1,11 +1,22 @@
 info:
   contact: {}
 paths:
+  /announcements:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new announcement and generates unique ID
+      produces:
+      - application/json
+      responses: {}
+      summary: Create new Announcement
+      tags:
+      - Announcements
   /announcements/{id}:
     get:
       consumes:
       - application/json
-      description: Retrieves a single announcement from the database
+      description: Retrieves a single announcement from the database.
       parameters:
       - description: Announcement ID
         in: path
@@ -18,4 +29,77 @@ paths:
       summary: Get an announcement by ID
       tags:
       - Announcements
+  /events:
+    post:
+      consumes:
+      - application/json
+      description: Retrieves a single event from the database.
+      produces:
+      - application/json
+      responses: {}
+      summary: Creates a new event and generates new ID
+      tags:
+      - Events
+  /events/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single event from the database.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Get an Event by ID
+      tags:
+      - Events
+  /events/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the event of choice from the database
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Deletes the Event of Choice
+      tags:
+      - Events
+  /events/getAll:
+    get:
+      consumes:
+      - application/json
+      description: Gets all the events from the event database
+      produces:
+      - application/json
+      responses: {}
+      summary: Gets all the events
+      tags:
+      - Events
+  /events/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates the event of choice in the database
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Update the Event of Choice
+      tags:
+      - Events
 swagger: "2.0"

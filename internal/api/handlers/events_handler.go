@@ -20,6 +20,15 @@ func NewEventHandler(eventService *services.EventsService) *EventsHandler {
 	}
 }
 
+// GetEvent godoc
+//
+//	@Summary		Get an Event by ID
+//	@Description	Retrieves a single event from the database.
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id path string true "Event ID"
+//	@Router			/events/{id} [get]
 func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -43,6 +52,14 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
+// CreateEvent godoc
+//
+//	@Summary		Creates a new event and generates new ID
+//	@Description	Retrieves a single event from the database.
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Router			/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params models.CreateEventParams
@@ -74,6 +91,14 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	})
 }
 
+// GetEvents godoc
+//
+//	@Summary		Gets all the events
+//	@Description	Gets all the events from the event database
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Router			/events/getAll [Get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	host := c.Query("host")
@@ -93,12 +118,30 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
+// UpdateEvent godoc
+//
+//		@Summary		Update the Event of Choice
+//		@Description	Updates the event of choice in the database
+//		@Tags			Events
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Event ID"
+//		@Router			/events/update [Put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// var params models.UpdateEventParams
 	panic("implement me (EventsHandler UpdateEvent)")
 }
 
+// DeleteEvent godoc
+//
+//		@Summary		Deletes the Event of Choice
+//		@Description	Delete the event of choice from the database
+//		@Tags			Events
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Event ID"
+//		@Router			/events/delete [Delete]
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
 	panic("implement me (EventsHandler DeleteEvent)")
 }

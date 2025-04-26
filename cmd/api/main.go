@@ -71,9 +71,8 @@ func main() {
 	documentation := router.Group("/")
 	{
 		eg := documentation.Group("/")
-		//This is supposed to grab the information from the api services if i'm not mistaken.
 		eg.GET("/events_handler")
-		eg.GET("/announcement_handler") //might be wrong here, just place holders
+		eg.GET("/announcement_handler")
 	}
 	// Gin swagger serves api docs, or something like that
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

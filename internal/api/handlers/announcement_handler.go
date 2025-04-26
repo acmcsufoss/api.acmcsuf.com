@@ -14,19 +14,19 @@ type AnnouncementHandler struct {
 	announcementService *services.AnnouncementService
 }
 
-// NewAnnoucmentHandler godoc
+func NewAnnouncementHandler(announcementService *services.AnnouncementService) *AnnouncementHandler {
+	return &AnnouncementHandler{announcementService: announcementService}
+}
+
+// GetAnnouncement godoc
 //
 //	@Summary		Get an announcement by ID
-//	@Description	Retrieves a single announcement from the database
+//	@Description	Retrieves a single announcement from the database.
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
 //	@Router			/announcements/{id} [get]
-func NewAnnouncementHandler(announcementService *services.AnnouncementService) *AnnouncementHandler {
-	return &AnnouncementHandler{announcementService: announcementService}
-}
-
 func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -48,6 +48,14 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	c.JSON(http.StatusOK, announcement)
 }
 
+// CreateAnnouncement godoc
+//
+//	@Summary		Create new Announcement
+//	@Description	Creates a new announcement and generates unique ID
+//	@Tags			Announcements
+//	@Accept			json
+//	@Produce		json
+//	@Router			/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params models.CreateAnnouncementParams
