@@ -93,8 +93,8 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 
 // GetEvents godoc
 //
-//	@Summary		Gets all the events
-//	@Description	Gets all the events from the event database
+//	@Summary		Get all the events
+//	@Description	Get all the events from the event database
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
@@ -120,7 +120,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 
 // UpdateEvent godoc
 //
-//		@Summary		Update the Event of Choice
+//		@Summary		Updates the Event of Choice
 //		@Description	Updates the event of choice in the database
 //		@Tags			Events
 //		@Accept			json

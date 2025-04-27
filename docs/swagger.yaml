@@ -1,6 +1,39 @@
 info:
   contact: {}
 paths:
+  /announcement/:id:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the Announcement of choice in the database
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Deletes the Announcement of Choice
+      tags:
+      - Announcements
+    put:
+      consumes:
+      - application/json
+      description: Updates the Announcement of choice in the database
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      summary: Updates the Announcement of Choice
+      tags:
+      - Announcements
   /announcements:
     post:
       consumes:
@@ -33,11 +66,11 @@ paths:
     get:
       consumes:
       - application/json
-      description: Gets all the events from the event database
+      description: Get all the events from the event database
       produces:
       - application/json
       responses: {}
-      summary: Gets all the events
+      summary: Get all the events
       tags:
       - Events
     post:
@@ -96,7 +129,7 @@ paths:
       produces:
       - application/json
       responses: {}
-      summary: Update the Event of Choice
+      summary: Updates the Event of Choice
       tags:
       - Events
 swagger: "2.0"

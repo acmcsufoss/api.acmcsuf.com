@@ -55,6 +55,7 @@ func (s *AnnouncementService) List(ctx context.Context, filters ...any) ([]model
 	return result, nil
 }
 
+// partially implemented
 func (s *AnnouncementService) Update(ctx context.Context, uuid string, params models.UpdateAnnouncementParams) error {
 	err := s.q.UpdateAnnouncement(ctx, params)
 	if err != nil {
