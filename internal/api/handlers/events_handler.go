@@ -28,7 +28,7 @@ func NewEventHandler(eventService *services.EventsService) *EventsHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Event ID"
-//	@Router			/events/{id} [get]
+//	@Router			/events/:id [get]
 func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -98,7 +98,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
-//	@Router			/events/getAll [Get]
+//	@Router			/events [Get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	host := c.Query("host")
@@ -126,7 +126,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//		@Router			/events/update [Put]
+//		@Router			/events/:id [Put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// var params models.UpdateEventParams
@@ -141,7 +141,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//		@Router			/events/delete [Delete]
+//		@Router			/events/:id [Delete]
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
 	panic("implement me (EventsHandler DeleteEvent)")
 }

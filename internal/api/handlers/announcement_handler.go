@@ -26,7 +26,7 @@ func NewAnnouncementHandler(announcementService *services.AnnouncementService) *
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
-//	@Router			/announcements/{id} [get]
+//	@Router			/announcements/:id [get]
 func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")

@@ -12,7 +12,7 @@ paths:
       summary: Create new Announcement
       tags:
       - Announcements
-  /announcements/{id}:
+  /announcements/:id:
     get:
       consumes:
       - application/json
@@ -30,6 +30,16 @@ paths:
       tags:
       - Announcements
   /events:
+    get:
+      consumes:
+      - application/json
+      description: Gets all the events from the event database
+      produces:
+      - application/json
+      responses: {}
+      summary: Gets all the events
+      tags:
+      - Events
     post:
       consumes:
       - application/json
@@ -40,24 +50,7 @@ paths:
       summary: Creates a new event and generates new ID
       tags:
       - Events
-  /events/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves a single event from the database.
-      parameters:
-      - description: Event ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses: {}
-      summary: Get an Event by ID
-      tags:
-      - Events
-  /events/delete:
+  /events/:id:
     delete:
       consumes:
       - application/json
@@ -74,18 +67,22 @@ paths:
       summary: Deletes the Event of Choice
       tags:
       - Events
-  /events/getAll:
     get:
       consumes:
       - application/json
-      description: Gets all the events from the event database
+      description: Retrieves a single event from the database.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses: {}
-      summary: Gets all the events
+      summary: Get an Event by ID
       tags:
       - Events
-  /events/update:
     put:
       consumes:
       - application/json

@@ -31,7 +31,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/announcements/{id}": {
+        "/announcements/:id": {
             "get": {
                 "description": "Retrieves a single announcement from the database.",
                 "consumes": [
@@ -57,6 +57,20 @@ const docTemplate = `{
             }
         },
         "/events": {
+            "get": {
+                "description": "Gets all the events from the event database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Gets all the events",
+                "responses": {}
+            },
             "post": {
                 "description": "Retrieves a single event from the database.",
                 "consumes": [
@@ -72,9 +86,9 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/events/delete": {
-            "delete": {
-                "description": "Delete the event of choice from the database",
+        "/events/:id": {
+            "get": {
+                "description": "Retrieves a single event from the database.",
                 "consumes": [
                     "application/json"
                 ],
@@ -84,7 +98,7 @@ const docTemplate = `{
                 "tags": [
                     "Events"
                 ],
-                "summary": "Deletes the Event of Choice",
+                "summary": "Get an Event by ID",
                 "parameters": [
                     {
                         "type": "string",
@@ -95,25 +109,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
-            }
-        },
-        "/events/getAll": {
-            "get": {
-                "description": "Gets all the events from the event database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Events"
-                ],
-                "summary": "Gets all the events",
-                "responses": {}
-            }
-        },
-        "/events/update": {
+            },
             "put": {
                 "description": "Updates the event of choice in the database",
                 "consumes": [
@@ -136,11 +132,9 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {}
-            }
-        },
-        "/events/{id}": {
-            "get": {
-                "description": "Retrieves a single event from the database.",
+            },
+            "delete": {
+                "description": "Delete the event of choice from the database",
                 "consumes": [
                     "application/json"
                 ],
@@ -150,7 +144,7 @@ const docTemplate = `{
                 "tags": [
                     "Events"
                 ],
-                "summary": "Get an Event by ID",
+                "summary": "Deletes the Event of Choice",
                 "parameters": [
                     {
                         "type": "string",
