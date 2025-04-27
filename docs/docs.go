@@ -15,6 +15,54 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/announcement/:id": {
+            "put": {
+                "description": "Updates the Announcement of choice in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcements"
+                ],
+                "summary": "Updates the Announcement of Choice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Announcement ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "description": "Deletes the Announcement of choice in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcements"
+                ],
+                "summary": "Deletes the Announcement of Choice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/announcements": {
             "post": {
                 "description": "Creates a new announcement and generates unique ID",
@@ -58,7 +106,7 @@ const docTemplate = `{
         },
         "/events": {
             "get": {
-                "description": "Gets all the events from the event database",
+                "description": "Get all the events from the event database",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,7 +116,7 @@ const docTemplate = `{
                 "tags": [
                     "Events"
                 ],
-                "summary": "Gets all the events",
+                "summary": "Get all the events",
                 "responses": {}
             },
             "post": {
@@ -121,7 +169,7 @@ const docTemplate = `{
                 "tags": [
                     "Events"
                 ],
-                "summary": "Update the Event of Choice",
+                "summary": "Updates the Event of Choice",
                 "parameters": [
                     {
                         "type": "string",

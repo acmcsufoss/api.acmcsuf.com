@@ -78,9 +78,28 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	})
 }
 
+// UpdateAnnouncement godoc
+//
+// @Summary		Updates the Announcement of Choice
+// @Description	Updates the Announcement of choice in the database
+// @Tags		Announcements
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "Announcement ID"
+// @Router		/announcement/:id [Put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	panic("implement me (UpdateAnnouncement Handler)")
 }
+
+// DeleteAnnouncement godoc
+//
+//		@Summary		Deletes the Announcement of Choice
+//		@Description	Deletes the Announcement of choice in the database
+//		@Tags			Announcements
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Event ID"
+//		@Router			/announcement/:id [Delete]
 func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
 	panic("implement me (DeleteAnnouncement Handler)")
 }

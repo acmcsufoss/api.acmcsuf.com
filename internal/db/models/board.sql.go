@@ -144,7 +144,7 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerR
 	return i, err
 }
 
-const getPositions = `-- name: GetPositions :one
+const getPosition = `-- name: GetPosition :one
 SELECT
     positions.semester,
     tiers.title,
@@ -158,15 +158,39 @@ INNER JOIN tiers
 WHERE officers.full_name = ?
 `
 
-type GetPositionsRow struct {
+type GetPositionRow struct {
 	Semester interface{}    `json:"semester"`
 	Title    sql.NullString `json:"title"`
 	Team     sql.NullString `json:"team"`
 }
 
-func (q *Queries) GetPositions(ctx context.Context, fullName string) (GetPositionsRow, error) {
-	row := q.db.QueryRowContext(ctx, getPositions, fullName)
-	var i GetPositionsRow
+func (q *Queries) GetPosition(ctx context.Context, fullName string) (GetPositionRow, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, fullName)
+	var i GetPositionRow
 	err := row.Scan(&i.Semester, &i.Title, &i.Team)
+	return i, err
+}
+
+const getTier = `-- name: GetTier :one
+SELECT
+    tier,
+    title,
+    t_index,
+    team
+FROM
+    tiers
+WHERE
+    tier = ?
+`
+
+func (q *Queries) GetTier(ctx context.Context, tier int64) (Tier, error) {
+	row := q.db.QueryRowContext(ctx, getTier, tier)
+	var i Tier
+	err := row.Scan(
+		&i.Tier,
+		&i.Title,
+		&i.TIndex,
+		&i.Team,
+	)
 	return i, err
 }
