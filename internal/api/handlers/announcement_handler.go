@@ -77,3 +77,10 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		"uuid":    params.Uuid,
 	})
 }
+
+func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
+	panic("implement me (UpdateAnnouncement Handler)")
+}
+func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
+	panic("implement me (DeleteAnnouncement Handler)")
+}
