@@ -7,34 +7,56 @@ package models
 
 import (
 	"context"
+	"database/sql"
 )
 
 const getBoard = `-- name: GetBoard :one
 SELECT
-    id,
-    name,
-    branch,
-    github,
-    discord,
-    year,
-    bio
+    full_name,
+    picture,
+    discord
 FROM
-    board_member
+    officers
 WHERE
-    id = ?
+    uuid = ?
 `
 
-func (q *Queries) GetBoard(ctx context.Context, id interface{}) (BoardMember, error) {
-	row := q.db.QueryRowContext(ctx, getBoard, id)
-	var i BoardMember
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Branch,
-		&i.Github,
-		&i.Discord,
-		&i.Year,
-		&i.Bio,
-	)
+type GetBoardRow struct {
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Discord  sql.NullString `json:"discord"`
+}
+
+func (q *Queries) GetBoard(ctx context.Context, uuid interface{}) (GetBoardRow, error) {
+	row := q.db.QueryRowContext(ctx, getBoard, uuid)
+	var i GetBoardRow
+	err := row.Scan(&i.FullName, &i.Picture, &i.Discord)
+	return i, err
+}
+
+const getPositions = `-- name: GetPositions :one
+SELECT
+    tiers.title,
+    tiers.team,
+    positions.semester
+FROM
+    officers
+INNER JOIN positions
+    ON officers.uuid = positions.oid
+INNER JOIN tiers
+    ON positions.tier = tiers.tier
+WHERE officers.full_name = ?
+`
+
+type GetPositionsRow struct {
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
+	Semester interface{}    `json:"semester"`
+}
+
+func (q *Queries) GetPositions(ctx context.Context, fullName string) (GetPositionsRow, error) {
+	row := q.db.QueryRowContext(ctx, getPositions, fullName)
+	var i GetPositionsRow
+	err := row.Scan(&i.Title, &i.Team, &i.Semester)
 	return i, err
 }
