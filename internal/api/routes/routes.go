@@ -15,6 +15,8 @@ func SetupRoutes(router *gin.Engine, eventService *services.EventsService, annou
 	router.DELETE("/events/:id", eventsHandler.DeleteEvent)
 	//announcementService
 	announcementHandler := handlers.NewAnnouncementHandler(announcementService)
-	router.GET("/announcement", announcementHandler.GetAnnouncement)
+	router.GET("/announcement/:id", announcementHandler.GetAnnouncement)
 	router.POST("/announcement", announcementHandler.CreateAnnouncement)
+	router.POST("/announcement/:id", announcementHandler.DeleteAnnouncement)
+	router.POST("/announcement/:id", announcementHandler.UpdateAnnouncement)
 }
