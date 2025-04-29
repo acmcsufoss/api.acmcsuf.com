@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createEvent = `-- name: CreateEvent :exec
@@ -18,8 +19,6 @@ event (
     end_at,
     is_all_day,
     host
-    -- the following doens't exist in schema
-    -- visibility
 )
 VALUES
 (?, ?, ?, ?, ?, ?)
@@ -44,6 +43,16 @@ func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) error 
 		arg.IsAllDay,
 		arg.Host,
 	)
+	return err
+}
+
+const deleteEvent = `-- name: DeleteEvent :exec
+DELETE FROM event
+WHERE uuid = ?
+`
+
+func (q *Queries) DeleteEvent(ctx context.Context, uuid string) error {
+	_, err := q.db.ExecContext(ctx, deleteEvent, uuid)
 	return err
 }
 
@@ -73,4 +82,79 @@ func (q *Queries) GetEvent(ctx context.Context, uuid string) (Event, error) {
 		&i.Host,
 	)
 	return i, err
+}
+
+const getEvents = `-- name: GetEvents :many
+SELECT
+    uuid,
+    location,
+    start_at,
+    end_at,
+    is_all_day,
+    host
+FROM
+    event
+`
+
+func (q *Queries) GetEvents(ctx context.Context) ([]Event, error) {
+	rows, err := q.db.QueryContext(ctx, getEvents)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Event
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.Location,
+			&i.StartAt,
+			&i.EndAt,
+			&i.IsAllDay,
+			&i.Host,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateEvent = `-- name: UpdateEvent :exec
+UPDATE event
+SET
+    location = COALESCE(?1, location),
+    start_at = COALESCE(?2, start_at),
+    end_at = COALESCE(?3, end_at),
+    is_all_day = COALESCE(?4, is_all_day),
+    host = COALESCE(?5, host)
+WHERE
+    uuid = ?6
+`
+
+type UpdateEventParams struct {
+	Location sql.NullString `json:"location"`
+	StartAt  interface{}    `json:"start_at"`
+	EndAt    interface{}    `json:"end_at"`
+	IsAllDay sql.NullBool   `json:"is_all_day"`
+	Host     sql.NullString `json:"host"`
+	Uuid     string         `json:"uuid"`
+}
+
+func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) error {
+	_, err := q.db.ExecContext(ctx, updateEvent,
+		arg.Location,
+		arg.StartAt,
+		arg.EndAt,
+		arg.IsAllDay,
+		arg.Host,
+		arg.Uuid,
+	)
+	return err
 }

@@ -10,10 +10,114 @@ import (
 	"database/sql"
 )
 
-const getBoard = `-- name: GetBoard :one
+const createOfficer = `-- name: CreateOfficer :one
+INSERT INTO
+officers (
+    uuid,
+    full_name,
+    picture,
+    github,
+    discord
+)
+VALUES
+(?, ?, ?, ?, ?)
+RETURNING uuid, full_name, picture, github, discord
+`
+
+type CreateOfficerParams struct {
+	Uuid     interface{}    `json:"uuid"`
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
+	Discord  sql.NullString `json:"discord"`
+}
+
+func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (Officer, error) {
+	row := q.db.QueryRowContext(ctx, createOfficer,
+		arg.Uuid,
+		arg.FullName,
+		arg.Picture,
+		arg.Github,
+		arg.Discord,
+	)
+	var i Officer
+	err := row.Scan(
+		&i.Uuid,
+		&i.FullName,
+		&i.Picture,
+		&i.Github,
+		&i.Discord,
+	)
+	return i, err
+}
+
+const createPosition = `-- name: CreatePosition :one
+INSERT INTO
+positions (
+    oid,
+    semester,
+    tier
+)
+VALUES
+(?, ?, ?)
+RETURNING oid, semester, tier
+`
+
+type CreatePositionParams struct {
+	Oid      interface{} `json:"oid"`
+	Semester interface{} `json:"semester"`
+	Tier     int64       `json:"tier"`
+}
+
+func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
+	row := q.db.QueryRowContext(ctx, createPosition, arg.Oid, arg.Semester, arg.Tier)
+	var i Position
+	err := row.Scan(&i.Oid, &i.Semester, &i.Tier)
+	return i, err
+}
+
+const createTier = `-- name: CreateTier :one
+INSERT INTO
+tiers (
+    tier,
+    title,
+    t_index,
+    team
+)
+VALUES
+(?, ?, ?, ?)
+RETURNING tier, title, t_index, team
+`
+
+type CreateTierParams struct {
+	Tier   int64          `json:"tier"`
+	Title  sql.NullString `json:"title"`
+	TIndex sql.NullInt64  `json:"t_index"`
+	Team   sql.NullString `json:"team"`
+}
+
+func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) (Tier, error) {
+	row := q.db.QueryRowContext(ctx, createTier,
+		arg.Tier,
+		arg.Title,
+		arg.TIndex,
+		arg.Team,
+	)
+	var i Tier
+	err := row.Scan(
+		&i.Tier,
+		&i.Title,
+		&i.TIndex,
+		&i.Team,
+	)
+	return i, err
+}
+
+const getOfficer = `-- name: GetOfficer :one
 SELECT
     full_name,
     picture,
+    github,
     discord
 FROM
     officers
@@ -21,24 +125,30 @@ WHERE
     uuid = ?
 `
 
-type GetBoardRow struct {
+type GetOfficerRow struct {
 	FullName string         `json:"full_name"`
 	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
 	Discord  sql.NullString `json:"discord"`
 }
 
-func (q *Queries) GetBoard(ctx context.Context, uuid interface{}) (GetBoardRow, error) {
-	row := q.db.QueryRowContext(ctx, getBoard, uuid)
-	var i GetBoardRow
-	err := row.Scan(&i.FullName, &i.Picture, &i.Discord)
+func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerRow, error) {
+	row := q.db.QueryRowContext(ctx, getOfficer, uuid)
+	var i GetOfficerRow
+	err := row.Scan(
+		&i.FullName,
+		&i.Picture,
+		&i.Github,
+		&i.Discord,
+	)
 	return i, err
 }
 
-const getPositions = `-- name: GetPositions :one
+const getPosition = `-- name: GetPosition :one
 SELECT
+    positions.semester,
     tiers.title,
-    tiers.team,
-    positions.semester
+    tiers.team
 FROM
     officers
 INNER JOIN positions
@@ -48,15 +158,39 @@ INNER JOIN tiers
 WHERE officers.full_name = ?
 `
 
-type GetPositionsRow struct {
+type GetPositionRow struct {
+	Semester interface{}    `json:"semester"`
 	Title    sql.NullString `json:"title"`
 	Team     sql.NullString `json:"team"`
-	Semester interface{}    `json:"semester"`
 }
 
-func (q *Queries) GetPositions(ctx context.Context, fullName string) (GetPositionsRow, error) {
-	row := q.db.QueryRowContext(ctx, getPositions, fullName)
-	var i GetPositionsRow
-	err := row.Scan(&i.Title, &i.Team, &i.Semester)
+func (q *Queries) GetPosition(ctx context.Context, fullName string) (GetPositionRow, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, fullName)
+	var i GetPositionRow
+	err := row.Scan(&i.Semester, &i.Title, &i.Team)
+	return i, err
+}
+
+const getTier = `-- name: GetTier :one
+SELECT
+    tier,
+    title,
+    t_index,
+    team
+FROM
+    tiers
+WHERE
+    tier = ?
+`
+
+func (q *Queries) GetTier(ctx context.Context, tier int64) (Tier, error) {
+	row := q.db.QueryRowContext(ctx, getTier, tier)
+	var i Tier
+	err := row.Scan(
+		&i.Tier,
+		&i.Title,
+		&i.TIndex,
+		&i.Team,
+	)
 	return i, err
 }

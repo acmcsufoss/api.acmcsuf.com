@@ -2,7 +2,7 @@
   description = "Go Dev Environment for api.acmcsuf.com";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -54,6 +54,9 @@
             air # run dev server with hot reload
             sqlfluff # SQL linter
             gnumake
+            curl
+            xh
+            jq
           ];
 
           shellHook = ''
