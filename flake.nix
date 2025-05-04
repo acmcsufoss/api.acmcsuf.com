@@ -57,6 +57,8 @@
             curl
             xh
             jq
+            flyctl
+            pprof
           ];
 
           shellHook = ''
