@@ -1,17 +1,15 @@
-ARG GO_VERSION=1.23-alpine
-FROM golang:${GO_VERSION} AS builder
+ARG GO_VERSION=1.23
+FROM golang:${GO_VERSION}-alpine AS builder
 
 ENV CGO_ENABLED=0
-ENV GOOS=linux
-RUN mkdir -p /app
-WORKDIR /app
+
+WORKDIR /usr/src/app
 COPY go.mod go.sum ./
-RUN go mod download
+RUN go mod download && go mod verify
 COPY . .
-RUN go build -ldflags="-w -s" -o /app/api .
+RUN go build -o /run-app ./cmd/api
 
 FROM alpine:3.21
-WORKDIR /app
-COPY --from=builder /app/api .
-EXPOSE 8080
-CMD ["/app/api"]
+
+COPY --from=builder /run-app /usr/local/bin/
+CMD ["run-app"]

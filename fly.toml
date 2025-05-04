@@ -7,6 +7,11 @@ app = 'api-acmcsuf-com'
 primary_region = 'lax'
 
 [build]
+  [build.args]
+    GO_VERSION = '1.24.2'
+
+[env]
+  PORT = '8080'
 
 [http_service]
   internal_port = 8080
@@ -18,6 +23,8 @@ primary_region = 'lax'
 
 [[vm]]
   size = 'shared-cpu-1x'
+  cpus = 1
+  memory_mb = 256
 
 [mounts]
   source="db"
