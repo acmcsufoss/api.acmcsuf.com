@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -10,14 +11,9 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
 	_ "modernc.org/sqlite"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/docs"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -32,23 +28,38 @@ func main() {
 		cancel()
 	}()
 
-	db, err := db.New(ctx)
+	// Setup SQLite database & make sure we can connect to it
+	uri := os.Getenv("DATABASE_URL")
+	if uri == "" {
+		log.Fatal("DATABASE_URL must be set")
+	}
+	db, err := sql.Open("sqlite", uri)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error opening SQLite database: %vl", err)
 	}
 	defer db.Close()
+	if err := db.PingContext(ctx); err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
+
+	schemaBytes, err := os.ReadFile("internal/db/sql/schemas/schema.sql")
+	if err != nil {
+		log.Fatalf("Error reading schema file: %v", err)
+	}
+
+	if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
+		log.Fatalf("Error initializing db schema: %v", err)
+	}
 
 	// Now we init services & gin router, and then start the server
 	// Should this be moved to the routes module??
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
 	router := gin.Default()
-
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupRoutes(router, eventsService, announcementService)
+	routes.SetupRoutes(router, eventsService)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -60,22 +71,6 @@ func main() {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
-	//Setup swagger
-	// TODO: Implement swagger documentation
-	// Info:
-	docs.SwaggerInfo.Title = "ACM CSUF API"
-	docs.SwaggerInfo.Description = "This is a documentation of current API avaliable."
-	docs.SwaggerInfo.Host = "localhost:8080"
-	docs.SwaggerInfo.BasePath = "/"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	documentation := router.Group("/")
-	{
-		eg := documentation.Group("/")
-		eg.GET("/events_handler")
-		eg.GET("/announcement_handler")
-	}
-	// Gin swagger serves api docs, or something like that
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	<-ctx.Done()
 	log.Println("Server shut down.")
