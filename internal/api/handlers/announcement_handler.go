@@ -78,6 +78,19 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	})
 }
 
+// ListAnnouncement godoc
+//
+// @Summary		Lists All Announcements
+// @Description	Lists All Announcements in the API
+// @Tags		Announcements
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "Announcement ID"
+// @Router		/announcement/:id [Put]
+func (h *AnnouncementHandler) ListAnnouncement(c *gin.Context) {
+	panic("Implement Me")
+}
+
 // UpdateAnnouncement godoc
 //
 // @Summary		Updates the Announcement of Choice
@@ -88,7 +101,25 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Param		id path string true "Announcement ID"
 // @Router		/announcement/:id [Put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
-	panic("implement me (UpdateAnnouncement Handler)")
+	ctx := c.Request.Context()
+	id := c.Param("id")
+	var params models.UpdateAnnouncementParams
+	err := h.announcementService.Update(ctx, id, params)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Announcement not found",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Not implemented",
+		})
+	}
+
+	c.JSON(http.StatusOK, err)
+
 }
 
 // DeleteAnnouncement godoc
@@ -101,5 +132,21 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 //	 	@Param			id path string true "Event ID"
 //		@Router			/announcement/:id [Delete]
 func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
-	panic("implement me (DeleteAnnouncement Handler)")
+	ctx := c.Request.Context()
+	id := c.Param("id")
+	err := h.announcementService.Delete(ctx, id)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Announcement not found",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Not implemented",
+		})
+	}
+
+	c.JSON(http.StatusOK, err)
 }
