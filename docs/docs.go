@@ -15,54 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/announcement/:id": {
-            "put": {
-                "description": "Updates the Announcement of choice in the database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Announcements"
-                ],
-                "summary": "Updates the Announcement of Choice",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Announcement ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            },
-            "delete": {
-                "description": "Deletes the Announcement of choice in the database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Announcements"
-                ],
-                "summary": "Deletes the Announcement of Choice",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {}
-            }
-        },
         "/announcements": {
             "post": {
                 "description": "Creates a new announcement and generates unique ID",
@@ -76,10 +28,47 @@ const docTemplate = `{
                     "Announcements"
                 ],
                 "summary": "Create new Announcement",
-                "responses": {}
+                "parameters": [
+                    {
+                        "description": "Announcement data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message with UUID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             }
         },
-        "/announcements/:id": {
+        "/announcements/{id}": {
             "get": {
                 "description": "Retrieves a single announcement from the database.",
                 "consumes": [
@@ -101,7 +90,152 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Announcement details",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates the Announcement of choice in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcements"
+                ],
+                "summary": "Updates the Announcement of Choice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Announcement ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated announcement data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Deletes the Announcement of choice in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Announcements"
+                ],
+                "summary": "Deletes the Announcement of Choice",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Announcement ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             }
         },
         "/events": {
@@ -117,10 +251,37 @@ const docTemplate = `{
                     "Events"
                 ],
                 "summary": "Get all the events",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Filter by host",
+                        "name": "host",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of events",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             },
             "post": {
-                "description": "Retrieves a single event from the database.",
+                "description": "Creates a new event in the database.",
                 "consumes": [
                     "application/json"
                 ],
@@ -131,10 +292,47 @@ const docTemplate = `{
                     "Events"
                 ],
                 "summary": "Creates a new event and generates new ID",
-                "responses": {}
+                "parameters": [
+                    {
+                        "description": "Event data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message with UUID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             }
         },
-        "/events/:id": {
+        "/events/{id}": {
             "get": {
                 "description": "Retrieves a single event from the database.",
                 "consumes": [
@@ -156,7 +354,32 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Event details",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             },
             "put": {
                 "description": "Updates the event of choice in the database",
@@ -177,9 +400,55 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Updated event data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams"
+                        }
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
             },
             "delete": {
                 "description": "Delete the event of choice from the database",
@@ -202,7 +471,190 @@ const docTemplate = `{
                         "required": true
                     }
                 ],
-                "responses": {}
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "type": "integer"
+                },
+                "discord_channel_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "discord_message_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "type": "integer"
+                },
+                "discord_channel_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "discord_message_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams": {
+            "type": "object",
+            "properties": {
+                "end_at": {},
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {},
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event": {
+            "type": "object",
+            "properties": {
+                "end_at": {},
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {},
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
+                "discord_channel_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "discord_message_id": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "$ref": "#/definitions/sql.NullString"
+                }
+            }
+        },
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams": {
+            "type": "object",
+            "properties": {
+                "end_at": {},
+                "host": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "is_all_day": {
+                    "$ref": "#/definitions/sql.NullBool"
+                },
+                "location": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "start_at": {},
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "sql.NullBool": {
+            "type": "object",
+            "properties": {
+                "bool": {
+                    "type": "boolean"
+                },
+                "valid": {
+                    "description": "Valid is true if Bool is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "sql.NullInt64": {
+            "type": "object",
+            "properties": {
+                "int64": {
+                    "type": "integer"
+                },
+                "valid": {
+                    "description": "Valid is true if Int64 is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "sql.NullString": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if String is not NULL",
+                    "type": "boolean"
+                }
             }
         }
     }
