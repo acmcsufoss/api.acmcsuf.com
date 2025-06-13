@@ -26,7 +26,10 @@ func NewAnnouncementHandler(announcementService *services.AnnouncementService) *
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
-//	@Router			/announcements/:id [get]
+//	@Success		200 {object} models.Announcement "Announcement details"
+//	@Failure		404 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/announcements/{id} [get]
 func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -55,6 +58,10 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
+//	@Param			body body models.CreateAnnouncementParams true "Announcement data"
+//	@Success		200 {object} map[string]interface{} "Success message with UUID"
+//	@Failure		400 {object} map[string]string
+//	@Failure		500 {object} map[string]string
 //	@Router			/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -86,7 +93,12 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "Announcement ID"
-// @Router		/announcement/:id [Put]
+// @Param		body body models.UpdateAnnouncementParams true "Updated announcement data"
+// @Success		200 {object} map[string]string "Success message"
+// @Failure		400 {object} map[string]string
+// @Failure		404 {object} map[string]string
+// @Failure		500 {object} map[string]string
+// @Router		/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	panic("implement me (UpdateAnnouncement Handler)")
 }
@@ -98,8 +110,11 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 //		@Tags			Announcements
 //		@Accept			json
 //		@Produce		json
-//	 	@Param			id path string true "Event ID"
-//		@Router			/announcement/:id [Delete]
+//	 	@Param			id path string true "Announcement ID"
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/announcements/{id} [delete]
 func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
 	panic("implement me (DeleteAnnouncement Handler)")
 }

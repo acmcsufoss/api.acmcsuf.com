@@ -65,18 +65,11 @@ func main() {
 	// TODO: Implement swagger documentation
 	// Info:
 	docs.SwaggerInfo.Title = "ACM CSUF API"
-	docs.SwaggerInfo.Description = "This is a documentation of current API avaliable."
+	docs.SwaggerInfo.Description = "This is a documentation of current API available."
+	docs.SwaggerInfo.Version = "1.0"
 	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	documentation := router.Group("/")
-	{
-		eg := documentation.Group("/")
-		{
-			eg.GET("/events")
-			eg.GET("/announcements")
-		}
-	}
 	// Gin swagger serves api docs, or something like that
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
