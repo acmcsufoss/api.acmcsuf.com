@@ -32,11 +32,11 @@ func main() {
 		cancel()
 	}()
 
-	db, err := db.New(ctx)
+	db, closer, err := db.New(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer closer()
 
 	// Now we init services & gin router, and then start the server
 	// Should this be moved to the routes module??
