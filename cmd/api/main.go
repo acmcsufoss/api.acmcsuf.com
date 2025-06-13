@@ -15,9 +15,9 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "modernc.org/sqlite"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/docs"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func main() {
@@ -60,7 +60,8 @@ func main() {
 			log.Fatalf("Failed to start server: %v", err)
 		}
 	}()
-	//Setup swagger
+
+	// Setup swagger
 	// TODO: Implement swagger documentation
 	// Info:
 	docs.SwaggerInfo.Title = "ACM CSUF API"
@@ -71,8 +72,10 @@ func main() {
 	documentation := router.Group("/")
 	{
 		eg := documentation.Group("/")
-		eg.GET("/events_handler")
-		eg.GET("/announcement_handler")
+		{
+			eg.GET("/events")
+			eg.GET("/announcements")
+		}
 	}
 	// Gin swagger serves api docs, or something like that
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
