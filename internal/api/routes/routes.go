@@ -6,17 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(router *gin.Engine, eventService *services.EventsService, announcementService *services.AnnouncementService) {
-	eventsHandler := handlers.NewEventHandler(eventService)
-	router.GET("/events", eventsHandler.GetEvents)
-	router.GET("/events/:id", eventsHandler.GetEvent)
-	router.POST("/events", eventsHandler.CreateEvent)
-	router.POST("/events/:id", eventsHandler.UpdateEvent)
-	router.DELETE("/events/:id", eventsHandler.DeleteEvent)
+func SetupRoutes(router *gin.Engine, eventService *services.EventsService,
+	announcementService *services.AnnouncementService) {
+	eventHandler := handlers.NewEventHandler(eventService)
+	router.GET("/events", eventHandler.GetEvents)
+	router.GET("/events/:id", eventHandler.GetEvent)
+	router.POST("/events", eventHandler.CreateEvent)
+	router.POST("/events/:id", eventHandler.UpdateEvent)
+	router.DELETE("/events/:id", eventHandler.DeleteEvent)
 	//announcementService
 	announcementHandler := handlers.NewAnnouncementHandler(announcementService)
-	router.GET("/announcement/:id", announcementHandler.GetAnnouncement)
-	router.POST("/announcement", announcementHandler.CreateAnnouncement)
-	router.DELETE("/announcement/:id", announcementHandler.DeleteAnnouncement)
-	router.POST("/announcement/:id", announcementHandler.UpdateAnnouncement)
+	router.GET("/announcements/:id", announcementHandler.GetAnnouncement)
+	router.POST("/announcements", announcementHandler.CreateAnnouncement)
+	router.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
+	router.POST("/announcements/:id", announcementHandler.UpdateAnnouncement)
 }
