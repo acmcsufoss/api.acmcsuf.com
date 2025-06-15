@@ -28,7 +28,10 @@ func NewEventHandler(eventService *services.EventsService) *EventsHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Event ID"
-//	@Router			/events/:id [get]
+//	@Success		200 {object} models.Event "Event details"
+//	@Failure		404 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/events/{id} [get]
 func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -55,10 +58,14 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 // CreateEvent godoc
 //
 //	@Summary		Creates a new event and generates new ID
-//	@Description	Retrieves a single event from the database.
+//	@Description	Creates a new event in the database.
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
+//	@Param			body body models.CreateEventParams true "Event data"
+//	@Success		200 {object} map[string]interface{} "Success message with UUID"
+//	@Failure		400 {object} map[string]string
+//	@Failure		500 {object} map[string]string
 //	@Router			/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -98,7 +105,10 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
-//	@Router			/events [Get]
+//	@Param			host query string false "Filter by host"
+//	@Success		200 {array} models.Event "List of events"
+//	@Failure		500 {object} map[string]string
+//	@Router			/events [get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	host := c.Query("host")
@@ -126,7 +136,12 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//		@Router			/events/:id [Put]
+//	 	@Param			body body models.UpdateEventParams true "Updated event data"
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		400 {object} map[string]string
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	// ctx := c.Request.Context()
 	// var params models.UpdateEventParams
@@ -141,7 +156,10 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//		@Router			/events/:id [Delete]
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/events/{id} [delete]
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
 	panic("implement me (EventsHandler DeleteEvent)")
 }
