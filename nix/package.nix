@@ -19,7 +19,7 @@
     subPackages = ["cmd/api"];
 
     meta = with pkgs.lib; {
-      description = "api for acmcsuf oss";
+      description = "API created and used by CSUF's ACM chapter";
       homepage = "https://github.com/acmcsufoss/api.acmcsuf.com";
       license = licenses.mit;
     };
