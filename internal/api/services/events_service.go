@@ -80,7 +80,11 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]models.Even
 }
 
 func (s *EventsService) Update(ctx context.Context, uuid string, params models.UpdateEventParams) error {
-	panic("implement me (EventsService Update)")
+	params.Uuid = uuid
+	if err := s.q.UpdateEvent(ctx, params); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *EventsService) Delete(ctx context.Context, uuid string) error {

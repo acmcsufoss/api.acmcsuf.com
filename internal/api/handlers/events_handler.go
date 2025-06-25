@@ -143,9 +143,27 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Failure		500 {object} map[string]string
 //		@Router			/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// var params models.UpdateEventParams
-	panic("implement me (EventsHandler UpdateEvent)")
+	ctx := c.Request.Context()
+	var params models.UpdateEventParams
+	id := c.Param("id")
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+		return
+	}
+
+	if err := h.eventsService.Update(ctx, id, params); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update event",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Event updated successfully",
+		"uuid":    params.Uuid,
+	})
 }
 
 // DeleteEvent godoc
