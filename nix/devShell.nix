@@ -18,7 +18,7 @@ mkShell {
   packages = [
     go
     gotools
-    gopls # Go langauge server
+    gopls # Go language server
     nilaway # Go static analysis tool
     delve # Go debugger
     sqlc # compiles SQL queries to Go code
