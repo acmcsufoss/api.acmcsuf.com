@@ -88,5 +88,8 @@ func (s *EventsService) Update(ctx context.Context, uuid string, params models.U
 }
 
 func (s *EventsService) Delete(ctx context.Context, uuid string) error {
-	panic("implement me (EventsService Delete)")
+	if err := s.q.DeleteEvent(ctx, uuid); err != nil {
+		return err
+	}
+	return nil
 }
