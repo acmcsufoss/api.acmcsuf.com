@@ -55,7 +55,7 @@ func main() {
 	}
 	serverAddr := fmt.Sprintf(":%s", port)
 	go func() {
-		log.Printf("Server startd on http://127.0.0.1%s\n", serverAddr)
+		log.Printf("Server started on http://127.0.0.1%s\n", serverAddr)
 		if err := router.Run(serverAddr); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
 		}
