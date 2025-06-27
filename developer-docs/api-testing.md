@@ -4,6 +4,22 @@ Once the api is running (via `air` or running it manually), you can use `xh` or 
 We recommend using `xh` as it is the more modern option.
 If you prefer to use a GUI instead, Postman is a popular option.
 
+## Using Swagger Documentation
+
+The API includes comprehensive Swagger documentation that provides an interactive interface for exploring and testing endpoints. When the server is running, you can access the Swagger UI at:
+
+```
+http://localhost:8080/swagger/index.html
+```
+
+The Swagger documentation includes:
+- Complete API endpoint documentation for all available routes
+- Interactive forms to test API calls directly from the browser
+- Request/response schemas and examples
+- Parameter descriptions and validation rules
+
+This is often the easiest way to explore the API and understand what endpoints are available without needing to dive into the source code. You can also use it to make test requests without needing to construct `curl` or `xh` commands manually.
+
 ## Using `xh` and `curl`
 
 ### Sending a GET request
