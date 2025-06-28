@@ -122,14 +122,10 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (Officer, er
 	return i, err
 }
 
-const getPosition = `-- name: GetPosition :one
+const getPosition = `-- name: GetPosition :many
 SELECT
-    officers.uuid,
     officers.full_name,
-    positions.oid,
     positions.semester,
-    positions.tier,
-    tiers.tier,
     tiers.title,
     tiers.team
 FROM
@@ -142,30 +138,38 @@ WHERE officers.full_name = ?
 `
 
 type GetPositionRow struct {
-	Uuid     interface{}    `json:"uuid"`
 	FullName string         `json:"full_name"`
-	Oid      interface{}    `json:"oid"`
 	Semester interface{}    `json:"semester"`
-	Tier     int64          `json:"tier"`
-	Tier_2   int64          `json:"tier_2"`
 	Title    sql.NullString `json:"title"`
 	Team     sql.NullString `json:"team"`
 }
 
-func (q *Queries) GetPosition(ctx context.Context, fullName string) (GetPositionRow, error) {
-	row := q.db.QueryRowContext(ctx, getPosition, fullName)
-	var i GetPositionRow
-	err := row.Scan(
-		&i.Uuid,
-		&i.FullName,
-		&i.Oid,
-		&i.Semester,
-		&i.Tier,
-		&i.Tier_2,
-		&i.Title,
-		&i.Team,
-	)
-	return i, err
+func (q *Queries) GetPosition(ctx context.Context, fullName string) ([]GetPositionRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPosition, fullName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPositionRow
+	for rows.Next() {
+		var i GetPositionRow
+		if err := rows.Scan(
+			&i.FullName,
+			&i.Semester,
+			&i.Title,
+			&i.Team,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getTier = `-- name: GetTier :one

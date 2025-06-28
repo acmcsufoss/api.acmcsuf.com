@@ -57,7 +57,7 @@ FROM
 WHERE
     tier = ?;
 
--- name: GetPosition :one
+-- name: GetPosition :many
 SELECT
     officers.full_name,
     positions.semester,
