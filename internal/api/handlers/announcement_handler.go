@@ -100,7 +100,27 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Failure		500 {object} map[string]string
 // @Router		/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
-	panic("implement me (UpdateAnnouncement Handler)")
+	ctx := c.Request.Context()
+	var params models.UpdateAnnouncementParams
+	id := c.Param("id")
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+	}
+
+	if err := h.announcementService.Update(ctx, id, params); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update announcement",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Announcement updated successfully",
+		"uuid":    params.Uuid,
+	})
 }
 
 // DeleteAnnouncement godoc
@@ -116,5 +136,17 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 //		@Failure		500 {object} map[string]string
 //		@Router			/announcements/{id} [delete]
 func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
-	panic("implement me (DeleteAnnouncement Handler)")
+	ctx := c.Request.Context()
+	id := c.Param("id")
+
+	if err := h.announcementService.Delete(ctx, id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete announcement",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Announcement updated successfully",
+	})
 }
