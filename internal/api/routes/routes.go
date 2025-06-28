@@ -6,8 +6,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(router *gin.Engine, eventService *services.EventsService,
-	announcementService *services.AnnouncementService) {
+func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
+	announcementService services.AnnouncementServicer) {
+
 	eventHandler := handlers.NewEventHandler(eventService)
 	router.GET("/events", eventHandler.GetEvents)
 	router.GET("/events/:id", eventHandler.GetEvent)

@@ -11,10 +11,10 @@ import (
 )
 
 type AnnouncementHandler struct {
-	announcementService *services.AnnouncementService
+	announcementService services.AnnouncementServicer
 }
 
-func NewAnnouncementHandler(announcementService *services.AnnouncementService) *AnnouncementHandler {
+func NewAnnouncementHandler(announcementService services.AnnouncementServicer) *AnnouncementHandler {
 	return &AnnouncementHandler{announcementService: announcementService}
 }
 

@@ -7,7 +7,8 @@ import (
 )
 
 type AnnouncementServicer interface {
-	Service[models.Announcement, string, models.CreateAnnouncementParams, models.UpdateAnnouncementParams]
+	Service[models.Announcement, string, models.CreateAnnouncementParams,
+		models.UpdateAnnouncementParams]
 }
 
 type AnnouncementService struct {
