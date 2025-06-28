@@ -44,11 +44,26 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 			return
 		}
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Not implemented",
+			"error": "Failed to retrieve announcement",
 		})
 	}
 
 	c.JSON(http.StatusOK, announcement)
+}
+
+func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
+	ctx := c.Request.Context()
+	// TODO: query for things to filter by
+	filters := []any{}
+
+	announcements, err := h.announcementService.List(ctx, filters...)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve announcements",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, announcements)
 }
 
 // CreateAnnouncement godoc
@@ -74,9 +89,10 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
+	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, params); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Not implemented",
+			"error": "Failed to create announcement",
 		})
 	}
 	c.JSON(http.StatusOK, gin.H{

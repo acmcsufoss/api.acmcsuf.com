@@ -15,10 +15,11 @@ func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	router.POST("/events", eventHandler.CreateEvent)
 	router.PUT("/events/:id", eventHandler.UpdateEvent)
 	router.DELETE("/events/:id", eventHandler.DeleteEvent)
-	//announcementService
+
 	announcementHandler := handlers.NewAnnouncementHandler(announcementService)
+	router.GET("/announcements", announcementHandler.GetAnnouncements)
 	router.GET("/announcements/:id", announcementHandler.GetAnnouncement)
 	router.POST("/announcements", announcementHandler.CreateAnnouncement)
-	router.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 	router.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
+	router.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 }
