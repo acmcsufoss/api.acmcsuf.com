@@ -1,6 +1,6 @@
 # api.acmcsuf.com
 
-ACM at CSUF club API for managing events, announcements, forms, and other services! See the `docs/` directory for more information on using and contributing to this project.
+ACM at CSUF club API for managing events, announcements, forms, and other services! See the `developer-docs/` directory for more information on using and contributing to this project.
 
 ---
 

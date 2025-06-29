@@ -55,10 +55,19 @@ func (s *AnnouncementService) List(ctx context.Context, filters ...any) ([]model
 	return result, nil
 }
 
+// partially implemented
 func (s *AnnouncementService) Update(ctx context.Context, uuid string, params models.UpdateAnnouncementParams) error {
-	panic("implement me (AnnouncementService Update)")
+	err := s.q.UpdateAnnouncement(ctx, params)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *AnnouncementService) Delete(ctx context.Context, uuid string) error {
-	panic("implement me (AnnouncementService Delete)")
+	err := s.q.DeleteAnnouncement(ctx, uuid)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,0 +1,17 @@
+{
+  "uuid": "event3",
+  "location": {
+    "string": "Updated Location",
+    "valid": true
+  },
+  "start_at": 1712851200000,
+  "end_at": 1712851200000,
+  "is_all_day": {
+    "bool": true,
+    "valid": true
+  },
+  "host": {
+    "string": "Updated Host",
+    "valid": true
+  }
+}

@@ -20,6 +20,18 @@ func NewEventHandler(eventService *services.EventsService) *EventsHandler {
 	}
 }
 
+// GetEvent godoc
+//
+//	@Summary		Get an Event by ID
+//	@Description	Retrieves a single event from the database.
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Param			id path string true "Event ID"
+//	@Success		200 {object} models.Event "Event details"
+//	@Failure		404 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/events/{id} [get]
 func (h *EventsHandler) GetEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -43,6 +55,18 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
+// CreateEvent godoc
+//
+//	@Summary		Creates a new event and generates new ID
+//	@Description	Creates a new event in the database.
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Param			body body models.CreateEventParams true "Event data"
+//	@Success		200 {object} map[string]interface{} "Success message with UUID"
+//	@Failure		400 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params models.CreateEventParams
@@ -74,6 +98,17 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	})
 }
 
+// GetEvents godoc
+//
+//	@Summary		Get all the events
+//	@Description	Get all the events from the event database
+//	@Tags			Events
+//	@Accept			json
+//	@Produce		json
+//	@Param			host query string false "Filter by host"
+//	@Success		200 {array} models.Event "List of events"
+//	@Failure		500 {object} map[string]string
+//	@Router			/events [get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
 	ctx := c.Request.Context()
 	host := c.Query("host")
@@ -93,12 +128,66 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, events)
 }
 
+// UpdateEvent godoc
+//
+//		@Summary		Updates the Event of Choice
+//		@Description	Updates the event of choice in the database
+//		@Tags			Events
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Event ID"
+//	 	@Param			body body models.UpdateEventParams true "Updated event data"
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		400 {object} map[string]string
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
-	// ctx := c.Request.Context()
-	// var params models.UpdateEventParams
-	panic("implement me (EventsHandler UpdateEvent)")
+	ctx := c.Request.Context()
+	var params models.UpdateEventParams
+	id := c.Param("id")
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+		return
+	}
+
+	if err := h.eventsService.Update(ctx, id, params); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update event",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Event updated successfully",
+		"uuid":    params.Uuid,
+	})
 }
 
+// DeleteEvent godoc
+//
+//		@Summary		Deletes the Event of Choice
+//		@Description	Delete the event of choice from the database
+//		@Tags			Events
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Event ID"
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/events/{id} [delete]
 func (h *EventsHandler) DeleteEvent(c *gin.Context) {
-	panic("implement me (EventsHandler DeleteEvent)")
+	ctx := c.Request.Context()
+	id := c.Param("id")
+	if err := h.eventsService.Delete(ctx, id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to delete event",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Event deleted successfully",
+	})
 }

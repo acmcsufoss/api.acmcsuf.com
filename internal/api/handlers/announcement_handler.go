@@ -18,6 +18,18 @@ func NewAnnouncementHandler(announcementService *services.AnnouncementService) *
 	return &AnnouncementHandler{announcementService: announcementService}
 }
 
+// GetAnnouncement godoc
+//
+//	@Summary		Get an announcement by ID
+//	@Description	Retrieves a single announcement from the database.
+//	@Tags			Announcements
+//	@Accept			json
+//	@Produce		json
+//	@Param			id path string true "Announcement ID"
+//	@Success		200 {object} models.Announcement "Announcement details"
+//	@Failure		404 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/announcements/{id} [get]
 func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -39,6 +51,18 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	c.JSON(http.StatusOK, announcement)
 }
 
+// CreateAnnouncement godoc
+//
+//	@Summary		Create new Announcement
+//	@Description	Creates a new announcement and generates unique ID
+//	@Tags			Announcements
+//	@Accept			json
+//	@Produce		json
+//	@Param			body body models.CreateAnnouncementParams true "Announcement data"
+//	@Success		200 {object} map[string]interface{} "Success message with UUID"
+//	@Failure		400 {object} map[string]string
+//	@Failure		500 {object} map[string]string
+//	@Router			/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params models.CreateAnnouncementParams
@@ -59,4 +83,38 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		"message": "Announcement created successfully",
 		"uuid":    params.Uuid,
 	})
+}
+
+// UpdateAnnouncement godoc
+//
+// @Summary		Updates the Announcement of Choice
+// @Description	Updates the Announcement of choice in the database
+// @Tags		Announcements
+// @Accept		json
+// @Produce		json
+// @Param		id path string true "Announcement ID"
+// @Param		body body models.UpdateAnnouncementParams true "Updated announcement data"
+// @Success		200 {object} map[string]string "Success message"
+// @Failure		400 {object} map[string]string
+// @Failure		404 {object} map[string]string
+// @Failure		500 {object} map[string]string
+// @Router		/announcements/{id} [put]
+func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
+	panic("implement me (UpdateAnnouncement Handler)")
+}
+
+// DeleteAnnouncement godoc
+//
+//		@Summary		Deletes the Announcement of Choice
+//		@Description	Deletes the Announcement of choice in the database
+//		@Tags			Announcements
+//		@Accept			json
+//		@Produce		json
+//	 	@Param			id path string true "Announcement ID"
+//		@Success		200 {object} map[string]string "Success message"
+//		@Failure		404 {object} map[string]string
+//		@Failure		500 {object} map[string]string
+//		@Router			/announcements/{id} [delete]
+func (h *AnnouncementHandler) DeleteAnnouncement(c *gin.Context) {
+	panic("implement me (DeleteAnnouncement Handler)")
 }

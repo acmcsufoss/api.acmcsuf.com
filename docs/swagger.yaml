@@ -1,0 +1,430 @@
+definitions:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement:
+    properties:
+      announce_at:
+        type: integer
+      discord_channel_id:
+        $ref: '#/definitions/sql.NullString'
+      discord_message_id:
+        $ref: '#/definitions/sql.NullString'
+      uuid:
+        type: string
+      visibility:
+        type: string
+    type: object
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams:
+    properties:
+      announce_at:
+        type: integer
+      discord_channel_id:
+        $ref: '#/definitions/sql.NullString'
+      discord_message_id:
+        $ref: '#/definitions/sql.NullString'
+      uuid:
+        type: string
+      visibility:
+        type: string
+    type: object
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams:
+    properties:
+      end_at: {}
+      host:
+        type: string
+      is_all_day:
+        type: boolean
+      location:
+        type: string
+      start_at: {}
+      uuid:
+        type: string
+    type: object
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event:
+    properties:
+      end_at: {}
+      host:
+        type: string
+      is_all_day:
+        type: boolean
+      location:
+        type: string
+      start_at: {}
+      uuid:
+        type: string
+    type: object
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams:
+    properties:
+      announce_at:
+        $ref: '#/definitions/sql.NullInt64'
+      discord_channel_id:
+        $ref: '#/definitions/sql.NullString'
+      discord_message_id:
+        $ref: '#/definitions/sql.NullString'
+      uuid:
+        type: string
+      visibility:
+        $ref: '#/definitions/sql.NullString'
+    type: object
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams:
+    properties:
+      end_at: {}
+      host:
+        $ref: '#/definitions/sql.NullString'
+      is_all_day:
+        $ref: '#/definitions/sql.NullBool'
+      location:
+        $ref: '#/definitions/sql.NullString'
+      start_at: {}
+      uuid:
+        type: string
+    type: object
+  sql.NullBool:
+    properties:
+      bool:
+        type: boolean
+      valid:
+        description: Valid is true if Bool is not NULL
+        type: boolean
+    type: object
+  sql.NullInt64:
+    properties:
+      int64:
+        type: integer
+      valid:
+        description: Valid is true if Int64 is not NULL
+        type: boolean
+    type: object
+  sql.NullString:
+    properties:
+      string:
+        type: string
+      valid:
+        description: Valid is true if String is not NULL
+        type: boolean
+    type: object
+info:
+  contact: {}
+paths:
+  /announcements:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new announcement and generates unique ID
+      parameters:
+      - description: Announcement data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message with UUID
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create new Announcement
+      tags:
+      - Announcements
+  /announcements/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes the Announcement of choice in the database
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes the Announcement of Choice
+      tags:
+      - Announcements
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single announcement from the database.
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Announcement details
+          schema:
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an announcement by ID
+      tags:
+      - Announcements
+    put:
+      consumes:
+      - application/json
+      description: Updates the Announcement of choice in the database
+      parameters:
+      - description: Announcement ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated announcement data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Updates the Announcement of Choice
+      tags:
+      - Announcements
+  /events:
+    get:
+      consumes:
+      - application/json
+      description: Get all the events from the event database
+      parameters:
+      - description: Filter by host
+        in: query
+        name: host
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of events
+          schema:
+            items:
+              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all the events
+      tags:
+      - Events
+    post:
+      consumes:
+      - application/json
+      description: Creates a new event in the database.
+      parameters:
+      - description: Event data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message with UUID
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creates a new event and generates new ID
+      tags:
+      - Events
+  /events/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the event of choice from the database
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes the Event of Choice
+      tags:
+      - Events
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single event from the database.
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Event details
+          schema:
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an Event by ID
+      tags:
+      - Events
+    put:
+      consumes:
+      - application/json
+      description: Updates the event of choice in the database
+      parameters:
+      - description: Event ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated event data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Updates the Event of Choice
+      tags:
+      - Events
+swagger: "2.0"
