@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"log"
 )
 
 type AnnouncementServicer interface {
-	Service[models.Announcement, string, models.CreateAnnouncementParams, models.UpdateAnnouncementParams]
+	Service[models.Announcement, string, models.CreateAnnouncementParams,
+		models.UpdateAnnouncementParams]
 }
 
 type AnnouncementService struct {
@@ -29,7 +31,9 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (models.Anno
 	return announcement, nil
 }
 
-func (s *AnnouncementService) Create(ctx context.Context, params models.CreateAnnouncementParams) error {
+func (s *AnnouncementService) Create(ctx context.Context,
+	params models.CreateAnnouncementParams) error {
+
 	if err := s.q.CreateAnnouncement(ctx, params); err != nil {
 		return err
 	}
@@ -40,7 +44,9 @@ type AnnouncementFilter interface {
 	Apply(events []models.Announcement) []models.Announcement
 }
 
-func (s *AnnouncementService) List(ctx context.Context, filters ...any) ([]models.Announcement, error) {
+func (s *AnnouncementService) List(ctx context.Context,
+	filters ...any) ([]models.Announcement, error) {
+
 	announcements, err := s.q.GetAnnouncements(ctx)
 	if err != nil {
 		return nil, err
@@ -55,10 +61,12 @@ func (s *AnnouncementService) List(ctx context.Context, filters ...any) ([]model
 	return result, nil
 }
 
-// partially implemented
-func (s *AnnouncementService) Update(ctx context.Context, uuid string, params models.UpdateAnnouncementParams) error {
+func (s *AnnouncementService) Update(ctx context.Context, uuid string,
+	params models.UpdateAnnouncementParams) error {
+
 	err := s.q.UpdateAnnouncement(ctx, params)
 	if err != nil {
+		log.Printf("Error updating announcement with UUID %s: %v", uuid, err)
 		return err
 	}
 	return nil
@@ -67,6 +75,7 @@ func (s *AnnouncementService) Update(ctx context.Context, uuid string, params mo
 func (s *AnnouncementService) Delete(ctx context.Context, uuid string) error {
 	err := s.q.DeleteAnnouncement(ctx, uuid)
 	if err != nil {
+		log.Printf("Error deleting announcement with UUID %s: %v", uuid, err)
 		return err
 	}
 	return nil
