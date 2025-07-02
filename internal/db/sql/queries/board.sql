@@ -1,6 +1,6 @@
--- name: CreateOfficer :one
+-- name: CreateOfficer :exec
 INSERT INTO
-officers (
+officer (
     uuid,
     full_name,
     picture,
@@ -11,9 +11,9 @@ VALUES
 (?, ?, ?, ?, ?)
 RETURNING *;
 
--- name: CreateTier :one
+-- name: CreateTier :exec
 INSERT INTO
-tiers (
+tier (
     tier,
     title,
     t_index,
@@ -23,9 +23,9 @@ VALUES
 (?, ?, ?, ?)
 RETURNING *;
 
--- name: CreatePosition :one
+-- name: CreatePosition :exec
 INSERT INTO
-positions (
+position (
     oid,
     semester,
     tier
@@ -36,12 +36,13 @@ RETURNING *;
 
 -- name: GetOfficer :one
 SELECT
+    uuid,
     full_name,
     picture,
     github,
     discord
 FROM
-    officers
+    officer
 WHERE
     uuid = ?;
 
@@ -52,19 +53,21 @@ SELECT
     t_index,
     team
 FROM
-    tiers
+    tier
 WHERE
     tier = ?;
 
 -- name: GetPosition :one
 SELECT
-    positions.semester,
-    tiers.title,
-    tiers.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officers
-INNER JOIN positions
-    ON officers.uuid = positions.oid
-INNER JOIN tiers
-    ON positions.tier = tiers.tier
-WHERE officers.full_name = ?
+    position
+WHERE
+    full_name = ?;
+
+-- NOTE: Had to declare above table as :one, may need to change later to :many
