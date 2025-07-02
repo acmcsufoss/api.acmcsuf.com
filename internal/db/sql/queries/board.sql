@@ -61,7 +61,7 @@ FROM
 WHERE
     tier = ?;
 
--- name: GetPosition :many
+-- name: GetPosition :one
 SELECT
     oid,
     semester,
