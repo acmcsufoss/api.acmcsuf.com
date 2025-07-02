@@ -136,7 +136,7 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (Officer, er
 	return i, err
 }
 
-const getPosition = `-- name: GetPosition :many
+const getPosition = `-- name: GetPosition :one
 SELECT
     oid,
     semester,
