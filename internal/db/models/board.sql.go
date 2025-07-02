@@ -12,7 +12,7 @@ import (
 
 const createOfficer = `-- name: CreateOfficer :exec
 INSERT INTO
-officers (
+officer (
     uuid,
     full_name,
     picture,
@@ -45,7 +45,7 @@ func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) er
 
 const createPosition = `-- name: CreatePosition :exec
 INSERT INTO
-positions (
+position (
     oid,
     semester,
     tier
@@ -68,7 +68,7 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 
 const createTier = `-- name: CreateTier :exec
 INSERT INTO
-tiers (
+tier (
     tier,
     title,
     t_index,
@@ -104,7 +104,7 @@ SELECT
     github,
     discord
 FROM
-    officers
+    officer
 WHERE
     uuid = ?
 `
@@ -131,7 +131,7 @@ SELECT
     title,
     team
 FROM
-    positions
+    position
 WHERE 
     full_name = ?
 `
@@ -157,7 +157,7 @@ SELECT
     t_index,
     team
 FROM
-    tiers
+    tier
 WHERE
     tier = ?
 `
