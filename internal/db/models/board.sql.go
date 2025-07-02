@@ -52,7 +52,7 @@ positions (
 )
 VALUES
 (?, ?, ?)
-RETURNING oid, semester, tier
+RETURNING oid, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
@@ -122,54 +122,32 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (Officer, er
 	return i, err
 }
 
-const getPosition = `-- name: GetPosition :many
+const getPosition = `-- name: GetPosition :one
 SELECT
-    officers.full_name,
-    positions.semester,
-    tiers.title,
-    tiers.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officers
-INNER JOIN positions
-    ON officers.uuid = positions.oid
-INNER JOIN tiers
-    ON positions.tier = tiers.tier
-WHERE officers.full_name = ?
+    positions
+WHERE 
+    full_name = ?
 `
 
-type GetPositionRow struct {
-	FullName string         `json:"full_name"`
-	Semester interface{}    `json:"semester"`
-	Title    sql.NullString `json:"title"`
-	Team     sql.NullString `json:"team"`
-}
-
-func (q *Queries) GetPosition(ctx context.Context, fullName string) ([]GetPositionRow, error) {
-	rows, err := q.db.QueryContext(ctx, getPosition, fullName)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetPositionRow
-	for rows.Next() {
-		var i GetPositionRow
-		if err := rows.Scan(
-			&i.FullName,
-			&i.Semester,
-			&i.Title,
-			&i.Team,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetPosition(ctx context.Context, fullName string) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, fullName)
+	var i Position
+	err := row.Scan(
+		&i.Oid,
+		&i.Semester,
+		&i.Tier,
+		&i.FullName,
+		&i.Title,
+		&i.Team,
+	)
+	return i, err
 }
 
 const getTier = `-- name: GetTier :one

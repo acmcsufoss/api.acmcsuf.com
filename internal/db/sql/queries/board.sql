@@ -57,16 +57,15 @@ FROM
 WHERE
     tier = ?;
 
--- name: GetPosition :many
+-- name: GetPosition :one
 SELECT
-    officers.full_name,
-    positions.semester,
-    tiers.title,
-    tiers.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officers
-INNER JOIN positions
-    ON officers.uuid = positions.oid
-INNER JOIN tiers
-    ON positions.tier = tiers.tier
-WHERE officers.full_name = ?;
+    positions
+WHERE 
+    full_name = ?;
