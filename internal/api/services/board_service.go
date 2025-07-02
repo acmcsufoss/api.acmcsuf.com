@@ -6,9 +6,15 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 )
 
+type BoardServicer interface {
+	//Service[params]
+}
+
 type BoardService struct {
 	q *models.Queries
 }
+
+var _ BoardServicer = (*BoardService)(nil)
 
 func NewBoardService(q *models.Queries) *BoardService {
 	return &BoardService{q: q}
