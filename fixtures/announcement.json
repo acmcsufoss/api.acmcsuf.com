@@ -1,0 +1,13 @@
+{
+    "uuid": "big-announcement",
+    "visibility": "public",
+    "announce_at": 1712851200000,
+    "discord_channel_id": {
+        "string": "chan-id",
+        "valid": true
+    },
+    "discord_message_id": {
+        "string": "message-id",
+        "valid": true
+    }
+}
