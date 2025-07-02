@@ -20,7 +20,7 @@ officer (
     github,
     discord
 )
-VALUES
+VALUESFixed some errors
 (?, ?, ?, ?, ?)
 RETURNING uuid, full_name, picture, github, discord
 `
