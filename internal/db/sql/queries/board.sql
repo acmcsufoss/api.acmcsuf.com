@@ -73,3 +73,5 @@ FROM
     position
 WHERE
     full_name = ?;
+
+-- NOTE: Had to declare above table as :one, may need to change later to :many
