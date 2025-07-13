@@ -12,7 +12,7 @@ import (
 
 const createOfficer = `-- name: CreateOfficer :one
 INSERT INTO
-officers (
+officer (
     uuid,
     full_name,
     picture,
@@ -53,7 +53,7 @@ func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (O
 
 const createPosition = `-- name: CreatePosition :one
 INSERT INTO
-positions (
+position (
     oid,
     semester,
     tier
@@ -78,7 +78,7 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 
 const createTier = `-- name: CreateTier :one
 INSERT INTO
-tiers (
+tier (
     tier,
     title,
     t_index,
@@ -120,7 +120,7 @@ SELECT
     github,
     discord
 FROM
-    officers
+    officer
 WHERE
     uuid = ?
 `
@@ -146,16 +146,16 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerR
 
 const getPosition = `-- name: GetPosition :one
 SELECT
-    positions.semester,
-    tiers.title,
-    tiers.team
+    position.semester,
+    tier.title,
+    tier.team
 FROM
-    officers
-INNER JOIN positions
-    ON officers.uuid = positions.oid
-INNER JOIN tiers
-    ON positions.tier = tiers.tier
-WHERE officers.full_name = ?
+    officer
+INNER JOIN position
+    ON officer.uuid = position.oid
+INNER JOIN tier
+    ON position.tier = tier.tier
+WHERE officer.full_name = ?
 `
 
 type GetPositionRow struct {
@@ -178,7 +178,7 @@ SELECT
     t_index,
     team
 FROM
-    tiers
+    tier
 WHERE
     tier = ?
 `
