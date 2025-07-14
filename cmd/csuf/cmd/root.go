@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
 	"github.com/spf13/cobra"
 )
 
@@ -25,6 +26,6 @@ func Execute() {
 }
 
 func init() {
-	//rootCmd.AddCommand(events.CLIEvents)
+	rootCmd.AddCommand(events.CLIEvents)
 	//rootCmd.AddCommand(announcements.CLIAnnouncements)
 }
