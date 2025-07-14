@@ -31,20 +31,15 @@ func init() {
 }
 
 func getEvents(id string, port string, host string) {
-	if id != "" {
-		fmt.Println("ID entered:", id)
-	}
 
 	// ----- Constructing url -----
 	// Combining Host and port
-	host = string(append([]byte(host), ':'))
-	host = string(append([]byte(host), []byte(port)...))
+	host = fmt.Sprint(host, ":", port)
 
 	// Constructing Path
 	path := "events"
 	if id != "" {
-		path = string(append([]byte(path), '/'))
-		path = string(append([]byte(path), []byte(id)...))
+		path = fmt.Sprint(path, "/", id)
 	}
 
 	getURL := &url.URL{
@@ -52,8 +47,6 @@ func getEvents(id string, port string, host string) {
 		Host:   host,
 		Path:   path,
 	}
-
-	//fmt.Println(getURL)
 
 	// ----- Get -----
 	response, err := http.Get(getURL.String())
@@ -63,6 +56,7 @@ func getEvents(id string, port string, host string) {
 	}
 	defer response.Body.Close()
 
+	// ----- Read Response Information -----
 	fmt.Println("Response status:", response.Status)
 
 	body, err := io.ReadAll(response.Body)

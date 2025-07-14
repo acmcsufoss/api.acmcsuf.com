@@ -25,7 +25,7 @@ var PostAnnouncement = &cobra.Command{
 
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
-		payload.Uuid, _ = cmd.Flags().GetString("id")
+		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		payload.AnnounceAt, _ = cmd.Flags().GetInt64("announceat")
 		channelIdString, _ := cmd.Flags().GetString("channelid")
@@ -39,9 +39,12 @@ var PostAnnouncement = &cobra.Command{
 }
 
 func init() {
+	// URL flags
 	PostAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host (ex: 127.0.0.1)")
 	PostAnnouncement.Flags().String("port", "8080", "Set a custom port (ex: 8080)")
-	PostAnnouncement.Flags().String("id", "", "Set this annoucement's uuid")
+	PostAnnouncement.Flags().String("id", "", "PUT to announcement by it's id")
+
+	// Payload flags
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
 	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this annoucement's announce at (Note: in unix time)")
 	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this annoucement's channel id")
@@ -79,12 +82,9 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	}
 
 	// ----- Announce at -----
-	// As of now this takes unix time directly
-	// I though this would be easier to pull from discord
-	// However, I am unsure, maybe I will do something similar
-	// to the time input in events
 	if payload.AnnounceAt == 0 {
-		fmt.Println("Please enter this annoucement's announce at:")
+		fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
+		fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading anounce at:", err)
@@ -93,16 +93,16 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 		announceatBuffer := scanner.Bytes()
 
-		// Because := doesnt want to work :l (since payload.AnnounceAt is not new)
+		// Sorry
 		var err error
-		payload.AnnounceAt, err = convert.ByteSlicetoInt64(announceatBuffer)
+		payload.AnnounceAt, err = convert.ByteSlicetoUnix(announceatBuffer)
 		if err != nil {
-			fmt.Println("error converting byte slice to int64:", err)
+			fmt.Println("error converting byte slice to unix time (of type int64):", err)
 			return
 		}
 	}
 
-	// ----- Discord Channel id -----
+	// ----- Discord Channel Id -----
 	if !payload.DiscordChannelID.Valid {
 		fmt.Println("Please enter this annoucement's discord channel id:")
 		scanner.Scan()
@@ -115,7 +115,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 		payload.DiscordChannelID = dbtypes.StringtoNullString(string(channelIdBuffer))
 	}
 
-	// ----- Discord Message id -----
+	// ----- Discord Message Id -----
 	if !payload.DiscordMessageID.Valid {
 		fmt.Println("Please enter this annoucement's message id:")
 		scanner.Scan()
@@ -142,14 +142,14 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 		return
 	}
 
-	// ----- Marshalling to json -----
+	// ----- Marshalling to Json -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("error formating payload to json:", err)
 		return
 	}
 
-	// ----- Constructing the url -----
+	// ----- Constructing the Url -----
 	host = fmt.Sprint(host, ":", port)
 	path := "announcements"
 

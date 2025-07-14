@@ -23,9 +23,12 @@ var DeleteAnnouncements = &cobra.Command{
 }
 
 func init() {
-	DeleteAnnouncements.Flags().String("host", "127.0.0.1", "set a custom host (ex: 127.0.0.1)")
-	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port (ex: 8080)")
+
+	// Url flags
+	DeleteAnnouncements.Flags().String("host", "127.0.0.1", "set a custom host (Defaults to: 127.0.0.1)")
+	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port (Defaults to: 8080)")
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcment by it's id")
+
 }
 
 func deleteAnnouncement(host string, port string, id string) {
@@ -60,6 +63,7 @@ func deleteAnnouncement(host string, port string, id string) {
 	}
 	defer response.Body.Close()
 
+	// ----- Read Response Information -----
 	fmt.Println("Request status:", response.Status)
 
 	body, err := io.ReadAll(response.Body)

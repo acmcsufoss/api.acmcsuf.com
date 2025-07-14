@@ -18,7 +18,7 @@ import (
 )
 
 var PutAnnouncements = &cobra.Command{
-	Use:   "put [--host <host>] [--port <port>] --id <uuid>",
+	Use:   "put --id <uuid>",
 	Short: "update an existing announcement by it's id",
 
 	Run: func(cmd *cobra.Command, args []string) {
@@ -26,7 +26,9 @@ var PutAnnouncements = &cobra.Command{
 
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
-		payload.Uuid, _ = cmd.Flags().GetString("id")
+		id, _ := cmd.Flags().GetString("id")
+
+		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		visibilityString, _ := cmd.Flags().GetString("visibility")
 		announceAtInt64, _ := cmd.Flags().GetInt64("announceat")
 		channelIdString, _ := cmd.Flags().GetString("channelid")
@@ -37,15 +39,19 @@ var PutAnnouncements = &cobra.Command{
 		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
 		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
 
-		putAnnouncements(host, port, &payload)
+		putAnnouncements(host, port, id, &payload)
 	},
 }
 
 func init() {
 
-	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom (ex: 127.0.0.1)")
-	PutAnnouncements.Flags().String("port", "8080", "Set a custom (ex: 8080)")
+	// Url flags
+	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom (Defaults to: 127.0.0.1)")
+	PutAnnouncements.Flags().String("port", "8080", "Set a custom (Defaults to: 8080)")
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by it's id")
+
+	// Payload flags
+	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
 	PutAnnouncements.Flags().Int64P("announceat", "a", 0, "Change this announcement's announce at")
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
@@ -53,15 +59,16 @@ func init() {
 
 }
 
-func putAnnouncements(host string, port string, payload *UpdateAnnouncement) {
-	if payload.Uuid == "" {
+func putAnnouncements(host string, port string, id string, payload *UpdateAnnouncement) {
+	// ----- Check if Id was Given -----
+	if id == "" {
 		fmt.Println("Announcement id required for put! Please use the --id flag")
 	}
 
 	// ----- Retrieving old Announcement -----
 	// ----- Constructing Url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("announcements/", payload.Uuid)
+	path := fmt.Sprint("announcements/", id)
 
 	oldPayloadUrl := &url.URL{
 		Scheme: "http",
@@ -69,7 +76,7 @@ func putAnnouncements(host string, port string, payload *UpdateAnnouncement) {
 		Path:   path,
 	}
 
-	// ----- Get the Current Announcement -----
+	// ----- Get the Announcement We Want to Update -----
 	request, err := http.Get(oldPayloadUrl.String())
 	if err != nil {
 		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
@@ -119,12 +126,7 @@ func putAnnouncements(host string, port string, payload *UpdateAnnouncement) {
 
 	// ----- Announce At ------
 	if payload.AnnounceAt.Int64 == 0 {
-		// Im sorry
 		oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
-		if err != nil {
-			fmt.Println("error with old payload announce at:", err)
-			return
-		}
 
 		changeAnnounceAt, err := changePrompt("announce at", oldAnnounceAt, scanner)
 		if err != nil {
@@ -193,6 +195,9 @@ func putAnnouncements(host string, port string, payload *UpdateAnnouncement) {
 		return
 	}
 	defer putResponse.Body.Close()
+
+	// ----- Reading Response Status -----
+	fmt.Println("PUT status:", putResponse.Status)
 
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
