@@ -31,7 +31,7 @@ type UpdateEvent struct {
 
 func init() {
 	//CLIEvents.AddCommand(PostEvent)
-	//CLIEvents.AddCommand(GetEvent)
+	CLIEvents.AddCommand(GetEvent)
 	//CLIEvents.AddCommand(PutEvents)
 	//CLIEvents.AddCommand(DeleteEvent)
 }
