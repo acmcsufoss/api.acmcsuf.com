@@ -7,7 +7,7 @@ import (
 )
 
 var CLIEvents = &cobra.Command{
-	Use:   "events HTTP-HEADER",
+	Use:   "events HEADER",
 	Short: "A command to manage events.",
 }
 
