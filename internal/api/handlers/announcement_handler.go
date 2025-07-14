@@ -94,7 +94,9 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})
+		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Announcement created successfully",
 		"uuid":    params.Uuid,
