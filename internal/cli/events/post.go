@@ -192,6 +192,12 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 		fmt.Println("Failed to post event:", err)
 		return
 	}
+
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
 	defer response.Body.Close()
 
 	// ----- Read Response Info -----

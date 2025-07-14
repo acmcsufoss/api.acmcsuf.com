@@ -57,6 +57,12 @@ func getEvents(id string, port string, host string) {
 		fmt.Println("Error getting the request:", err)
 		return
 	}
+
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
 	defer response.Body.Close()
 
 	// ----- Read Response Information -----

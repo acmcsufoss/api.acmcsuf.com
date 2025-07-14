@@ -77,14 +77,20 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	}
 
 	// ----- Get the Announcement We Want to Update -----
-	request, err := http.Get(oldPayloadUrl.String())
+	response, err := http.Get(oldPayloadUrl.String())
 	if err != nil {
 		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
 		return
 	}
-	defer request.Body.Close()
 
-	body, err := io.ReadAll(request.Body)
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
 		return
@@ -196,6 +202,12 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		fmt.Println("Error with response:", err)
 		return
 	}
+
+	if putResponse == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
 	defer putResponse.Body.Close()
 
 	// ----- Reading Response Status -----

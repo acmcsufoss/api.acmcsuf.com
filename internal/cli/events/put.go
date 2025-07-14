@@ -83,6 +83,12 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 		fmt.Printf("Error retrieveing %s: %s", id, err)
 		return
 	}
+
+	if getResponse == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
 	defer getResponse.Body.Close()
 
 	body, err := io.ReadAll(getResponse.Body)
@@ -234,6 +240,11 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	putResponse, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Error with response:", err)
+		return
+	}
+
+	if putResponse == nil {
+		fmt.Println("no response recieved")
 		return
 	}
 	defer putResponse.Body.Close()

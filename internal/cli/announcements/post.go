@@ -166,6 +166,11 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 		fmt.Println("error with post:", err)
 		return
 	}
+
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
 	defer response.Body.Close()
 
 	fmt.Println("Response status:", response.Status)

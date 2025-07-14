@@ -61,6 +61,12 @@ func deleteAnnouncement(host string, port string, id string) {
 		fmt.Println("error with delete response:", err)
 		return
 	}
+
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
+
 	defer response.Body.Close()
 
 	// ----- Read Response Information -----

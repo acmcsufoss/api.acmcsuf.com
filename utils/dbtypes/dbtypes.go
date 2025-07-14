@@ -2,6 +2,8 @@ package dbtypes
 
 import "database/sql"
 
+// Utilities for Go types to Sql null types
+
 func StringtoNullString(str string) sql.NullString {
 	return sql.NullString{
 		String: str,

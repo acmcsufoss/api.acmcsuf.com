@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// A lot of
+
 func ByteSlicetoInt64(data []byte) (int64, error) {
 	// Padding, if number is too short we run into the eof and get an error (see binary.Read)
 	/*if len(data) < 8 {

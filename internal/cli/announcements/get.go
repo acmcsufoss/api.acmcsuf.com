@@ -46,16 +46,22 @@ func getAnnouncement(host string, port string, uuid string) {
 	}
 
 	// ----- Requesting Get -----
-	request, err := http.Get(getUrl.String())
+	response, err := http.Get(getUrl.String())
 	if err != nil {
 		fmt.Println("error with request:", err)
 		return
 	}
-	defer request.Body.Close()
 
-	fmt.Println("Response status:", request.Status)
+	if response == nil {
+		fmt.Println("no response recieved")
+		return
+	}
 
-	body, err := io.ReadAll(request.Body)
+	defer response.Body.Close()
+
+	fmt.Println("Response status:", response.Status)
+
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("error reading body:", err)
 		return
