@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -11,10 +10,6 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "csuf",
 	Short: "A CLI tool to help manage the API of the CSUF ACM website",
-
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("CSUF API TOOL")
-	},
 }
 
 func Execute() {
@@ -30,5 +25,6 @@ func Execute() {
 }
 
 func init() {
-	//rootCmd.AddCommand
+	//rootCmd.AddCommand(events.CLIEvents)
+	//rootCmd.AddCommand(announcements.CLIAnnouncements)
 }
