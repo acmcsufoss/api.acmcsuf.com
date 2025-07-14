@@ -1,6 +1,6 @@
 package main
 
-import "github.com/acmcsufoss/api.acmcsuf.com/csuf/cmd"
+import "github.com/acmcsufoss/api.acmcsuf.com/cmd/csuf/cmd"
 
 // Initalizing cobra here
 // To use the CLI, first, cd into this directory (/api.acmcsuf.com/cmd/csuf)
