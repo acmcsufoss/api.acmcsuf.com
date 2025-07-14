@@ -31,5 +31,5 @@ func init() {
 	CLIAnnouncements.AddCommand(GetAnnouncement)
 	CLIAnnouncements.AddCommand(PostAnnouncement)
 	CLIAnnouncements.AddCommand(DeleteAnnouncements)
-	//CLIAnnouncements.AddCommand(PutAnnouncements)
+	CLIAnnouncements.AddCommand(PutAnnouncements)
 }
