@@ -97,10 +97,12 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
+	// Known issue: Despite the response going through and output saying uuid has been updated
+	// it does not actually update
 	if payload.Uuid == "" {
-		changeUuid, err := changePrompt("visibility", oldPayload.Visibility, scanner)
+		changeUuid, err := changePrompt("uuid", oldPayload.Uuid, scanner)
 		if err != nil {
-			fmt.Println("error with changing visibility:", err)
+			fmt.Println("error with changing uuid:", err)
 			return
 		}
 		if changeUuid != nil {

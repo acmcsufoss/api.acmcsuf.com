@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
 	_ "github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
 	"github.com/spf13/cobra"
 )
@@ -23,17 +24,12 @@ var PutEvents = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 
-		id, err := cmd.Flags().GetString("id")
-		if err != nil {
-			fmt.Println("Event ID is required!")
-			return
-		}
-
-		payload := Event{}
+		payload := CreateEvent{}
 
 		// CLI for url
 		host, _ := cmd.Flags().GetString("urlhost")
 		port, _ := cmd.Flags().GetString("port")
+		id, _ := cmd.Flags().GetString("id")
 
 		// CLI for payload
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
@@ -47,21 +43,24 @@ var PutEvents = &cobra.Command{
 }
 
 func init() {
+
 	// URL Flags
 	PutEvents.Flags().String("id", "", "Event to update")
 	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
 	PutEvents.Flags().String("port", "8080", "Custom port (ex: 8080)")
 
 	// Payload flags
-	PutEvents.Flags().String("uuid", "", "Change uuid of event")
-	PutEvents.Flags().String("location", "", "Change location of event")
-	PutEvents.Flags().Int("startat", 0, "Change the start time of event")
-	PutEvents.Flags().Int("endat", 0, "Change the end time of event")
-	PutEvents.Flags().String("host", "", "Change host of event")
-	PutEvents.Flags().Bool("allday", false, "Change if event is all day")
+	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")
+	PutEvents.Flags().StringP("location", "l", "", "Set location of new event")
+	PutEvents.Flags().Int64P("startat", "s", 0, "Set the start time of new event (Note: flag takes Unix time)")
+	PutEvents.Flags().Int64P("endat", "e", 0, "Set the end time of new event (Note: flag takes unix time)")
+	PutEvents.Flags().StringP("host", "H", "", "Set host of new event")
+	PutEvents.Flags().BoolP("allday", "a", false, "Set if new event is all day")
+
 }
 
-func updateEvent(id string, host string, port string, payload *Event) {
+func updateEvent(id string, host string, port string, payload *CreateEvent) {
+	// ----- Check for Event Id -----
 	if id == "" {
 		fmt.Println("Event ID is required!")
 		return
@@ -92,7 +91,7 @@ func updateEvent(id string, host string, port string, payload *Event) {
 		return
 	}
 
-	var oldpayload Event
+	var oldpayload CreateEvent
 	json.Unmarshal(body, &oldpayload)
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -109,9 +108,8 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventUuid {
-			newUuidBuffer := scanner.Bytes()
-			payload.Uuid = string(newUuidBuffer)
+		if changeTheEventUuid != nil {
+			payload.Uuid = string(changeTheEventUuid)
 		} else {
 			payload.Uuid = oldpayload.Uuid
 		}
@@ -126,9 +124,8 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventLocation {
-			newLocationBuffer := scanner.Bytes()
-			payload.Location = string(newLocationBuffer)
+		if changeTheEventLocation != nil {
+			payload.Location = string(changeTheEventLocation)
 		} else {
 			payload.Location = oldpayload.Location
 		}
@@ -142,9 +139,8 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventStartAt {
-			newStartAtBuffer := scanner.Bytes()
-			payload.StartAt, err = convert.ByteSlicetoInt64(newStartAtBuffer)
+		if changeTheEventStartAt != nil {
+			payload.StartAt, err = convert.ByteSlicetoInt64(changeTheEventStartAt)
 			if err != nil {
 				fmt.Println("Error with reading start integer:", err)
 				return
@@ -162,9 +158,8 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventEndAt {
-			newEndAtBuffer := scanner.Bytes()
-			payload.EndAt, err = convert.ByteSlicetoInt64(newEndAtBuffer)
+		if changeTheEventEndAt != nil {
+			payload.EndAt, err = convert.ByteSlicetoInt64(changeTheEventEndAt)
 			if err != nil {
 				fmt.Println("Error with reading end integer:", err)
 				return
@@ -183,7 +178,7 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventAllDay {
+		if changeTheEventAllDay != nil {
 			newAllDayBuffer := scanner.Bytes()
 			payload.IsAllDay, err = yesOrNo(newAllDayBuffer, scanner)
 			if err != nil {
@@ -203,9 +198,8 @@ func updateEvent(id string, host string, port string, payload *Event) {
 			return
 		}
 
-		if changeTheEventHost {
-			newHostBuffer := scanner.Bytes()
-			payload.Host = string(newHostBuffer)
+		if changeTheEventHost != nil {
+			payload.Host = string(changeTheEventHost)
 		} else {
 			payload.Host = oldpayload.Host
 		}
@@ -213,26 +207,16 @@ func updateEvent(id string, host string, port string, payload *Event) {
 
 	// ----- PUT the payload -----
 
-	/*updatePayload := PutEvent{
+	updatePayload := UpdateEvent{
 		Uuid:     payload.Uuid,
-		Location: toNullString(payload.Location),
-		StartAt:  toNullInt64(payload.StartAt),
-		EndAt:    toNullInt64(payload.EndAt),
-		IsAllDay: sql.NullBool{
-			Bool:  payload.IsAllDay,
-			Valid: true,
-		},
-		Host: toNullString(payload.Host),
-	}*/
-	updatePayload := PutEvent{
-		Uuid:     &payload.Uuid,
-		Location: &payload.Location,
-		StartAt:  &payload.StartAt,
-		EndAt:    &payload.EndAt,
-		IsAllDay: &payload.IsAllDay,
-		Host:     &payload.Host,
+		Location: dbtypes.StringtoNullString(payload.Location),
+		StartAt:  dbtypes.Int64toNullInt64(payload.StartAt),
+		EndAt:    dbtypes.Int64toNullInt64(payload.EndAt),
+		IsAllDay: dbtypes.BooltoNullBool(payload.IsAllDay),
+		Host:     dbtypes.StringtoNullString(payload.Host),
 	}
 
+	// ----- Put the Payload -----
 	newPayload, err := json.Marshal(updatePayload)
 	if err != nil {
 		fmt.Println("Error marshaling data:", err)
@@ -254,6 +238,9 @@ func updateEvent(id string, host string, port string, payload *Event) {
 	}
 	defer putResponse.Body.Close()
 
+	// ----- Read Response Info -----
+	fmt.Println("Response status:", putResponse.Status)
+
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
 		fmt.Println("Error with body:", err)
@@ -265,39 +252,28 @@ func updateEvent(id string, host string, port string, payload *Event) {
 
 // ============================================= Helper functions =============================================
 
-// The following function does these things:
-// 1. Ask the user if they want to chnage [x] data
-// 2. User inputs a response to scanner
-// 3. If yesOrNo() is true then:
-// 4. Prompt user for new data [x]
-// 5. Scanner scans the users response
-// 6. Return true. Scanner holds the byte slice which can be used by the function that called this one
-// Note: I think this is a little risky, I believe it would be very easy to override the bytes slice by accident.
-//
-//	If the person reading this thinks there is a better way to manage scanner, then by all means go ahead and try.
-
-// Returns a bool, indicating if the user wants to change the current data field passed into the function
-func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) (bool, error) {
+// Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
+func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
 	fmt.Printf("Would you like to change this event's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
-		return false, fmt.Errorf("error reading input: %s", err)
+		return nil, fmt.Errorf("error reading input: %s", err)
 	}
 	userInput := scanner.Bytes()
 
 	changeData, err := yesOrNo(userInput, scanner)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	if changeData {
 		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the event:\n", dataToBeChanged)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
-			return false, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
+			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
 		}
-		return true, nil
+		return scanner.Bytes(), nil
 	} else {
-		return false, nil
+		return nil, nil
 	}
 }
 
