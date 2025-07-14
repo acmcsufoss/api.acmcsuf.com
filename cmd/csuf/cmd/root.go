@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
 )
 
@@ -28,4 +29,5 @@ func Execute() {
 
 func init() {
 	rootCmd.AddCommand(events.CLIEvents)
+	rootCmd.AddCommand(announcements.CLIAnnouncements)
 }

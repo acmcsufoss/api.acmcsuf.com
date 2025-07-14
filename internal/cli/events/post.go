@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"time"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/spf13/cobra"
 )
 
@@ -50,7 +50,13 @@ func promptEvent(cmd *cobra.Command, args []string) {
 	// ----- Start Time -----
 	fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
 	fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
-	startTime, err := inputTime(scanner)
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		fmt.Println("error reading start time:", err)
+		return
+	}
+	startTimeBuffer := scanner.Bytes()
+	startTime, err := convert.ByteSlicetoUnix(startTimeBuffer)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -60,7 +66,13 @@ func promptEvent(cmd *cobra.Command, args []string) {
 
 	// ----- End Time -----
 	fmt.Println("Please enter the end time of the event in the same format as above:")
-	endTime, err := inputTime(scanner)
+	scanner.Scan()
+	if err := scanner.Err(); err != nil {
+		fmt.Println("error reading end time:", err)
+		return
+	}
+	endTimeBuffer := scanner.Bytes()
+	endTime, err := convert.ByteSlicetoUnix(endTimeBuffer)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -122,16 +134,16 @@ func promptEvent(cmd *cobra.Command, args []string) {
 	}
 
 	// ----- Post -----
-	resp, err := http.Post("http://127.0.0.1:8080/events", "application/json", strings.NewReader(string(jsonEvent)))
+	response, err := http.Post("http://127.0.0.1:8080/events", "application/json", strings.NewReader(string(jsonEvent)))
 	if err != nil {
 		fmt.Println("Failed to post event:", err)
 		return
 	}
-	defer resp.Body.Close()
+	defer response.Body.Close()
 
-	fmt.Println("Response Status:", resp.Status)
+	fmt.Println("Response Status:", response.Status)
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Failed to read response body:", err)
 		return
@@ -139,17 +151,4 @@ func promptEvent(cmd *cobra.Command, args []string) {
 
 	fmt.Println("Response body:", string(body))
 
-}
-
-func inputTime(scanner *bufio.Scanner) (int64, error) {
-	scanner.Scan()
-	timeBuffer := scanner.Bytes()
-	timeString := string(timeBuffer)
-
-	startTime, err := time.Parse(time.Layout, timeString)
-	if err != nil {
-		return -1, err
-	}
-
-	return startTime.Unix(), nil
 }
