@@ -30,6 +30,6 @@ type UpdateAnnouncement struct {
 func init() {
 	CLIAnnouncements.AddCommand(GetAnnouncement)
 	CLIAnnouncements.AddCommand(PostAnnouncement)
-	//CLIAnnouncements.AddCommand(DeleteAnnouncements)
+	CLIAnnouncements.AddCommand(DeleteAnnouncements)
 	//CLIAnnouncements.AddCommand(PutAnnouncements)
 }
