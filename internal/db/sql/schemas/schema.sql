@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS announcement (
     --UNIQUE (id)
 );
 
-CREATE TABLE IF NOT EXISTS officers (
+CREATE TABLE IF NOT EXISTS officer (
     uuid CHAR(4) PRIMARY KEY,
     full_name VARCHAR(30) NOT NULL,
     picture VARCHAR(37),
@@ -35,21 +35,21 @@ CREATE TABLE IF NOT EXISTS officers (
     discord VARCHAR(32)
 );
 
-CREATE TABLE IF NOT EXISTS tiers (
+CREATE TABLE IF NOT EXISTS tier (
     tier INT PRIMARY KEY,
     title VARCHAR(40),
     t_index INT,
     team VARCHAR(20)
 );
 
-CREATE TABLE IF NOT EXISTS positions (
+CREATE TABLE IF NOT EXISTS position (
     oid CHAR(4) NOT NULL,
     semester CHAR(3) NOT NULL,
     tier INT NOT NULL,
     PRIMARY KEY (oid, semester, tier),
 
-    CONSTRAINT fk_officers FOREIGN KEY (oid) REFERENCES officers (uuid),
-    CONSTRAINT fk_tiers FOREIGN KEY (tier) REFERENCES tiers (tier)
+    CONSTRAINT fk_officer FOREIGN KEY (oid) REFERENCES officer (uuid),
+    CONSTRAINT fk_tier FOREIGN KEY (tier) REFERENCES tier (tier)
 );
 
 -- TODO: Create a table for access tokens for the API.

@@ -1,6 +1,6 @@
 -- name: CreateOfficer :one
 INSERT INTO
-officers (
+officer (
     uuid,
     full_name,
     picture,
@@ -13,7 +13,7 @@ RETURNING *;
 
 -- name: CreateTier :one
 INSERT INTO
-tiers (
+tier (
     tier,
     title,
     t_index,
@@ -25,7 +25,7 @@ RETURNING *;
 
 -- name: CreatePosition :one
 INSERT INTO
-positions (
+position (
     oid,
     semester,
     tier
@@ -41,7 +41,7 @@ SELECT
     github,
     discord
 FROM
-    officers
+    officer
 WHERE
     uuid = ?;
 
@@ -52,19 +52,19 @@ SELECT
     t_index,
     team
 FROM
-    tiers
+    tier
 WHERE
     tier = ?;
 
 -- name: GetPosition :one
 SELECT
-    positions.semester,
-    tiers.title,
-    tiers.team
+    position.semester,
+    tier.title,
+    tier.team
 FROM
-    officers
-INNER JOIN positions
-    ON officers.uuid = positions.oid
-INNER JOIN tiers
-    ON positions.tier = tiers.tier
-WHERE officers.full_name = ?
+    officer
+INNER JOIN position
+    ON officer.uuid = position.oid
+INNER JOIN tier
+    ON position.tier = tier.tier
+WHERE officer.full_name = ?
