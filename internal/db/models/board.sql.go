@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const createOfficer = `-- name: CreateOfficer :one
+const createOfficer = `-- name: CreateOfficer :exec
 INSERT INTO
 officer (
     uuid,
@@ -32,58 +32,54 @@ type CreateOfficerParams struct {
 	Discord  sql.NullString `json:"discord"`
 }
 
-func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (Officer, error) {
-	row := q.db.QueryRowContext(ctx, createOfficer,
+func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) error {
+	_, err := q.db.ExecContext(ctx, createOfficer,
 		arg.Uuid,
 		arg.FullName,
 		arg.Picture,
 		arg.Github,
 		arg.Discord,
 	)
-	var i Officer
-	err := row.Scan(
-		&i.Uuid,
-		&i.FullName,
-		&i.Picture,
-		&i.Github,
-		&i.Discord,
-	)
-	return i, err
+	return err
 }
 
-const createPosition = `-- name: CreatePosition :one
+const createPosition = `-- name: CreatePosition :exec
 INSERT INTO
 position (
     oid,
     semester,
-    tier
+    tier,
+    full_name,
+    title,
+    team
 )
 VALUES
-(?, ?, ?)
+(?, ?, ?, ?, ?, ?)
 RETURNING oid, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
-	Oid      interface{} `json:"oid"`
-	Semester interface{} `json:"semester"`
-	Tier     int64       `json:"tier"`
+	Oid      interface{}    `json:"oid"`
+	Semester interface{}    `json:"semester"`
+	Tier     int64          `json:"tier"`
+	FullName string         `json:"full_name"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
 }
 
-func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
-	row := q.db.QueryRowContext(ctx, createPosition, arg.Oid, arg.Semester, arg.Tier)
-	var i Position
-	err := row.Scan(
-		&i.Oid,
-		&i.Semester,
-		&i.Tier,
-		&i.FullName,
-		&i.Title,
-		&i.Team,
+func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) error {
+	_, err := q.db.ExecContext(ctx, createPosition,
+		arg.Oid,
+		arg.Semester,
+		arg.Tier,
+		arg.FullName,
+		arg.Title,
+		arg.Team,
 	)
-	return i, err
+	return err
 }
 
-const createTier = `-- name: CreateTier :one
+const createTier = `-- name: CreateTier :exec
 INSERT INTO
 tier (
     tier,
@@ -103,21 +99,14 @@ type CreateTierParams struct {
 	Team   sql.NullString `json:"team"`
 }
 
-func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) (Tier, error) {
-	row := q.db.QueryRowContext(ctx, createTier,
+func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) error {
+	_, err := q.db.ExecContext(ctx, createTier,
 		arg.Tier,
 		arg.Title,
 		arg.TIndex,
 		arg.Team,
 	)
-	var i Tier
-	err := row.Scan(
-		&i.Tier,
-		&i.Title,
-		&i.TIndex,
-		&i.Team,
-	)
-	return i, err
+	return err
 }
 
 const deleteOfficer = `-- name: DeleteOfficer :exec
@@ -161,6 +150,7 @@ func (q *Queries) DeleteTier(ctx context.Context, tier int64) error {
 
 const getOfficer = `-- name: GetOfficer :one
 SELECT
+    uuid,
     full_name,
     picture,
     github,
@@ -171,17 +161,11 @@ WHERE
     uuid = ?
 `
 
-type GetOfficerRow struct {
-	FullName string         `json:"full_name"`
-	Picture  sql.NullString `json:"picture"`
-	Github   sql.NullString `json:"github"`
-	Discord  sql.NullString `json:"discord"`
-}
-
-func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerRow, error) {
+func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (Officer, error) {
 	row := q.db.QueryRowContext(ctx, getOfficer, uuid)
-	var i GetOfficerRow
+	var i Officer
 	err := row.Scan(
+		&i.Uuid,
 		&i.FullName,
 		&i.Picture,
 		&i.Github,
@@ -206,6 +190,29 @@ WHERE
 
 func (q *Queries) GetPosition(ctx context.Context, oid interface{}) (Position, error) {
 	row := q.db.QueryRowContext(ctx, getPosition, oid)
+	var i Position
+	err := row.Scan(
+		&i.Oid,
+		&i.Semester,
+		&i.Tier,
+		&i.FullName,
+		&i.Title,
+		&i.Team,
+	)
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
+FROM
+    position
+WHERE
+    full_name = ?
+`
+
+func (q *Queries) GetPosition(ctx context.Context, fullName string) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, fullName)
 	var i Position
 	err := row.Scan(
 		&i.Oid,
