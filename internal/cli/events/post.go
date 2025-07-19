@@ -131,11 +131,12 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 		isAllDayBuffer := scanner.Bytes()
 		isAllDayString := strings.ToUpper(string(isAllDayBuffer))
 
-		if isAllDayString == "YES" || isAllDayString == "Y" {
+		switch isAllDayString {
+		case "YES", "Y":
 			payload.IsAllDay = true
-		} else if isAllDayString == "NO" || isAllDayString == "N" {
+		case "NO", "N":
 			payload.IsAllDay = false
-		} else {
+		default:
 			fmt.Println("Invalid input.")
 			return
 		}
