@@ -38,7 +38,6 @@ var PostEvent = &cobra.Command{
 func init() {
 
 	// URL Flags
-	PostEvent.Flags().String("id", "", "Event to update")
 	PostEvent.Flags().String("urlhost", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
 	PostEvent.Flags().String("port", "8080", "Custom port (ex: 8080)")
 
