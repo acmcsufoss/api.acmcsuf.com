@@ -14,7 +14,6 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
-	_ "github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
 	"github.com/spf13/cobra"
 )
 
