@@ -63,7 +63,7 @@ func deleteEvent(id string, host string, port string) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
@@ -74,7 +74,7 @@ func deleteEvent(id string, host string, port string) {
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
-		fmt.Println("Error reading delete response body:,", err)
+		fmt.Println("Error reading delete response body:", err)
 		return
 	}
 

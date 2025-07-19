@@ -195,7 +195,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 

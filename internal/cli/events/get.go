@@ -59,7 +59,7 @@ func getEvents(id string, port string, host string) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 

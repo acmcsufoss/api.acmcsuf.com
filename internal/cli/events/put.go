@@ -79,12 +79,12 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- Retrieve payload -----
 	getResponse, err := http.Get(retrievalURL.String())
 	if err != nil {
-		fmt.Printf("Error retrieveing %s: %s", id, err)
+		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
 
 	if getResponse == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
@@ -243,7 +243,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	}
 
 	if putResponse == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 	defer putResponse.Body.Close()
