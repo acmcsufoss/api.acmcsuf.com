@@ -291,11 +291,12 @@ func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Sca
 func yesOrNo(userInput []byte, scanner *bufio.Scanner) (bool, error) {
 	userInputString := strings.ToUpper(string(userInput))
 
-	if userInputString == "YES" || userInputString == "Y" || userInputString == "TRUE" {
+	switch userInputString {
+	case "YES", "Y", "TRUE":
 		return true, nil
-	} else if userInputString == "NO" || userInputString == "N" || userInputString == "FALSE" {
+	case "NO", "N", "FALSE":
 		return false, nil
-	} else {
+	default:
 		fmt.Println("Invalid input, please try again.")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
