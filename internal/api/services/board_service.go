@@ -14,7 +14,7 @@ func NewBoardService(q *models.Queries) *BoardService {
 	return &BoardService{q: q}
 }
 
-func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (models.Officer, error) {
+func (s *BoardService) GetOfficer(ctx context.Context, uuid interface{}) (models.Officer, error) {
 	officer, err := s.q.GetOfficer(ctx, uuid)
 	if err != nil {
 		return models.Officer{}, err
@@ -23,14 +23,15 @@ func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (models.Offi
 }
 
 func (s *BoardService) CreateOfficer(ctx context.Context, params models.CreateOfficerParams) error {
-	if err := s.q.CreateOfficer(ctx, params); err != nil {
+	err := s.q.CreateOfficer(ctx, params)
+	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *BoardService) GetTier(ctx context.Context, tier string) (models.Tier, error) {
-	tier, err := s.q.GetTier(ctx, tier)
+func (s *BoardService) GetTier(ctx context.Context, tierName int64) (models.Tier, error) {
+	tier, err := s.q.GetTier(ctx, tierName)
 	if err != nil {
 		return models.Tier{}, err
 	}
@@ -38,7 +39,8 @@ func (s *BoardService) GetTier(ctx context.Context, tier string) (models.Tier, e
 }
 
 func (s *BoardService) CreateTier(ctx context.Context, params models.CreateTierParams) error {
-	if err := s.q.CreateTier(ctx, params); err != nil {
+	err := s.q.CreateTier(ctx, params)
+	if err != nil {
 		return err
 	}
 	return nil
@@ -53,7 +55,8 @@ func (s *BoardService) GetPosition(ctx context.Context, fullName string) (models
 }
 
 func (s *BoardService) CreatePosition(ctx context.Context, params models.CreatePositionParams) error {
-	if err := s.q.CreatePosition(ctx, params); err != nil {
+	err := s.q.CreatePosition(ctx, params)
+	if err != nil {
 		return err
 	}
 	return nil
