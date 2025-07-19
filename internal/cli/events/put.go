@@ -97,7 +97,10 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	}
 
 	var oldpayload CreateEvent
-	json.Unmarshal(body, &oldpayload)
+	if err := json.Unmarshal(body, &oldpayload); err != nil {
+		fmt.Println("Error unmarshaling JSON response:", err)
+		return
+	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 
