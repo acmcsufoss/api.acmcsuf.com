@@ -10,10 +10,11 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
+
 	"github.com/spf13/cobra"
 )
 
@@ -110,7 +111,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	// ----- uuid -----
 	if payload.Uuid == "" {
-		changeTheEventUuid, err := changePrompt("uuid", oldpayload.Uuid, scanner)
+		changeTheEventUuid, err := cli.ChangePrompt("uuid", oldpayload.Uuid, scanner)
 		if err != nil {
 			fmt.Println(err) // Custom errors in changePrompt()
 			return
@@ -126,7 +127,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	// ----- Location -----
 	if payload.Location == "" {
-		changeTheEventLocation, err := changePrompt("location", oldpayload.Location, scanner)
+		changeTheEventLocation, err := cli.ChangePrompt("location", oldpayload.Location, scanner)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -141,7 +142,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	// ----- Start time -----
 	if payload.StartAt == 0 {
-		changeTheEventStartAt, err := changePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
+		changeTheEventStartAt, err := cli.ChangePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -160,7 +161,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	// ----- End time -----
 	if payload.EndAt == 0 {
-		changeTheEventEndAt, err := changePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
+		changeTheEventEndAt, err := cli.ChangePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -180,7 +181,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- All day -----
 	// This is kind of awkward but I don't know have a workaround at the moment
 	if !payload.IsAllDay {
-		changeTheEventAllDay, err := changePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
+		changeTheEventAllDay, err := cli.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -188,7 +189,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 		if changeTheEventAllDay != nil {
 			newAllDayBuffer := scanner.Bytes()
-			payload.IsAllDay, err = yesOrNo(newAllDayBuffer, scanner)
+			payload.IsAllDay, err = cli.YesOrNo(newAllDayBuffer, scanner)
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -200,7 +201,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	// ----- Host -----
 	if payload.Host == "" {
-		changeTheEventHost, err := changePrompt("host", oldpayload.Host, scanner)
+		changeTheEventHost, err := cli.ChangePrompt("host", oldpayload.Host, scanner)
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -261,49 +262,4 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	}
 
 	fmt.Println(string(body))
-}
-
-// ============================================= Helper functions =============================================
-
-// Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
-func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
-	fmt.Printf("Would you like to change this event's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading input: %s", err)
-	}
-	userInput := scanner.Bytes()
-
-	changeData, err := yesOrNo(userInput, scanner)
-	if err != nil {
-		return nil, err
-	}
-	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the event:\n", dataToBeChanged)
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
-		}
-		return scanner.Bytes(), nil
-	} else {
-		return nil, nil
-	}
-}
-
-func yesOrNo(userInput []byte, scanner *bufio.Scanner) (bool, error) {
-	userInputString := strings.ToUpper(string(userInput))
-
-	switch userInputString {
-	case "YES", "Y", "TRUE":
-		return true, nil
-	case "NO", "N", "FALSE":
-		return false, nil
-	default:
-		fmt.Println("Invalid input, please try again.")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			return false, fmt.Errorf("error scanning new input: %s", err)
-		}
-		return yesOrNo(scanner.Bytes(), scanner)
-	}
 }

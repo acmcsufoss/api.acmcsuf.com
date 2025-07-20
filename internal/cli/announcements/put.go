@@ -10,10 +10,11 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
+
 	"github.com/spf13/cobra"
 )
 
@@ -107,7 +108,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	// Known issue: Despite the response going through and output saying uuid has been updated
 	// it does not actually update
 	if payload.Uuid == "" {
-		changeUuid, err := changePrompt("uuid", oldPayload.Uuid, scanner)
+		changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
 		if err != nil {
 			fmt.Println("error with changing uuid:", err)
 			return
@@ -121,7 +122,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Visibility -----
 	if payload.Visibility.String == "" {
-		changeVisibility, err := changePrompt("visibility", oldPayload.Visibility, scanner)
+		changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
 		if err != nil {
 			fmt.Println("error with changing visibility:", err)
 			return
@@ -137,7 +138,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	if payload.AnnounceAt.Int64 == 0 {
 		oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
 
-		changeAnnounceAt, err := changePrompt("announce at", oldAnnounceAt, scanner)
+		changeAnnounceAt, err := cli.ChangePrompt("announce at", oldAnnounceAt, scanner)
 		if err != nil {
 			fmt.Println("error with changing announce at:", err)
 			return
@@ -156,7 +157,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Discord Channel ID -----
 	if payload.DiscordChannelID.String == "" {
-		changeDiscordChannelID, err := changePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
+		changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
 		if err != nil {
 			fmt.Println("error with changing :", err)
 			return
@@ -170,7 +171,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Discord Message ID -----
 	if payload.DiscordMessageID.String == "" {
-		changeDiscordMessageID, err := changePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
+		changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
 		if err != nil {
 			fmt.Println("error with changing :", err)
 			return
@@ -222,49 +223,4 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	fmt.Println(string(body))
 
-}
-
-// ============================================= Helper functions =============================================
-
-// Returns a byte slice, if the byte slice is nil, no change will be made. Otherwise, a change will be made
-func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
-	fmt.Printf("Would you like to change this announcement's \x1b[1m%s\x1b[0m?[y/n]\nCurrent announcement's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading input: %s", err)
-	}
-	userInput := scanner.Bytes()
-
-	changeData, err := yesOrNo(userInput, scanner)
-	if err != nil {
-		return nil, err
-	}
-	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the announcement:\n", dataToBeChanged)
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
-		}
-		return scanner.Bytes(), nil
-	} else {
-		return nil, nil
-	}
-}
-
-func yesOrNo(userInput []byte, scanner *bufio.Scanner) (bool, error) {
-	userInputString := strings.ToUpper(string(userInput))
-
-	switch userInputString {
-	case "YES", "Y", "TRUE":
-		return true, nil
-	case "NO", "N", "FALSE":
-		return false, nil
-	default:
-		fmt.Println("Invalid input, please try again.")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			return false, fmt.Errorf("error scanning new input: %s", err)
-		}
-		return yesOrNo(scanner.Bytes(), scanner)
-	}
 }
