@@ -63,7 +63,7 @@ func deleteAnnouncement(host string, port string, id string) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
