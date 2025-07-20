@@ -18,7 +18,7 @@ import (
 
 var PostAnnouncement = &cobra.Command{
 	Use:   "post",
-	Short: "post a new announcment",
+	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := CreateAnnouncement{}

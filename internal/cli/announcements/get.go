@@ -27,7 +27,7 @@ func init() {
 	// Url flags
 	GetAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host (Defaults to: 127.0.0.1)")
 	GetAnnouncement.Flags().String("port", "8080", "Set a custom port (Defaults to: 8080)")
-	GetAnnouncement.Flags().String("id", "", "Get a specific event by it's id")
+	GetAnnouncement.Flags().String("id", "", "Get a specific announcement by its id")
 
 }
 
@@ -53,7 +53,7 @@ func getAnnouncement(host string, port string, uuid string) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
