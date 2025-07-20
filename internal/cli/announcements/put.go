@@ -19,7 +19,7 @@ import (
 
 var PutAnnouncements = &cobra.Command{
 	Use:   "put --id <uuid>",
-	Short: "update an existing announcement by it's id",
+	Short: "update an existing announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := UpdateAnnouncement{}
@@ -48,7 +48,7 @@ func init() {
 	// Url flags
 	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom (Defaults to: 127.0.0.1)")
 	PutAnnouncements.Flags().String("port", "8080", "Set a custom (Defaults to: 8080)")
-	PutAnnouncements.Flags().String("id", "", "Get an announcement by it's id")
+	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
 
 	// Payload flags
 	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
@@ -84,7 +84,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
@@ -204,7 +204,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	}
 
 	if putResponse == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 
@@ -227,7 +227,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 // Returns a byte slice, if the byte slice is nil, no change will be made. Otherwise, a change will be made
 func changePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
-	fmt.Printf("Would you like to change this announcements's \x1b[1m%s\x1b[0m?[y/n]\nCurrent announcement's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
+	fmt.Printf("Would you like to change this announcement's \x1b[1m%s\x1b[0m?[y/n]\nCurrent announcement's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("error reading input: %s", err)
