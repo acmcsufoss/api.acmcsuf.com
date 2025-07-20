@@ -6,6 +6,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
+
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
