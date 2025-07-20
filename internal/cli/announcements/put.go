@@ -63,6 +63,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	// ----- Check if Id was Given -----
 	if id == "" {
 		fmt.Println("Announcement id required for put! Please use the --id flag")
+		return
 	}
 
 	// ----- Retrieving old Announcement -----
