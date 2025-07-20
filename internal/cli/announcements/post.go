@@ -46,9 +46,9 @@ func init() {
 
 	// Payload flags
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
-	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this annoucement's announce at (Note: in unix time)")
-	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this annoucement's channel id")
-	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this annoucement's message id")
+	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at (Note: in unix time)")
+	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this announcement's channel id")
+	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
 
 func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
@@ -70,10 +70,10 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 	// ----- Visibility -----
 	if payload.Visibility == "" {
-		fmt.Println("Please enter this annoucement's visibility:")
+		fmt.Println("Please enter this announcement's visibility:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
-			fmt.Println("error with reading visiblity:", err)
+			fmt.Println("error with reading visibility:", err)
 			return
 		}
 
@@ -104,7 +104,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 	// ----- Discord Channel Id -----
 	if !payload.DiscordChannelID.Valid {
-		fmt.Println("Please enter this annoucement's discord channel id:")
+		fmt.Println("Please enter this announcement's discord channel id:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading  discord channel id:", err)
@@ -117,7 +117,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 	// ----- Discord Message Id -----
 	if !payload.DiscordMessageID.Valid {
-		fmt.Println("Please enter this annoucement's message id:")
+		fmt.Println("Please enter this announcement's message id:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading message id:", err)
@@ -168,7 +168,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	}
 
 	if response == nil {
-		fmt.Println("no response recieved")
+		fmt.Println("no response received")
 		return
 	}
 	defer response.Body.Close()
