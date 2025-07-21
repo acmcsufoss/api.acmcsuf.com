@@ -107,80 +107,100 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	// ----- Uuid -----
 	// Known issue: Despite the response going through and output saying uuid has been updated
 	// it does not actually update
-	if payload.Uuid == "" {
-		changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
-		if err != nil {
-			fmt.Println("error with changing uuid:", err)
-			return
+	for {
+		if payload.Uuid == "" {
+			changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
+			if err != nil {
+				fmt.Println("error with changing uuid:", err)
+				continue
+			}
+			if changeUuid != nil {
+				payload.Uuid = string(changeUuid)
+			} else {
+				payload.Uuid = oldPayload.Uuid
+			}
 		}
-		if changeUuid != nil {
-			payload.Uuid = string(changeUuid)
-		} else {
-			payload.Uuid = oldPayload.Uuid
-		}
+
+		break
 	}
 
 	// ----- Visibility -----
-	if payload.Visibility.String == "" {
-		changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
-		if err != nil {
-			fmt.Println("error with changing visibility:", err)
-			return
+	for {
+		if payload.Visibility.String == "" {
+			changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
+			if err != nil {
+				fmt.Println("error with changing visibility:", err)
+				continue
+			}
+			if changeVisibility != nil {
+				payload.Visibility = dbtypes.StringtoNullString(string(changeVisibility))
+			} else {
+				payload.Visibility = dbtypes.StringtoNullString(oldPayload.Visibility)
+			}
 		}
-		if changeVisibility != nil {
-			payload.Visibility = dbtypes.StringtoNullString(string(changeVisibility))
-		} else {
-			payload.Visibility = dbtypes.StringtoNullString(oldPayload.Visibility)
-		}
+
+		break
 	}
 
 	// ----- Announce At ------
-	if payload.AnnounceAt.Int64 == 0 {
-		oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
+	for {
+		if payload.AnnounceAt.Int64 == 0 {
+			oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
 
-		changeAnnounceAt, err := cli.ChangePrompt("announce at", oldAnnounceAt, scanner)
-		if err != nil {
-			fmt.Println("error with changing announce at:", err)
-			return
-		}
-		if changeAnnounceAt != nil {
-			announceAtInt64, err := convert.ByteSlicetoInt64(changeAnnounceAt)
+			changeAnnounceAt, err := cli.ChangePrompt("announce at", oldAnnounceAt, scanner)
 			if err != nil {
-				fmt.Println(err)
-				return
+				fmt.Println("error with changing announce at:", err)
+				continue
 			}
-			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
-		} else {
-			payload.AnnounceAt = dbtypes.Int64toNullInt64(oldPayload.AnnounceAt)
+			if changeAnnounceAt != nil {
+				announceAtInt64, err := convert.ByteSlicetoInt64(changeAnnounceAt)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
+			} else {
+				payload.AnnounceAt = dbtypes.Int64toNullInt64(oldPayload.AnnounceAt)
+			}
 		}
+
+		break
 	}
 
 	// ----- Discord Channel ID -----
-	if payload.DiscordChannelID.String == "" {
-		changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
-		if err != nil {
-			fmt.Println("error with changing :", err)
-			return
+	for {
+		if payload.DiscordChannelID.String == "" {
+			changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
+			if err != nil {
+				fmt.Println("error with changing :", err)
+				continue
+			}
+			if changeDiscordChannelID != nil {
+				payload.DiscordChannelID = dbtypes.StringtoNullString(string(changeDiscordChannelID))
+			} else {
+				payload.DiscordChannelID = oldPayload.DiscordChannelID
+			}
 		}
-		if changeDiscordChannelID != nil {
-			payload.DiscordChannelID = dbtypes.StringtoNullString(string(changeDiscordChannelID))
-		} else {
-			payload.DiscordChannelID = oldPayload.DiscordChannelID
-		}
+
+		break
 	}
 
 	// ----- Discord Message ID -----
-	if payload.DiscordMessageID.String == "" {
-		changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
-		if err != nil {
-			fmt.Println("error with changing :", err)
-			return
+	for {
+		if payload.DiscordMessageID.String == "" {
+			changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
+			if err != nil {
+				fmt.Println("error with changing :", err)
+				continue
+			}
+			if changeDiscordMessageID != nil {
+				payload.DiscordMessageID = dbtypes.StringtoNullString(string(changeDiscordMessageID))
+			} else {
+				payload.DiscordMessageID = oldPayload.DiscordMessageID
+			}
 		}
-		if changeDiscordMessageID != nil {
-			payload.DiscordMessageID = dbtypes.StringtoNullString(string(changeDiscordMessageID))
-		} else {
-			payload.DiscordMessageID = oldPayload.DiscordMessageID
-		}
+
+		break
 	}
 
 	// ----- Marshal Payload to Json -----

@@ -110,108 +110,127 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// payload values are empty if user did not input a value in the command line
 
 	// ----- uuid -----
-	if payload.Uuid == "" {
-		changeTheEventUuid, err := cli.ChangePrompt("uuid", oldpayload.Uuid, scanner)
-		if err != nil {
-			fmt.Println(err) // Custom errors in changePrompt()
-			return
-		}
+	for {
+		if payload.Uuid == "" {
+			changeTheEventUuid, err := cli.ChangePrompt("uuid", oldpayload.Uuid, scanner)
+			if err != nil {
+				fmt.Println(err) // Custom errors in changePrompt()
+				continue
+			}
 
-		if changeTheEventUuid != nil {
-			payload.Uuid = string(changeTheEventUuid)
-		} else {
-			payload.Uuid = oldpayload.Uuid
+			if changeTheEventUuid != nil {
+				payload.Uuid = string(changeTheEventUuid)
+			} else {
+				payload.Uuid = oldpayload.Uuid
+			}
 		}
-
+		break
 	}
 
 	// ----- Location -----
-	if payload.Location == "" {
-		changeTheEventLocation, err := cli.ChangePrompt("location", oldpayload.Location, scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	for {
+		if payload.Location == "" {
+			changeTheEventLocation, err := cli.ChangePrompt("location", oldpayload.Location, scanner)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
 
-		if changeTheEventLocation != nil {
-			payload.Location = string(changeTheEventLocation)
-		} else {
-			payload.Location = oldpayload.Location
+			if changeTheEventLocation != nil {
+				payload.Location = string(changeTheEventLocation)
+			} else {
+				payload.Location = oldpayload.Location
+			}
 		}
+		break
 	}
 
 	// ----- Start time -----
-	if payload.StartAt == 0 {
-		changeTheEventStartAt, err := cli.ChangePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventStartAt != nil {
-			payload.StartAt, err = convert.ByteSlicetoInt64(changeTheEventStartAt)
+	for {
+		if payload.StartAt == 0 {
+			changeTheEventStartAt, err := cli.ChangePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
 			if err != nil {
-				fmt.Println("Error with reading start integer:", err)
-				return
+				fmt.Println(err)
+				continue
 			}
-		} else {
-			payload.StartAt = oldpayload.StartAt
+
+			if changeTheEventStartAt != nil {
+				payload.StartAt, err = convert.ByteSlicetoInt64(changeTheEventStartAt)
+				if err != nil {
+					fmt.Println("Error with reading start integer:", err)
+					continue
+				}
+			} else {
+				payload.StartAt = oldpayload.StartAt
+			}
 		}
+		break
 	}
 
 	// ----- End time -----
-	if payload.EndAt == 0 {
-		changeTheEventEndAt, err := cli.ChangePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventEndAt != nil {
-			payload.EndAt, err = convert.ByteSlicetoInt64(changeTheEventEndAt)
+	for {
+		if payload.EndAt == 0 {
+			changeTheEventEndAt, err := cli.ChangePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
 			if err != nil {
-				fmt.Println("Error with reading end integer:", err)
-				return
+				fmt.Println(err)
+				continue
 			}
-		} else {
-			payload.EndAt = oldpayload.EndAt
+
+			if changeTheEventEndAt != nil {
+				payload.EndAt, err = convert.ByteSlicetoInt64(changeTheEventEndAt)
+				if err != nil {
+					fmt.Println("Error with reading end integer:", err)
+					continue
+				}
+			} else {
+				payload.EndAt = oldpayload.EndAt
+			}
 		}
+		break
 	}
 
 	// ----- All day -----
 	// This is kind of awkward but I don't know have a workaround at the moment
-	if !payload.IsAllDay {
-		changeTheEventAllDay, err := cli.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventAllDay != nil {
-			newAllDayBuffer := scanner.Bytes()
-			payload.IsAllDay, err = cli.YesOrNo(newAllDayBuffer, scanner)
+	for {
+		if !payload.IsAllDay {
+			changeTheEventAllDay, err := cli.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
 			if err != nil {
 				fmt.Println(err)
-				return
+				continue
 			}
-		} else {
-			payload.IsAllDay = oldpayload.IsAllDay
+
+			if changeTheEventAllDay != nil {
+				newAllDayBuffer := scanner.Bytes()
+				payload.IsAllDay, err = cli.YesOrNo(newAllDayBuffer, scanner)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+			} else {
+				payload.IsAllDay = oldpayload.IsAllDay
+			}
 		}
+
+		break
 	}
 
 	// ----- Host -----
-	if payload.Host == "" {
-		changeTheEventHost, err := cli.ChangePrompt("host", oldpayload.Host, scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
+	for {
+		if payload.Host == "" {
+			changeTheEventHost, err := cli.ChangePrompt("host", oldpayload.Host, scanner)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			if changeTheEventHost != nil {
+				payload.Host = string(changeTheEventHost)
+			} else {
+				payload.Host = oldpayload.Host
+			}
 		}
 
-		if changeTheEventHost != nil {
-			payload.Host = string(changeTheEventHost)
-		} else {
-			payload.Host = oldpayload.Host
-		}
+		break
 	}
 
 	// ----- PUT the payload -----

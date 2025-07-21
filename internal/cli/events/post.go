@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/spf13/cobra"
 )
@@ -55,118 +56,141 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
-	if payload.Uuid == "" {
-		fmt.Println("Please enter event's uuid:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
+	for {
+		if payload.Uuid == "" {
+			fmt.Println("Please enter event's uuid:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println(err)
+				continue
+			}
 
-		uuidBuffer := scanner.Bytes()
-		payload.Uuid = string(uuidBuffer)
+			uuidBuffer := scanner.Bytes()
+			payload.Uuid = string(uuidBuffer)
+			break
+		}
 	}
 
 	// ----- Location -----
-	if payload.Location == "" {
-		fmt.Println("please enter the event's location:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
+	for {
+		if payload.Location == "" {
+			fmt.Println("please enter the event's location:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println(err)
+				continue
+			}
 
-		locationBuffer := scanner.Bytes()
-		payload.Location = string(locationBuffer)
+			locationBuffer := scanner.Bytes()
+			payload.Location = string(locationBuffer)
+			break
+		}
 	}
 
 	// ----- Start Time -----
-	if payload.StartAt == 0 {
-		fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-		fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading start time:", err)
-			return
+	for {
+		if payload.StartAt == 0 {
+			fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
+			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error reading start time:", err)
+				continue
+			}
+			startTimeBuffer := scanner.Bytes()
+			startTime, err := convert.ByteSlicetoUnix(startTimeBuffer)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			payload.StartAt = startTime
+			break
 		}
-		startTimeBuffer := scanner.Bytes()
-		startTime, err := convert.ByteSlicetoUnix(startTimeBuffer)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		payload.StartAt = startTime
 	}
 
 	// ----- End Time -----
-	if payload.EndAt == 0 {
-		fmt.Println("Please enter the end time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-		fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading end time:", err)
-			return
+	for {
+		if payload.EndAt == 0 {
+			fmt.Println("Please enter the end time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
+			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error reading end time:", err)
+				continue
+			}
+			endTimeBuffer := scanner.Bytes()
+			endTime, err := convert.ByteSlicetoUnix(endTimeBuffer)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			payload.EndAt = endTime
+			break
 		}
-		endTimeBuffer := scanner.Bytes()
-		endTime, err := convert.ByteSlicetoUnix(endTimeBuffer)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		payload.EndAt = endTime
 	}
 
 	// ----- Is all day -----
 
 	// This is kind of awkward
-	if !payload.IsAllDay {
-		fmt.Println("Is the event all day?")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
+	for {
+		if !payload.IsAllDay {
+			fmt.Println("Is the event all day?")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println(err)
+				continue
+			}
 
-		isAllDayBuffer := scanner.Bytes()
-		isAllDayString := strings.ToUpper(string(isAllDayBuffer))
+			isAllDayBuffer := scanner.Bytes()
+			isAllDayString := strings.ToUpper(string(isAllDayBuffer))
 
-		switch isAllDayString {
-		case "YES", "Y":
-			payload.IsAllDay = true
-		case "NO", "N":
-			payload.IsAllDay = false
-		default:
-			fmt.Println("Invalid input.")
-			return
+			switch isAllDayString {
+			case "YES", "Y":
+				payload.IsAllDay = true
+			case "NO", "N":
+				payload.IsAllDay = false
+			default:
+				fmt.Println("Invalid input.")
+				continue
+			}
+			break
 		}
 	}
 
 	// ----- Host -----
-	if payload.Host == "" {
-		fmt.Println("Please enter the event host:")
+	for {
+		if payload.Host == "" {
+			fmt.Println("Please enter the event host:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			hostBuffer := scanner.Bytes()
+			payload.Host = string(hostBuffer)
+			break
+		}
+	}
+
+	// ----- Confirmation -----
+	for {
+		fmt.Println("Is your event data correct? If not, type n or no. [Note that time is displayed in UNIX time.]\n", payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		hostBuffer := scanner.Bytes()
-		payload.Host = string(hostBuffer)
-	}
-
-	// ----- Confirmation -----
-	fmt.Println("Is your event data correct? If not, type n or no. [Note that time is displayed in UNIX time.]\n", payload)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	confirmationBuffer := scanner.Bytes()
-	confirmationString := strings.ToUpper(string(confirmationBuffer))
-
-	if confirmationString == "NO" || confirmationString == "N" {
-		return
+		confirmationBuffer := scanner.Bytes()
+		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		if err != nil {
+			fmt.Println("error with reading confimrmation:", err)
+		}
+		if !confirmationBool {
+			continue
+		}
+		break
 	}
 
 	// ----- Convert to Json -----

@@ -29,7 +29,7 @@ func ByteSlicetoUnix(data []byte) (int64, error) {
 
 	startTime, err := time.Parse(time.Layout, timeString)
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("error in converting byte slice to string: %s", err)
 	}
 
 	return startTime.Unix(), nil

@@ -11,6 +11,7 @@ import (
 
 	"fmt"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
 	"github.com/spf13/cobra"
@@ -56,90 +57,116 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
-	if payload.Uuid == "" {
-		fmt.Println("Please enter the announcement's uuid:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error with reading uuid:", err)
-			return
+	for {
+		if payload.Uuid == "" {
+			fmt.Println("Please enter the announcement's uuid:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error with reading uuid:", err)
+				continue
+			}
+
+			uuidBuffer := scanner.Bytes()
+			payload.Uuid = string(uuidBuffer)
 		}
 
-		uuidBuffer := scanner.Bytes()
-		payload.Uuid = string(uuidBuffer)
+		break
 	}
 
 	// ----- Visibility -----
-	if payload.Visibility == "" {
-		fmt.Println("Please enter this announcement's visibility:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error with reading visibility:", err)
-			return
+	for {
+		if payload.Visibility == "" {
+			fmt.Println("Please enter this announcement's visibility:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error with reading visibility:", err)
+				continue
+			}
+
+			visibilityBuffer := scanner.Bytes()
+			payload.Visibility = string(visibilityBuffer)
 		}
 
-		visibilityBuffer := scanner.Bytes()
-		payload.Visibility = string(visibilityBuffer)
+		break
 	}
 
 	// ----- Announce at -----
-	if payload.AnnounceAt == 0 {
-		fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-		fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading anounce at:", err)
-			return
+	for {
+		if payload.AnnounceAt == 0 {
+			fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
+			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error reading anounce at:", err)
+				continue
+			}
+
+			announceatBuffer := scanner.Bytes()
+
+			// Sorry
+			var err error
+			payload.AnnounceAt, err = convert.ByteSlicetoUnix(announceatBuffer)
+			if err != nil {
+				fmt.Println("error converting byte slice to unix time (of type int64):", err)
+				continue
+			}
 		}
 
-		announceatBuffer := scanner.Bytes()
-
-		// Sorry
-		var err error
-		payload.AnnounceAt, err = convert.ByteSlicetoUnix(announceatBuffer)
-		if err != nil {
-			fmt.Println("error converting byte slice to unix time (of type int64):", err)
-			return
-		}
+		break
 	}
 
 	// ----- Discord Channel Id -----
-	if !payload.DiscordChannelID.Valid {
-		fmt.Println("Please enter this announcement's discord channel id:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading  discord channel id:", err)
-			return
+	for {
+		if !payload.DiscordChannelID.Valid {
+			fmt.Println("Please enter this announcement's discord channel id:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error reading  discord channel id:", err)
+				continue
+			}
+
+			channelIdBuffer := scanner.Bytes()
+			payload.DiscordChannelID = dbtypes.StringtoNullString(string(channelIdBuffer))
 		}
 
-		channelIdBuffer := scanner.Bytes()
-		payload.DiscordChannelID = dbtypes.StringtoNullString(string(channelIdBuffer))
+		break
 	}
 
 	// ----- Discord Message Id -----
-	if !payload.DiscordMessageID.Valid {
-		fmt.Println("Please enter this announcement's message id:")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading message id:", err)
-			return
+	for {
+		if !payload.DiscordMessageID.Valid {
+			fmt.Println("Please enter this announcement's message id:")
+			scanner.Scan()
+			if err := scanner.Err(); err != nil {
+				fmt.Println("error reading message id:", err)
+				continue
+			}
+			messageIdBuffer := scanner.Bytes()
+			payload.DiscordMessageID = dbtypes.StringtoNullString(string(messageIdBuffer))
 		}
-		messageIdBuffer := scanner.Bytes()
-		payload.DiscordMessageID = dbtypes.StringtoNullString(string(messageIdBuffer))
+
+		break
 	}
 
 	// ----- Confirmation -----
-	fmt.Println("Is your event data correct? If not, type n or no. \n", *payload)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		fmt.Println(err)
-		return
-	}
+	for {
+		fmt.Println("Is your event data correct? If not, type n or no. \n", *payload)
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			continue
+		}
 
-	confirmationBuffer := scanner.Bytes()
-	confirmationString := strings.ToUpper(string(confirmationBuffer))
-
-	if confirmationString == "NO" || confirmationString == "N" {
-		return
+		confirmationBuffer := scanner.Bytes()
+		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		if err != nil {
+			fmt.Println("error with reading confirmation:", err)
+			continue
+		}
+		if !confirmationBool {
+			continue
+		}
+		break
 	}
 
 	// ----- Marshalling to Json -----
