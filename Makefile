@@ -2,11 +2,12 @@
 
 BIN_DIR := bin
 APP_NAME := api
+CLI_NAME := cli
 
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt vet run build check test sql-check sql-fix clean
+.PHONY:fmt vet run build check test sql-check sql-fix clean build-cli
 
 fmt:
 	@go fmt ./...
@@ -44,3 +45,7 @@ clean:
 	go clean
 	rm -f $(GENERATE_MARKER)
 	rm -rf $(BIN_DIR)
+
+build-cli: fmt
+	mkdir -p $(BIN_DIR)
+	go build -o $(BIN_DIR)/$(CLI_NAME) ./cmd/csuf
