@@ -31,15 +31,22 @@ var PutAnnouncements = &cobra.Command{
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		visibilityString, _ := cmd.Flags().GetString("visibility")
-		announceAtInt64, _ := cmd.Flags().GetInt64("announceat")
+		announceAtString, _ := cmd.Flags().GetString("announceat")
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
 		payload.Visibility = dbtypes.StringtoNullString(visibilityString)
-		payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
 		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
 		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
 
+		if announceAtString != "" {
+			announceAtUnix, err := convert.ByteSlicetoUnix([]byte(announceAtString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtUnix)
+		}
 		putAnnouncements(host, port, id, &payload)
 	},
 }
@@ -53,7 +60,7 @@ func init() {
 
 	// Payload flags
 	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
-	PutAnnouncements.Flags().Int64P("announceat", "a", 0, "Change this announcement's announce at")
+	PutAnnouncements.Flags().StringP("announceat", "a", "", "Change this announcement's announce at")
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
@@ -147,13 +154,14 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		if payload.AnnounceAt.Int64 == 0 {
 			oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
 
-			changeAnnounceAt, err := cli.ChangePrompt("announce at", oldAnnounceAt, scanner)
+			// Yah this might be a little sloppy in the terminal. forgive me.
+			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"03:04:05PM 01/02/06\")", oldAnnounceAt, scanner)
 			if err != nil {
 				fmt.Println("error with changing announce at:", err)
 				continue
 			}
 			if changeAnnounceAt != nil {
-				announceAtInt64, err := convert.ByteSlicetoInt64(changeAnnounceAt)
+				announceAtInt64, err := convert.ByteSlicetoUnix(changeAnnounceAt)
 				if err != nil {
 					fmt.Println(err)
 					continue

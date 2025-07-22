@@ -28,12 +28,21 @@ var PostAnnouncement = &cobra.Command{
 		port, _ := cmd.Flags().GetString("port")
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
-		payload.AnnounceAt, _ = cmd.Flags().GetInt64("announceat")
+		announceString, _ := cmd.Flags().GetString("announceat")
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
 		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
 		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
+
+		if announceString != "" {
+			var err error
+			payload.AnnounceAt, err = convert.ByteSlicetoInt64([]byte(announceString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
 
 		postAnnouncement(host, port, &payload)
 	},
@@ -47,7 +56,7 @@ func init() {
 
 	// Payload flags
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
-	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at (Note: in unix time)")
+	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at")
 	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this announcement's channel id")
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
@@ -94,7 +103,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	for {
 		if payload.AnnounceAt == 0 {
 			fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			fmt.Println("For example: \x1b[93m03:04:05PM 01/02/06\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading anounce at:", err)
