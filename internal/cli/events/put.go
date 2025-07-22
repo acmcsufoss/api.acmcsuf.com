@@ -265,6 +265,31 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 		Host:     dbtypes.StringtoNullString(payload.Host),
 	}
 
+	// Confirmation
+	// TODO: Fix put
+	for {
+		fmt.Println("Are these changes okay?[y/n]")
+		cli.PrintStruct(updatePayload)
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error scanning confirmation:", err)
+			continue
+		}
+
+		confirmationBuffer := scanner.Bytes()
+		confirmation, err := cli.YesOrNo(confirmationBuffer, scanner)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if !confirmation {
+			return
+		}
+
+		break
+	}
+
 	// ----- Put the Payload -----
 	newPayload, err := json.Marshal(updatePayload)
 	if err != nil {

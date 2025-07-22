@@ -29,6 +29,7 @@ func init() {
 	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port")
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
 
+	DeleteAnnouncements.MarkFlagRequired("id")
 }
 
 func deleteAnnouncement(host string, port string, id string) {

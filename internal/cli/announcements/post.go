@@ -159,21 +159,22 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no. \n", *payload)
+		fmt.Println("Is your event data correct? If not, type n or no.")
+		cli.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
-			continue
+			return
 		}
 
 		confirmationBuffer := scanner.Bytes()
 		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
-			fmt.Println("error with reading confirmation:", err)
-			continue
+			fmt.Println("error with reading confimrmation:", err)
 		}
 		if !confirmationBool {
-			continue
+			// Sorry :(
+			return
 		}
 		break
 	}

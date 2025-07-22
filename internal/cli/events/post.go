@@ -184,7 +184,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println(err)
-				return
+				continue
 			}
 
 			hostBuffer := scanner.Bytes()
@@ -195,7 +195,8 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no. [Note that time is displayed in UNIX time.]\n", payload)
+		fmt.Println("Is your event data correct? If not, type n or no.")
+		cli.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -208,7 +209,8 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 			fmt.Println("error with reading confimrmation:", err)
 		}
 		if !confirmationBool {
-			continue
+			// Sorry :(
+			return
 		}
 		break
 	}

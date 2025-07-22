@@ -1,11 +1,12 @@
 package announcements
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -61,12 +62,15 @@ func getAnnouncement(host string, port string, uuid string) {
 
 	fmt.Println("Response status:", response.Status)
 
-	body, err := io.ReadAll(response.Body)
+	var getPayload []CreateAnnouncement
+	err = json.NewDecoder(response.Body).Decode(&getPayload)
 	if err != nil {
-		fmt.Println("error reading body:", err)
+		fmt.Println("Failed to read response body:", err)
 		return
 	}
 
-	fmt.Println(string(body))
+	for i := range getPayload {
+		cli.PrintStruct(getPayload[i])
+	}
 
 }

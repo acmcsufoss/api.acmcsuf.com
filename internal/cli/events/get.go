@@ -1,11 +1,12 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/spf13/cobra"
 )
 
@@ -68,12 +69,14 @@ func getEvents(id string, port string, host string) {
 	// ----- Read Response Information -----
 	fmt.Println("Response status:", response.Status)
 
-	body, err := io.ReadAll(response.Body)
+	var getPayload []CreateEvent
+	err = json.NewDecoder(response.Body).Decode(&getPayload)
 	if err != nil {
 		fmt.Println("Failed to read response body:", err)
 		return
 	}
 
-	fmt.Println("Response body:", string(body))
-
+	for i := range getPayload {
+		cli.PrintStruct(getPayload[i])
+	}
 }
