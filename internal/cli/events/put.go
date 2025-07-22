@@ -34,10 +34,28 @@ var PutEvents = &cobra.Command{
 		// CLI for payload
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
-		payload.StartAt, _ = cmd.Flags().GetInt64("startat")
-		payload.EndAt, _ = cmd.Flags().GetInt64("endat")
+		startAtString, _ := cmd.Flags().GetString("startat")
+		durationString, _ := cmd.Flags().GetString("duration")
 		payload.IsAllDay, _ = cmd.Flags().GetBool("allday")
 		payload.Host, _ = cmd.Flags().GetString("host")
+
+		if startAtString != "" {
+			var err error
+			payload.StartAt, err = convert.ByteSlicetoUnix([]byte(startAtString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if durationString != "" {
+				var err error
+				payload.EndAt, err = cli.TimeAfterDuration(payload.StartAt, durationString)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+		}
+
 		updateEvent(id, host, port, &payload)
 	},
 }
@@ -52,10 +70,13 @@ func init() {
 	// Payload flags
 	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PutEvents.Flags().StringP("location", "l", "", "Set location of new event")
-	PutEvents.Flags().Int64P("startat", "s", 0, "Set the start time of new event (Note: flag takes Unix time)")
-	PutEvents.Flags().Int64P("endat", "e", 0, "Set the end time of new event (Note: flag takes unix time)")
+	PutEvents.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
+	PutEvents.Flags().StringP("duration", "d", "", "Set the end time of new event (Format: 03:04:05)")
 	PutEvents.Flags().StringP("host", "H", "", "Set host of new event")
 	PutEvents.Flags().BoolP("allday", "a", false, "Set if new event is all day")
+
+	// This flag is neccessary
+	PutEvents.MarkFlagRequired("id")
 
 }
 
@@ -148,14 +169,14 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- Start time -----
 	for {
 		if payload.StartAt == 0 {
-			changeTheEventStartAt, err := cli.ChangePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
+			changeTheEventStartAt, err := cli.ChangePrompt("start time (format: 03:04:05PM 01/02/06)", cli.FormatUnix(oldpayload.StartAt), scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 
 			if changeTheEventStartAt != nil {
-				payload.StartAt, err = convert.ByteSlicetoInt64(changeTheEventStartAt)
+				payload.StartAt, err = convert.ByteSlicetoUnix(changeTheEventStartAt)
 				if err != nil {
 					fmt.Println("Error with reading start integer:", err)
 					continue
@@ -167,17 +188,17 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 		break
 	}
 
-	// ----- End time -----
+	// ----- End time (Duration) -----
 	for {
 		if payload.EndAt == 0 {
-			changeTheEventEndAt, err := cli.ChangePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
+			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 03:04:05)", cli.FormatUnix(oldpayload.EndAt), scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
 
 			if changeTheEventEndAt != nil {
-				payload.EndAt, err = convert.ByteSlicetoInt64(changeTheEventEndAt)
+				payload.EndAt, err = convert.ByteSlicetoUnix(changeTheEventEndAt)
 				if err != nil {
 					fmt.Println("Error with reading end integer:", err)
 					continue

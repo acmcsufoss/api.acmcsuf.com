@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
@@ -65,6 +64,7 @@ func init() {
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
 
+	PutAnnouncements.MarkFlagRequired("id")
 }
 
 func putAnnouncements(host string, port string, id string, payload *UpdateAnnouncement) {
@@ -152,7 +152,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	// ----- Announce At ------
 	for {
 		if payload.AnnounceAt.Int64 == 0 {
-			oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
+			oldAnnounceAt := cli.FormatUnix(oldPayload.AnnounceAt)
 
 			// Yah this might be a little sloppy in the terminal. forgive me.
 			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"03:04:05PM 01/02/06\")", oldAnnounceAt, scanner)

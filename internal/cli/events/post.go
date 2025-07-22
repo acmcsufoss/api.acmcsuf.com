@@ -27,11 +27,31 @@ var PostEvent = &cobra.Command{
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
-		payload.StartAt, _ = cmd.Flags().GetInt64("startat")
-		payload.EndAt, _ = cmd.Flags().GetInt64("endat")
+		startAtString, _ := cmd.Flags().GetString("startat")
+		duration, _ := cmd.Flags().GetString("duration")
 		payload.IsAllDay, _ = cmd.Flags().GetBool("isallday")
 		payload.Host, _ = cmd.Flags().GetString("host")
 
+		if startAtString != "" {
+			var err error
+			payload.StartAt, err = convert.ByteSlicetoUnix([]byte(startAtString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if duration != "" {
+				var err error
+				payload.EndAt, err = cli.TimeAfterDuration(payload.StartAt, duration)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+		}
+
+		if duration != "" && startAtString == "" {
+			fmt.Printf("--startat is requred in order to use --duration")
+		}
 		postEvent(urlhost, port, &payload)
 	},
 }
@@ -45,8 +65,8 @@ func init() {
 	// Payload flags
 	PostEvent.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PostEvent.Flags().StringP("location", "l", "", "Set location of new event")
-	PostEvent.Flags().Int64P("startat", "s", 0, "Set the start time of new event (Note: flag takes Unix time)")
-	PostEvent.Flags().Int64P("endat", "e", 0, "Set the end time of new event (Note: flag takes unix time)")
+	PostEvent.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
+	PostEvent.Flags().StringP("duration", "d", "", "Set the duration of new event (Format: 03:04:05)")
 	PostEvent.Flags().StringP("host", "H", "", "Set host of new event")
 	PostEvent.Flags().BoolP("allday", "a", false, "Set if new event is all day")
 
@@ -90,8 +110,8 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	// ----- Start Time -----
 	for {
 		if payload.StartAt == 0 {
-			fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			fmt.Println("Please enter the start time of the event in the following format:\n [Hour]:[Minute]:[Second][PM | AM] [Month]/[Day]/[Year]")
+			fmt.Println("For example: \x1b[93m03:04:05PM 01/02/06\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading start time:", err)
@@ -108,18 +128,18 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 		}
 	}
 
-	// ----- End Time -----
+	// ----- End Time (Duration) -----
 	for {
 		if payload.EndAt == 0 {
-			fmt.Println("Please enter the end time of the event in the following format:\n [Month]/[Day] [Hour]:[Minute]:[Second][PM | AM] '[Last 2 digits of year] -0700")
-			fmt.Println("For example: \x1b[93m01/02 03:04:05PM '06 -0700\x1b[0m")
+			fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]:[Seconds]")
+			fmt.Println("For example: \x1b[93m03:04:05\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading end time:", err)
 				continue
 			}
 			endTimeBuffer := scanner.Bytes()
-			endTime, err := convert.ByteSlicetoUnix(endTimeBuffer)
+			endTime, err := cli.TimeAfterDuration(payload.StartAt, string(endTimeBuffer))
 			if err != nil {
 				fmt.Println(err)
 				continue
