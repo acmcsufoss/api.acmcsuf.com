@@ -47,8 +47,8 @@ var PutAnnouncements = &cobra.Command{
 func init() {
 
 	// Url flags
-	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom (Defaults to: 127.0.0.1)")
-	PutAnnouncements.Flags().String("port", "8080", "Set a custom (Defaults to: 8080)")
+	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom host")
+	PutAnnouncements.Flags().String("port", "8080", "Set a custom port")
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
 
 	// Payload flags

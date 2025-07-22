@@ -26,8 +26,8 @@ func init() {
 
 	// Url flags
 	DeleteEvent.Flags().String("id", "", "Delete the identified event")
-	DeleteEvent.Flags().String("host", "127.0.0.1", "Set a custom host (ex: 127.0.0.1)")
-	DeleteEvent.Flags().String("port", "8080", "Set a custom port (ex: 8080)")
+	DeleteEvent.Flags().String("host", "127.0.0.1", "Set a custom host")
+	DeleteEvent.Flags().String("port", "8080", "Set a custom port")
 
 }
 

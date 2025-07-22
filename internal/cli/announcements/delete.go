@@ -25,8 +25,8 @@ var DeleteAnnouncements = &cobra.Command{
 func init() {
 
 	// Url flags
-	DeleteAnnouncements.Flags().String("host", "127.0.0.1", "set a custom host (Defaults to: 127.0.0.1)")
-	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port (Defaults to: 8080)")
+	DeleteAnnouncements.Flags().String("host", "127.0.0.1", "set a custom host")
+	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port")
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
 
 }

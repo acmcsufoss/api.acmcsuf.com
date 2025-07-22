@@ -46,8 +46,8 @@ func init() {
 
 	// URL Flags
 	PutEvents.Flags().String("id", "", "Event to update")
-	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
-	PutEvents.Flags().String("port", "8080", "Custom port (ex: 8080)")
+	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host")
+	PutEvents.Flags().String("port", "8080", "Custom port")
 
 	// Payload flags
 	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")

@@ -28,8 +28,8 @@ func init() {
 
 	// Url Flags
 	GetEvent.Flags().String("id", "", "Get a specific event")
-	GetEvent.Flags().String("host", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
-	GetEvent.Flags().String("port", "8080", "Custom port (ex: 8080)")
+	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
+	GetEvent.Flags().String("port", "8080", "Custom port")
 
 }
 
