@@ -61,3 +61,93 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 		"uuid":    params.Uuid,
 	})
 }
+
+func (h *BoardHandler) GetTier(c *gin.Context) {
+	ctx := c.Request.Context()
+	id := c.Param("id")
+
+	tier, err := h.boardService.GetTier(ctx, id)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Tier not found",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve tier",
+		})
+	}
+
+	c.JSON(http.StatusOK, tier)
+}
+
+func (h *BoardHandler) CreateTier(c *gin.Context) {
+	ctx := c.Request.Context()
+	var params models.CreateTierParams
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+		return
+	}
+
+	// TODO: error out if required fields aren't provided
+	if err := h.boardService.CreateTier(ctx, params); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create tier",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Tier created successfully",
+		"tier":    params.Tier,
+	})
+}
+
+func (h *BoardHandler) GetPosition(c *gin.Context) {
+	ctx := c.Request.Context()
+	id := c.Param("id")
+
+	position, err := h.boardService.GetPosition(ctx, id)
+
+	if err != nil {
+		if err.Error() == "sql: no rows in result set" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"error": "Position not found",
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to retrieve position",
+		})
+	}
+
+	c.JSON(http.StatusOK, position)
+}
+
+func (h *BoardHandler) CreatePosition(c *gin.Context) {
+	ctx := c.Request.Context()
+	var params models.CreatePositionParams
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body. " + err.Error(),
+		})
+		return
+	}
+
+	// TODO: error out if required fields aren't provided
+	if err := h.boardService.CreatePosition(ctx, params); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to create position",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "Position created successfully",
+		"oid":      params.Oid,
+		"semester": params.Semester,
+		"tier":     params.Tier,
+	})
+}

@@ -1,5 +1,4 @@
 -- name: CreateOfficer :exec
--- name: CreateOfficer :exec
 INSERT INTO
 officer (
     uuid,

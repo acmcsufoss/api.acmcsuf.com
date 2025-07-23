@@ -9,7 +9,7 @@ import (
 )
 
 func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer) {
+	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
 
 	// Version 1 routes
@@ -29,5 +29,12 @@ func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 		v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
 		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 
+		boardHandler := handlers.NewBoardHandler(boardService)
+		router.GET("/officer/:id", boardHandler.GetOfficer)
+		router.GET("/tier/:id", boardHandler.GetTier)
+		router.GET("/position/:id", boardHandler.GetPosition)
+		router.POST("/officer", announcementHandler.CreateAnnouncement)
+		router.POST("/tier", announcementHandler.CreateAnnouncement)
+		router.POST("/position", announcementHandler.CreateAnnouncement)
 	}
 }
