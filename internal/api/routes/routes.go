@@ -7,7 +7,7 @@ import (
 )
 
 func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer) {
+	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 
 	eventHandler := handlers.NewEventHandler(eventService)
 	router.GET("/events", eventHandler.GetEvents)
@@ -22,4 +22,12 @@ func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	router.POST("/announcements", announcementHandler.CreateAnnouncement)
 	router.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
 	router.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
+
+	boardHandler := handlers.NewBoardHandler(boardService)
+	router.GET("/officer/:id", boardHandler.GetOfficer)
+	router.GET("/tier/:id", boardHandler.GetTier)
+	router.GET("/position/:id", boardHandler.GetPosition)
+	router.POST("/officer", announcementHandler.CreateAnnouncement)
+	router.POST("/tier", announcementHandler.CreateAnnouncement)
+	router.POST("/position", announcementHandler.CreateAnnouncement)
 }
