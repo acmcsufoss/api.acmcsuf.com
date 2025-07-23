@@ -7,7 +7,7 @@ import (
 )
 
 type BoardServicer interface {
-	//Service[params]
+	//Service[models.Officer, models.Tier, models.Position]
 }
 
 type BoardService struct {
