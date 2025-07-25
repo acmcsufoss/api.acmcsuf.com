@@ -144,6 +144,15 @@ func PrintStruct(s any) {
 			} else {
 				display = "NULL"
 			}
+
+		case reflect.TypeOf(sql.NullBool{}):
+			n := value.Interface().(sql.NullBool)
+			if n.Valid {
+				display = strconv.FormatBool(n.Bool)
+			} else {
+				display = "NULL"
+			}
+
 		default:
 			if value.Kind() == reflect.Int64 {
 				display = FormatUnix(value.Int())

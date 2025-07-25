@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
@@ -115,6 +116,11 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	body, err := io.ReadAll(getResponse.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
+		return
+	}
+
+	if strings.Contains(getResponse.Status, "404") {
+		fmt.Println("error 404 retrieved. event does not exist")
 		return
 	}
 
@@ -299,7 +305,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
+	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewReader(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
