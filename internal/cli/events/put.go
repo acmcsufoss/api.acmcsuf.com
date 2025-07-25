@@ -306,7 +306,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
+	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewReader(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
