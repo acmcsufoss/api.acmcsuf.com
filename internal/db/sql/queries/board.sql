@@ -68,3 +68,47 @@ INNER JOIN position
 INNER JOIN tier
     ON position.tier = tier.tier
 WHERE officer.full_name = ?
+
+-- name: UpdateOfficer :exec
+UPDATE officer
+SET
+    full_name = COALESCE(sqlc.narg('full_name'), full_name),
+    picture = COALESCE(sqlc.narg('picture'), picture),
+    github = COALESCE(sqlc.narg('github'), github),
+    discord = COALESCE(sqlc.narg('discord'), discord)
+WHERE
+    uuid = sqlc.arg('uuid');
+
+-- name: UpdateTier :exec 
+UPDATE tier
+SET
+    title = COALESCE(sqlc.narg('title'), title),
+    t_index = COALESCE(sqlc.narg('t_index'), t_index),
+    team = COALESCE(sqlc.narg('team'), team)
+WHERE
+    tier = sqlc.arg('tier');
+
+-- name: UpdatePosition :exec 
+UPDATE position
+SET
+    title = COALESCE(sqlc.narg('title'), title),
+    t_index = COALESCE(sqlc.narg('t_index'), t_index),
+    team = COALESCE(sqlc.narg('team'), team)
+WHERE
+    oid = sqlc.arg('oid')
+AND
+    semester = sqlc.arg('semester')
+AND
+    tier = sqlc.arg('tier');
+
+-- name: DeleteOfficer :exec
+DELETE FROM officer
+WHERE uuid = ?;
+
+-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?;
+
+-- name: DeletePosition :exec
+DELETE FROM position
+WHERE oid = ?;
