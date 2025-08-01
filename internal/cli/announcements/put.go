@@ -223,7 +223,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		confirmationBuffer := scanner.Bytes()
 		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
-			fmt.Println("error with reading confimrmation:", err)
+			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(

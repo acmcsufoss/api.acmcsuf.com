@@ -170,7 +170,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 		confirmationBuffer := scanner.Bytes()
 		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
-			fmt.Println("error with reading confimrmation:", err)
+			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(

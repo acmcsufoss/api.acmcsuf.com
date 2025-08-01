@@ -37,7 +37,7 @@ func ByteSlicetoUnix(data []byte) (int64, error) {
 	// Parse time in relation to los angeles time, or more familiarly, PST time
 	startTime, err := time.ParseInLocation(layout, timeString, loc)
 	if err != nil {
-		return -1, fmt.Errorf("error in converting byte slice to string: %s", err)
+		return -1, fmt.Errorf("error parsing time format: %s", err)
 	}
 
 	return startTime.Unix(), nil

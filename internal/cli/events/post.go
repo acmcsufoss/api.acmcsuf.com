@@ -50,7 +50,7 @@ var PostEvent = &cobra.Command{
 		}
 
 		if duration != "" && startAtString == "" {
-			fmt.Printf("--startat is requred in order to use --duration")
+			fmt.Printf("--startat is required in order to use --duration")
 		}
 		postEvent(urlhost, port, &payload)
 	},
@@ -206,7 +206,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 		confirmationBuffer := scanner.Bytes()
 		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
-			fmt.Println("error with reading confimrmation:", err)
+			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(
