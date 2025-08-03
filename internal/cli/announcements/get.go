@@ -62,15 +62,25 @@ func getAnnouncement(host string, port string, uuid string) {
 
 	fmt.Println("Response status:", response.Status)
 
-	var getPayload []CreateAnnouncement
-	err = json.NewDecoder(response.Body).Decode(&getPayload)
-	if err != nil {
-		fmt.Println("Failed to read response body:", err)
-		return
-	}
+	if id == "" {
+		var getPayload []CreateAnnouncement
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body without id:", err)
+			return
+		}
 
-	for i := range getPayload {
-		cli.PrintStruct(getPayload[i])
-	}
+		for i := range getPayload {
+			cli.PrintStruct(getPayload[i])
+		}
+	} else {
+		var getPayload CreateAnnouncement
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body with id:", err)
+			return
+		}
 
+		cli.PrintStruct(getPayload)
+	}
 }

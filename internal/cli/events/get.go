@@ -69,14 +69,25 @@ func getEvents(id string, port string, host string) {
 	// ----- Read Response Information -----
 	fmt.Println("Response status:", response.Status)
 
-	var getPayload []CreateEvent
-	err = json.NewDecoder(response.Body).Decode(&getPayload)
-	if err != nil {
-		fmt.Println("Failed to read response body:", err)
-		return
-	}
+	if id == "" {
+		var getPayload []CreateEvent
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body without id:", err)
+			return
+		}
 
-	for i := range getPayload {
-		cli.PrintStruct(getPayload[i])
+		for i := range getPayload {
+			cli.PrintStruct(getPayload[i])
+		}
+	} else {
+		var getPayload CreateEvent
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body with id:", err)
+			return
+		}
+
+		cli.PrintStruct(getPayload)
 	}
 }
