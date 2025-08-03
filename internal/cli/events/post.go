@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/spf13/cobra"
 )
@@ -52,6 +53,7 @@ var PostEvent = &cobra.Command{
 		if duration != "" && startAtString == "" {
 			fmt.Printf("--startat is required in order to use --duration")
 		}
+
 		postEvent(urlhost, port, &payload)
 	},
 }
@@ -62,11 +64,13 @@ func init() {
 	PostEvent.Flags().String("urlhost", "127.0.0.1", "Custom host")
 	PostEvent.Flags().String("port", "8080", "Custom port")
 
+
 	// Payload flags
 	PostEvent.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PostEvent.Flags().StringP("location", "l", "", "Set location of new event")
 	PostEvent.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
 	PostEvent.Flags().StringP("duration", "d", "", "Set the duration of new event (Format: 03:04:05)")
+
 	PostEvent.Flags().StringP("host", "H", "", "Set host of new event")
 	PostEvent.Flags().BoolP("allday", "a", false, "Set if new event is all day")
 
@@ -147,6 +151,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 			payload.EndAt = endTime
 			break
 		}
+
 	}
 
 	// ----- Is all day -----
@@ -197,6 +202,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
 		cli.PrintStruct(payload)
+
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -213,6 +219,7 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 			return
 		}
 		break
+
 	}
 
 	// ----- Convert to Json -----

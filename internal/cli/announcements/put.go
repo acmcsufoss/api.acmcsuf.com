@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 
+
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
@@ -31,6 +32,7 @@ var PutAnnouncements = &cobra.Command{
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		visibilityString, _ := cmd.Flags().GetString("visibility")
 		announceAtString, _ := cmd.Flags().GetString("announceat")
+
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
@@ -46,6 +48,7 @@ var PutAnnouncements = &cobra.Command{
 			}
 			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtUnix)
 		}
+    
 		putAnnouncements(host, port, id, &payload)
 	},
 }
@@ -55,16 +58,19 @@ func init() {
 	// Url flags
 	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PutAnnouncements.Flags().String("port", "8080", "Set a custom port")
+
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
 
 	// Payload flags
 	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
 	PutAnnouncements.Flags().StringP("announceat", "a", "", "Change this announcement's announce at")
+
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
 
 	PutAnnouncements.MarkFlagRequired("id")
+
 }
 
 func putAnnouncements(host string, port string, id string, payload *UpdateAnnouncement) {
@@ -111,6 +117,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		fmt.Println("error unmarshaling previous announcement data:", err)
 		return
 	}
+
 
 	// ----- Prompt User for New Values -----
 	scanner := bufio.NewScanner(os.Stdin)
@@ -234,6 +241,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 			return
 		}
 		break
+
 	}
 
 	// ----- Marshal Payload to Json -----

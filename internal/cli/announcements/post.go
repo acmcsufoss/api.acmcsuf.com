@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
 	"github.com/spf13/cobra"
@@ -29,6 +30,7 @@ var PostAnnouncement = &cobra.Command{
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		announceString, _ := cmd.Flags().GetString("announceat")
+
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
@@ -52,11 +54,13 @@ func init() {
 	// URL flags
 	PostAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PostAnnouncement.Flags().String("port", "8080", "Set a custom port")
+
 	PostAnnouncement.Flags().String("id", "", "PUT to announcement by it's id")
 
 	// Payload flags
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
 	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at")
+
 	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this announcement's channel id")
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
@@ -177,6 +181,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 			return
 		}
 		break
+
 	}
 
 	// ----- Marshalling to Json -----

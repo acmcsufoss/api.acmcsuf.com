@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
+
 	"github.com/spf13/cobra"
 )
 
@@ -28,6 +29,7 @@ func init() {
 	// Url flags
 	GetAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
 	GetAnnouncement.Flags().String("port", "8080", "Set a custom port")
+
 	GetAnnouncement.Flags().String("id", "", "Get a specific announcement by its id")
 
 }
@@ -83,4 +85,5 @@ func getAnnouncement(host string, port string, uuid string) {
 
 		cli.PrintStruct(getPayload)
 	}
+
 }

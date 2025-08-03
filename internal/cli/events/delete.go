@@ -30,6 +30,7 @@ func init() {
 	DeleteEvent.Flags().String("port", "8080", "Set a custom port")
 
 	DeleteEvent.MarkFlagRequired("id")
+
 }
 
 func deleteEvent(id string, host string, port string) {

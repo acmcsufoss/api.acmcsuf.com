@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
+
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +32,7 @@ func init() {
 	GetEvent.Flags().String("id", "", "Get a specific event")
 	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
 	GetEvent.Flags().String("port", "8080", "Custom port")
+
 
 }
 
@@ -90,4 +92,5 @@ func getEvents(id string, port string, host string) {
 
 		cli.PrintStruct(getPayload)
 	}
+
 }

@@ -6,15 +6,10 @@ import (
 	"time"
 )
 
-// A lot of
+
+// Common Byte Slice Conversions
 
 func ByteSlicetoInt64(data []byte) (int64, error) {
-	// Padding, if number is too short we run into the eof and get an error (see binary.Read)
-	/*if len(data) < 8 {
-		padded := make([]byte, 8-len(data), 8)
-		data = append(padded, data...)
-	}
-	*/
 	fmt.Printf("%d, %v", data, data)
 	number, err := strconv.Atoi(string(data))
 	if err != nil {
@@ -38,6 +33,7 @@ func ByteSlicetoUnix(data []byte) (int64, error) {
 	startTime, err := time.ParseInLocation(layout, timeString, loc)
 	if err != nil {
 		return -1, fmt.Errorf("error parsing time format: %s", err)
+
 	}
 
 	return startTime.Unix(), nil
