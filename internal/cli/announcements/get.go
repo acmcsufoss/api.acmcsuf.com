@@ -62,7 +62,7 @@ func getAnnouncement(host string, port string, uuid string) {
 
 	fmt.Println("Response status:", response.Status)
 
-	if id == "" {
+	if uuid == "" {
 		var getPayload []CreateAnnouncement
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {

@@ -37,7 +37,7 @@ var PostAnnouncement = &cobra.Command{
 
 		if announceString != "" {
 			var err error
-			payload.AnnounceAt, err = convert.ByteSlicetoInt64([]byte(announceString))
+			payload.AnnounceAt, err = convert.ByteSlicetoUnix([]byte(announceString))
 			if err != nil {
 				fmt.Println(err)
 				return

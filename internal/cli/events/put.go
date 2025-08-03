@@ -125,8 +125,9 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	}
 
 	var oldpayload CreateEvent
-	if err := json.Unmarshal(body, &oldpayload); err != nil {
-		fmt.Println("Error unmarshaling JSON response:", err)
+	err = json.Unmarshal(body, &oldpayload)
+	if err != nil {
+		fmt.Println("error unmarshalling previous event data:", err)
 		return
 	}
 
@@ -197,7 +198,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- End time (Duration) -----
 	for {
 		if payload.EndAt == 0 {
-			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 03:04:05)", cli.FormatUnix(oldpayload.EndAt), scanner)
+			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 03:04:05 01/02/06)", cli.FormatUnix(oldpayload.EndAt), scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -305,7 +306,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewReader(newPayload))
+	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return

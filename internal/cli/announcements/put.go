@@ -106,7 +106,11 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	}
 
 	var oldPayload CreateAnnouncement
-	json.Unmarshal(body, &oldPayload)
+	err = json.Unmarshal(body, &oldPayload)
+	if err != nil {
+		fmt.Println("error unmarshaling previous announcement data:", err)
+		return
+	}
 
 	// ----- Prompt User for New Values -----
 	scanner := bufio.NewScanner(os.Stdin)
