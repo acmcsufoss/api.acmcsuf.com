@@ -5,13 +5,13 @@
 buildGoModule {
   name = "api-acmcsuf";
   src = ../.;
-  vendorHash = "sha256-PbObU1GpSa18kwp1kQvYTR3j+Vuh6dNLphwDYXxOejc=";
+  vendorHash = "sha256-3BpLbfoLmv5dwBxEHW7i//MlgIsrGMT8ZILrze7WM18=";
 
   postBuild = ''
     mv $GOPATH/bin/api $GOPATH/bin/api-acmcsuf
   '';
 
-  subPackages = ["cmd/api"];
+  subPackages = ["cmd/api" "cmd/csuf"];
 
   meta = {
     description = "API created and used by CSUF's ACM chapter";
