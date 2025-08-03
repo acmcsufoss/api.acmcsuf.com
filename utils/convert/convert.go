@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-
 // Common Byte Slice Conversions
 
 func ByteSlicetoInt64(data []byte) (int64, error) {

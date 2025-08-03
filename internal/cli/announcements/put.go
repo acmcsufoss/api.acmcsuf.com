@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"os"
 
-
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
@@ -48,7 +47,7 @@ var PutAnnouncements = &cobra.Command{
 			}
 			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtUnix)
 		}
-    
+
 		putAnnouncements(host, port, id, &payload)
 	},
 }
@@ -117,7 +116,6 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		fmt.Println("error unmarshaling previous announcement data:", err)
 		return
 	}
-
 
 	// ----- Prompt User for New Values -----
 	scanner := bufio.NewScanner(os.Stdin)

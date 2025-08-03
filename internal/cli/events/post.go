@@ -64,7 +64,6 @@ func init() {
 	PostEvent.Flags().String("urlhost", "127.0.0.1", "Custom host")
 	PostEvent.Flags().String("port", "8080", "Custom port")
 
-
 	// Payload flags
 	PostEvent.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PostEvent.Flags().StringP("location", "l", "", "Set location of new event")

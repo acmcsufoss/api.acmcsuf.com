@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
@@ -69,7 +68,6 @@ func init() {
 	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host")
 	PutEvents.Flags().String("port", "8080", "Custom port")
 
-
 	// Payload flags
 	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PutEvents.Flags().StringP("location", "l", "", "Set location of new event")
@@ -80,7 +78,6 @@ func init() {
 
 	// This flag is neccessary
 	PutEvents.MarkFlagRequired("id")
-
 
 }
 
@@ -302,7 +299,6 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 
 		break
 	}
-
 
 	// ----- Put the Payload -----
 	newPayload, err := json.Marshal(updatePayload)

@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
 )
 
 // Reoccuring functions for CLI files
@@ -171,4 +170,3 @@ func PrintStruct(s any) {
 
 	fmt.Println("----------------------------------------------------------------")
 }
-

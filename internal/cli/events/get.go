@@ -33,7 +33,6 @@ func init() {
 	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
 	GetEvent.Flags().String("port", "8080", "Custom port")
 
-
 }
 
 func getEvents(id string, port string, host string) {
