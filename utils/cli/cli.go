@@ -61,16 +61,15 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 	startUnix := time.Unix(startTime, 0)
 
 	// Since I cant go from 03:04:05 -> time.Time directly, I am left doing some... parsing
-	re := regexp.MustCompile(`(\d{2}):(\d{2}):(\d{2})`)
+	re := regexp.MustCompile(`(\d{2}):(\d{2})`)
 	parsedDuration := re.FindStringSubmatch(duration)
 
 	if parsedDuration == nil {
-		return -1, fmt.Errorf("error, duration time must be in the format: 03:04:05")
+		return -1, fmt.Errorf("error, duration time must be in the format: 03:04")
 	}
 
 	durHour := parsedDuration[1]
 	durMin := parsedDuration[2]
-	durSec := parsedDuration[3]
 
 	//fmt.Println("Parsed times:", durHour, durMin, durSec)
 	intDurHour, err := strconv.Atoi(durHour)
@@ -83,15 +82,9 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 		return -1, fmt.Errorf("error converting minute to int: %s", err)
 	}
 
-	intDurSec, err := strconv.Atoi(durSec)
-	if err != nil {
-		return -1, fmt.Errorf("error converting second to int: %s", err)
-	}
-
 	totalDuration := startUnix.Add(
 		time.Duration(intDurHour)*time.Hour +
-			time.Duration(intDurMin)*time.Minute +
-			time.Duration(intDurSec)*time.Second,
+			time.Duration(intDurMin)*time.Minute,
 	)
 
 	return totalDuration.Unix(), nil
@@ -100,7 +93,7 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 // For unix times of int64 to readable format of 03:04:05PM 01/02/06
 func FormatUnix(unixTime int64) string {
 	t := time.Unix(unixTime, 0)
-	return t.Format("03:04:05PM 01/02/06")
+	return t.Format("01/02/06 03:04PM")
 }
 
 // BOO! Any type jumpscare

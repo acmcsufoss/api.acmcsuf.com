@@ -164,7 +164,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 			oldAnnounceAt := cli.FormatUnix(oldPayload.AnnounceAt)
 
 			// Yah this might be a little sloppy in the terminal. forgive me.
-			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"03:04:05PM 01/02/06\")", oldAnnounceAt, scanner)
+			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner)
 			if err != nil {
 				fmt.Println("error with changing announce at:", err)
 				continue

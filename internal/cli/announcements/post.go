@@ -106,8 +106,8 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	// ----- Announce at -----
 	for {
 		if payload.AnnounceAt == 0 {
-			fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n [Hour]:[Minutes]:[Seconds][PM | AM] [Month]/[Day]/[Year]")
-			fmt.Println("For example: \x1b[93m03:04:05PM 01/02/06\x1b[0m")
+			fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]")
+			fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading anounce at:", err)

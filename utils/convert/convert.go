@@ -20,7 +20,7 @@ func ByteSlicetoInt64(data []byte) (int64, error) {
 
 func ByteSlicetoUnix(data []byte) (int64, error) {
 	// 12 hour format. Note: AM AND PM HAVE TO BE CAPITALIZED
-	layout := "03:04:05PM 01/02/06"
+	layout := "01/02/06 03:04PM"
 	loc, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
 		return -1, fmt.Errorf("error in getting location for time: %s", err)

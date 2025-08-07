@@ -177,7 +177,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- Start time -----
 	for {
 		if payload.StartAt == 0 {
-			changeTheEventStartAt, err := cli.ChangePrompt("start time (format: 03:04:05PM 01/02/06)", cli.FormatUnix(oldpayload.StartAt), scanner)
+			changeTheEventStartAt, err := cli.ChangePrompt("start time (format: 01/02/06 03:04PM)", cli.FormatUnix(oldpayload.StartAt), scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue
@@ -199,7 +199,7 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// ----- End time (Duration) -----
 	for {
 		if payload.EndAt == 0 {
-			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 03:04:05 01/02/06)", cli.FormatUnix(oldpayload.EndAt), scanner)
+			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 01/02/06 03:04 )", cli.FormatUnix(oldpayload.EndAt), scanner)
 			if err != nil {
 				fmt.Println(err)
 				continue

@@ -113,8 +113,8 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	// ----- Start Time -----
 	for {
 		if payload.StartAt == 0 {
-			fmt.Println("Please enter the start time of the event in the following format:\n [Hour]:[Minute]:[Second][PM | AM] [Month]/[Day]/[Year]")
-			fmt.Println("For example: \x1b[93m03:04:05PM 01/02/06\x1b[0m")
+			fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute]:[Second][PM | AM]")
+			fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading start time:", err)
@@ -134,8 +134,8 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 	// ----- End Time (Duration) -----
 	for {
 		if payload.EndAt == 0 {
-			fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]:[Seconds]")
-			fmt.Println("For example: \x1b[93m03:04:05\x1b[0m")
+			fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]")
+			fmt.Println("For example: \x1b[93m03:04\x1b[0m")
 			scanner.Scan()
 			if err := scanner.Err(); err != nil {
 				fmt.Println("error reading end time:", err)
