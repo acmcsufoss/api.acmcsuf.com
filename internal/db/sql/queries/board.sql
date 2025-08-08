@@ -98,10 +98,8 @@ SET
     team = COALESCE(sqlc.narg('team'), team)
 WHERE
     oid = sqlc.arg('oid')
-AND
-    semester = sqlc.arg('semester')
-AND
-    tier = sqlc.arg('tier');
+    AND semester = sqlc.arg('semester')
+    AND tier = sqlc.arg('tier');
 
 -- name: DeleteOfficer :exec
 DELETE FROM officer
@@ -113,6 +111,7 @@ WHERE tier = ?;
 
 -- name: DeletePosition :exec
 DELETE FROM position
-WHERE oid = ?
-AND semester = ?
-AND tier = ?;
+WHERE 
+    oid = ?
+    AND semester = ?
+    AND tier = ?;

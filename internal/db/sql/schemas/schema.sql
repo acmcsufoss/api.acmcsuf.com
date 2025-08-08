@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS position (
     full_name VARCHAR(30) NOT NULL,
     title VARCHAR(40),
     team VARCHAR(20),
-    PRIMARY KEY (oid, semester, tier)
+    PRIMARY KEY (oid, semester, tier),
     
 
     CONSTRAINT fk_officer FOREIGN KEY (oid) REFERENCES officer (uuid),
