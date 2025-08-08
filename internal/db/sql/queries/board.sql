@@ -58,26 +58,28 @@ WHERE
 
 -- name: GetPosition :one
 SELECT
-    position.semester,
-    tier.title,
-    tier.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officer
-INNER JOIN position
-    ON officer.uuid = position.oid
-INNER JOIN tier
-    ON position.tier = tier.tier
-WHERE officer.full_name = ?
+    position
+WHERE
+    full_name = ?;
+
+-- NOTE: Had to declare above table as :one, may need to change later to :many
 
 -- name: UpdateOfficer :exec
 UPDATE officer
 SET
-    full_name = COALESCE(sqlc.narg('full_name'), full_name),
-    picture = COALESCE(sqlc.narg('picture'), picture),
-    github = COALESCE(sqlc.narg('github'), github),
-    discord = COALESCE(sqlc.narg('discord'), discord)
+    full_name = COALESCE(:full_name, full_name),
+    picture = COALESCE(:picture, picture),
+    github = COALESCE(:github, github),
+    discord = COALESCE(:discord, discord)
 WHERE
-    uuid = sqlc.arg('uuid');
+    uuid = :uuid;
 
 -- name: UpdateTier :exec 
 UPDATE tier
@@ -91,8 +93,8 @@ WHERE
 -- name: UpdatePosition :exec 
 UPDATE position
 SET
+    full_name = COALESCE(sqlc.narg('full_name'), full_name),
     title = COALESCE(sqlc.narg('title'), title),
-    t_index = COALESCE(sqlc.narg('t_index'), t_index),
     team = COALESCE(sqlc.narg('team'), team)
 WHERE
     oid = sqlc.arg('oid')
@@ -111,4 +113,6 @@ WHERE tier = ?;
 
 -- name: DeletePosition :exec
 DELETE FROM position
-WHERE oid = ?;
+WHERE oid = ?
+AND semester = ?
+AND tier = ?;
