@@ -111,7 +111,7 @@ WHERE tier = ?;
 
 -- name: DeletePosition :exec
 DELETE FROM position
-WHERE 
+WHERE
     oid = ?
     AND semester = ?
     AND tier = ?;
