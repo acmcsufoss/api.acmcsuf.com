@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
@@ -34,10 +35,28 @@ var PutEvents = &cobra.Command{
 		// CLI for payload
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
-		payload.StartAt, _ = cmd.Flags().GetInt64("startat")
-		payload.EndAt, _ = cmd.Flags().GetInt64("endat")
+		startAtString, _ := cmd.Flags().GetString("startat")
+		durationString, _ := cmd.Flags().GetString("duration")
 		payload.IsAllDay, _ = cmd.Flags().GetBool("allday")
 		payload.Host, _ = cmd.Flags().GetString("host")
+
+		if startAtString != "" {
+			var err error
+			payload.StartAt, err = convert.ByteSlicetoUnix([]byte(startAtString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			if durationString != "" {
+				var err error
+				payload.EndAt, err = cli.TimeAfterDuration(payload.StartAt, durationString)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+			}
+		}
+
 		updateEvent(id, host, port, &payload)
 	},
 }
@@ -46,16 +65,19 @@ func init() {
 
 	// URL Flags
 	PutEvents.Flags().String("id", "", "Event to update")
-	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
-	PutEvents.Flags().String("port", "8080", "Custom port (ex: 8080)")
+	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host")
+	PutEvents.Flags().String("port", "8080", "Custom port")
 
 	// Payload flags
 	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PutEvents.Flags().StringP("location", "l", "", "Set location of new event")
-	PutEvents.Flags().Int64P("startat", "s", 0, "Set the start time of new event (Note: flag takes Unix time)")
-	PutEvents.Flags().Int64P("endat", "e", 0, "Set the end time of new event (Note: flag takes unix time)")
+	PutEvents.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
+	PutEvents.Flags().StringP("duration", "d", "", "Set the end time of new event (Format: 03:04:05)")
 	PutEvents.Flags().StringP("host", "H", "", "Set host of new event")
 	PutEvents.Flags().BoolP("allday", "a", false, "Set if new event is all day")
+
+	// This flag is neccessary
+	PutEvents.MarkFlagRequired("id")
 
 }
 
@@ -97,9 +119,16 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 		return
 	}
 
+	if strings.Contains(getResponse.Status, "404") {
+		fmt.Println("error 404 retrieved. event does not exist")
+		return
+	}
+
 	var oldpayload CreateEvent
-	if err := json.Unmarshal(body, &oldpayload); err != nil {
-		fmt.Println("Error unmarshaling JSON response:", err)
+	err = json.Unmarshal(body, &oldpayload)
+	if err != nil {
+		fmt.Println("error unmarshalling previous event data:", err)
+
 		return
 	}
 
@@ -110,108 +139,129 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 	// payload values are empty if user did not input a value in the command line
 
 	// ----- uuid -----
-	if payload.Uuid == "" {
-		changeTheEventUuid, err := cli.ChangePrompt("uuid", oldpayload.Uuid, scanner)
-		if err != nil {
-			fmt.Println(err) // Custom errors in changePrompt()
-			return
-		}
+	for {
+		if payload.Uuid == "" {
+			changeTheEventUuid, err := cli.ChangePrompt("uuid", oldpayload.Uuid, scanner)
+			if err != nil {
+				fmt.Println(err) // Custom errors in changePrompt()
+				continue
+			}
 
-		if changeTheEventUuid != nil {
-			payload.Uuid = string(changeTheEventUuid)
-		} else {
-			payload.Uuid = oldpayload.Uuid
+			if changeTheEventUuid != nil {
+				payload.Uuid = string(changeTheEventUuid)
+			} else {
+				payload.Uuid = oldpayload.Uuid
+			}
 		}
-
+		break
 	}
 
 	// ----- Location -----
-	if payload.Location == "" {
-		changeTheEventLocation, err := cli.ChangePrompt("location", oldpayload.Location, scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+	for {
+		if payload.Location == "" {
+			changeTheEventLocation, err := cli.ChangePrompt("location", oldpayload.Location, scanner)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
 
-		if changeTheEventLocation != nil {
-			payload.Location = string(changeTheEventLocation)
-		} else {
-			payload.Location = oldpayload.Location
+			if changeTheEventLocation != nil {
+				payload.Location = string(changeTheEventLocation)
+			} else {
+				payload.Location = oldpayload.Location
+			}
 		}
+		break
 	}
 
 	// ----- Start time -----
-	if payload.StartAt == 0 {
-		changeTheEventStartAt, err := cli.ChangePrompt("start time", strconv.FormatInt(oldpayload.StartAt, 10), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventStartAt != nil {
-			payload.StartAt, err = convert.ByteSlicetoInt64(changeTheEventStartAt)
+	for {
+		if payload.StartAt == 0 {
+			changeTheEventStartAt, err := cli.ChangePrompt("start time (format: 01/02/06 03:04PM)", cli.FormatUnix(oldpayload.StartAt), scanner)
 			if err != nil {
-				fmt.Println("Error with reading start integer:", err)
-				return
+				fmt.Println(err)
+				continue
 			}
-		} else {
-			payload.StartAt = oldpayload.StartAt
+
+			if changeTheEventStartAt != nil {
+				payload.StartAt, err = convert.ByteSlicetoUnix(changeTheEventStartAt)
+				if err != nil {
+					fmt.Println("Error with reading start integer:", err)
+					continue
+				}
+			} else {
+				payload.StartAt = oldpayload.StartAt
+			}
 		}
+		break
 	}
 
-	// ----- End time -----
-	if payload.EndAt == 0 {
-		changeTheEventEndAt, err := cli.ChangePrompt("end time", strconv.FormatInt(oldpayload.EndAt, 10), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventEndAt != nil {
-			payload.EndAt, err = convert.ByteSlicetoInt64(changeTheEventEndAt)
+	// ----- End time (Duration) -----
+	for {
+		if payload.EndAt == 0 {
+			changeTheEventEndAt, err := cli.ChangePrompt("end time (format: 01/02/06 03:04 )", cli.FormatUnix(oldpayload.EndAt), scanner)
 			if err != nil {
-				fmt.Println("Error with reading end integer:", err)
-				return
+				fmt.Println(err)
+				continue
 			}
-		} else {
-			payload.EndAt = oldpayload.EndAt
+
+			if changeTheEventEndAt != nil {
+				payload.EndAt, err = convert.ByteSlicetoUnix(changeTheEventEndAt)
+				if err != nil {
+					fmt.Println("Error with reading end integer:", err)
+					continue
+				}
+			} else {
+				payload.EndAt = oldpayload.EndAt
+			}
 		}
+		break
+
 	}
 
 	// ----- All day -----
 	// This is kind of awkward but I don't know have a workaround at the moment
-	if !payload.IsAllDay {
-		changeTheEventAllDay, err := cli.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		if changeTheEventAllDay != nil {
-			newAllDayBuffer := scanner.Bytes()
-			payload.IsAllDay, err = cli.YesOrNo(newAllDayBuffer, scanner)
+	for {
+		if !payload.IsAllDay {
+			changeTheEventAllDay, err := cli.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
 			if err != nil {
 				fmt.Println(err)
-				return
+				continue
 			}
-		} else {
-			payload.IsAllDay = oldpayload.IsAllDay
+
+			if changeTheEventAllDay != nil {
+				newAllDayBuffer := scanner.Bytes()
+				payload.IsAllDay, err = cli.YesOrNo(newAllDayBuffer, scanner)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+			} else {
+				payload.IsAllDay = oldpayload.IsAllDay
+			}
 		}
+
+		break
 	}
 
 	// ----- Host -----
-	if payload.Host == "" {
-		changeTheEventHost, err := cli.ChangePrompt("host", oldpayload.Host, scanner)
-		if err != nil {
-			fmt.Println(err)
-			return
+	for {
+		if payload.Host == "" {
+			changeTheEventHost, err := cli.ChangePrompt("host", oldpayload.Host, scanner)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+
+			if changeTheEventHost != nil {
+				payload.Host = string(changeTheEventHost)
+			} else {
+				payload.Host = oldpayload.Host
+			}
 		}
 
-		if changeTheEventHost != nil {
-			payload.Host = string(changeTheEventHost)
-		} else {
-			payload.Host = oldpayload.Host
-		}
+		break
+
 	}
 
 	// ----- PUT the payload -----
@@ -223,6 +273,31 @@ func updateEvent(id string, host string, port string, payload *CreateEvent) {
 		EndAt:    dbtypes.Int64toNullInt64(payload.EndAt),
 		IsAllDay: dbtypes.BooltoNullBool(payload.IsAllDay),
 		Host:     dbtypes.StringtoNullString(payload.Host),
+	}
+
+	// Confirmation
+	// TODO: Fix put
+	for {
+		fmt.Println("Are these changes okay?[y/n]")
+		cli.PrintStruct(updatePayload)
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error scanning confirmation:", err)
+			continue
+		}
+
+		confirmationBuffer := scanner.Bytes()
+		confirmation, err := cli.YesOrNo(confirmationBuffer, scanner)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if !confirmation {
+			return
+		}
+
+		break
 	}
 
 	// ----- Put the Payload -----

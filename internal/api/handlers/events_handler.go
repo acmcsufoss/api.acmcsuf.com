@@ -3,6 +3,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
@@ -147,6 +148,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	var params models.UpdateEventParams
 	id := c.Param("id")
 
+	fmt.Println("UPDATE:", id)
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
@@ -155,8 +157,9 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	}
 
 	if err := h.eventsService.Update(ctx, id, params); err != nil {
+		error := fmt.Sprint("Failed to update event: ", err, " | ", ctx, " | ", id, " | ", params)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to update event",
+			"error": error,
 		})
 		return
 	}

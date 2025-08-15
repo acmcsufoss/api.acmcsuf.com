@@ -1,10 +1,12 @@
 package announcements
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 
 	"github.com/spf13/cobra"
 )
@@ -25,8 +27,9 @@ var GetAnnouncement = &cobra.Command{
 func init() {
 
 	// Url flags
-	GetAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host (Defaults to: 127.0.0.1)")
-	GetAnnouncement.Flags().String("port", "8080", "Set a custom port (Defaults to: 8080)")
+	GetAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
+	GetAnnouncement.Flags().String("port", "8080", "Set a custom port")
+
 	GetAnnouncement.Flags().String("id", "", "Get a specific announcement by its id")
 
 }
@@ -61,12 +64,26 @@ func getAnnouncement(host string, port string, uuid string) {
 
 	fmt.Println("Response status:", response.Status)
 
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("error reading body:", err)
-		return
-	}
+	if uuid == "" {
+		var getPayload []CreateAnnouncement
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body without id:", err)
+			return
+		}
 
-	fmt.Println(string(body))
+		for i := range getPayload {
+			cli.PrintStruct(getPayload[i])
+		}
+	} else {
+		var getPayload CreateAnnouncement
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body with id:", err)
+			return
+		}
+
+		cli.PrintStruct(getPayload)
+	}
 
 }
