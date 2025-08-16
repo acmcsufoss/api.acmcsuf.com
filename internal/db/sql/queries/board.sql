@@ -67,7 +67,7 @@ SELECT
 FROM
     position
 WHERE
-    full_name = ?;
+    oid = ?;
 
 -- NOTE: Had to declare above table as :one, may need to change later to :many
 
@@ -84,22 +84,22 @@ WHERE
 -- name: UpdateTier :exec 
 UPDATE tier
 SET
-    title = COALESCE(sqlc.narg('title'), title),
-    t_index = COALESCE(sqlc.narg('t_index'), t_index),
-    team = COALESCE(sqlc.narg('team'), team)
+    title = COALESCE(:title, title),
+    t_index = COALESCE(:t_index, t_index),
+    team = COALESCE(:team, team)
 WHERE
-    tier = sqlc.arg('tier');
+    tier = :tier;
 
 -- name: UpdatePosition :exec 
 UPDATE position
 SET
-    full_name = COALESCE(sqlc.narg('full_name'), full_name),
-    title = COALESCE(sqlc.narg('title'), title),
-    team = COALESCE(sqlc.narg('team'), team)
+    full_name = COALESCE(:full_name, full_name),
+    title = COALESCE(:title, title),
+    team = COALESCE(:team, team)
 WHERE
-    oid = sqlc.arg('oid')
-    AND semester = sqlc.arg('semester')
-    AND tier = sqlc.arg('tier');
+    oid = :oid
+    AND semester = :semester
+    AND tier = :tier;
 
 -- name: DeleteOfficer :exec
 DELETE FROM officer

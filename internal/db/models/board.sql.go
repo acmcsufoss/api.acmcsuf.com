@@ -60,7 +60,7 @@ position (
 )
 VALUES
 (?, ?, ?)
-RETURNING oid, semester, tier
+RETURNING oid, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
@@ -72,7 +72,14 @@ type CreatePositionParams struct {
 func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
 	row := q.db.QueryRowContext(ctx, createPosition, arg.Oid, arg.Semester, arg.Tier)
 	var i Position
-	err := row.Scan(&i.Oid, &i.Semester, &i.Tier)
+	err := row.Scan(
+		&i.Oid,
+		&i.Semester,
+		&i.Tier,
+		&i.FullName,
+		&i.Title,
+		&i.Team,
+	)
 	return i, err
 }
 
@@ -113,6 +120,45 @@ func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) (Tier, e
 	return i, err
 }
 
+const deleteOfficer = `-- name: DeleteOfficer :exec
+DELETE FROM officer
+WHERE uuid = ?
+`
+
+func (q *Queries) DeleteOfficer(ctx context.Context, uuid interface{}) error {
+	_, err := q.db.ExecContext(ctx, deleteOfficer, uuid)
+	return err
+}
+
+const deletePosition = `-- name: DeletePosition :exec
+DELETE FROM position
+WHERE
+    oid = ?
+    AND semester = ?
+    AND tier = ?
+`
+
+type DeletePositionParams struct {
+	Oid      interface{} `json:"oid"`
+	Semester interface{} `json:"semester"`
+	Tier     int64       `json:"tier"`
+}
+
+func (q *Queries) DeletePosition(ctx context.Context, arg DeletePositionParams) error {
+	_, err := q.db.ExecContext(ctx, deletePosition, arg.Oid, arg.Semester, arg.Tier)
+	return err
+}
+
+const deleteTier = `-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?
+`
+
+func (q *Queries) DeleteTier(ctx context.Context, tier int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTier, tier)
+	return err
+}
+
 const getOfficer = `-- name: GetOfficer :one
 SELECT
     full_name,
@@ -146,28 +192,29 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerR
 
 const getPosition = `-- name: GetPosition :one
 SELECT
-    position.semester,
-    tier.title,
-    tier.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officer
-INNER JOIN position
-    ON officer.uuid = position.oid
-INNER JOIN tier
-    ON position.tier = tier.tier
-WHERE officer.full_name = ?
+    position
+WHERE
+    oid = ?
 `
 
-type GetPositionRow struct {
-	Semester interface{}    `json:"semester"`
-	Title    sql.NullString `json:"title"`
-	Team     sql.NullString `json:"team"`
-}
-
-func (q *Queries) GetPosition(ctx context.Context, fullName string) (GetPositionRow, error) {
-	row := q.db.QueryRowContext(ctx, getPosition, fullName)
-	var i GetPositionRow
-	err := row.Scan(&i.Semester, &i.Title, &i.Team)
+func (q *Queries) GetPosition(ctx context.Context, oid interface{}) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, oid)
+	var i Position
+	err := row.Scan(
+		&i.Oid,
+		&i.Semester,
+		&i.Tier,
+		&i.FullName,
+		&i.Title,
+		&i.Team,
+	)
 	return i, err
 }
 
@@ -193,4 +240,96 @@ func (q *Queries) GetTier(ctx context.Context, tier int64) (Tier, error) {
 		&i.Team,
 	)
 	return i, err
+}
+
+const updateOfficer = `-- name: UpdateOfficer :exec
+
+UPDATE officer
+SET
+    full_name = COALESCE(?1, full_name),
+    picture = COALESCE(?2, picture),
+    github = COALESCE(?3, github),
+    discord = COALESCE(?4, discord)
+WHERE
+    uuid = ?5
+`
+
+type UpdateOfficerParams struct {
+	FullName string         `json:"full_name"`
+	Picture  sql.NullString `json:"picture"`
+	Github   sql.NullString `json:"github"`
+	Discord  sql.NullString `json:"discord"`
+	Uuid     interface{}    `json:"uuid"`
+}
+
+// NOTE: Had to declare above table as :one, may need to change later to :many
+func (q *Queries) UpdateOfficer(ctx context.Context, arg UpdateOfficerParams) error {
+	_, err := q.db.ExecContext(ctx, updateOfficer,
+		arg.FullName,
+		arg.Picture,
+		arg.Github,
+		arg.Discord,
+		arg.Uuid,
+	)
+	return err
+}
+
+const updatePosition = `-- name: UpdatePosition :exec
+UPDATE position
+SET
+    full_name = COALESCE(?1, full_name),
+    title = COALESCE(?2, title),
+    team = COALESCE(?3, team)
+WHERE
+    oid = ?4
+    AND semester = ?5
+    AND tier = ?6
+`
+
+type UpdatePositionParams struct {
+	FullName string         `json:"full_name"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
+	Oid      interface{}    `json:"oid"`
+	Semester interface{}    `json:"semester"`
+	Tier     int64          `json:"tier"`
+}
+
+func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) error {
+	_, err := q.db.ExecContext(ctx, updatePosition,
+		arg.FullName,
+		arg.Title,
+		arg.Team,
+		arg.Oid,
+		arg.Semester,
+		arg.Tier,
+	)
+	return err
+}
+
+const updateTier = `-- name: UpdateTier :exec
+UPDATE tier
+SET
+    title = COALESCE(?1, title),
+    t_index = COALESCE(?2, t_index),
+    team = COALESCE(?3, team)
+WHERE
+    tier = ?4
+`
+
+type UpdateTierParams struct {
+	Title  sql.NullString `json:"title"`
+	TIndex sql.NullInt64  `json:"t_index"`
+	Team   sql.NullString `json:"team"`
+	Tier   int64          `json:"tier"`
+}
+
+func (q *Queries) UpdateTier(ctx context.Context, arg UpdateTierParams) error {
+	_, err := q.db.ExecContext(ctx, updateTier,
+		arg.Title,
+		arg.TIndex,
+		arg.Team,
+		arg.Tier,
+	)
+	return err
 }
