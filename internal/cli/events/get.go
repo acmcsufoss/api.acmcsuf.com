@@ -1,10 +1,12 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 
 	"github.com/spf13/cobra"
 )
@@ -28,8 +30,8 @@ func init() {
 
 	// Url Flags
 	GetEvent.Flags().String("id", "", "Get a specific event")
-	GetEvent.Flags().String("host", "127.0.0.1", "Custom host (ex: 127.0.0.1)")
-	GetEvent.Flags().String("port", "8080", "Custom port (ex: 8080)")
+	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
+	GetEvent.Flags().String("port", "8080", "Custom port")
 
 }
 
@@ -68,12 +70,26 @@ func getEvents(id string, port string, host string) {
 	// ----- Read Response Information -----
 	fmt.Println("Response status:", response.Status)
 
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Failed to read response body:", err)
-		return
-	}
+	if id == "" {
+		var getPayload []CreateEvent
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body without id:", err)
+			return
+		}
 
-	fmt.Println("Response body:", string(body))
+		for i := range getPayload {
+			cli.PrintStruct(getPayload[i])
+		}
+	} else {
+		var getPayload CreateEvent
+		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body with id:", err)
+			return
+		}
+
+		cli.PrintStruct(getPayload)
+	}
 
 }

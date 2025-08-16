@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
@@ -31,14 +30,23 @@ var PutAnnouncements = &cobra.Command{
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		visibilityString, _ := cmd.Flags().GetString("visibility")
-		announceAtInt64, _ := cmd.Flags().GetInt64("announceat")
+		announceAtString, _ := cmd.Flags().GetString("announceat")
+
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
 		payload.Visibility = dbtypes.StringtoNullString(visibilityString)
-		payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
 		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
 		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
+
+		if announceAtString != "" {
+			announceAtUnix, err := convert.ByteSlicetoUnix([]byte(announceAtString))
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtUnix)
+		}
 
 		putAnnouncements(host, port, id, &payload)
 	},
@@ -47,16 +55,20 @@ var PutAnnouncements = &cobra.Command{
 func init() {
 
 	// Url flags
-	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom (Defaults to: 127.0.0.1)")
-	PutAnnouncements.Flags().String("port", "8080", "Set a custom (Defaults to: 8080)")
+	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom host")
+	PutAnnouncements.Flags().String("port", "8080", "Set a custom port")
+
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
 
 	// Payload flags
 	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
-	PutAnnouncements.Flags().Int64P("announceat", "a", 0, "Change this announcement's announce at")
+	PutAnnouncements.Flags().StringP("announceat", "a", "", "Change this announcement's announce at")
+
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
+
+	PutAnnouncements.MarkFlagRequired("id")
 
 }
 
@@ -99,7 +111,11 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	}
 
 	var oldPayload CreateAnnouncement
-	json.Unmarshal(body, &oldPayload)
+	err = json.Unmarshal(body, &oldPayload)
+	if err != nil {
+		fmt.Println("error unmarshaling previous announcement data:", err)
+		return
+	}
 
 	// ----- Prompt User for New Values -----
 	scanner := bufio.NewScanner(os.Stdin)
@@ -107,80 +123,123 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	// ----- Uuid -----
 	// Known issue: Despite the response going through and output saying uuid has been updated
 	// it does not actually update
-	if payload.Uuid == "" {
-		changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
-		if err != nil {
-			fmt.Println("error with changing uuid:", err)
-			return
+	for {
+		if payload.Uuid == "" {
+			changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
+			if err != nil {
+				fmt.Println("error with changing uuid:", err)
+				continue
+			}
+			if changeUuid != nil {
+				payload.Uuid = string(changeUuid)
+			} else {
+				payload.Uuid = oldPayload.Uuid
+			}
 		}
-		if changeUuid != nil {
-			payload.Uuid = string(changeUuid)
-		} else {
-			payload.Uuid = oldPayload.Uuid
-		}
+
+		break
 	}
 
 	// ----- Visibility -----
-	if payload.Visibility.String == "" {
-		changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
-		if err != nil {
-			fmt.Println("error with changing visibility:", err)
-			return
+	for {
+		if payload.Visibility.String == "" {
+			changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
+			if err != nil {
+				fmt.Println("error with changing visibility:", err)
+				continue
+			}
+			if changeVisibility != nil {
+				payload.Visibility = dbtypes.StringtoNullString(string(changeVisibility))
+			} else {
+				payload.Visibility = dbtypes.StringtoNullString(oldPayload.Visibility)
+			}
 		}
-		if changeVisibility != nil {
-			payload.Visibility = dbtypes.StringtoNullString(string(changeVisibility))
-		} else {
-			payload.Visibility = dbtypes.StringtoNullString(oldPayload.Visibility)
-		}
+
+		break
 	}
 
 	// ----- Announce At ------
-	if payload.AnnounceAt.Int64 == 0 {
-		oldAnnounceAt := strconv.FormatInt(oldPayload.AnnounceAt, 10)
+	for {
+		if payload.AnnounceAt.Int64 == 0 {
+			oldAnnounceAt := cli.FormatUnix(oldPayload.AnnounceAt)
 
-		changeAnnounceAt, err := cli.ChangePrompt("announce at", oldAnnounceAt, scanner)
-		if err != nil {
-			fmt.Println("error with changing announce at:", err)
-			return
-		}
-		if changeAnnounceAt != nil {
-			announceAtInt64, err := convert.ByteSlicetoInt64(changeAnnounceAt)
+			// Yah this might be a little sloppy in the terminal. forgive me.
+			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner)
 			if err != nil {
-				fmt.Println(err)
-				return
+				fmt.Println("error with changing announce at:", err)
+				continue
 			}
-			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
-		} else {
-			payload.AnnounceAt = dbtypes.Int64toNullInt64(oldPayload.AnnounceAt)
+			if changeAnnounceAt != nil {
+				announceAtInt64, err := convert.ByteSlicetoUnix(changeAnnounceAt)
+				if err != nil {
+					fmt.Println(err)
+					continue
+				}
+				payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
+			} else {
+				payload.AnnounceAt = dbtypes.Int64toNullInt64(oldPayload.AnnounceAt)
+			}
 		}
+
+		break
 	}
 
 	// ----- Discord Channel ID -----
-	if payload.DiscordChannelID.String == "" {
-		changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
-		if err != nil {
-			fmt.Println("error with changing :", err)
-			return
+	for {
+		if payload.DiscordChannelID.String == "" {
+			changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
+			if err != nil {
+				fmt.Println("error with changing :", err)
+				continue
+			}
+			if changeDiscordChannelID != nil {
+				payload.DiscordChannelID = dbtypes.StringtoNullString(string(changeDiscordChannelID))
+			} else {
+				payload.DiscordChannelID = oldPayload.DiscordChannelID
+			}
 		}
-		if changeDiscordChannelID != nil {
-			payload.DiscordChannelID = dbtypes.StringtoNullString(string(changeDiscordChannelID))
-		} else {
-			payload.DiscordChannelID = oldPayload.DiscordChannelID
-		}
+
+		break
 	}
 
 	// ----- Discord Message ID -----
-	if payload.DiscordMessageID.String == "" {
-		changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
-		if err != nil {
-			fmt.Println("error with changing :", err)
+	for {
+		if payload.DiscordMessageID.String == "" {
+			changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
+			if err != nil {
+				fmt.Println("error with changing :", err)
+				continue
+			}
+			if changeDiscordMessageID != nil {
+				payload.DiscordMessageID = dbtypes.StringtoNullString(string(changeDiscordMessageID))
+			} else {
+				payload.DiscordMessageID = oldPayload.DiscordMessageID
+			}
+		}
+
+		break
+	}
+	// ----- Confirmation -----
+	for {
+		fmt.Println("Is your event data correct? If not, type n or no.")
+		cli.PrintStruct(payload)
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
 			return
 		}
-		if changeDiscordMessageID != nil {
-			payload.DiscordMessageID = dbtypes.StringtoNullString(string(changeDiscordMessageID))
-		} else {
-			payload.DiscordMessageID = oldPayload.DiscordMessageID
+
+		confirmationBuffer := scanner.Bytes()
+		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		if err != nil {
+			fmt.Println("error with reading confirmation:", err)
 		}
+		if !confirmationBool {
+			// Sorry :(
+			return
+		}
+		break
+
 	}
 
 	// ----- Marshal Payload to Json -----
