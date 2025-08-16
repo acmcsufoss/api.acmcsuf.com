@@ -58,13 +58,60 @@ WHERE
 
 -- name: GetPosition :one
 SELECT
-    position.semester,
-    tier.title,
-    tier.team
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
 FROM
-    officer
-INNER JOIN position
-    ON officer.uuid = position.oid
-INNER JOIN tier
-    ON position.tier = tier.tier
-WHERE officer.full_name = ?
+    position
+WHERE
+    oid = ?;
+
+-- NOTE: Had to declare above table as :one, may need to change later to :many
+
+-- name: UpdateOfficer :exec
+UPDATE officer
+SET
+    full_name = COALESCE(:full_name, full_name),
+    picture = COALESCE(:picture, picture),
+    github = COALESCE(:github, github),
+    discord = COALESCE(:discord, discord)
+WHERE
+    uuid = :uuid;
+
+-- name: UpdateTier :exec 
+UPDATE tier
+SET
+    title = COALESCE(:title, title),
+    t_index = COALESCE(:t_index, t_index),
+    team = COALESCE(:team, team)
+WHERE
+    tier = :tier;
+
+-- name: UpdatePosition :exec 
+UPDATE position
+SET
+    full_name = COALESCE(:full_name, full_name),
+    title = COALESCE(:title, title),
+    team = COALESCE(:team, team)
+WHERE
+    oid = :oid
+    AND semester = :semester
+    AND tier = :tier;
+
+-- name: DeleteOfficer :exec
+DELETE FROM officer
+WHERE uuid = ?;
+
+-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?;
+
+-- name: DeletePosition :exec
+DELETE FROM position
+WHERE
+    oid = ?
+    AND semester = ?
+    AND tier = ?;

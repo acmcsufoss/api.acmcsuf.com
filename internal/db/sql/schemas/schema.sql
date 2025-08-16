@@ -46,8 +46,10 @@ CREATE TABLE IF NOT EXISTS position (
     oid CHAR(4) NOT NULL,
     semester CHAR(3) NOT NULL,
     tier INT NOT NULL,
+    full_name VARCHAR(30) NOT NULL,
+    title VARCHAR(40),
+    team VARCHAR(20),
     PRIMARY KEY (oid, semester, tier),
-
     CONSTRAINT fk_officer FOREIGN KEY (oid) REFERENCES officer (uuid),
     CONSTRAINT fk_tier FOREIGN KEY (tier) REFERENCES tier (tier)
 );

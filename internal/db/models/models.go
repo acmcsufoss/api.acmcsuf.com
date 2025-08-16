@@ -40,9 +40,12 @@ type Person struct {
 }
 
 type Position struct {
-	Oid      interface{} `json:"oid"`
-	Semester interface{} `json:"semester"`
-	Tier     int64       `json:"tier"`
+	Oid      interface{}    `json:"oid"`
+	Semester interface{}    `json:"semester"`
+	Tier     int64          `json:"tier"`
+	FullName string         `json:"full_name"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
 }
 
 type Tier struct {
