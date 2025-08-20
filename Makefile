@@ -7,10 +7,12 @@ CLI_NAME := cli
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt vet run build check test sql-check sql-fix clean build-cli
+.PHONY:fmt run build check test check-sql fix-sql clean
 
 fmt:
 	@go fmt ./...
+
+VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
 $(GENERATE_MARKER): $(GENERATE_DEPS)
 	go generate ./...
@@ -18,34 +20,28 @@ $(GENERATE_MARKER): $(GENERATE_DEPS)
 
 generate: fmt $(GENERATE_MARKER)
 
-vet: fmt
-	go vet ./...
-
 run: build
 	./$(BIN_DIR)/$(APP_NAME)
 
 build: generate
-	mkdir -p $(BIN_DIR)
-	go build -o $(BIN_DIR)/$(APP_NAME) ./cmd/api
+	@mkdir -p $(BIN_DIR)
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(APP_NAME) ./cmd/api
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/cli
 
-check: vet
+check:
+	go vet ./...
 	nilaway ./...
 
 test: check
 	go test ./...
 
-sql-check:
+check-sql:
 	sqlfluff lint --dialect sqlite
 
-sql-fix:
-	sqlfluff format --dialect sqlite
+fix-sql:
 	sqlfluff fix --dialect sqlite
 
 clean:
 	go clean
 	rm -f $(GENERATE_MARKER)
 	rm -rf $(BIN_DIR)
-
-build-cli: fmt
-	mkdir -p $(BIN_DIR)
-	go build -o $(BIN_DIR)/$(CLI_NAME) ./cmd/csuf
