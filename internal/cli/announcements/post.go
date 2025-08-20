@@ -11,10 +11,8 @@ import (
 
 	"fmt"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +21,7 @@ var PostAnnouncement = &cobra.Command{
 	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := CreateAnnouncement{}
+		payload := models.CreateAnnouncementParams{}
 
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
@@ -34,19 +32,27 @@ var PostAnnouncement = &cobra.Command{
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
-		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
-		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
+		payload.DiscordChannelID = utils.StringtoNullString(channelIdString)
+		payload.DiscordMessageID = utils.StringtoNullString(messageIdString)
 
 		if announceString != "" {
 			var err error
-			payload.AnnounceAt, err = convert.ByteSlicetoUnix([]byte(announceString))
+			payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceString))
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 		}
 
-		postAnnouncement(host, port, &payload)
+		changedFlags := announcementFlags{
+			id:         cmd.Flags().Lookup("uuid").Changed,
+			visibility: cmd.Flags().Lookup("visibility").Changed,
+			announceat: cmd.Flags().Lookup("announceat").Changed,
+			channelid:  cmd.Flags().Lookup("channelid").Changed,
+			messageid:  cmd.Flags().Lookup("messageid").Changed,
+		}
+
+		postAnnouncement(host, port, &payload, changedFlags)
 	},
 }
 
@@ -55,9 +61,8 @@ func init() {
 	PostAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PostAnnouncement.Flags().String("port", "8080", "Set a custom port")
 
-	PostAnnouncement.Flags().String("id", "", "PUT to announcement by it's id")
-
 	// Payload flags
+	PostAnnouncement.Flags().String("uuid", "", "Set this announcement's id")
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
 	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at")
 
@@ -65,64 +70,68 @@ func init() {
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
 
-func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
+func postAnnouncement(host string, port string, payload *models.CreateAnnouncementParams, changedFlags announcementFlags) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
 	for {
-		if payload.Uuid == "" {
-			fmt.Println("Please enter the announcement's uuid:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error with reading uuid:", err)
-				continue
-			}
-
-			uuidBuffer := scanner.Bytes()
-			payload.Uuid = string(uuidBuffer)
+		if changedFlags.id {
+			break
 		}
 
+		fmt.Println("Please enter the announcement's uuid:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error with reading uuid:", err)
+			continue
+		}
+
+		uuidBuffer := scanner.Bytes()
+
+		payload.Uuid = string(uuidBuffer)
 		break
 	}
 
 	// ----- Visibility -----
 	for {
-		if payload.Visibility == "" {
-			fmt.Println("Please enter this announcement's visibility:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error with reading visibility:", err)
-				continue
-			}
-
-			visibilityBuffer := scanner.Bytes()
-			payload.Visibility = string(visibilityBuffer)
+		if changedFlags.visibility {
+			break
 		}
+		fmt.Println("Please enter this announcement's visibility:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error with reading visibility:", err)
+			continue
+		}
+
+		visibilityBuffer := scanner.Bytes()
+		payload.Visibility = string(visibilityBuffer)
 
 		break
 	}
 
 	// ----- Announce at -----
 	for {
-		if payload.AnnounceAt == 0 {
-			fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]")
-			fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error reading anounce at:", err)
-				continue
-			}
+		if changedFlags.announceat {
+			break
+		}
 
-			announceatBuffer := scanner.Bytes()
+		fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]")
+		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error reading anounce at:", err)
+			continue
+		}
 
-			// Sorry
-			var err error
-			payload.AnnounceAt, err = convert.ByteSlicetoUnix(announceatBuffer)
-			if err != nil {
-				fmt.Println("error converting byte slice to unix time (of type int64):", err)
-				continue
-			}
+		announceatBuffer := scanner.Bytes()
+
+		var err error
+		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
+		if err != nil {
+			fmt.Println("error converting byte slice to unix time (of type int64):", err)
+			continue
 		}
 
 		break
@@ -130,33 +139,37 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 
 	// ----- Discord Channel Id -----
 	for {
-		if !payload.DiscordChannelID.Valid {
-			fmt.Println("Please enter this announcement's discord channel id:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error reading  discord channel id:", err)
-				continue
-			}
-
-			channelIdBuffer := scanner.Bytes()
-			payload.DiscordChannelID = dbtypes.StringtoNullString(string(channelIdBuffer))
+		if changedFlags.channelid {
+			break
 		}
+
+		fmt.Println("Please enter this announcement's discord channel id:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error reading  discord channel id:", err)
+			continue
+		}
+
+		channelIdBuffer := scanner.Bytes()
+		payload.DiscordChannelID = utils.StringtoNullString(string(channelIdBuffer))
 
 		break
 	}
 
 	// ----- Discord Message Id -----
 	for {
-		if !payload.DiscordMessageID.Valid {
-			fmt.Println("Please enter this announcement's message id:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error reading message id:", err)
-				continue
-			}
-			messageIdBuffer := scanner.Bytes()
-			payload.DiscordMessageID = dbtypes.StringtoNullString(string(messageIdBuffer))
+		if changedFlags.messageid {
+			break
 		}
+
+		fmt.Println("Please enter this announcement's message id:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error reading message id:", err)
+			continue
+		}
+		messageIdBuffer := scanner.Bytes()
+		payload.DiscordMessageID = utils.StringtoNullString(string(messageIdBuffer))
 
 		break
 	}
@@ -164,7 +177,7 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
-		cli.PrintStruct(payload)
+		utils.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -172,16 +185,16 @@ func postAnnouncement(host string, port string, payload *CreateAnnouncement) {
 		}
 
 		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(
 			return
+		} else {
+			break
 		}
-		break
-
 	}
 
 	// ----- Marshalling to Json -----
