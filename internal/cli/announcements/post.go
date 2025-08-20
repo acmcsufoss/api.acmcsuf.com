@@ -130,7 +130,6 @@ func postAnnouncement(host string, port string, payload *models.CreateAnnounceme
 		var err error
 		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
 		if err != nil {
-			fmt.Println(payload.AnnounceAt)
 			fmt.Println("error converting byte slice to unix time (of type int64):", err)
 			continue
 		}
