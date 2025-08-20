@@ -1,12 +1,13 @@
 {
+  version,
   lib,
   buildGoModule,
 }:
 buildGoModule {
   name = "api-acmcsuf";
   src = ../.;
+  version = version;
   vendorHash = "sha256-3BpLbfoLmv5dwBxEHW7i//MlgIsrGMT8ZILrze7WM18=";
-
   postBuild = ''
     mv $GOPATH/bin/api $GOPATH/bin/api-acmcsuf
   '';
