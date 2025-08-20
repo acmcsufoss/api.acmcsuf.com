@@ -10,10 +10,8 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/dbtypes"
-
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -22,7 +20,7 @@ var PutAnnouncements = &cobra.Command{
 	Short: "update an existing announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := UpdateAnnouncement{}
+		payload := models.UpdateAnnouncementParams{}
 
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
@@ -35,20 +33,28 @@ var PutAnnouncements = &cobra.Command{
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
-		payload.Visibility = dbtypes.StringtoNullString(visibilityString)
-		payload.DiscordChannelID = dbtypes.StringtoNullString(channelIdString)
-		payload.DiscordMessageID = dbtypes.StringtoNullString(messageIdString)
+		payload.Visibility = utils.StringtoNullString(visibilityString)
+		payload.DiscordChannelID = utils.StringtoNullString(channelIdString)
+		payload.DiscordMessageID = utils.StringtoNullString(messageIdString)
 
 		if announceAtString != "" {
-			announceAtUnix, err := convert.ByteSlicetoUnix([]byte(announceAtString))
+			announceAtUnix, err := utils.ByteSlicetoUnix([]byte(announceAtString))
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtUnix)
+			payload.AnnounceAt = utils.Int64toNullInt64(announceAtUnix)
 		}
 
-		putAnnouncements(host, port, id, &payload)
+		changedFlags := announcementFlags{
+			id:         cmd.Flags().Lookup("uuid").Changed,
+			visibility: cmd.Flags().Lookup("visibility").Changed,
+			announceat: cmd.Flags().Lookup("announceat").Changed,
+			channelid:  cmd.Flags().Lookup("channelid").Changed,
+			messageid:  cmd.Flags().Lookup("messageid").Changed,
+		}
+
+		putAnnouncements(host, port, id, &payload, changedFlags)
 	},
 }
 
@@ -72,7 +78,7 @@ func init() {
 
 }
 
-func putAnnouncements(host string, port string, id string, payload *UpdateAnnouncement) {
+func putAnnouncements(host string, port string, id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags) {
 	// ----- Check if Id was Given -----
 	if id == "" {
 		fmt.Println("Announcement id required for put! Please use the --id flag")
@@ -110,7 +116,7 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		return
 	}
 
-	var oldPayload CreateAnnouncement
+	var oldPayload models.CreateAnnouncementParams
 	err = json.Unmarshal(body, &oldPayload)
 	if err != nil {
 		fmt.Println("error unmarshaling previous announcement data:", err)
@@ -121,11 +127,10 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
-	// Known issue: Despite the response going through and output saying uuid has been updated
-	// it does not actually update
+	// Will probably remove uuid from all put cli soon
 	for {
 		if payload.Uuid == "" {
-			changeUuid, err := cli.ChangePrompt("uuid", oldPayload.Uuid, scanner)
+			changeUuid, err := utils.ChangePrompt("uuid", oldPayload.Uuid, scanner)
 			if err != nil {
 				fmt.Println("error with changing uuid:", err)
 				continue
@@ -142,17 +147,18 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Visibility -----
 	for {
-		if payload.Visibility.String == "" {
-			changeVisibility, err := cli.ChangePrompt("visibility", oldPayload.Visibility, scanner)
-			if err != nil {
-				fmt.Println("error with changing visibility:", err)
-				continue
-			}
-			if changeVisibility != nil {
-				payload.Visibility = dbtypes.StringtoNullString(string(changeVisibility))
-			} else {
-				payload.Visibility = dbtypes.StringtoNullString(oldPayload.Visibility)
-			}
+		if changedFlags.visibility {
+			break
+		}
+		changeVisibility, err := utils.ChangePrompt("visibility", oldPayload.Visibility, scanner)
+		if err != nil {
+			fmt.Println("error with changing visibility:", err)
+			continue
+		}
+		if changeVisibility != nil {
+			payload.Visibility = utils.StringtoNullString(string(changeVisibility))
+		} else {
+			payload.Visibility = utils.StringtoNullString(oldPayload.Visibility)
 		}
 
 		break
@@ -160,25 +166,26 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Announce At ------
 	for {
-		if payload.AnnounceAt.Int64 == 0 {
-			oldAnnounceAt := cli.FormatUnix(oldPayload.AnnounceAt)
+		if changedFlags.announceat {
+			break
+		}
+		oldAnnounceAt := utils.FormatUnix(oldPayload.AnnounceAt)
 
-			// Yah this might be a little sloppy in the terminal. forgive me.
-			changeAnnounceAt, err := cli.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner)
+		// Yah this might be a little sloppy in the terminal. forgive me.
+		changeAnnounceAt, err := utils.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner)
+		if err != nil {
+			fmt.Println("error with changing announce at:", err)
+			continue
+		}
+		if changeAnnounceAt != nil {
+			announceAtInt64, err := utils.ByteSlicetoUnix(changeAnnounceAt)
 			if err != nil {
-				fmt.Println("error with changing announce at:", err)
+				fmt.Println(err)
 				continue
 			}
-			if changeAnnounceAt != nil {
-				announceAtInt64, err := convert.ByteSlicetoUnix(changeAnnounceAt)
-				if err != nil {
-					fmt.Println(err)
-					continue
-				}
-				payload.AnnounceAt = dbtypes.Int64toNullInt64(announceAtInt64)
-			} else {
-				payload.AnnounceAt = dbtypes.Int64toNullInt64(oldPayload.AnnounceAt)
-			}
+			payload.AnnounceAt = utils.Int64toNullInt64(announceAtInt64)
+		} else {
+			payload.AnnounceAt = utils.Int64toNullInt64(oldPayload.AnnounceAt)
 		}
 
 		break
@@ -186,17 +193,19 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Discord Channel ID -----
 	for {
-		if payload.DiscordChannelID.String == "" {
-			changeDiscordChannelID, err := cli.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
-			if err != nil {
-				fmt.Println("error with changing :", err)
-				continue
-			}
-			if changeDiscordChannelID != nil {
-				payload.DiscordChannelID = dbtypes.StringtoNullString(string(changeDiscordChannelID))
-			} else {
-				payload.DiscordChannelID = oldPayload.DiscordChannelID
-			}
+		if changedFlags.channelid {
+			break
+		}
+
+		changeDiscordChannelID, err := utils.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
+		if err != nil {
+			fmt.Println("error with changing :", err)
+			continue
+		}
+		if changeDiscordChannelID != nil {
+			payload.DiscordChannelID = utils.StringtoNullString(string(changeDiscordChannelID))
+		} else {
+			payload.DiscordChannelID = oldPayload.DiscordChannelID
 		}
 
 		break
@@ -204,25 +213,27 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 
 	// ----- Discord Message ID -----
 	for {
-		if payload.DiscordMessageID.String == "" {
-			changeDiscordMessageID, err := cli.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
-			if err != nil {
-				fmt.Println("error with changing :", err)
-				continue
-			}
-			if changeDiscordMessageID != nil {
-				payload.DiscordMessageID = dbtypes.StringtoNullString(string(changeDiscordMessageID))
-			} else {
-				payload.DiscordMessageID = oldPayload.DiscordMessageID
-			}
+		if changedFlags.messageid {
+			break
+		}
+		changeDiscordMessageID, err := utils.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
+		if err != nil {
+			fmt.Println("error with changing :", err)
+			continue
+		}
+		if changeDiscordMessageID != nil {
+			payload.DiscordMessageID = utils.StringtoNullString(string(changeDiscordMessageID))
+		} else {
+			payload.DiscordMessageID = oldPayload.DiscordMessageID
 		}
 
 		break
 	}
+
 	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
-		cli.PrintStruct(payload)
+		utils.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -230,15 +241,16 @@ func putAnnouncements(host string, port string, id string, payload *UpdateAnnoun
 		}
 
 		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(
 			return
+		} else {
+			break
 		}
-		break
 
 	}
 

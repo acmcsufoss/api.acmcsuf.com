@@ -1,9 +1,10 @@
-package cli
+package utils
 
 import (
 	"bufio"
 	"database/sql"
 	"fmt"
+	"math"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -96,10 +97,10 @@ func FormatUnix(unixTime int64) string {
 	return t.Format("01/02/06 03:04PM")
 }
 
-// BOO! Any type jumpscare
+// I personally like 'interface{}', but 'any' also works if you want to change it
 
-// Prints any struct in a nice display.
-func PrintStruct(s any) {
+// Print the struct passed into it in a nice display in the terminal
+func PrintStruct(s interface{}) {
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)
 
@@ -116,14 +117,21 @@ func PrintStruct(s any) {
 
 	fmt.Printf("%s:\n", typ.Name())
 	for i := 0; i < val.NumField(); i++ {
-		field := typ.Field(i)
-		value := val.Field(i)
+		v := val.Field(i)
+		t := typ.Field(i)
 		display := ""
 
-		// I AM CRYING
-		switch value.Type() {
+		// If a value is still in interface, such as CreateEventParams.StartAt (as of writing this) unwrap it.
+		if v.Kind() == reflect.Interface && !v.IsNil() {
+			v = v.Elem()
+		}
+		if v.Kind() == reflect.Ptr && !v.IsNil() {
+			v = v.Elem()
+		}
+
+		switch v.Type() {
 		case reflect.TypeOf(sql.NullInt64{}):
-			n := value.Interface().(sql.NullInt64)
+			n := v.Interface().(sql.NullInt64)
 			if n.Valid {
 				display = FormatUnix(n.Int64)
 			} else {
@@ -131,7 +139,7 @@ func PrintStruct(s any) {
 			}
 
 		case reflect.TypeOf(sql.NullString{}):
-			n := value.Interface().(sql.NullString)
+			n := v.Interface().(sql.NullString)
 			if n.Valid {
 				display = n.String
 			} else {
@@ -139,7 +147,7 @@ func PrintStruct(s any) {
 			}
 
 		case reflect.TypeOf(sql.NullBool{}):
-			n := value.Interface().(sql.NullBool)
+			n := v.Interface().(sql.NullBool)
 			if n.Valid {
 				display = strconv.FormatBool(n.Bool)
 			} else {
@@ -147,18 +155,28 @@ func PrintStruct(s any) {
 			}
 
 		default:
-			if value.Kind() == reflect.Int64 {
-				display = FormatUnix(value.Int())
-			} else {
-				if value.CanInterface() {
-					display = fmt.Sprintf("%v", value.Interface())
+			switch v.Kind() {
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				display = FormatUnix(v.Int())
+
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				u := v.Uint()
+				if u <= math.MaxInt64 {
+					display = FormatUnix(int64(u))
 				} else {
-					display = "<unexported>" // Dont ask me what nightmare had to occure to include this
+					display = fmt.Sprintf("%v", u)
+				}
+
+			default:
+				if v.CanInterface() {
+					display = fmt.Sprintf("%v", v.Interface())
+				} else {
+					display = "<unexported>"
 				}
 			}
 		}
 
-		fmt.Printf("\t%-20s | %s\n", field.Name, display)
+		fmt.Printf("\t%-20s | %s\n", t.Name, display)
 	}
 
 	fmt.Println("----------------------------------------------------------------")

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
-
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -71,7 +71,7 @@ func getEvents(id string, port string, host string) {
 	fmt.Println("Response status:", response.Status)
 
 	if id == "" {
-		var getPayload []CreateEvent
+		var getPayload []models.CreateEventParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -79,17 +79,17 @@ func getEvents(id string, port string, host string) {
 		}
 
 		for i := range getPayload {
-			cli.PrintStruct(getPayload[i])
+			utils.PrintStruct(getPayload[i])
 		}
 	} else {
-		var getPayload CreateEvent
+		var getPayload models.CreateEventParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
 			return
 		}
 
-		cli.PrintStruct(getPayload)
+		utils.PrintStruct(getPayload)
 	}
 
 }

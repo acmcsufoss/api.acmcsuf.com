@@ -1,4 +1,4 @@
-package convert
+package utils
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func ByteSlicetoUnix(data []byte) (int64, error) {
 	layout := "01/02/06 03:04PM"
 	loc, err := time.LoadLocation("America/Los_Angeles")
 	if err != nil {
-		return -1, fmt.Errorf("error in getting location for time: %s", err)
+		return 0, fmt.Errorf("error in getting location for time: %s", err)
 	}
 
 	timeString := string(data)
@@ -31,7 +31,7 @@ func ByteSlicetoUnix(data []byte) (int64, error) {
 	// Parse time in relation to los angeles time, or more familiarly, PST time
 	startTime, err := time.ParseInLocation(layout, timeString, loc)
 	if err != nil {
-		return -1, fmt.Errorf("error parsing time format: %s", err)
+		return 0, fmt.Errorf("error parsing time format: %s", err)
 
 	}
 

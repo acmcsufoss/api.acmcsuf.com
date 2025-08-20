@@ -10,9 +10,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/cli"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/convert"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +21,7 @@ var PostEvent = &cobra.Command{
 	Short: "Post a new event.",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := CreateEvent{}
+		payload := models.CreateEventParams{}
 
 		urlhost, _ := cmd.Flags().GetString("urlhost")
 		port, _ := cmd.Flags().GetString("port")
@@ -35,14 +35,14 @@ var PostEvent = &cobra.Command{
 
 		if startAtString != "" {
 			var err error
-			payload.StartAt, err = convert.ByteSlicetoUnix([]byte(startAtString))
+			payload.StartAt, err = utils.ByteSlicetoUnix([]byte(startAtString))
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
 			if duration != "" {
 				var err error
-				payload.EndAt, err = cli.TimeAfterDuration(payload.StartAt, duration)
+				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt.(int64), duration)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -54,7 +54,16 @@ var PostEvent = &cobra.Command{
 			fmt.Printf("--startat is required in order to use --duration")
 		}
 
-		postEvent(urlhost, port, &payload)
+		changedFlags := eventFlags{
+			uuid:     cmd.Flags().Lookup("uuid").Changed,
+			location: cmd.Flags().Lookup("location").Changed,
+			startat:  cmd.Flags().Lookup("startat").Changed,
+			duration: cmd.Flags().Lookup("duration").Changed,
+			isallday: cmd.Flags().Lookup("isallday").Changed,
+			host:     cmd.Flags().Lookup("host").Changed,
+		}
+
+		postEvent(urlhost, port, &payload, changedFlags)
 	},
 }
 
@@ -71,136 +80,148 @@ func init() {
 	PostEvent.Flags().StringP("duration", "d", "", "Set the duration of new event (Format: 03:04:05)")
 
 	PostEvent.Flags().StringP("host", "H", "", "Set host of new event")
-	PostEvent.Flags().BoolP("allday", "a", false, "Set if new event is all day")
+	PostEvent.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
 
 }
-func postEvent(urlhost string, port string, payload *CreateEvent) {
+func postEvent(urlhost string, port string, payload *models.CreateEventParams, changedFlag eventFlags) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
 	for {
-		if payload.Uuid == "" {
-			fmt.Println("Please enter event's uuid:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			uuidBuffer := scanner.Bytes()
-			payload.Uuid = string(uuidBuffer)
+		if changedFlag.uuid {
 			break
 		}
+
+		fmt.Println("Please enter event's uuid:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		uuidBuffer := scanner.Bytes()
+		payload.Uuid = string(uuidBuffer)
+		break
 	}
 
 	// ----- Location -----
 	for {
-		if payload.Location == "" {
-			fmt.Println("please enter the event's location:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			locationBuffer := scanner.Bytes()
-			payload.Location = string(locationBuffer)
+		if changedFlag.location {
 			break
 		}
+
+		fmt.Println("please enter the event's location:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		locationBuffer := scanner.Bytes()
+		payload.Location = string(locationBuffer)
+		fmt.Println(payload.Location)
+		break
 	}
 
 	// ----- Start Time -----
 	for {
-		if payload.StartAt == 0 {
-			fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute]:[Second][PM | AM]")
-			fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error reading start time:", err)
-				continue
-			}
-			startTimeBuffer := scanner.Bytes()
-			startTime, err := convert.ByteSlicetoUnix(startTimeBuffer)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			payload.StartAt = startTime
+
+		if changedFlag.startat {
 			break
 		}
+
+		fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]")
+		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error reading start time:", err)
+			continue
+		}
+		startTimeBuffer := scanner.Bytes()
+		startTime, err := utils.ByteSlicetoUnix(startTimeBuffer)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		payload.StartAt = startTime
+		break
 	}
 
 	// ----- End Time (Duration) -----
 	for {
-		if payload.EndAt == 0 {
-			fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]")
-			fmt.Println("For example: \x1b[93m03:04\x1b[0m")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println("error reading end time:", err)
-				continue
-			}
-			endTimeBuffer := scanner.Bytes()
-			endTime, err := cli.TimeAfterDuration(payload.StartAt, string(endTimeBuffer))
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			payload.EndAt = endTime
+
+		if changedFlag.duration {
 			break
 		}
 
+		fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]")
+		fmt.Println("For example: \x1b[93m03:04\x1b[0m")
+
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println("error reading end time:", err)
+			continue
+		}
+
+		endTimeBuffer := scanner.Bytes()
+		endTime, err := utils.TimeAfterDuration(payload.StartAt.(int64), string(endTimeBuffer))
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		payload.EndAt = endTime
+		break
 	}
 
 	// ----- Is all day -----
 
-	// This is kind of awkward
 	for {
-		if !payload.IsAllDay {
-			fmt.Println("Is the event all day?")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			isAllDayBuffer := scanner.Bytes()
-			isAllDayString := strings.ToUpper(string(isAllDayBuffer))
-
-			switch isAllDayString {
-			case "YES", "Y":
-				payload.IsAllDay = true
-			case "NO", "N":
-				payload.IsAllDay = false
-			default:
-				fmt.Println("Invalid input.")
-				continue
-			}
+		if changedFlag.isallday {
 			break
 		}
+
+		fmt.Println("Is the event all day?")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		isAllDayBuffer := scanner.Bytes()
+
+		isAllDay, err := utils.YesOrNo(isAllDayBuffer, scanner)
+		if err != nil {
+			fmt.Println(err)
+		}
+		payload.IsAllDay = isAllDay
+		break
 	}
 
 	// ----- Host -----
 	for {
-		if payload.Host == "" {
-			fmt.Println("Please enter the event host:")
-			scanner.Scan()
-			if err := scanner.Err(); err != nil {
-				fmt.Println(err)
-				continue
-			}
-
-			hostBuffer := scanner.Bytes()
-			payload.Host = string(hostBuffer)
+		if changedFlag.host {
 			break
 		}
+
+		fmt.Println("Please enter the event host:")
+		scanner.Scan()
+		if err := scanner.Err(); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		hostBuffer := scanner.Bytes()
+		payload.Host = string(hostBuffer)
+		break
 	}
 
 	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
-		cli.PrintStruct(payload)
+		utils.PrintStruct(payload)
 
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -209,15 +230,16 @@ func postEvent(urlhost string, port string, payload *CreateEvent) {
 		}
 
 		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := cli.YesOrNo(confirmationBuffer, scanner)
+		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
 		if err != nil {
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
 			// Sorry :(
 			return
+		} else {
+			break
 		}
-		break
 
 	}
 
