@@ -14,7 +14,15 @@
     flake-utils.lib.eachDefaultSystem (
       system: let
         pkgs = nixpkgs.legacyPackages.${system};
-        package = pkgs.callPackage ./nix/package.nix {};
+
+        version =
+          if (self ? rev)
+          then builtins.substring 0 8 self.rev
+          else "dev";
+
+        package = pkgs.callPackage ./nix/package.nix {
+          version = version;
+        };
       in {
         packages.default = package;
         devShells.default = pkgs.callPackage ./nix/devShell.nix {};
