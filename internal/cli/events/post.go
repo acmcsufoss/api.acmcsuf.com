@@ -120,7 +120,6 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 
 		locationBuffer := scanner.Bytes()
 		payload.Location = string(locationBuffer)
-		fmt.Println(payload.Location)
 		break
 	}
 
