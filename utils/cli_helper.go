@@ -47,10 +47,8 @@ func FormatUnix(unixTime int64) string {
 	return t.Format("01/02/06 03:04PM")
 }
 
-// I personally like 'interface{}', but 'any' also works if you want to change it
-
 // Print the struct passed into it in a nice display in the terminal
-func PrintStruct(s interface{}) {
+func PrintStruct(s any) {
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)
 
