@@ -18,9 +18,22 @@ import (
 	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	"flag"
 )
 
+var Version = "dev"
+
 func main() {
+
+	var showVersion = flag.Bool("version", false, "Show version")
+	flag.Parse()
+
+	if *showVersion {
+		fmt.Printf("Version: %s\n", Version)
+		os.Exit(0)
+	}
+
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
