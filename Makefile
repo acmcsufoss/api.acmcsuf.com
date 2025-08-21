@@ -41,7 +41,14 @@ check-sql:
 fix-sql:
 	sqlfluff fix --dialect sqlite
 
+release:
+	@echo "Current version: $(VERSION)"
+	@read "Enter new version (e.g., v0.2.0): " version; \
+	git tag -a $$version -m "Release $$version"; \
+	# git push origin $$version; \
+	echo "Tagged $$version."
+
 clean:
 	go clean
 	rm -f $(GENERATE_MARKER)
-	rm -rf $(BIN_DIR)
+	rm -rf $(BIN_DIR) result

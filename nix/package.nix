@@ -13,6 +13,7 @@ buildGoModule {
   '';
 
   subPackages = ["cmd/api" "cmd/csuf"];
+  ldflags = ["-X main.Version=${version}"];
 
   meta = {
     description = "API created and used by CSUF's ACM chapter";
