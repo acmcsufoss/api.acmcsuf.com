@@ -26,7 +26,7 @@ run: build
 build: generate
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(APP_NAME) ./cmd/api
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/cli
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/csuf
 
 check:
 	go vet ./...
