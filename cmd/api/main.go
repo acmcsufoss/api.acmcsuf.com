@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -18,8 +19,6 @@ import (
 	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	"flag"
 )
 
 var Version = "dev"
