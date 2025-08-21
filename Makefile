@@ -43,9 +43,9 @@ fix-sql:
 
 release:
 	@echo "Current version: $(VERSION)"
-	@read "Enter new version (e.g., v0.2.0): " version; \
+	@read -p "Enter new version (e.g., v0.2.0): " version; \
 	git tag -a $$version -m "Release $$version"; \
-	# git push origin $$version; \
+	git push origin $$version; \
 	echo "Tagged $$version."
 
 clean:
