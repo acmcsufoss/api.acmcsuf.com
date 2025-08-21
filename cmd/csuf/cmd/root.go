@@ -10,9 +10,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var Version = "dev"
+
 var rootCmd = &cobra.Command{
-	Use:   "csuf",
-	Short: "A CLI tool to help manage the API of the CSUF ACM website",
+	Use:     "csuf",
+	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
+	Version: Version,
 }
 
 func Execute() {
