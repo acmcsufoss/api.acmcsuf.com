@@ -2,7 +2,7 @@
 
 BIN_DIR := bin
 APP_NAME := api
-CLI_NAME := cli
+CLI_NAME := csuf
 
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
