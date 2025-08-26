@@ -25,7 +25,7 @@
         };
       in {
         packages.default = package;
-        devShells.default = pkgs.callPackage ./nix/devShell.nix {};
+        devShells.default = pkgs.callPackage ./nix/shell.nix {};
 
         apps = {
           default = {
