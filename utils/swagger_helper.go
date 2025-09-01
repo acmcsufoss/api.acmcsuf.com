@@ -5,7 +5,7 @@ package utils
 // Description for swagger documentation.
 var SwaggerDescription string = "This is a documentation of the **acmcsuf API**.\n\n" +
 	"---\n" +
-	"# **csuf-cli**\n" +
+	"# **acmcsuf-cli**\n" +
 	"The command line interface tools provide a quick and easy way to test out the currently implemented routes.\n\n" +
 	"## **csuf events [command]**\n" +
 	"Use this command to interact with event-related features.\n\n" +
