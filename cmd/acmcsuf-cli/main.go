@@ -1,11 +1,5 @@
 package main
 
-// Initalizing cobra here
-// To use the CLI, first, cd into this directory (/api.acmcsuf.com/cmd/csuf)
-// Next, run: go install .
-// Now, if you have not already, export the go bin path: export PATH="$HOME/go/bin:$PATH"
-// Now type csuf in your command line and see what happens!
-
 import (
 	"log"
 	"os"
@@ -19,7 +13,7 @@ import (
 var Version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:     "csuf",
+	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
 	Version: Version,
 }
