@@ -1,0 +1,10 @@
+*              @thejolman @sidvasu  # current team leads
+
+*.nix          @thejolman
+/.github/      @thejolman
+
+*.sql          @sidvasu
+/internal/db/  @sidvasu
+
+/internal/cli/ @GaballaGit
+/utils/        @GaballaGit
