@@ -13,7 +13,7 @@ import (
 var Version = "dev"
 
 var rootCmd = &cobra.Command{
-	Use:     "csuf",
+	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
 	Version: Version,
 }
