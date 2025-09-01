@@ -25,8 +25,8 @@ run: build
 
 build: generate
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/acmcsuf-api
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/acmcsuf-cli
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/$(API_NAME)
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/$(CLI_NAME)
 
 check:
 	go vet ./...
