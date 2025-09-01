@@ -4,8 +4,8 @@ tmp_dir = "tmp"
 
 [build]
   args_bin = []
-  bin = "./bin/api"
-  cmd = "go build -o bin/api ./cmd/api"
+  bin = "./bin/acmcsuf-api"
+  cmd = "go build ./cmd/acmcsuf-api"
   delay = 1000
   exclude_dir = ["assets", "tmp", "vendor", "testdata"]
   exclude_file = []

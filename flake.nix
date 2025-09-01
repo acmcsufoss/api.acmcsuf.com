@@ -30,11 +30,11 @@
         apps = {
           default = {
             type = "app";
-            program = "${package}/bin/api-acmcsuf";
+            program = "${package}/bin/acmcsuf-api";
           };
           csuf = {
             type = "app";
-            program = "${package}/bin/csuf";
+            program = "${package}/bin/acmcsuf-api";
           };
         };
       }
