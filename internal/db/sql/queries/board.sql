@@ -49,6 +49,17 @@ FROM
 WHERE
     uuid = ?;
 
+-- name: UpdateOfficer :exec
+UPDATE officer
+SET
+    full_name = COALESCE(sqlc.narg('full_name'), full_name),
+    picture = COALESCE(sqlc.narg('picture'), picture),
+    picture = COALESCE(sqlc.narg('picture'), picture),
+    github = COALESCE(sqlc.narg('github'), github),
+    discord = COALESCE(sqlc.narg('discord'), discord)
+WHERE
+    uuid = sqlc.arg('uuid');
+
 -- name: GetTier :one
 SELECT
     tier,
