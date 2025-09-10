@@ -7,7 +7,7 @@ CLI_NAME := acmcsuf-cli
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt run build check test check-sql fix-sql clean
+.PHONY:fmt run build vet check test check-sql fix-sql clean
 
 fmt:
 	@go fmt ./...
@@ -28,8 +28,10 @@ build: generate
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-check:
+vet:
 	go vet ./...
+
+check:
 	staticcheck ./...
 
 test: check
