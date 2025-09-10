@@ -56,12 +56,13 @@ func main() {
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
+	boardService := services.NewBoardService(queries)
 	router := gin.Default()
 
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupRoutes(router, eventsService, announcementService)
+	routes.SetupRoutes(router, eventsService, announcementService, boardService)
 
 	// Setup swagger
 	docs.SwaggerInfo.Title = "ACM CSUF API"
