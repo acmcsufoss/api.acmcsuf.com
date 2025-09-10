@@ -1,9 +1,7 @@
 {
   mkShell,
   go,
-  gotools,
   gopls,
-  nilaway,
   delve,
   sqlc,
   air,
@@ -14,13 +12,13 @@
   jq,
   go-swag,
   cobra-cli,
+  go-tools,
 }:
 mkShell {
   packages = [
     go
-    gotools
     gopls # Go language server
-    nilaway # Go static analysis tool
+    go-tools
     delve # Go debugger
     sqlc # compiles SQL queries to Go code
     air # run dev server with hot reload
