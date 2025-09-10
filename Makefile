@@ -25,8 +25,8 @@ run: build
 
 build: generate
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/$(API_NAME)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/ ./cmd/$(CLI_NAME)
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
 check:
 	go vet ./...
