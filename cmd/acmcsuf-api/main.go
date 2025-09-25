@@ -47,7 +47,6 @@ func main() {
 	defer closer()
 
 	// Now we init services & gin router, and then start the server
-	// Should this be moved to the routes module??
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
@@ -57,8 +56,6 @@ func main() {
 		"127.0.0.1/32",
 	})
 	routes.SetupRoutes(router, eventsService, announcementService)
-
-	// Setup swagger
 
 	port := os.Getenv("PORT")
 	if port == "" {
