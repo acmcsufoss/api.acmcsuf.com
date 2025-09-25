@@ -20,7 +20,7 @@ import (
 var Version = "dev"
 
 func main() {
-
+	// =================== Command Line Arg Parsing ===================
 	var showVersion = flag.Bool("version", false, "Show version")
 	flag.Parse()
 
@@ -28,6 +28,8 @@ func main() {
 		fmt.Printf("Version: %s\n", Version)
 		os.Exit(0)
 	}
+	// ================================================================
+
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -37,30 +39,37 @@ func main() {
 	go func() {
 		<-signalChan
 		log.Println("Shutting down the server...")
+		// when cancel is called, it sends a "done" signal to ctx
 		cancel()
 	}()
 
+	// =================== Inialize database ===================
 	db, closer, err := db.New(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer closer()
 
-	// Now we init services & gin router, and then start the server
+	// =================== Inialize all services ===================
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
-	router := gin.Default()
 
+	// =================== Server configuration ===================
+	router := gin.Default()
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
+
+	// This hooks the initialized services up to their handlers and plugs them into the router
 	routes.SetupRoutes(router, eventsService, announcementService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
+
+	// =================== Start server in goroutine ===================
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", port)
 		log.Printf("\033[32m Server started on http://%s \033[0m\n", serverAddr)
@@ -70,6 +79,6 @@ func main() {
 		}
 	}()
 
+	// This essentially pauses the main function until the "done" signal is received
 	<-ctx.Done()
-	log.Println("Server shut down.")
 }

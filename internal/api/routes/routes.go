@@ -9,6 +9,7 @@ import (
 
 func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer) {
+	router.GET("/swagger/*any", api.NewSwaggerHandler())
 
 	v1 := router.Group("/v1")
 
@@ -25,6 +26,4 @@ func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	v1.POST("/announcements", announcementHandler.CreateAnnouncement)
 	v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
 	v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
-
-	v1.GET("/swagger/*any", api.NewSwaggerHandler())
 }
