@@ -9,17 +9,19 @@ import (
 func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer) {
 
+	v1 := router.Group("/v1")
+
 	eventHandler := handlers.NewEventHandler(eventService)
-	router.GET("/events", eventHandler.GetEvents)
-	router.GET("/events/:id", eventHandler.GetEvent)
-	router.POST("/events", eventHandler.CreateEvent)
-	router.PUT("/events/:id", eventHandler.UpdateEvent)
-	router.DELETE("/events/:id", eventHandler.DeleteEvent)
+	v1.GET("/events", eventHandler.GetEvents)
+	v1.GET("/events/:id", eventHandler.GetEvent)
+	v1.POST("/events", eventHandler.CreateEvent)
+	v1.PUT("/events/:id", eventHandler.UpdateEvent)
+	v1.DELETE("/events/:id", eventHandler.DeleteEvent)
 
 	announcementHandler := handlers.NewAnnouncementHandler(announcementService)
-	router.GET("/announcements", announcementHandler.GetAnnouncements)
-	router.GET("/announcements/:id", announcementHandler.GetAnnouncement)
-	router.POST("/announcements", announcementHandler.CreateAnnouncement)
-	router.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
-	router.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
+	v1.GET("/announcements", announcementHandler.GetAnnouncements)
+	v1.GET("/announcements/:id", announcementHandler.GetAnnouncement)
+	v1.POST("/announcements", announcementHandler.CreateAnnouncement)
+	v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
+	v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 }
