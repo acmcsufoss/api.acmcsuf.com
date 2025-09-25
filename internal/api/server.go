@@ -39,7 +39,7 @@ func Run(ctx context.Context) {
 	}
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", port)
-		log.Printf("[32m Server started on http://%s [0m ", serverAddr)
+		log.Printf("[32mServer started on http://%s[0m", serverAddr)
 
 		if err := router.Run(serverAddr); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
@@ -47,5 +47,5 @@ func Run(ctx context.Context) {
 	}()
 
 	<-ctx.Done()
-	log.Println("Server shut down.")
+	log.Println("[32mServer shut down.[0m")
 }

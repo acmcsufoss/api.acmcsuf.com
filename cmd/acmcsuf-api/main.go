@@ -9,18 +9,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	"github.com/gin-gonic/gin"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
 	_ "modernc.org/sqlite"
 )
 
 var Version = "dev"
 
 func main() {
-	// =================== Command Line Arg Parsing ===================
+	// =================== Command line arg parsing ===================
 	var showVersion = flag.Bool("version", false, "Show version")
 	flag.Parse()
 
@@ -28,9 +24,8 @@ func main() {
 		fmt.Printf("Version: %s\n", Version)
 		os.Exit(0)
 	}
-	// ================================================================
 
-
+	// =================== Goroutine management ===================
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -38,47 +33,11 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-signalChan
-		log.Println("Shutting down the server...")
+		log.Println("[32mShutting down the server...[0m")
 		// when cancel is called, it sends a "done" signal to ctx
 		cancel()
 	}()
 
-	// =================== Inialize database ===================
-	db, closer, err := db.New(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer closer()
-
-	// =================== Inialize all services ===================
-	queries := models.New(db)
-	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
-
-	// =================== Server configuration ===================
-	router := gin.Default()
-	router.SetTrustedProxies([]string{
-		"127.0.0.1/32",
-	})
-
-	// This hooks the initialized services up to their handlers and plugs them into the router
-	routes.SetupRoutes(router, eventsService, announcementService)
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-
-	// =================== Start server in goroutine ===================
-	go func() {
-		serverAddr := fmt.Sprintf("localhost:%s", port)
-		log.Printf("\033[32m Server started on http://%s \033[0m\n", serverAddr)
-
-		if err := router.Run(serverAddr); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
-		}
-	}()
-
-	// This essentially pauses the main function until the "done" signal is received
-	<-ctx.Done()
+	// =================== Start the server ===================
+	api.Run(ctx)
 }
