@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/gin-gonic/gin"
@@ -9,7 +8,7 @@ import (
 
 func SetupRoutes(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer) {
-	router.GET("/swagger/*any", api.NewSwaggerHandler())
+	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
 
 	v1 := router.Group("/v1")
 

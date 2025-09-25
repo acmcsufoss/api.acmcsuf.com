@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
