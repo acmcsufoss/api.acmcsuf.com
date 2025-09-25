@@ -13,13 +13,8 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/gin-gonic/gin"
 	_ "modernc.org/sqlite"
-
-	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var Version = "dev"
@@ -64,13 +59,6 @@ func main() {
 	routes.SetupRoutes(router, eventsService, announcementService)
 
 	// Setup swagger
-	docs.SwaggerInfo.Title = "ACM CSUF API"
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
-	docs.SwaggerInfo.BasePath = "/"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	docs.SwaggerInfo.Description = utils.SwaggerDescription
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	port := os.Getenv("PORT")
 	if port == "" {
