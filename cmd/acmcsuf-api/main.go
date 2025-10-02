@@ -34,7 +34,7 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-signalChan
-		log.Println("[32mShutting down the server...[0m")
+		log.Println("\x1b[32mShutting down the server...\x1b[0m")
 		// when cancel is called, it sends a "done" signal to ctx
 		cancel()
 	}()

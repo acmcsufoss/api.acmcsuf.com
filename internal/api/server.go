@@ -41,7 +41,7 @@ func Run(ctx context.Context) {
 	}
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", port)
-		log.Printf("[32mServer started on http://%s[0m", serverAddr)
+		log.Printf("\x1b[32mServer started on http://%s\x1b[0m", serverAddr)
 
 		if err := router.Run(serverAddr); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
@@ -51,5 +51,5 @@ func Run(ctx context.Context) {
 	// This is a blocking call that prevents the function from finishing until the signal
 	// is received.
 	<-ctx.Done()
-	log.Println("[32mServer shut down.[0m")
+	log.Println("\x1b[32mServer shut down.\x1b[0m")
 }
