@@ -46,6 +46,8 @@ func Run(ctx context.Context) {
 		}
 	}()
 
+	// This is a blocking call that prevents the function from finishing until the signal
+	// is received.
 	<-ctx.Done()
 	log.Println("[32mServer shut down.[0m")
 }
