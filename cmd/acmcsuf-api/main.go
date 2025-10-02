@@ -26,6 +26,7 @@ func main() {
 	}
 
 	// =================== Goroutine management ===================
+	log.SetPrefix("[SERVER] ")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
