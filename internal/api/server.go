@@ -1,3 +1,5 @@
+// This file (server.go) contains server initialization logic that's called by main.go
+
 package api
 
 import (
@@ -7,6 +9,7 @@ import (
 	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
@@ -30,7 +33,7 @@ func Run(ctx context.Context) {
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	SetupRoutes(router, eventsService, announcementService)
+	routes.SetupV1Routes(router, eventsService, announcementService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
