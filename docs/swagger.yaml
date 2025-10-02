@@ -104,7 +104,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /announcements:
+  /v1/announcements:
     post:
       consumes:
       - application/json
@@ -139,7 +139,7 @@ paths:
       summary: Create new Announcement
       tags:
       - Announcements
-  /announcements/{id}:
+  /v1/announcements/{id}:
     delete:
       consumes:
       - application/json
@@ -252,7 +252,7 @@ paths:
       summary: Updates the Announcement of Choice
       tags:
       - Announcements
-  /events:
+  /v1/events:
     get:
       consumes:
       - application/json
@@ -314,7 +314,7 @@ paths:
       summary: Creates a new event and generates new ID
       tags:
       - Events
-  /events/{id}:
+  /v1/events/{id}:
     delete:
       consumes:
       - application/json
