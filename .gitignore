@@ -33,3 +33,5 @@ result
 .generate.marker
 
 tmp/
+
+.env
