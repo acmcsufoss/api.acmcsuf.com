@@ -1,3 +1,12 @@
+/*
+Package main is the entry point for the acmcsuf-api server.
+
+It is responsible for:
+- Parsing command-line arguments like --version.
+- Setting up a context that listens for OS interrupt signals (Ctrl+C)
+  to enable graceful shutdown of the server.
+- Calling the Run function in the api package to start the server.
+*/
 package main
 
 import (
