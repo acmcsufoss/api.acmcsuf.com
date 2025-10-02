@@ -1,4 +1,4 @@
-package routes
+package api
 
 import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"

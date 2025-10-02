@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
@@ -31,7 +30,7 @@ func Run(ctx context.Context) {
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupRoutes(router, eventsService, announcementService)
+	SetupRoutes(router, eventsService, announcementService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
