@@ -1,4 +1,4 @@
-name: godoc_pr_preview
+name: Godoc PR Preview
 
 on:
   pull_request:
@@ -7,12 +7,14 @@ on:
       - synchronize
 
 jobs:
-  request_documentation:
+  build:
+    name: Godoc
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v5
+
       - name: Set up Go
-        uses: actions/checkout@v5
         uses: actions/setup-go@v6
         with:
           go-version: 1.24.3
