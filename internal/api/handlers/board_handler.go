@@ -22,7 +22,7 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
-	officer, err := h.boardService.Get(ctx, id)
+	officer, err := h.boardService.GetOfficer(ctx, id)
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
@@ -63,7 +63,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	}
 
 	// TODO: error out if required fields aren't provided
-	if err := h.boardService.Create(ctx, params); err != nil {
+	if err := h.boardService.CreateOfficer(ctx, params); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create officer",
 		})
