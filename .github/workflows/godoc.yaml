@@ -1,4 +1,4 @@
-name: Godoc PR Preview
+name: Godoc
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Godoc
+    name: PR Preview
     runs-on: ubuntu-latest
 
     steps:
