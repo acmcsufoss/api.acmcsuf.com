@@ -15,9 +15,11 @@ type BoardServicer interface {
 
 	GetTier(ctx context.Context, tierName int64) (models.Tier, error)
 	ListTiers(ctx context.Context, filters ...any) ([]models.Tier, error)
-	// CreateTier(ctx context.Context, params models.CreateTierParams) error
-	// UpdateTier(ctx context.Context, id string, params models.UpdateTierParams) error
+	CreateTier(ctx context.Context, params models.CreateTierParams) error
 	DeleteTier(ctx context.Context, tierName int64) error
+
+	GetPosition(ctx context.Context, fullName string) (models.Position, error)
+	CreatePosition(ctx context.Context, params models.CreatePositionParams) error
 }
 
 type BoardService struct {
@@ -59,21 +61,20 @@ func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {
 }
 
 func (s *BoardService) GetTier(ctx context.Context, tierName int64) (models.Tier, error) {
-	// tier, err := s.q.GetTier(ctx, tierName)
-	// if err != nil {
-	// 	return models.Tier{}, err
-	// }
-	// return tier, nil
-	panic("not implemented")
+	tier, err := s.q.GetTier(ctx, tierName)
+	if err != nil {
+		return models.Tier{}, err
+	}
+	return tier, nil
 }
 
-// func (s *BoardService) CreateTier(ctx context.Context, params models.CreateTierParams) error {
-// 	err := s.q.CreateTier(ctx, params)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func (s *BoardService) CreateTier(ctx context.Context, params models.CreateTierParams) error {
+	err := s.q.CreateTier(ctx, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]models.Tier, error) {
 	panic("not implemented")
@@ -83,18 +84,18 @@ func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 	panic("not implemented")
 }
 
-// func (s *BoardService) GetPosition(ctx context.Context, fullName string) (models.Position, error) {
-// 	position, err := s.q.GetPosition(ctx, fullName)
-// 	if err != nil {
-// 		return models.Position{}, err
-// 	}
-// 	return position, nil
-// }
+func (s *BoardService) GetPosition(ctx context.Context, fullName string) (models.Position, error) {
+	position, err := s.q.GetPosition(ctx, fullName)
+	if err != nil {
+		return models.Position{}, err
+	}
+	return position, nil
+}
 
-// func (s *BoardService) CreatePosition(ctx context.Context, params models.CreatePositionParams) error {
-// 	err := s.q.CreatePosition(ctx, params)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	return nil
-// }
+func (s *BoardService) CreatePosition(ctx context.Context, params models.CreatePositionParams) error {
+	err := s.q.CreatePosition(ctx, params)
+	if err != nil {
+		return err
+	}
+	return nil
+}

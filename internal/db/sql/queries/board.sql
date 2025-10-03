@@ -34,55 +34,55 @@ SET
 WHERE
     uuid = sqlc.arg('uuid');
 
--- -- name: CreateTier :exec
--- INSERT INTO
--- tier (
---     tier,
---     title,
---     t_index,
---     team
--- )
--- VALUES
--- (?, ?, ?, ?)
--- RETURNING *;
+-- name: CreateTier :exec
+INSERT INTO
+tier (
+    tier,
+    title,
+    t_index,
+    team
+)
+VALUES
+(?, ?, ?, ?)
+RETURNING *;
 
--- -- name: CreatePosition :exec
--- INSERT INTO
--- position (
---     oid,
---     semester,
---     tier,
---     full_name,
---     title,
---     team
--- )
--- VALUES
--- (?, ?, ?, ?, ?, ?)
--- RETURNING *;
+-- name: CreatePosition :exec
+INSERT INTO
+position (
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
+)
+VALUES
+(?, ?, ?, ?, ?, ?)
+RETURNING *;
 
 
--- -- name: GetTier :one
--- SELECT
---     tier,
---     title,
---     t_index,
---     team
--- FROM
---     tier
--- WHERE
---     tier = ?;
---
--- -- name: GetPosition :one
--- SELECT
---     oid,
---     semester,
---     tier,
---     full_name,
---     title,
---     team
--- FROM
---     position
--- WHERE
---     full_name = ?;
+-- name: GetTier :one
+SELECT
+    tier,
+    title,
+    t_index,
+    team
+FROM
+    tier
+WHERE
+    tier = ?;
+
+-- name: GetPosition :one
+SELECT
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
+FROM
+    position
+WHERE
+    full_name = ?;
 
 -- NOTE: Had to declare above table as :one, may need to change later to :many
