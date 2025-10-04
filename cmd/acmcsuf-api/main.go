@@ -9,23 +9,14 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/gin-gonic/gin"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
 	_ "modernc.org/sqlite"
-
-	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 var Version = "dev"
 
 func main() {
-
+	// =================== Command line arg parsing ===================
 	var showVersion = flag.Bool("version", false, "Show version")
 	flag.Parse()
 
@@ -34,6 +25,8 @@ func main() {
 		os.Exit(0)
 	}
 
+	// =================== Goroutine management ===================
+	log.SetPrefix("[SERVER] ")
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -41,50 +34,11 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-signalChan
-		log.Println("Shutting down the server...")
+		log.Println("\x1b[32mShutting down the server...\x1b[0m")
+		// when cancel is called, it sends a "done" signal to ctx
 		cancel()
 	}()
 
-	db, closer, err := db.New(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer closer()
-
-	// Now we init services & gin router, and then start the server
-	// Should this be moved to the routes module??
-	queries := models.New(db)
-	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
-	router := gin.Default()
-
-	router.SetTrustedProxies([]string{
-		"127.0.0.1/32",
-	})
-	routes.SetupRoutes(router, eventsService, announcementService)
-
-	// Setup swagger
-	docs.SwaggerInfo.Title = "ACM CSUF API"
-	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "localhost:8080"
-	docs.SwaggerInfo.BasePath = "/"
-	docs.SwaggerInfo.Schemes = []string{"http", "https"}
-	docs.SwaggerInfo.Description = utils.SwaggerDescription
-	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
-	go func() {
-		serverAddr := fmt.Sprintf("localhost:%s", port)
-		log.Printf("\033[32m Server started on http://%s \033[0m\n", serverAddr)
-
-		if err := router.Run(serverAddr); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
-		}
-	}()
-
-	<-ctx.Done()
-	log.Println("Server shut down.")
+	// =================== Start the server ===================
+	api.Run(ctx)
 }
