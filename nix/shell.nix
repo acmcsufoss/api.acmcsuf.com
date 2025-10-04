@@ -32,9 +32,11 @@ mkShell {
   ];
 
   shellHook = ''
-    export DATABASE_URL="file:dev.db?cache=shared&mode=rwc"
     export CGO_ENABLED=0  # cgo compiler flags cause issues with delve when using Nix
-    export PATH="$PWD/bin:$PATH"
+    if [ ! -f .env ]; then
+      echo ".env file not found! Creating one from .env.example for you..."
+      cp .env.example .env
+    fi
     echo -e "\e[32mLoaded nix dev shell\e[0m"
   '';
 }
