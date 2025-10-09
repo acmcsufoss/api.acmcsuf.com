@@ -46,6 +46,30 @@ VALUES
 (?, ?, ?, ?)
 RETURNING *;
 
+-- name: UpdateTier :exec
+UPDATE tier
+SET
+    title = COALESCE(:title, title),
+    t_index = COALESCE(:t_index, t_index),
+    team = COALESCE(:team, team),
+WHERE
+    tier = :tier;
+
+-- name: GetTier :one
+SELECT
+    tier,
+    title,
+    t_index,
+    team
+FROM
+    tier
+WHERE
+    tier = ?;
+
+-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?;
+
 -- name: CreatePosition :exec
 INSERT INTO
 position (
@@ -60,18 +84,6 @@ VALUES
 (?, ?, ?, ?, ?, ?)
 RETURNING *;
 
-
--- name: GetTier :one
-SELECT
-    tier,
-    title,
-    t_index,
-    team
-FROM
-    tier
-WHERE
-    tier = ?;
-
 -- name: GetPosition :one
 SELECT
     oid,
@@ -85,4 +97,11 @@ FROM
 WHERE
     full_name = ?;
 
--- NOTE: Had to declare above table as :one, may need to change later to :many
+-- name: 
+
+-- name: DeletePosition :exec
+DELETE FROM position
+WHERE
+    oid = ?
+    AND semester = ?
+    AND tier = ?;
