@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/announcements": {
+        "/v1/announcements": {
             "post": {
                 "description": "Creates a new announcement and generates unique ID",
                 "consumes": [
@@ -68,7 +68,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/announcements/{id}": {
+        "/v1/announcements/{id}": {
             "get": {
                 "description": "Retrieves a single announcement from the database.",
                 "consumes": [
@@ -238,7 +238,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events": {
+        "/v1/events": {
             "get": {
                 "description": "Get all the events from the event database",
                 "consumes": [
@@ -332,7 +332,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/events/{id}": {
+        "/v1/events/{id}": {
             "get": {
                 "description": "Retrieves a single event from the database.",
                 "consumes": [
