@@ -51,7 +51,7 @@ UPDATE tier
 SET
     title = COALESCE(:title, title),
     t_index = COALESCE(:t_index, t_index),
-    team = COALESCE(:team, team),
+    team = COALESCE(:team, team)
 WHERE
     tier = :tier;
 
@@ -97,7 +97,16 @@ FROM
 WHERE
     full_name = ?;
 
--- name: 
+-- name: UpdatePosition
+UPDATE position
+SET
+    full_name = COALESCE(:full_name, full_name),
+    title = COALESCE(:title, title),
+    team = COALESCE(:team, team)
+WHERE
+    oid = :oid
+    AND semester = :semester
+    AND tier = :tier;
 
 -- name: DeletePosition :exec
 DELETE FROM position
