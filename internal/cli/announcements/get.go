@@ -37,7 +37,7 @@ func init() {
 func getAnnouncement(host string, port string, uuid string) {
 	// ----- Constructing the url -----
 	host = fmt.Sprint(host, ":", port)
-	path := "announcements"
+	path := "v1/announcements"
 	if uuid != "" {
 		path = fmt.Sprint(path, "/", uuid)
 	}

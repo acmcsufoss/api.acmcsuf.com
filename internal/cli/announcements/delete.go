@@ -40,7 +40,7 @@ func deleteAnnouncement(host string, port string, id string) {
 
 	// ----- Constructing Url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("announcements/", id)
+	path := fmt.Sprint("v1/announcements/", id)
 
 	deleteUrl := &url.URL{
 		Scheme: "http",

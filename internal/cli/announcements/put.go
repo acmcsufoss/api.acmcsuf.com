@@ -88,7 +88,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 	// ----- Retrieving old Announcement -----
 	// ----- Constructing Url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("announcements/", id)
+	path := fmt.Sprint("v1/announcements/", id)
 
 	oldPayloadUrl := &url.URL{
 		Scheme: "http",
