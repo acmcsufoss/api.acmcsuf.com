@@ -3,19 +3,14 @@
 package routes
 
 import (
-	"net/http"
+	"github.com/gin-gonic/gin"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/gin-gonic/gin"
 )
 
-func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
+func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer) {
-	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
-	router.GET("/swagger", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
-	})
 
 	// Version 1 routes
 	v1 := router.Group("/v1")
@@ -39,6 +34,5 @@ func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 			announcements.PUT(":id", h.UpdateAnnouncement)
 			announcements.DELETE(":id", h.DeleteAnnouncement)
 		}
-
 	}
 }
