@@ -3,6 +3,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/gin-gonic/gin"
@@ -11,23 +13,32 @@ import (
 func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer) {
 	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
+	router.GET("/swagger", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "/swagger/index.html")
+	})
 
 	// Version 1 routes
 	v1 := router.Group("/v1")
 	{
-		eventHandler := handlers.NewEventHandler(eventService)
-		v1.GET("/events", eventHandler.GetEvents)
-		v1.GET("/events/:id", eventHandler.GetEvent)
-		v1.POST("/events", eventHandler.CreateEvent)
-		v1.PUT("/events/:id", eventHandler.UpdateEvent)
-		v1.DELETE("/events/:id", eventHandler.DeleteEvent)
+		events := v1.Group("/events")
+		{
+			h := handlers.NewEventHandler(eventService)
+			events.GET("", h.GetEvents)
+			events.GET(":id", h.GetEvent)
+			events.POST("", h.CreateEvent)
+			events.PUT(":id", h.UpdateEvent)
+			events.DELETE(":id", h.DeleteEvent)
+		}
 
-		announcementHandler := handlers.NewAnnouncementHandler(announcementService)
-		v1.GET("/announcements", announcementHandler.GetAnnouncements)
-		v1.GET("/announcements/:id", announcementHandler.GetAnnouncement)
-		v1.POST("/announcements", announcementHandler.CreateAnnouncement)
-		v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
-		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
+		announcements := v1.Group("/announcements")
+		{
+			h := handlers.NewAnnouncementHandler(announcementService)
+			announcements.GET("", h.GetAnnouncements)
+			announcements.GET(":id", h.GetAnnouncement)
+			announcements.POST("", h.CreateAnnouncement)
+			announcements.PUT(":id", h.UpdateAnnouncement)
+			announcements.DELETE(":id", h.DeleteAnnouncement)
+		}
 
 	}
 }
