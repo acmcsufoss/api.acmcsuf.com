@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams"
+                            "$ref": "#/definitions/models.CreateAnnouncementParams"
                         }
                     }
                 ],
@@ -94,7 +94,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Announcement details",
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement"
+                            "$ref": "#/definitions/models.Announcement"
                         }
                     },
                     "404": {
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams"
+                            "$ref": "#/definitions/models.UpdateAnnouncementParams"
                         }
                     }
                 ],
@@ -265,7 +265,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
+                                "$ref": "#/definitions/models.Event"
                             }
                         }
                     },
@@ -299,7 +299,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams"
+                            "$ref": "#/definitions/models.CreateEventParams"
                         }
                     }
                 ],
@@ -358,7 +358,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Event details",
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
+                            "$ref": "#/definitions/models.Event"
                         }
                     },
                     "404": {
@@ -407,7 +407,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams"
+                            "$ref": "#/definitions/models.UpdateEventParams"
                         }
                     }
                 ],
@@ -504,7 +504,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement": {
+        "models.Announcement": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -524,7 +524,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams": {
+        "models.CreateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -544,7 +544,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams": {
+        "models.CreateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {},
@@ -563,7 +563,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event": {
+        "models.Event": {
             "type": "object",
             "properties": {
                 "end_at": {},
@@ -582,7 +582,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams": {
+        "models.UpdateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -602,7 +602,7 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams": {
+        "models.UpdateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {},
