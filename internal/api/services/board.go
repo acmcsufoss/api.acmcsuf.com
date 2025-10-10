@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"errors"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 )
@@ -41,7 +42,7 @@ func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (models.Offi
 }
 
 func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]models.Officer, error) {
-	panic("not implemented")
+	return nil, errors.New("not implemented")
 }
 
 func (s *BoardService) CreateOfficer(ctx context.Context, params models.CreateOfficerParams) error {
@@ -77,11 +78,11 @@ func (s *BoardService) CreateTier(ctx context.Context, params models.CreateTierP
 }
 
 func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]models.Tier, error) {
-	panic("not implemented")
+	return nil, errors.New("not implemented")
 }
 
 func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
-	panic("not implemented")
+	return errors.New("not implemented")
 }
 
 func (s *BoardService) GetPosition(ctx context.Context, fullName string) (models.Position, error) {

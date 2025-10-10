@@ -41,15 +41,15 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 }
 
 func (h *BoardHandler) GetOfficers(c *gin.Context) {
-	panic("not implemented")
+	c.Status(http.StatusNotImplemented)
 }
 
 func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
-	panic("not implemented")
+	c.Status(http.StatusNotImplemented)
 }
 
 func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
-	panic("not implemented")
+	c.Status(http.StatusNotImplemented)
 }
 
 func (h *BoardHandler) CreateOfficer(c *gin.Context) {
