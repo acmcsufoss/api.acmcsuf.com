@@ -30,11 +30,16 @@ func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 
 		boardHandler := handlers.NewBoardHandler(boardService)
+		router.GET("/officers", boardHandler.GetOfficers)
 		router.GET("/officer/:id", boardHandler.GetOfficer)
+		router.POST("/officer", boardHandler.CreateOfficer)
+		router.PUT("/officer", boardHandler.UpdateOfficer)
+		router.DELETE("/officer", boardHandler.DeleteOfficer)
+
 		router.GET("/tier/:id", boardHandler.GetTier)
+		router.POST("/tier", boardHandler.CreateTier)
+
 		router.GET("/position/:id", boardHandler.GetPosition)
-		router.POST("/officer", announcementHandler.CreateAnnouncement)
-		router.POST("/tier", announcementHandler.CreateAnnouncement)
-		router.POST("/position", announcementHandler.CreateAnnouncement)
+		router.POST("/position", boardHandler.CreatePosition)
 	}
 }
