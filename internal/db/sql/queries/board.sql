@@ -1,4 +1,4 @@
--- name: CreateOfficer :one
+-- name: CreateOfficer :exec
 INSERT INTO
 officer (
     uuid,
@@ -11,7 +11,30 @@ VALUES
 (?, ?, ?, ?, ?)
 RETURNING *;
 
--- name: CreateTier :one
+-- name: GetOfficer :one
+SELECT
+    uuid,
+    full_name,
+    picture,
+    github,
+    discord
+FROM
+    officer
+WHERE
+    uuid = ?;
+
+-- name: UpdateOfficer :exec
+UPDATE officer
+SET
+    full_name = COALESCE(sqlc.narg('full_name'), full_name),
+    picture = COALESCE(sqlc.narg('picture'), picture),
+    picture = COALESCE(sqlc.narg('picture'), picture),
+    github = COALESCE(sqlc.narg('github'), github),
+    discord = COALESCE(sqlc.narg('discord'), discord)
+WHERE
+    uuid = sqlc.arg('uuid');
+
+-- name: CreateTier :exec
 INSERT INTO
 tier (
     tier,
@@ -23,27 +46,14 @@ VALUES
 (?, ?, ?, ?)
 RETURNING *;
 
--- name: CreatePosition :one
-INSERT INTO
-position (
-    oid,
-    semester,
-    tier
-)
-VALUES
-(?, ?, ?)
-RETURNING *;
-
--- name: GetOfficer :one
-SELECT
-    full_name,
-    picture,
-    github,
-    discord
-FROM
-    officer
+-- name: UpdateTier :exec
+UPDATE tier
+SET
+    title = COALESCE(:title, title),
+    t_index = COALESCE(:t_index, t_index),
+    team = COALESCE(:team, team)
 WHERE
-    uuid = ?;
+    tier = :tier;
 
 -- name: GetTier :one
 SELECT
@@ -56,6 +66,24 @@ FROM
 WHERE
     tier = ?;
 
+-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?;
+
+-- name: CreatePosition :exec
+INSERT INTO
+position (
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team
+)
+VALUES
+(?, ?, ?, ?, ?, ?)
+RETURNING *;
+
 -- name: GetPosition :one
 SELECT
     oid,
@@ -67,30 +95,9 @@ SELECT
 FROM
     position
 WHERE
-    oid = ?;
+    full_name = ?;
 
--- NOTE: Had to declare above table as :one, may need to change later to :many
-
--- name: UpdateOfficer :exec
-UPDATE officer
-SET
-    full_name = COALESCE(:full_name, full_name),
-    picture = COALESCE(:picture, picture),
-    github = COALESCE(:github, github),
-    discord = COALESCE(:discord, discord)
-WHERE
-    uuid = :uuid;
-
--- name: UpdateTier :exec 
-UPDATE tier
-SET
-    title = COALESCE(:title, title),
-    t_index = COALESCE(:t_index, t_index),
-    team = COALESCE(:team, team)
-WHERE
-    tier = :tier;
-
--- name: UpdatePosition :exec 
+-- name: UpdatePosition :exec
 UPDATE position
 SET
     full_name = COALESCE(:full_name, full_name),
@@ -100,14 +107,6 @@ WHERE
     oid = :oid
     AND semester = :semester
     AND tier = :tier;
-
--- name: DeleteOfficer :exec
-DELETE FROM officer
-WHERE uuid = ?;
-
--- name: DeleteTier :exec
-DELETE FROM tier
-WHERE tier = ?;
 
 -- name: DeletePosition :exec
 DELETE FROM position

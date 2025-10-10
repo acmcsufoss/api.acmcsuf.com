@@ -9,7 +9,7 @@ import (
 )
 
 func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer) {
+	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
 
 	// Version 1 routes
@@ -29,5 +29,23 @@ func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 		v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
 		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 
+		boardHandler := handlers.NewBoardHandler(boardService)
+		v1.GET("/officers", boardHandler.GetOfficers)
+		v1.GET("/officer/:id", boardHandler.GetOfficer)
+		v1.POST("/officer", boardHandler.CreateOfficer)
+		v1.PUT("/officer/:id", boardHandler.UpdateOfficer)
+		v1.DELETE("/officer/:id", boardHandler.DeleteOfficer)
+
+		v1.GET("/tier", boardHandler.GetTiers)
+		v1.GET("/tier/:id", boardHandler.GetTier)
+		v1.POST("/tier", boardHandler.CreateTier)
+		v1.PUT("/tier/:id", boardHandler.UpdateTier)
+		v1.DELETE("/tier/:id", boardHandler.DeleteTier)
+
+		v1.GET("/position", boardHandler.GetPositions)
+		v1.GET("/position/:id", boardHandler.GetPosition)
+		v1.POST("/position", boardHandler.CreatePosition)
+		v1.PUT("/position/:id", boardHandler.UpdatePosition)
+		v1.DELETE("/position/:id", boardHandler.DeletePosition)
 	}
 }
