@@ -75,6 +75,10 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	})
 }
 
+func (h *BoardHandler) GetTiers(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
 func (h *BoardHandler) GetTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	id, err := strconv.Atoi(c.Param("id"))
@@ -124,6 +128,18 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 	})
 }
 
+func (h *BoardHandler) UpdateTier(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func (h *BoardHandler) DeleteTier(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func (h *BoardHandler) GetPositions(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
 func (h *BoardHandler) GetPosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
@@ -168,4 +184,12 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 		"semester": params.Semester,
 		"tier":     params.Tier,
 	})
+}
+
+func (h *BoardHandler) UpdatePosition(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
+}
+
+func (h *BoardHandler) DeletePosition(c *gin.Context) {
+	c.Status(http.StatusNotImplemented)
 }
