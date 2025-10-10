@@ -9,7 +9,7 @@ If you prefer to use a GUI instead, Postman is a popular option.
 The API includes comprehensive Swagger documentation that provides an interactive interface for exploring and testing endpoints. When the server is running, you can access the Swagger UI at:
 
 ```
-http://localhost:8080/swagger/index.html
+http://localhost:8080/v1/swagger/index.html
 ```
 
 The Swagger documentation includes:
