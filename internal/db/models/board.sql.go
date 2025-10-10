@@ -109,6 +109,35 @@ func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) error {
 	return err
 }
 
+const deletePosition = `-- name: DeletePosition :exec
+DELETE FROM position
+WHERE
+    oid = ?
+    AND semester = ?
+    AND tier = ?
+`
+
+type DeletePositionParams struct {
+	Oid      interface{} `json:"oid"`
+	Semester interface{} `json:"semester"`
+	Tier     int64       `json:"tier"`
+}
+
+func (q *Queries) DeletePosition(ctx context.Context, arg DeletePositionParams) error {
+	_, err := q.db.ExecContext(ctx, deletePosition, arg.Oid, arg.Semester, arg.Tier)
+	return err
+}
+
+const deleteTier = `-- name: DeleteTier :exec
+DELETE FROM tier
+WHERE tier = ?
+`
+
+func (q *Queries) DeleteTier(ctx context.Context, tier int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTier, tier)
+	return err
+}
+
 const getOfficer = `-- name: GetOfficer :one
 SELECT
     uuid,
@@ -214,6 +243,66 @@ func (q *Queries) UpdateOfficer(ctx context.Context, arg UpdateOfficerParams) er
 		arg.Github,
 		arg.Discord,
 		arg.Uuid,
+	)
+	return err
+}
+
+const updatePosition = `-- name: UpdatePosition :exec
+UPDATE position
+SET
+    full_name = COALESCE(?1, full_name),
+    title = COALESCE(?2, title),
+    team = COALESCE(?3, team)
+WHERE
+    oid = ?4
+    AND semester = ?5
+    AND tier = ?6
+`
+
+type UpdatePositionParams struct {
+	FullName string         `json:"full_name"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
+	Oid      interface{}    `json:"oid"`
+	Semester interface{}    `json:"semester"`
+	Tier     int64          `json:"tier"`
+}
+
+func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) error {
+	_, err := q.db.ExecContext(ctx, updatePosition,
+		arg.FullName,
+		arg.Title,
+		arg.Team,
+		arg.Oid,
+		arg.Semester,
+		arg.Tier,
+	)
+	return err
+}
+
+const updateTier = `-- name: UpdateTier :exec
+UPDATE tier
+SET
+    title = COALESCE(?1, title),
+    t_index = COALESCE(?2, t_index),
+    team = COALESCE(?3, team)
+WHERE
+    tier = ?4
+`
+
+type UpdateTierParams struct {
+	Title  sql.NullString `json:"title"`
+	TIndex sql.NullInt64  `json:"t_index"`
+	Team   sql.NullString `json:"team"`
+	Tier   int64          `json:"tier"`
+}
+
+func (q *Queries) UpdateTier(ctx context.Context, arg UpdateTierParams) error {
+	_, err := q.db.ExecContext(ctx, updateTier,
+		arg.Title,
+		arg.TIndex,
+		arg.Team,
+		arg.Tier,
 	)
 	return err
 }

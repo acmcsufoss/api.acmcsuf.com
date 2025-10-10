@@ -97,7 +97,7 @@ FROM
 WHERE
     full_name = ?;
 
--- name: UpdatePosition
+-- name: UpdatePosition :exec
 UPDATE position
 SET
     full_name = COALESCE(:full_name, full_name),
