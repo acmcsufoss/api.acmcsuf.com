@@ -41,7 +41,7 @@ func deleteEvent(id string, host string, port string) {
 	}
 
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("events/", id)
+	path := fmt.Sprint("v1/events/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",

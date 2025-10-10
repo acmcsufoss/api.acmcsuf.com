@@ -251,7 +251,7 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 
 	// ----- Construct Url -----
 	urlhost = fmt.Sprint(urlhost, ":", port)
-	path := "events"
+	path := "v1/events"
 
 	postUrl := &url.URL{
 		Scheme: "http",

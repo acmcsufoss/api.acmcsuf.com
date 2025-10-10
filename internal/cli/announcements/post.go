@@ -206,7 +206,7 @@ func postAnnouncement(host string, port string, payload *models.CreateAnnounceme
 
 	// ----- Constructing the Url -----
 	host = fmt.Sprint(host, ":", port)
-	path := "announcements"
+	path := "v1/announcements"
 
 	postURL := &url.URL{
 		Scheme: "http",

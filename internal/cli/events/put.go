@@ -98,7 +98,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	// ----- Constructing Url -----
 	host = fmt.Sprint(host, ":", port)
 
-	path := fmt.Sprint("events", "/", id)
+	path := fmt.Sprint("v1/events", "/", id)
 
 	retrievalURL := &url.URL{
 		Scheme: "http",
