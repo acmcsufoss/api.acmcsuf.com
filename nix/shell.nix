@@ -38,5 +38,6 @@ mkShell {
       cp .env.example .env
     fi
     echo -e "\e[32mLoaded nix dev shell\e[0m"
+    export GOROOT="${go}/share/go"
   '';
 }

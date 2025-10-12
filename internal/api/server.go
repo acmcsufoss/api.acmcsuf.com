@@ -8,11 +8,12 @@ import (
 	"log"
 	"os"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	"github.com/gin-gonic/gin"
 )
 
 // Run initializes the database, services, and router, then starts the server.
@@ -33,7 +34,8 @@ func Run(ctx context.Context) {
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupV1Routes(router, eventsService, announcementService)
+	routes.SetupRoot(router)
+	routes.SetupV1(router, eventsService, announcementService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
