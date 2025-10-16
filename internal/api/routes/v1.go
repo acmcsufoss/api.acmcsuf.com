@@ -9,7 +9,8 @@ import (
 )
 
 func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer) {
+	announcementService services.AnnouncementServicer, 
+	discordOauthService services.DiscordOauthServicer) {
 	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
 
 	// Version 1 routes
@@ -29,5 +30,8 @@ func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
 		v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
 		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
 
+		discordOauthHandler := handlers.NewDiscordOauthHandler(discordOauthService)
+		v1.GET("/discord", discordOauthHandler.GoRedirect)
+		v1.GET("/discord/handle", discordOauthHandler.HandleRedirect)
 	}
 }

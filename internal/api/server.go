@@ -28,12 +28,13 @@ func Run(ctx context.Context) {
 	queries := models.New(db)
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
+	discordOauthService := services.NewDiscordOauthService()
 	router := gin.Default()
 
 	router.SetTrustedProxies([]string{
 		"127.0.0.1/32",
 	})
-	routes.SetupV1Routes(router, eventsService, announcementService)
+	routes.SetupV1Routes(router, eventsService, announcementService, discordOauthService)
 
 	port := os.Getenv("PORT")
 	if port == "" {
