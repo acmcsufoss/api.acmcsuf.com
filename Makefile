@@ -1,13 +1,13 @@
 .DEFAULT_GOAL := build
 
 BIN_DIR := bin
-APP_NAME := api
-CLI_NAME := csuf
+API_NAME := acmcsuf-api
+CLI_NAME := acmcsuf-cli
 
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt run build check test check-sql fix-sql clean
+.PHONY:fmt run build vet check test check-sql fix-sql clean
 
 fmt:
 	@go fmt ./...
@@ -21,16 +21,18 @@ $(GENERATE_MARKER): $(GENERATE_DEPS)
 generate: fmt $(GENERATE_MARKER)
 
 run: build
-	./$(BIN_DIR)/$(APP_NAME)
+	./$(BIN_DIR)/$(API_NAME)
 
 build: generate
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(APP_NAME) ./cmd/api
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/csuf
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
+	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
+
+vet:
+	go vet ./...
 
 check:
-	go vet ./...
-	nilaway ./...
+	staticcheck ./...
 
 test: check
 	go test ./...

@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: CI Checks
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
@@ -18,12 +19,6 @@ jobs:
 
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
-
-      - name: Setup Nix cache
-        uses: DeterminateSystems/flakehub-cache-action@main
-
-      # - name: Check Flake
-      #   run: nix flake check
 
       - name: Format check
         run: nix develop -c bash -c "make fmt && git diff --exit-code"

@@ -1,0 +1,51 @@
+// This file (v1.go) initializes v1 routes used by the server. Called by server.go
+
+package routes
+
+import (
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/gin-gonic/gin"
+)
+
+func SetupV1Routes(router *gin.Engine, eventService services.EventsServicer,
+	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
+	router.GET("/swagger/*any", handlers.NewSwaggerHandler())
+
+	// Version 1 routes
+	v1 := router.Group("/v1")
+	{
+		eventHandler := handlers.NewEventHandler(eventService)
+		v1.GET("/events", eventHandler.GetEvents)
+		v1.GET("/events/:id", eventHandler.GetEvent)
+		v1.POST("/events", eventHandler.CreateEvent)
+		v1.PUT("/events/:id", eventHandler.UpdateEvent)
+		v1.DELETE("/events/:id", eventHandler.DeleteEvent)
+
+		announcementHandler := handlers.NewAnnouncementHandler(announcementService)
+		v1.GET("/announcements", announcementHandler.GetAnnouncements)
+		v1.GET("/announcements/:id", announcementHandler.GetAnnouncement)
+		v1.POST("/announcements", announcementHandler.CreateAnnouncement)
+		v1.PUT("/announcements/:id", announcementHandler.UpdateAnnouncement)
+		v1.DELETE("/announcements/:id", announcementHandler.DeleteAnnouncement)
+
+		boardHandler := handlers.NewBoardHandler(boardService)
+		v1.GET("/officers", boardHandler.GetOfficers)
+		v1.GET("/officer/:id", boardHandler.GetOfficer)
+		v1.POST("/officer", boardHandler.CreateOfficer)
+		v1.PUT("/officer/:id", boardHandler.UpdateOfficer)
+		v1.DELETE("/officer/:id", boardHandler.DeleteOfficer)
+
+		v1.GET("/tier", boardHandler.GetTiers)
+		v1.GET("/tier/:id", boardHandler.GetTier)
+		v1.POST("/tier", boardHandler.CreateTier)
+		v1.PUT("/tier/:id", boardHandler.UpdateTier)
+		v1.DELETE("/tier/:id", boardHandler.DeleteTier)
+
+		v1.GET("/position", boardHandler.GetPositions)
+		v1.GET("/position/:id", boardHandler.GetPosition)
+		v1.POST("/position", boardHandler.CreatePosition)
+		v1.PUT("/position/:id", boardHandler.UpdatePosition)
+		v1.DELETE("/position/:id", boardHandler.DeletePosition)
+	}
+}

@@ -1,4 +1,4 @@
-name: godoc_pr_preview
+name: Godoc
 
 on:
   pull_request:
@@ -7,14 +7,17 @@ on:
       - synchronize
 
 jobs:
-  request_documentation:
+  build:
+    name: PR Preview
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v5
+
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v6
         with:
-          go-version: 1.21
+          go-version: 1.24.3
 
       - name: Generate comment
         id: generate_comment
@@ -31,18 +34,24 @@ jobs:
           REPO: github.com/${{ github.event.pull_request.base.repo.full_name }}
           REV: ${{ github.event.pull_request.head.sha }}
 
-      - name: Update existing issue comment
-        uses: peter-evans/find-comment@v1
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v4
         id: fc
         with:
           issue-number: ${{ github.event.pull_request.number }}
           comment-author: "github-actions[bot]"
           body-includes: "### godoc reference preview ready ✨"
-          edit-mode: replace
+
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: ${{ steps.generate_comment.outputs.comment }}
 
       - name: Update comment
         if: steps.fc.outputs.comment-id != ''
-        uses: peter-evans/create-or-update-comment@v1
+        uses: peter-evans/create-or-update-comment@v4
         with:
           comment-id: ${{ steps.fc.outputs.comment-id }}
           body: ${{ steps.generate_comment.outputs.comment }}

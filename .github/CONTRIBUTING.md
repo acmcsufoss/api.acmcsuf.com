@@ -40,3 +40,8 @@ Don't be afraid to ask for help with anything on this project. DMs are open!
 - The Copilot PR review is a useful feature - it often catches easy to miss
   copy-paste errors, spelling/grammar mistakes, and other things. Be cautious
   though - it can make mistakes, and always validate the issues it finds.
+- Only *squash merging and rebase merging* into main are allowed. Don't worry
+  about this too much, but if you don't know which to choose:
+  - Choose a squash merge if the individual commits in the PR don't matter very
+    much and/or the change is relatively atomic.
+  - Choose a rebase merge if the individual commits in the PR do matter.
