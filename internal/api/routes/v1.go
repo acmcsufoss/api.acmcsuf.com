@@ -11,7 +11,7 @@ import (
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer,
-  discordOauthService services.DiscordOauthServicer) {
+	discordOauthService services.DiscordOauthServicer) {
 
 	// Version 1 routes
 	v1 := router.Group("/v1")
@@ -35,12 +35,11 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 			announcements.PUT(":id", h.UpdateAnnouncement)
 			announcements.DELETE(":id", h.DeleteAnnouncement)
 		}
-    
-    discordOauth := v1.Group("/discord")
-    {
-      h := handlers.NewDiscordOauthHandler(discordOauthService)
-      discordOauth.GET("", h.GoRedirect)
-      discordOauth.GET("handle", h.HandleRedirect)
-    }
+		discordOauth := v1.Group("/discord")
+		{
+			h := handlers.NewDiscordOauthHandler(discordOauthService)
+			discordOauth.GET("", h.GoRedirect)
+			discordOauth.GET("handle", h.HandleRedirect)
+		}
 	}
 }
