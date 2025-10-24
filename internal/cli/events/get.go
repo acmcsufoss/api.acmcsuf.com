@@ -42,7 +42,7 @@ func getEvents(id string, port string, host string) {
 	host = fmt.Sprint(host, ":", port)
 
 	// Constructing Path
-	path := "events"
+	path := "v1/events"
 	if id != "" {
 		path = fmt.Sprint(path, "/", id)
 	}

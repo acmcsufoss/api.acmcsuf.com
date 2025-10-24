@@ -4,7 +4,7 @@ BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
-GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) $(wildcard sqlc.yaml)
+GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) internal/db/sqlc.yaml $(wildcard internal/api/handlers/*.go)
 GENERATE_MARKER := .generate.marker
 
 .PHONY:fmt run build vet check test check-sql fix-sql clean

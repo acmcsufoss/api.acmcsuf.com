@@ -1,5 +1,5 @@
 definitions:
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement:
+  models.Announcement:
     properties:
       announce_at:
         type: integer
@@ -12,7 +12,7 @@ definitions:
       visibility:
         type: string
     type: object
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams:
+  models.CreateAnnouncementParams:
     properties:
       announce_at:
         type: integer
@@ -25,7 +25,7 @@ definitions:
       visibility:
         type: string
     type: object
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams:
+  models.CreateEventParams:
     properties:
       end_at: {}
       host:
@@ -38,7 +38,7 @@ definitions:
       uuid:
         type: string
     type: object
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event:
+  models.Event:
     properties:
       end_at: {}
       host:
@@ -51,7 +51,7 @@ definitions:
       uuid:
         type: string
     type: object
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams:
+  models.UpdateAnnouncementParams:
     properties:
       announce_at:
         $ref: '#/definitions/sql.NullInt64'
@@ -64,7 +64,7 @@ definitions:
       visibility:
         $ref: '#/definitions/sql.NullString'
     type: object
-  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams:
+  models.UpdateEventParams:
     properties:
       end_at: {}
       host:
@@ -115,7 +115,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams'
+          $ref: '#/definitions/models.CreateAnnouncementParams'
       produces:
       - application/json
       responses:
@@ -190,7 +190,7 @@ paths:
         "200":
           description: Announcement details
           schema:
-            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement'
+            $ref: '#/definitions/models.Announcement'
         "404":
           description: Not Found
           schema:
@@ -221,7 +221,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams'
+          $ref: '#/definitions/models.UpdateAnnouncementParams'
       produces:
       - application/json
       responses:
@@ -269,7 +269,7 @@ paths:
           description: List of events
           schema:
             items:
-              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
+              $ref: '#/definitions/models.Event'
             type: array
         "500":
           description: Internal Server Error
@@ -290,7 +290,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams'
+          $ref: '#/definitions/models.CreateEventParams'
       produces:
       - application/json
       responses:
@@ -365,7 +365,7 @@ paths:
         "200":
           description: Event details
           schema:
-            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
+            $ref: '#/definitions/models.Event'
         "404":
           description: Not Found
           schema:
@@ -396,7 +396,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams'
+          $ref: '#/definitions/models.UpdateEventParams'
       produces:
       - application/json
       responses:
