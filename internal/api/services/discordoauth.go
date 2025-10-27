@@ -2,12 +2,12 @@ package services
 
 import (
 	"encoding/json"
-	"io"
-	"os"
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
 	disgoauth "github.com/realTristan/disgoauth"
+	"io"
+	"net/http"
+	"os"
 )
 
 var RequestClient *http.Client = &http.Client{}
@@ -23,10 +23,10 @@ type DiscordOauthService struct {
 
 func NewDiscordOauthService() *DiscordOauthService {
 	return &DiscordOauthService{dc: disgoauth.Init(&disgoauth.Client{
-								ClientID: os.Getenv("DISCORD_CLIENT_ID"),
-								ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),
-								RedirectURI: os.Getenv("DISCORD_REDIRECT_URI"),
-								Scopes: []string{disgoauth.ScopeIdentify, "guilds.members.read"},
+		ClientID:     os.Getenv("DISCORD_CLIENT_ID"),
+		ClientSecret: os.Getenv("DISCORD_CLIENT_SECRET"),
+		RedirectURI:  os.Getenv("DISCORD_REDIRECT_URI"),
+		Scopes:       []string{disgoauth.ScopeIdentify, "guilds.members.read"},
 	})}
 }
 
@@ -37,7 +37,7 @@ func (s *DiscordOauthService) Redirect(w gin.ResponseWriter, r *http.Request) {
 func (s *DiscordOauthService) HandleRedirect(code string) {
 	var (
 		accessToken, _ = s.dc.GetOnlyAccessToken(code)
-		guildData, _ = GetUserGuildData(accessToken)
+		guildData, _   = GetUserGuildData(accessToken)
 	)
 	jguildData, _ := json.MarshalIndent(guildData, "", "\t")
 	fmt.Println(string(jguildData))
