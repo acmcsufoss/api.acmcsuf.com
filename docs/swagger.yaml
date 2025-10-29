@@ -38,6 +38,43 @@ definitions:
       uuid:
         type: string
     type: object
+  models.CreateOfficerParams:
+    properties:
+      discord:
+        $ref: '#/definitions/sql.NullString'
+      full_name:
+        type: string
+      github:
+        $ref: '#/definitions/sql.NullString'
+      picture:
+        $ref: '#/definitions/sql.NullString'
+      uuid: {}
+    type: object
+  models.CreatePositionParams:
+    properties:
+      oid: {}
+      semester: {}
+      tier:
+        type: integer
+    type: object
+  models.CreateTierParams:
+    properties:
+      t_index:
+        $ref: '#/definitions/sql.NullInt64'
+      team:
+        $ref: '#/definitions/sql.NullString'
+      tier:
+        type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
+    type: object
+  models.DeletePositionParams:
+    properties:
+      oid: {}
+      semester: {}
+      tier:
+        type: integer
+    type: object
   models.Event:
     properties:
       end_at: {}
@@ -50,6 +87,42 @@ definitions:
       start_at: {}
       uuid:
         type: string
+    type: object
+  models.Officer:
+    properties:
+      discord:
+        $ref: '#/definitions/sql.NullString'
+      full_name:
+        type: string
+      github:
+        $ref: '#/definitions/sql.NullString'
+      picture:
+        $ref: '#/definitions/sql.NullString'
+      uuid: {}
+    type: object
+  models.Position:
+    properties:
+      full_name:
+        type: string
+      oid: {}
+      semester: {}
+      team:
+        $ref: '#/definitions/sql.NullString'
+      tier:
+        type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
+    type: object
+  models.Tier:
+    properties:
+      t_index:
+        $ref: '#/definitions/sql.NullInt64'
+      team:
+        $ref: '#/definitions/sql.NullString'
+      tier:
+        type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
     type: object
   models.UpdateAnnouncementParams:
     properties:
@@ -76,6 +149,42 @@ definitions:
       start_at: {}
       uuid:
         type: string
+    type: object
+  models.UpdateOfficerParams:
+    properties:
+      discord:
+        $ref: '#/definitions/sql.NullString'
+      full_name:
+        type: string
+      github:
+        $ref: '#/definitions/sql.NullString'
+      picture:
+        $ref: '#/definitions/sql.NullString'
+      uuid: {}
+    type: object
+  models.UpdatePositionParams:
+    properties:
+      full_name:
+        type: string
+      oid: {}
+      semester: {}
+      team:
+        $ref: '#/definitions/sql.NullString'
+      tier:
+        type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
+    type: object
+  models.UpdateTierParams:
+    properties:
+      t_index:
+        $ref: '#/definitions/sql.NullInt64'
+      team:
+        $ref: '#/definitions/sql.NullString'
+      tier:
+        type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
     type: object
   sql.NullBool:
     properties:
@@ -252,6 +361,531 @@ paths:
       summary: Updates the Announcement of Choice
       tags:
       - Announcements
+  /v1/board/officers:
+    get:
+      consumes:
+      - application/json
+      description: Get all officers from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of officers
+          schema:
+            items:
+              $ref: '#/definitions/models.Officer'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all officers
+      tags:
+      - Board
+    post:
+      consumes:
+      - application/json
+      description: Creates a new officer in the database.
+      parameters:
+      - description: Officer data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateOfficerParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message with UUID
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creates a new officer
+      tags:
+      - Board
+  /v1/board/officers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an officer from the database
+      parameters:
+      - description: Officer UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes an officer
+      tags:
+      - Board
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single officer from the database.
+      parameters:
+      - description: Officer UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Officer details
+          schema:
+            $ref: '#/definitions/models.Officer'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an Officer by UUID
+      tags:
+      - Board
+    put:
+      consumes:
+      - application/json
+      description: Updates an officer in the database
+      parameters:
+      - description: Officer UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated officer data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateOfficerParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Updates an officer
+      tags:
+      - Board
+  /v1/board/positions:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a position from the database (requires oid, semester, and
+        tier)
+      parameters:
+      - description: Position identifier
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeletePositionParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes a position
+      tags:
+      - Board
+    get:
+      consumes:
+      - application/json
+      description: Get all positions from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of positions
+          schema:
+            items:
+              $ref: '#/definitions/models.Position'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all positions
+      tags:
+      - Board
+    post:
+      consumes:
+      - application/json
+      description: Creates a new position in the database.
+      parameters:
+      - description: Position data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatePositionParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creates a new position
+      tags:
+      - Board
+    put:
+      consumes:
+      - application/json
+      description: Updates a position in the database
+      parameters:
+      - description: Updated position data (must include oid, semester, tier)
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdatePositionParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Updates a position
+      tags:
+      - Board
+  /v1/board/positions/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single position from the database by officer UUID.
+      parameters:
+      - description: Officer full name
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Position details
+          schema:
+            $ref: '#/definitions/models.Position'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a Position by UUID
+      tags:
+      - Board
+  /v1/board/tiers:
+    get:
+      consumes:
+      - application/json
+      description: Get all tiers from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of tiers
+          schema:
+            items:
+              $ref: '#/definitions/models.Tier'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all tiers
+      tags:
+      - Board
+    post:
+      consumes:
+      - application/json
+      description: Creates a new tier in the database.
+      parameters:
+      - description: Tier data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTierParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message with tier number
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Creates a new tier
+      tags:
+      - Board
+  /v1/board/tiers/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tier from the database
+      parameters:
+      - description: Tier number
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Deletes a tier
+      tags:
+      - Board
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a single tier from the database.
+      parameters:
+      - description: Tier number
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tier details
+          schema:
+            $ref: '#/definitions/models.Tier'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a Tier by tier number
+      tags:
+      - Board
+    put:
+      consumes:
+      - application/json
+      description: Updates a tier in the database
+      parameters:
+      - description: Tier number
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated tier data
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTierParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Success message
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Updates a tier
+      tags:
+      - Board
   /v1/events:
     get:
       consumes:
