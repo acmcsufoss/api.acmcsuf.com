@@ -10,7 +10,7 @@ import (
 )
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer) {
+	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 
 	// Version 1 routes
 	v1 := router.Group("/v1")
@@ -33,6 +33,32 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 			announcements.POST("", h.CreateAnnouncement)
 			announcements.PUT(":id", h.UpdateAnnouncement)
 			announcements.DELETE(":id", h.DeleteAnnouncement)
+		}
+
+		board := v1.Group("/board")
+		{
+			h := handlers.NewBoardHandler(boardService)
+
+			// Officers
+			board.GET("/officers", h.GetOfficers)
+			board.GET("/officers/:id", h.GetOfficer)
+			board.POST("/officers", h.CreateOfficer)
+			board.PUT("/officers/:id", h.UpdateOfficer)
+			board.DELETE("/officers/:id", h.DeleteOfficer)
+
+			// Tiers
+			board.GET("/tiers", h.GetTiers)
+			board.GET("/tiers/:id", h.GetTier)
+			board.POST("/tiers", h.CreateTier)
+			board.PUT("/tiers/:id", h.UpdateTier)
+			board.DELETE("/tiers/:id", h.DeleteTier)
+
+			// Positions
+			board.GET("/positions", h.GetPositions)
+			board.GET("/positions/:id", h.GetPosition)
+			board.POST("/positions", h.CreatePosition)
+			board.PUT("/positions", h.UpdatePosition)
+			board.DELETE("/positions", h.DeletePosition)
 		}
 	}
 }

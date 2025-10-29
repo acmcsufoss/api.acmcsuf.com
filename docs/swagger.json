@@ -227,6 +227,796 @@
                 }
             }
         },
+        "/v1/board/officers": {
+            "get": {
+                "description": "Get all officers from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get all officers",
+                "responses": {
+                    "200": {
+                        "description": "List of officers",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Officer"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new officer in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Creates a new officer",
+                "parameters": [
+                    {
+                        "description": "Officer data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateOfficerParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message with UUID",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/board/officers/{id}": {
+            "get": {
+                "description": "Retrieves a single officer from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get an Officer by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Officer UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Officer details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Officer"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates an officer in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Updates an officer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Officer UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated officer data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateOfficerParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete an officer from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Deletes an officer",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Officer UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/board/positions": {
+            "get": {
+                "description": "Get all positions from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get all positions",
+                "responses": {
+                    "200": {
+                        "description": "List of positions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Position"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a position in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Updates a position",
+                "parameters": [
+                    {
+                        "description": "Updated position data (must include oid, semester, tier)",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdatePositionParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new position in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Creates a new position",
+                "parameters": [
+                    {
+                        "description": "Position data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreatePositionParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a position from the database (requires oid, semester, and tier)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Deletes a position",
+                "parameters": [
+                    {
+                        "description": "Position identifier",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeletePositionParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/board/positions/{id}": {
+            "get": {
+                "description": "Retrieves a single position from the database by officer UUID.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get a Position by UUID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Officer full name",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Position details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Position"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/board/tiers": {
+            "get": {
+                "description": "Get all tiers from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get all tiers",
+                "responses": {
+                    "200": {
+                        "description": "List of tiers",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Tier"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Creates a new tier in the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Creates a new tier",
+                "parameters": [
+                    {
+                        "description": "Tier data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateTierParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message with tier number",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/board/tiers/{id}": {
+            "get": {
+                "description": "Retrieves a single tier from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Get a Tier by tier number",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tier number",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tier details",
+                        "schema": {
+                            "$ref": "#/definitions/models.Tier"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Updates a tier in the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Updates a tier",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tier number",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated tier data",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateTierParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a tier from the database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Board"
+                ],
+                "summary": "Deletes a tier",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Tier number",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success message",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/v1/events": {
             "get": {
                 "description": "Get all the events from the event database",
@@ -552,6 +1342,61 @@
                 }
             }
         },
+        "models.CreateOfficerParams": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "picture": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {}
+            }
+        },
+        "models.CreatePositionParams": {
+            "type": "object",
+            "properties": {
+                "oid": {},
+                "semester": {},
+                "tier": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CreateTierParams": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
+                }
+            }
+        },
+        "models.DeletePositionParams": {
+            "type": "object",
+            "properties": {
+                "oid": {},
+                "semester": {},
+                "tier": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Event": {
             "type": "object",
             "properties": {
@@ -568,6 +1413,60 @@
                 "start_at": {},
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "models.Officer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "picture": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {}
+            }
+        },
+        "models.Position": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "oid": {},
+                "semester": {},
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
+                }
+            }
+        },
+        "models.Tier": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },
@@ -607,6 +1506,60 @@
                 "start_at": {},
                 "uuid": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UpdateOfficerParams": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "picture": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "uuid": {}
+            }
+        },
+        "models.UpdatePositionParams": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "oid": {},
+                "semester": {},
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
+                }
+            }
+        },
+        "models.UpdateTierParams": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },
