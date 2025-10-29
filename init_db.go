@@ -1,45 +1,45 @@
 package main
 
 import (
-    "database/sql"
-    "encoding/json"
-    "fmt"
-    "log"
-    "os"
-    "strings"
-    _ "github.com/mattn/go-sqlite3"
+	"database/sql"
+	"encoding/json"
+	"fmt"
+	_ "github.com/mattn/go-sqlite3"
+	"log"
+	"os"
+	"strings"
 )
 
 type Officer struct {
-    FullName  string `json:"fullName"`
-    Picture   string `json:"picture"`
-    Positions map[string][]struct {
-        Title string `json:"title"`
-        Tier  int    `json:"tier"`
-    } `json:"positions"`
-    Discord string `json:"discord,omitempty"`
+	FullName  string `json:"fullName"`
+	Picture   string `json:"picture"`
+	Positions map[string][]struct {
+		Title string `json:"title"`
+		Tier  int    `json:"tier"`
+	} `json:"positions"`
+	Discord string `json:"discord,omitempty"`
 }
 
 func main() {
-    data, err := os.ReadFile("officers.json")
-    if err != nil {
-        log.Fatal("Error reading JSON file:", err)
-    }
+	data, err := os.ReadFile("officers.json")
+	if err != nil {
+		log.Fatal("Error reading JSON file:", err)
+	}
 
-    var officers []Officer
-    err = json.Unmarshal(data, &officers)
-    if err != nil {
-        log.Fatal("Error unmarshaling JSON:", err)
-    }
+	var officers []Officer
+	err = json.Unmarshal(data, &officers)
+	if err != nil {
+		log.Fatal("Error unmarshaling JSON:", err)
+	}
 
-    db, err := sql.Open("sqlite3", "./dev.db")
-    if err != nil {
-        log.Fatal("Error opening database:", err)
-    }
-    defer db.Close()
+	db, err := sql.Open("sqlite3", "./dev.db")
+	if err != nil {
+		log.Fatal("Error opening database:", err)
+	}
+	defer db.Close()
 
 	// Create tables if they don't exist
-    _, err = db.Exec(`
+	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS officer (
             uuid CHAR(4) PRIMARY KEY,
             full_name VARCHAR(30) NOT NULL,
@@ -67,67 +67,67 @@ func main() {
             CONSTRAINT fk_tiers FOREIGN KEY (tier) REFERENCES tier(tier)
         );
     `)
-    if err != nil {
-        log.Fatal("Error creating tables:", err)
-    }
+	if err != nil {
+		log.Fatal("Error creating tables:", err)
+	}
 
 	// Prepare statements
-    officerStmt, err := db.Prepare("INSERT OR IGNORE INTO officer (uuid, full_name, picture, discord) VALUES (?, ?, ?, ?)")
-    if err != nil {
-        log.Fatal("Error preparing officer statement:", err)
-    }
-    defer officerStmt.Close()
+	officerStmt, err := db.Prepare("INSERT OR IGNORE INTO officer (uuid, full_name, picture, discord) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal("Error preparing officer statement:", err)
+	}
+	defer officerStmt.Close()
 
-    tierStmt, err := db.Prepare("INSERT OR IGNORE INTO tier (tier, title) VALUES (?, ?)")
-    if err != nil {
-        log.Fatal("Error preparing tier statement:", err)
-    }
-    defer tierStmt.Close()
+	tierStmt, err := db.Prepare("INSERT OR IGNORE INTO tier (tier, title) VALUES (?, ?)")
+	if err != nil {
+		log.Fatal("Error preparing tier statement:", err)
+	}
+	defer tierStmt.Close()
 
-    positionStmt, err := db.Prepare("INSERT OR IGNORE INTO position (oid, semester, tier, full_name, title) VALUES (?, ?, ?, ?, ?)")
-    if err != nil {
-        log.Fatal("Error preparing position statement:", err)
-    }
-    defer positionStmt.Close()
+	positionStmt, err := db.Prepare("INSERT OR IGNORE INTO position (oid, semester, tier, full_name, title) VALUES (?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Fatal("Error preparing position statement:", err)
+	}
+	defer positionStmt.Close()
 
-    // Insert officers
-    for i, officer := range officers {
-        // Generate sequential 4-digit ID (0001, 0002, etc.)
-        sequentialID := fmt.Sprintf("%04d", i+1)
+	// Insert officers
+	for i, officer := range officers {
+		// Generate sequential 4-digit ID (0001, 0002, etc.)
+		sequentialID := fmt.Sprintf("%04d", i+1)
 
-        // Insert officer
-        _, err = officerStmt.Exec(sequentialID, officer.FullName, officer.Picture, officer.Discord)
-        if err != nil {
-            log.Printf("Error inserting officer %s: %v", officer.FullName, err)
-            continue
-        }
+		// Insert officer
+		_, err = officerStmt.Exec(sequentialID, officer.FullName, officer.Picture, officer.Discord)
+		if err != nil {
+			log.Printf("Error inserting officer %s: %v", officer.FullName, err)
+			continue
+		}
 
-        // Insert all positions the officer holds
-        for semester, positions := range officer.Positions {
-            for _, pos := range positions {
-                // Insert tier if it doesn't exist yet
-                _, err = tierStmt.Exec(pos.Tier, pos.Title)
-                if err != nil {
-                    log.Printf("Error inserting tier %d for officer %s: %v", pos.Tier, officer.FullName, err)
-                    continue
-                }
+		// Insert all positions the officer holds
+		for semester, positions := range officer.Positions {
+			for _, pos := range positions {
+				// Insert tier if it doesn't exist yet
+				_, err = tierStmt.Exec(pos.Tier, pos.Title)
+				if err != nil {
+					log.Printf("Error inserting tier %d for officer %s: %v", pos.Tier, officer.FullName, err)
+					continue
+				}
 
-                // Insert position
-                _, err = positionStmt.Exec(
-                    sequentialID, 
-                    strings.ToUpper(semester), 
-                    pos.Tier,
-                    officer.FullName,
-                    pos.Title,
-                )
-                if err != nil {
-                    log.Printf("Error inserting position for officer %s: %v", officer.FullName, err)
-                    continue
-                }
-            }
-        }
-    }
+				// Insert position
+				_, err = positionStmt.Exec(
+					sequentialID,
+					strings.ToUpper(semester),
+					pos.Tier,
+					officer.FullName,
+					pos.Title,
+				)
+				if err != nil {
+					log.Printf("Error inserting position for officer %s: %v", officer.FullName, err)
+					continue
+				}
+			}
+		}
+	}
 
-    fmt.Println("Database population completed successfully!")
-    fmt.Printf("Processed %d officers\n", len(officers))
+	fmt.Println("Database population completed successfully!")
+	fmt.Printf("Processed %d officers\n", len(officers))
 }
