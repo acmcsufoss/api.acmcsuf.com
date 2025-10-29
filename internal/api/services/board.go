@@ -43,6 +43,18 @@ func NewBoardService(q *models.Queries, db models.DBTX) *BoardService {
 	}
 }
 
+type OfficerFilter interface {
+	Apply(officers []models.Officer) []models.Officer
+}
+
+type TierFilter interface {
+	Apply(tiers []models.Tier) []models.Tier
+}
+
+type PositionFilter interface {
+	Apply(positions []models.Position) []models.Position
+}
+
 // Officer Methods
 func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (models.Officer, error) {
 	row, err := s.q.GetOfficer(ctx, uuid)
@@ -60,28 +72,19 @@ func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (models.Offi
 }
 
 func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]models.Officer, error) {
-	query := `SELECT uuid, full_name, picture, github, discord FROM officer`
-
-	rows, err := s.db.QueryContext(ctx, query)
+	officers, err := s.q.GetOfficers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var officers []models.Officer
-	for rows.Next() {
-		var o models.Officer
-		if err := rows.Scan(&o.Uuid, &o.FullName, &o.Picture, &o.Github, &o.Discord); err != nil {
-			return nil, err
+	result := officers
+	for _, filter := range filters {
+		if officerFilter, ok := filter.(OfficerFilter); ok {
+			result = officerFilter.Apply(result)
 		}
-		officers = append(officers, o)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return officers, nil
+	return result, nil
 }
 
 func (s *BoardService) CreateOfficer(ctx context.Context, params models.CreateOfficerParams) error {
@@ -104,28 +107,19 @@ func (s *BoardService) GetTier(ctx context.Context, tierName int64) (models.Tier
 }
 
 func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]models.Tier, error) {
-	query := `SELECT tier, title, t_index, team FROM tier ORDER BY tier`
-
-	rows, err := s.db.QueryContext(ctx, query)
+	tiers, err := s.q.GetTiers(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var tiers []models.Tier
-	for rows.Next() {
-		var t models.Tier
-		if err := rows.Scan(&t.Tier, &t.Title, &t.TIndex, &t.Team); err != nil {
-			return nil, err
+	result := tiers
+	for _, filter := range filters {
+		if tierFilter, ok := filter.(TierFilter); ok {
+			result = tierFilter.Apply(result)
 		}
-		tiers = append(tiers, t)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return tiers, nil
+	return result, nil
 }
 
 func (s *BoardService) CreateTier(ctx context.Context, params models.CreateTierParams) error {
@@ -147,28 +141,19 @@ func (s *BoardService) GetPosition(ctx context.Context, oid string) (models.Posi
 }
 
 func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]models.Position, error) {
-	query := `SELECT oid, semester, tier, full_name, title, team FROM position`
-
-	rows, err := s.db.QueryContext(ctx, query)
+	positions, err := s.q.GetPositions(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var positions []models.Position
-	for rows.Next() {
-		var p models.Position
-		if err := rows.Scan(&p.Oid, &p.Semester, &p.Tier, &p.FullName, &p.Title, &p.Team); err != nil {
-			return nil, err
+	result := positions
+	for _, filter := range filters {
+		if positionFilter, ok := filter.(PositionFilter); ok {
+			result = positionFilter.Apply(result)
 		}
-		positions = append(positions, p)
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return positions, nil
+	return result, nil
 }
 
 func (s *BoardService) CreatePosition(ctx context.Context, params models.CreatePositionParams) error {

@@ -115,3 +115,35 @@ WHERE
     oid = ?
     AND semester = ?
     AND tier = ?;
+
+-- name: GetOfficers :many
+SELECT 
+    uuid, 
+    full_name,
+    picture,
+    github, 
+    discord 
+FROM 
+    officer;
+
+-- name: GetTiers :many
+SELECT 
+    tier,
+    title,
+    t_index,
+    team 
+FROM 
+    tier 
+ORDER BY 
+    tier;
+
+-- name: GetPositions :many
+SELECT
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team 
+FROM 
+    position;

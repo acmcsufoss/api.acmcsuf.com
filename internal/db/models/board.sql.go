@@ -190,6 +190,46 @@ func (q *Queries) GetOfficer(ctx context.Context, uuid interface{}) (GetOfficerR
 	return i, err
 }
 
+const getOfficers = `-- name: GetOfficers :many
+SELECT 
+    uuid, 
+    full_name,
+    picture,
+    github, 
+    discord 
+FROM 
+    officer
+`
+
+func (q *Queries) GetOfficers(ctx context.Context) ([]Officer, error) {
+	rows, err := q.db.QueryContext(ctx, getOfficers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Officer
+	for rows.Next() {
+		var i Officer
+		if err := rows.Scan(
+			&i.Uuid,
+			&i.FullName,
+			&i.Picture,
+			&i.Github,
+			&i.Discord,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPosition = `-- name: GetPosition :one
 SELECT
     oid,
@@ -218,6 +258,48 @@ func (q *Queries) GetPosition(ctx context.Context, oid interface{}) (Position, e
 	return i, err
 }
 
+const getPositions = `-- name: GetPositions :many
+SELECT
+    oid,
+    semester,
+    tier,
+    full_name,
+    title,
+    team 
+FROM 
+    position
+`
+
+func (q *Queries) GetPositions(ctx context.Context) ([]Position, error) {
+	rows, err := q.db.QueryContext(ctx, getPositions)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Position
+	for rows.Next() {
+		var i Position
+		if err := rows.Scan(
+			&i.Oid,
+			&i.Semester,
+			&i.Tier,
+			&i.FullName,
+			&i.Title,
+			&i.Team,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTier = `-- name: GetTier :one
 SELECT
     tier,
@@ -240,6 +322,46 @@ func (q *Queries) GetTier(ctx context.Context, tier int64) (Tier, error) {
 		&i.Team,
 	)
 	return i, err
+}
+
+const getTiers = `-- name: GetTiers :many
+SELECT 
+    tier,
+    title,
+    t_index,
+    team 
+FROM 
+    tier 
+ORDER BY 
+    tier
+`
+
+func (q *Queries) GetTiers(ctx context.Context) ([]Tier, error) {
+	rows, err := q.db.QueryContext(ctx, getTiers)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tier
+	for rows.Next() {
+		var i Tier
+		if err := rows.Scan(
+			&i.Tier,
+			&i.Title,
+			&i.TIndex,
+			&i.Team,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateOfficer = `-- name: UpdateOfficer :exec
