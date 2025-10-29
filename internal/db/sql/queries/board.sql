@@ -117,24 +117,24 @@ WHERE
     AND tier = ?;
 
 -- name: GetOfficers :many
-SELECT 
-    uuid, 
+SELECT
+    uuid,
     full_name,
     picture,
-    github, 
-    discord 
-FROM 
+    github,
+    discord
+FROM
     officer;
 
 -- name: GetTiers :many
-SELECT 
+SELECT
     tier,
     title,
     t_index,
-    team 
-FROM 
-    tier 
-ORDER BY 
+    team
+FROM
+    tier
+ORDER BY
     tier;
 
 -- name: GetPositions :many
@@ -144,6 +144,6 @@ SELECT
     tier,
     full_name,
     title,
-    team 
-FROM 
+    team
+FROM
     position;
