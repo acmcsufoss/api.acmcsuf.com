@@ -1,0 +1,8 @@
+-- Language: sqlite
+
+DROP TABLE IF EXISTS position;
+DROP TABLE IF EXISTS tier;
+DROP TABLE IF EXISTS officer;
+DROP TABLE IF EXISTS announcement;
+DROP TABLE IF EXISTS person;
+DROP TABLE IF EXISTS event;
