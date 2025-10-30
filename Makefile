@@ -38,10 +38,10 @@ test: check
 	go test ./...
 
 check-sql:
-	sqlfluff lint --dialect sqlite
+	sqlfluff lint --dialect sqlite ./internal/db/sql/
 
 fix-sql:
-	sqlfluff fix --dialect sqlite
+	sqlfluff fix --dialect sqlite ./internal/db/sql/
 
 release:
 	@echo "Current version: $(VERSION)"
