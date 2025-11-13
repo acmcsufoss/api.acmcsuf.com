@@ -22,7 +22,6 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
 		payload := models.CreateEventParams{}
 
 		// CLI for url
@@ -47,7 +46,7 @@ var PutEvents = &cobra.Command{
 			}
 			if durationString != "" {
 				var err error
-				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt.(int64), durationString)
+				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt, durationString)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -69,7 +68,6 @@ var PutEvents = &cobra.Command{
 }
 
 func init() {
-
 	// URL Flags
 	PutEvents.Flags().String("id", "", "Event to update")
 	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host")
@@ -85,7 +83,6 @@ func init() {
 
 	// This flag is neccessary
 	PutEvents.MarkFlagRequired("id")
-
 }
 
 func updateEvent(id string, host string, port string, payload *models.CreateEventParams, changedFlags eventFlags) {
@@ -187,7 +184,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.startat {
 			break
 		}
-		changeTheEventStartAt, err := utils.ChangePrompt("start time (format: 01/02/06 03:04PM)", utils.FormatUnix(int64(oldpayload.StartAt.(float64))), scanner)
+		changeTheEventStartAt, err := utils.ChangePrompt("start time (format: 01/02/06 03:04PM)", utils.FormatUnix(oldpayload.StartAt), scanner)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -210,7 +207,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.duration {
 			break
 		}
-		changeTheEventEndAt, err := utils.ChangePrompt("end time (format: 01/02/06 03:04 )", utils.FormatUnix(int64(oldpayload.EndAt.(float64))), scanner)
+		changeTheEventEndAt, err := utils.ChangePrompt("end time (format: 01/02/06 03:04 )", utils.FormatUnix(oldpayload.EndAt), scanner)
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -278,8 +275,8 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	updatePayload := models.UpdateEventParams{
 		Uuid:     payload.Uuid,
 		Location: utils.StringtoNullString(payload.Location),
-		StartAt:  utils.Int64toNullInt64(int64(payload.StartAt.(float64))),
-		EndAt:    utils.Int64toNullInt64(int64(payload.EndAt.(float64))),
+		StartAt:  utils.Int64toNullInt64(payload.StartAt),
+		EndAt:    utils.Int64toNullInt64(payload.EndAt),
 		IsAllDay: utils.BooltoNullBool(payload.IsAllDay),
 		Host:     utils.StringtoNullString(payload.Host),
 	}

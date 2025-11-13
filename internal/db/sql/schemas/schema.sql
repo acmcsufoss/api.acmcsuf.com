@@ -1,11 +1,16 @@
 -- Language: sqlite
 
+-- Note: Using datatypes the sqlc does not know how to interpret (such as INT instead of INTEGER)
+-- will result in sqlc generating interfaces, which is undesired. I recommend skimming the docs
+-- if you are unsure about your sqlc: 
+-- https://docs.sqlc.dev/en/stable/reference/datatypes.html
+
 -- Create the 'events' table which is a table of event resources.
 CREATE TABLE IF NOT EXISTS event (
     uuid TEXT PRIMARY KEY,
     location TEXT NOT NULL,
-    start_at NUMBER NOT NULL, -- Start time in UTC milliseconds.
-    end_at NUMBER NOT NULL,
+    start_at INTEGER NOT NULL, -- Start time in UTC milliseconds.
+    end_at INTEGER NOT NULL,
     is_all_day BOOLEAN NOT NULL,
     host TEXT NOT NULL -- Accepts team ID or plain text.
 );
@@ -28,7 +33,7 @@ CREATE TABLE IF NOT EXISTS announcement (
 );
 
 CREATE TABLE IF NOT EXISTS officer (
-    uuid CHAR(4) PRIMARY KEY,
+    uuid VARCHAR(4) PRIMARY KEY,
     full_name VARCHAR(30) NOT NULL,
     picture VARCHAR(37),
     github VARCHAR(64),
@@ -43,9 +48,9 @@ CREATE TABLE IF NOT EXISTS tier (
 );
 
 CREATE TABLE IF NOT EXISTS position (
-    oid CHAR(4) NOT NULL,
-    semester CHAR(3) NOT NULL,
-    tier INT NOT NULL,
+    oid VARCHAR(4) NOT NULL,
+    semester VARCHAR(3) NOT NULL,
+    tier INTEGER NOT NULL,
     full_name VARCHAR(30) NOT NULL,
     title VARCHAR(40),
     team VARCHAR(20),
