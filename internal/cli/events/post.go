@@ -42,7 +42,7 @@ var PostEvent = &cobra.Command{
 			}
 			if duration != "" {
 				var err error
-				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt.(int64), duration)
+				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt, duration)
 				if err != nil {
 					fmt.Println(err)
 					return
@@ -68,7 +68,6 @@ var PostEvent = &cobra.Command{
 }
 
 func init() {
-
 	// URL Flags
 	PostEvent.Flags().String("urlhost", "127.0.0.1", "Custom host")
 	PostEvent.Flags().String("port", "8080", "Custom port")
@@ -81,10 +80,9 @@ func init() {
 
 	PostEvent.Flags().StringP("host", "H", "", "Set host of new event")
 	PostEvent.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
-
 }
-func postEvent(urlhost string, port string, payload *models.CreateEventParams, changedFlag eventFlags) {
 
+func postEvent(urlhost string, port string, payload *models.CreateEventParams, changedFlag eventFlags) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----
@@ -165,7 +163,7 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 		}
 
 		endTimeBuffer := scanner.Bytes()
-		endTime, err := utils.TimeAfterDuration(payload.StartAt.(int64), string(endTimeBuffer))
+		endTime, err := utils.TimeAfterDuration(payload.StartAt, string(endTimeBuffer))
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -283,5 +281,4 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 	}
 
 	fmt.Println("Response body:", string(body))
-
 }
