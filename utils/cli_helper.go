@@ -17,8 +17,8 @@ import (
 // --------------------------- Printing to terminal ---------------------------
 
 // Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
-func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
-	fmt.Printf("Would you like to change this event's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
+func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
+	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, dataToBeChanged, currentData)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("error reading input: %s", err)
@@ -165,7 +165,7 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 	durHour := parsedDuration[1]
 	durMin := parsedDuration[2]
 
-	//fmt.Println("Parsed times:", durHour, durMin, durSec)
+	// fmt.Println("Parsed times:", durHour, durMin, durSec)
 	intDurHour, err := strconv.Atoi(durHour)
 	if err != nil {
 		return -1, fmt.Errorf("error converting hour to int: %s", err)
