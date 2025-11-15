@@ -45,9 +45,11 @@ func getOfficers(id, port, host string) {
 	response, err := http.Get(getURL.String())
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
+		return
 	}
 	if response == nil {
 		fmt.Println("no response recieved")
+		return
 	}
 
 	defer response.Body.Close()
