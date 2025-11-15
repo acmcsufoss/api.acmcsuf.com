@@ -59,7 +59,6 @@ var PutAnnouncements = &cobra.Command{
 }
 
 func init() {
-
 	// Url flags
 	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PutAnnouncements.Flags().String("port", "8080", "Set a custom port")
@@ -75,7 +74,6 @@ func init() {
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
 
 	PutAnnouncements.MarkFlagRequired("id")
-
 }
 
 func putAnnouncements(host string, port string, id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags) {
@@ -130,7 +128,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 	// Will probably remove uuid from all put cli soon
 	for {
 		if payload.Uuid == "" {
-			changeUuid, err := utils.ChangePrompt("uuid", oldPayload.Uuid, scanner)
+			changeUuid, err := utils.ChangePrompt("uuid", oldPayload.Uuid, scanner, "announcment")
 			if err != nil {
 				fmt.Println("error with changing uuid:", err)
 				continue
@@ -150,7 +148,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 		if changedFlags.visibility {
 			break
 		}
-		changeVisibility, err := utils.ChangePrompt("visibility", oldPayload.Visibility, scanner)
+		changeVisibility, err := utils.ChangePrompt("visibility", oldPayload.Visibility, scanner, "announcment")
 		if err != nil {
 			fmt.Println("error with changing visibility:", err)
 			continue
@@ -172,7 +170,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 		oldAnnounceAt := utils.FormatUnix(oldPayload.AnnounceAt)
 
 		// Yah this might be a little sloppy in the terminal. forgive me.
-		changeAnnounceAt, err := utils.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner)
+		changeAnnounceAt, err := utils.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner, "announcment")
 		if err != nil {
 			fmt.Println("error with changing announce at:", err)
 			continue
@@ -197,7 +195,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 			break
 		}
 
-		changeDiscordChannelID, err := utils.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner)
+		changeDiscordChannelID, err := utils.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner, "announcment")
 		if err != nil {
 			fmt.Println("error with changing :", err)
 			continue
@@ -216,7 +214,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 		if changedFlags.messageid {
 			break
 		}
-		changeDiscordMessageID, err := utils.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner)
+		changeDiscordMessageID, err := utils.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner, "announcment")
 		if err != nil {
 			fmt.Println("error with changing :", err)
 			continue
@@ -293,5 +291,4 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 	}
 
 	fmt.Println(string(body))
-
 }

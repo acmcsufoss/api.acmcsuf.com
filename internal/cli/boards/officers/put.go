@@ -113,10 +113,10 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 			break
 		}
 
-		change, err := utils.ChangePrompt("full name", old.FullName, scanner)
+		change, err := utils.ChangePrompt("full name", old.FullName, scanner, "officer")
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if change != nil {
 			payload.FullName = string(change)
@@ -131,10 +131,11 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 		if flags.picture {
 			break
 		}
-		change, err := utils.ChangePrompt("picture", old.Picture.String, scanner)
+
+		change, err := utils.ChangePrompt("picture", old.Picture.String, scanner, "officer")
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if change != nil {
 			payload.Picture = utils.StringtoNullString(string(change))
@@ -149,10 +150,11 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 		if flags.github {
 			break
 		}
-		change, err := utils.ChangePrompt("github", old.Github.String, scanner)
+
+		change, err := utils.ChangePrompt("github", old.Github.String, scanner, "officer")
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if change != nil {
 			payload.Github = utils.StringtoNullString(string(change))
@@ -167,10 +169,11 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 		if flags.discord {
 			break
 		}
-		change, err := utils.ChangePrompt("discord", old.Discord.String, scanner)
+
+		change, err := utils.ChangePrompt("discord", old.Discord.String, scanner, "officer")
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if change != nil {
 			payload.Discord = utils.StringtoNullString(string(change))
@@ -185,10 +188,11 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 		if flags.uuid {
 			break
 		}
-		change, err := utils.ChangePrompt("uuid", old.Uuid, scanner)
+
+		change, err := utils.ChangePrompt("uuid", old.Uuid, scanner, "officer")
 		if err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if change != nil {
 			payload.Uuid = string(change)
