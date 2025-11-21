@@ -78,7 +78,4 @@ make help    # Display all targets
 
 ---
 
-## To use the Nix dev shell
-
-
 Developed with 💚 by [**@acmcsufoss**](https://github.com/acmcsufoss)
