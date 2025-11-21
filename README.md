@@ -39,7 +39,7 @@ make run # Compiles and runs directly (no hot-reloading)
 
 #### Configuring the API
 The API server is configurable via environment variables. See [`.env.example`](./.env.example) for
-values you can override and configure them in you `.env` file.
+values you can override and configure in your `.env` file.
 
 ### Using the CLI
 The CLI is a simple command-line client for the API server. Make sure the API
