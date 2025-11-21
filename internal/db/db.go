@@ -5,20 +5,14 @@ package db
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"os"
 
 	_ "modernc.org/sqlite"
 )
 
-func New(ctx context.Context) (*sql.DB, func(), error) {
-	uri := os.Getenv("DATABASE_URL")
-	if uri == "" {
-		return nil, nil, errors.New("DATABASE_URL must be set")
-	}
-
-	db, err := sql.Open("sqlite", uri)
+func New(ctx context.Context, url string) (*sql.DB, func(), error) {
+	db, err := sql.Open("sqlite", url)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error opening SQLite database: %v", err)
 	}
