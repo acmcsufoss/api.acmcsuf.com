@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
@@ -19,7 +19,8 @@ import (
 // Run initializes the database, services, and router, then starts the server.
 // It waits for the context to be canceled to initiate a graceful shutdown.
 func Run(ctx context.Context) {
-	db, closer, err := db.New(ctx)
+	cfg := config.Load()
+	db, closer, err := db.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,18 +33,12 @@ func Run(ctx context.Context) {
 	boardService := services.NewBoardService(queries, db)
 	router := gin.Default()
 
-	router.SetTrustedProxies([]string{
-		"127.0.0.1/32",
-	})
+	router.SetTrustedProxies(cfg.AllowedOrigins)
 	routes.SetupRoot(router)
 	routes.SetupV1(router, eventsService, announcementService, boardService)
 
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
 	go func() {
-		serverAddr := fmt.Sprintf("localhost:%s", port)
+		serverAddr := fmt.Sprintf("localhost:%s", cfg.Port)
 		log.Printf("\x1b[32mServer started on http://%s\x1b[0m", serverAddr)
 
 		if err := router.Run(serverAddr); err != nil {
