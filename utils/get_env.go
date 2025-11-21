@@ -2,8 +2,8 @@ package utils
 
 import (
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 func GetEnv(key, defaultValue string) string {
