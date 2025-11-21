@@ -32,6 +32,11 @@ Don't be afraid to ask for help with anything on this project. DMs are open!
     - Occasionally rebasing will create merge conflicts out of thin air - in
       these cases it's fine to just merge.
 - Don't forget to [link PR to issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue) if you are solving one.
+- *Keep PRs small and focused*. If possible keep PRs under 300-400 lines of
+  changes. If you have a big change, maybe try breaking it into multiple smaller
+  PRs.
+    - Not a strict requirement, but it's well known that big PRs are harder to
+      review effectively and accurately.
 - Please request a review from a current project maintainer or ping us on
   discord when your pr is ready to merge.
   - We may respond to your review with some suggestions and/or changes that
@@ -40,8 +45,8 @@ Don't be afraid to ask for help with anything on this project. DMs are open!
 - The Copilot PR review is a useful feature - it often catches easy to miss
   copy-paste errors, spelling/grammar mistakes, and other things. Be cautious
   though - it can make mistakes, and always validate the issues it finds.
-- Only *squash merging and rebase merging* into main are allowed. Don't worry
-  about this too much, but if you don't know which to choose:
+- *squash merging* into main is preferred. Don't worry about this too much, but
+  if you don't know which to choose:
   - Choose a squash merge if the individual commits in the PR don't matter very
     much and/or the change is relatively atomic.
-  - Choose a rebase merge if the individual commits in the PR do matter.
+  - Choose a rebase merge/normal merge if the individual commits in the PR do matter.
