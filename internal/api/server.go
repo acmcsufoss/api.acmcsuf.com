@@ -33,7 +33,7 @@ func Run(ctx context.Context) {
 	boardService := services.NewBoardService(queries, db)
 	router := gin.Default()
 
-	router.SetTrustedProxies(cfg.AllowedOrigins)
+	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
 	routes.SetupV1(router, eventsService, announcementService, boardService)
 
