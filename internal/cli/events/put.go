@@ -86,6 +86,13 @@ func init() {
 }
 
 func updateEvent(id string, host string, port string, payload *models.CreateEventParams, changedFlags eventFlags) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Check for Event Id -----
 	if id == "" {
 		fmt.Println("Event ID is required!")
@@ -145,7 +152,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	// ----- uuid -----
 	for {
 		if payload.Uuid == "" {
-			changeTheEventUuid, err := utils.ChangePrompt("uuid", oldpayload.Uuid, scanner)
+			changeTheEventUuid, err := utils.ChangePrompt("uuid", oldpayload.Uuid, scanner, "event")
 			if err != nil {
 				fmt.Println(err) // Custom errors in changePrompt()
 				continue
@@ -165,7 +172,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.location {
 			break
 		}
-		changeTheEventLocation, err := utils.ChangePrompt("location", oldpayload.Location, scanner)
+		changeTheEventLocation, err := utils.ChangePrompt("location", oldpayload.Location, scanner, "event")
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -184,7 +191,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.startat {
 			break
 		}
-		changeTheEventStartAt, err := utils.ChangePrompt("start time (format: 01/02/06 03:04PM)", utils.FormatUnix(oldpayload.StartAt), scanner)
+		changeTheEventStartAt, err := utils.ChangePrompt("start time (format: 01/02/06 03:04PM)", utils.FormatUnix(oldpayload.StartAt), scanner, "event")
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -207,7 +214,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.duration {
 			break
 		}
-		changeTheEventEndAt, err := utils.ChangePrompt("end time (format: 01/02/06 03:04 )", utils.FormatUnix(oldpayload.EndAt), scanner)
+		changeTheEventEndAt, err := utils.ChangePrompt("end time (format: 01/02/06 03:04 )", utils.FormatUnix(oldpayload.EndAt), scanner, "event")
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -232,7 +239,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 			break
 		}
 
-		changeTheEventAllDay, err := utils.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner)
+		changeTheEventAllDay, err := utils.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner, "event")
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -256,7 +263,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		if changedFlags.host {
 			break
 		}
-		changeTheEventHost, err := utils.ChangePrompt("host", oldpayload.Host, scanner)
+		changeTheEventHost, err := utils.ChangePrompt("host", oldpayload.Host, scanner, "event")
 		if err != nil {
 			fmt.Println(err)
 			continue

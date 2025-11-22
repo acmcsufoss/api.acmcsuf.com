@@ -72,6 +72,12 @@ func init() {
 
 func postAnnouncement(host string, port string, payload *models.CreateAnnouncementParams, changedFlags announcementFlags) {
 
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----

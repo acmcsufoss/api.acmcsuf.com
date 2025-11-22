@@ -27,14 +27,16 @@ definitions:
     type: object
   models.CreateEventParams:
     properties:
-      end_at: {}
+      end_at:
+        type: integer
       host:
         type: string
       is_all_day:
         type: boolean
       location:
         type: string
-      start_at: {}
+      start_at:
+        type: integer
       uuid:
         type: string
     type: object
@@ -48,12 +50,15 @@ definitions:
         $ref: '#/definitions/sql.NullString'
       picture:
         $ref: '#/definitions/sql.NullString'
-      uuid: {}
+      uuid:
+        type: string
     type: object
   models.CreatePositionParams:
     properties:
-      oid: {}
-      semester: {}
+      oid:
+        type: string
+      semester:
+        type: string
       tier:
         type: integer
     type: object
@@ -70,21 +75,25 @@ definitions:
     type: object
   models.DeletePositionParams:
     properties:
-      oid: {}
-      semester: {}
+      oid:
+        type: string
+      semester:
+        type: string
       tier:
         type: integer
     type: object
   models.Event:
     properties:
-      end_at: {}
+      end_at:
+        type: integer
       host:
         type: string
       is_all_day:
         type: boolean
       location:
         type: string
-      start_at: {}
+      start_at:
+        type: integer
       uuid:
         type: string
     type: object
@@ -98,14 +107,17 @@ definitions:
         $ref: '#/definitions/sql.NullString'
       picture:
         $ref: '#/definitions/sql.NullString'
-      uuid: {}
+      uuid:
+        type: string
     type: object
   models.Position:
     properties:
       full_name:
         type: string
-      oid: {}
-      semester: {}
+      oid:
+        type: string
+      semester:
+        type: string
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
@@ -139,14 +151,16 @@ definitions:
     type: object
   models.UpdateEventParams:
     properties:
-      end_at: {}
+      end_at:
+        $ref: '#/definitions/sql.NullInt64'
       host:
         $ref: '#/definitions/sql.NullString'
       is_all_day:
         $ref: '#/definitions/sql.NullBool'
       location:
         $ref: '#/definitions/sql.NullString'
-      start_at: {}
+      start_at:
+        $ref: '#/definitions/sql.NullInt64'
       uuid:
         type: string
     type: object
@@ -160,14 +174,17 @@ definitions:
         $ref: '#/definitions/sql.NullString'
       picture:
         $ref: '#/definitions/sql.NullString'
-      uuid: {}
+      uuid:
+        type: string
     type: object
   models.UpdatePositionParams:
     properties:
       full_name:
         type: string
-      oid: {}
-      semester: {}
+      oid:
+        type: string
+      semester:
+        type: string
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
