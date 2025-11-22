@@ -1,4 +1,4 @@
-package events
+package officers
 
 import (
 	"encoding/json"
@@ -11,31 +11,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var GetEvent = &cobra.Command{
-	Use:   "get",
-	Short: "Get events",
+var GetOfficers = &cobra.Command{
+	Use:   "get [flags]",
+	Short: "Get Officers",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// If these where global, unexpected behavior would be expected :(
 		id, _ := cmd.Flags().GetString("id")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		getEvents(id, port, host)
+		getOfficers(id, port, host)
 	},
 }
 
 func init() {
-
-	// Url Flags
-	GetEvent.Flags().String("id", "", "Get a specific event")
-	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
-	GetEvent.Flags().String("port", "8080", "Custom port")
-
+	GetOfficers.Flags().String("id", "", "Get a specific officer")
+	GetOfficers.Flags().String("host", "127.0.0.1", "Custom host")
+	GetOfficers.Flags().String("port", "8080", "Custom port")
 }
 
-func getEvents(id string, port string, host string) {
+func getOfficers(id, port, host string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -43,15 +38,9 @@ func getEvents(id string, port string, host string) {
 		return
 	}
 
-	// ----- Constructing url -----
-	// Combining Host and port
+	// prepare url
 	host = fmt.Sprint(host, ":", port)
-
-	// Constructing Path
-	path := "v1/events"
-	if id != "" {
-		path = fmt.Sprint(path, "/", id)
-	}
+	path := fmt.Sprint("v1/board/officers/", id)
 
 	getURL := &url.URL{
 		Scheme: "http",
@@ -59,25 +48,21 @@ func getEvents(id string, port string, host string) {
 		Path:   path,
 	}
 
-	// ----- Get -----
+	// getting officer(s)
 	response, err := http.Get(getURL.String())
 	if err != nil {
-		fmt.Println("Error getting the request:", err)
+		fmt.Println("error getting the request: ", err)
 		return
 	}
-
 	if response == nil {
-		fmt.Println("no response received")
+		fmt.Println("no response recieved")
 		return
 	}
 
 	defer response.Body.Close()
 
-	// ----- Read Response Information -----
-	fmt.Println("Response status:", response.Status)
-
 	if id == "" {
-		var getPayload []models.CreateEventParams
+		var getPayload []models.GetOfficerRow
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -88,7 +73,7 @@ func getEvents(id string, port string, host string) {
 			utils.PrintStruct(getPayload[i])
 		}
 	} else {
-		var getPayload models.CreateEventParams
+		var getPayload models.GetOfficerRow
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
@@ -97,5 +82,4 @@ func getEvents(id string, port string, host string) {
 
 		utils.PrintStruct(getPayload)
 	}
-
 }

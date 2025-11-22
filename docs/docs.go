@@ -1337,7 +1337,9 @@ const docTemplate = `{
         "models.CreateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "type": "integer"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -1347,7 +1349,9 @@ const docTemplate = `{
                 "location": {
                     "type": "string"
                 },
-                "start_at": {},
+                "start_at": {
+                    "type": "integer"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1368,14 +1372,20 @@ const docTemplate = `{
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.CreatePositionParams": {
             "type": "object",
             "properties": {
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "tier": {
                     "type": "integer"
                 }
@@ -1401,8 +1411,12 @@ const docTemplate = `{
         "models.DeletePositionParams": {
             "type": "object",
             "properties": {
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "tier": {
                     "type": "integer"
                 }
@@ -1411,7 +1425,9 @@ const docTemplate = `{
         "models.Event": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "type": "integer"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -1421,7 +1437,9 @@ const docTemplate = `{
                 "location": {
                     "type": "string"
                 },
-                "start_at": {},
+                "start_at": {
+                    "type": "integer"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1442,7 +1460,9 @@ const docTemplate = `{
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.Position": {
@@ -1451,8 +1471,12 @@ const docTemplate = `{
                 "full_name": {
                     "type": "string"
                 },
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },
@@ -1504,7 +1528,9 @@ const docTemplate = `{
         "models.UpdateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
                 "host": {
                     "$ref": "#/definitions/sql.NullString"
                 },
@@ -1514,7 +1540,9 @@ const docTemplate = `{
                 "location": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "start_at": {},
+                "start_at": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1535,7 +1563,9 @@ const docTemplate = `{
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.UpdatePositionParams": {
@@ -1544,8 +1574,12 @@ const docTemplate = `{
                 "full_name": {
                     "type": "string"
                 },
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },

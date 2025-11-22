@@ -1326,7 +1326,9 @@
         "models.CreateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "type": "integer"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -1336,7 +1338,9 @@
                 "location": {
                     "type": "string"
                 },
-                "start_at": {},
+                "start_at": {
+                    "type": "integer"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1357,14 +1361,20 @@
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.CreatePositionParams": {
             "type": "object",
             "properties": {
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "tier": {
                     "type": "integer"
                 }
@@ -1390,8 +1400,12 @@
         "models.DeletePositionParams": {
             "type": "object",
             "properties": {
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "tier": {
                     "type": "integer"
                 }
@@ -1400,7 +1414,9 @@
         "models.Event": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "type": "integer"
+                },
                 "host": {
                     "type": "string"
                 },
@@ -1410,7 +1426,9 @@
                 "location": {
                     "type": "string"
                 },
-                "start_at": {},
+                "start_at": {
+                    "type": "integer"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1431,7 +1449,9 @@
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.Position": {
@@ -1440,8 +1460,12 @@
                 "full_name": {
                     "type": "string"
                 },
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },
@@ -1493,7 +1517,9 @@
         "models.UpdateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {},
+                "end_at": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
                 "host": {
                     "$ref": "#/definitions/sql.NullString"
                 },
@@ -1503,7 +1529,9 @@
                 "location": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "start_at": {},
+                "start_at": {
+                    "$ref": "#/definitions/sql.NullInt64"
+                },
                 "uuid": {
                     "type": "string"
                 }
@@ -1524,7 +1552,9 @@
                 "picture": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "uuid": {}
+                "uuid": {
+                    "type": "string"
+                }
             }
         },
         "models.UpdatePositionParams": {
@@ -1533,8 +1563,12 @@
                 "full_name": {
                     "type": "string"
                 },
-                "oid": {},
-                "semester": {},
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },

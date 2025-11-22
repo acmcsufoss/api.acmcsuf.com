@@ -1,4 +1,4 @@
-package events
+package officers
 
 import (
 	"fmt"
@@ -10,31 +10,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var DeleteEvent = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete an event with its id",
+var DeleteOfficers = &cobra.Command{
+	Use:   "delete --id <uuid>",
+	Short: "Delete an officer with their id",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		deleteEvent(id, host, port)
+		deleteOfficer(id, host, port)
 	},
 }
 
 func init() {
+	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
+	DeleteOfficers.Flags().String("host", "127.0.0.1", "Set a custom host")
+	DeleteOfficers.Flags().String("port", "8080", "Set a custom port")
 
-	// Url flags
-	DeleteEvent.Flags().String("id", "", "Delete the identified event")
-	DeleteEvent.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteEvent.Flags().String("port", "8080", "Set a custom port")
-
-	DeleteEvent.MarkFlagRequired("id")
-
+	DeleteOfficers.MarkFlagRequired("id")
 }
 
-func deleteEvent(id string, host string, port string) {
+func deleteOfficer(id, host, port string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -42,14 +39,15 @@ func deleteEvent(id string, host string, port string) {
 		return
 	}
 
-	// ----- Check if Event Id was Given -----
+	// req id
 	if id == "" {
-		fmt.Println("Event ID is required to delete!")
+		fmt.Println("ID is required to delete!")
 		return
 	}
 
+	// prepare url
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/events/", id)
+	path := fmt.Sprint("v1/board/officers/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",
@@ -57,9 +55,9 @@ func deleteEvent(id string, host string, port string) {
 		Path:   path,
 	}
 
+	// send delete request
 	client := &http.Client{}
 
-	// ----- Delete Request -----
 	request, err := http.NewRequest(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error making delete request:", err)
@@ -78,9 +76,6 @@ func deleteEvent(id string, host string, port string) {
 	}
 
 	defer response.Body.Close()
-
-	// ----- Read Response Info -----
-	fmt.Println("Response status:", response.Status)
 
 	body, err := io.ReadAll(response.Body)
 	if err != nil {

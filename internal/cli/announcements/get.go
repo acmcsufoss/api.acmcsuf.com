@@ -35,6 +35,13 @@ func init() {
 }
 
 func getAnnouncement(host string, port string, uuid string) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Constructing the url -----
 	host = fmt.Sprint(host, ":", port)
 	path := "v1/announcements"

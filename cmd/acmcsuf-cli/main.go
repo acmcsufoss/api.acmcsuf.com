@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/boards/officers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
 
 	"github.com/spf13/cobra"
@@ -31,6 +32,7 @@ func Execute() {
 func init() {
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
+	rootCmd.AddCommand(officers.CLIOfficers)
 }
 
 func main() {
