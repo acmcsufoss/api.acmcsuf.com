@@ -2,9 +2,17 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
 
 jobs:
   build:
@@ -34,4 +42,3 @@ jobs:
 
       - name: Test
         run: nix develop -c make test
-

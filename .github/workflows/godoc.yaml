@@ -5,6 +5,10 @@ on:
     types:
       - opened
       - synchronize
+    paths:
+      - "**/*.go"
+      - "go.mod"
+      - "go.sum"
 
 jobs:
   build:
