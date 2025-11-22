@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
+	"net/http"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -18,7 +19,7 @@ import (
 
 // Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
 func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
-	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, dataToBeChanged, currentData)
+	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("error reading input: %s", err)
@@ -128,6 +129,18 @@ func PrintStruct(s any) {
 	}
 
 	fmt.Println("----------------------------------------------------------------")
+}
+
+func CheckConnection() error {
+
+	_, err := http.Get("http://localhost:8080/health")
+	if err != nil {
+		return fmt.Errorf("\x1b[1;37;41mUNABLE TO CONNECT\x1b[0m | %s\n\t↳ %v",
+			"Did you forget to start the server?",
+			err)
+	}
+	return nil
+
 }
 
 // --------------------------- Getting values from input ---------------------------

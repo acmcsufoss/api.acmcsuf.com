@@ -83,6 +83,13 @@ func init() {
 }
 
 func postEvent(urlhost string, port string, payload *models.CreateEventParams, changedFlag eventFlags) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// ----- Uuid -----

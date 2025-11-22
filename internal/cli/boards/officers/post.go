@@ -60,6 +60,13 @@ func init() {
 }
 
 func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, port string) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	scanner := bufio.NewScanner(os.Stdin)
 
 	// uuid

@@ -31,6 +31,13 @@ func init() {
 }
 
 func getOfficers(id, port, host string) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// prepare url
 	host = fmt.Sprint(host, ":", port)
 	path := fmt.Sprint("v1/board/officers/", id)

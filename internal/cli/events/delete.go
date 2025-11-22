@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -34,6 +35,13 @@ func init() {
 }
 
 func deleteEvent(id string, host string, port string) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Check if Event Id was Given -----
 	if id == "" {
 		fmt.Println("Event ID is required to delete!")

@@ -86,6 +86,13 @@ func init() {
 }
 
 func updateEvent(id string, host string, port string, payload *models.CreateEventParams, changedFlags eventFlags) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Check for Event Id -----
 	if id == "" {
 		fmt.Println("Event ID is required!")

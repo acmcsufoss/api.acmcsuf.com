@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
 
@@ -31,6 +32,13 @@ func init() {
 }
 
 func deleteOfficer(id, host, port string) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// req id
 	if id == "" {
 		fmt.Println("ID is required to delete!")

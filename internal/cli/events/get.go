@@ -37,6 +37,12 @@ func init() {
 
 func getEvents(id string, port string, host string) {
 
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Constructing url -----
 	// Combining Host and port
 	host = fmt.Sprint(host, ":", port)

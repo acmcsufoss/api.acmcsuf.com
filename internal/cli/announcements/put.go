@@ -77,6 +77,13 @@ func init() {
 }
 
 func putAnnouncements(host string, port string, id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	// ----- Check if Id was Given -----
 	if id == "" {
 		fmt.Println("Announcement id required for put! Please use the --id flag")

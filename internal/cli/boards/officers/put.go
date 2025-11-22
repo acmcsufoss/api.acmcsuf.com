@@ -66,6 +66,13 @@ func init() {
 }
 
 func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flags officerFlags) {
+
+	err := utils.CheckConnection()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	if id == "" {
 		fmt.Println("Officer id required for put! Use --id")
 		return
