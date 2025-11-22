@@ -31,7 +31,7 @@ func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Sca
 		return nil, err
 	}
 	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the event:\n", dataToBeChanged)
+		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
