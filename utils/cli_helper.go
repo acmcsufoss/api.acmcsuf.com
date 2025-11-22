@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
+	"net/http"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -17,8 +18,8 @@ import (
 // --------------------------- Printing to terminal ---------------------------
 
 // Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
-func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner) ([]byte, error) {
-	fmt.Printf("Would you like to change this event's \x1b[1m%s\x1b[0m?[y/n]\nCurrent event's %s: \x1b[93m%s\x1b[0m\n", dataToBeChanged, dataToBeChanged, currentData)
+func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
+	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
 	scanner.Scan()
 	if err := scanner.Err(); err != nil {
 		return nil, fmt.Errorf("error reading input: %s", err)
@@ -30,7 +31,7 @@ func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Sca
 		return nil, err
 	}
 	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the event:\n", dataToBeChanged)
+		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
@@ -130,6 +131,18 @@ func PrintStruct(s any) {
 	fmt.Println("----------------------------------------------------------------")
 }
 
+func CheckConnection() error {
+
+	_, err := http.Get("http://localhost:8080/health")
+	if err != nil {
+		return fmt.Errorf("\x1b[1;37;41mUNABLE TO CONNECT\x1b[0m | %s\n\t↳ %v",
+			"Did you forget to start the server?",
+			err)
+	}
+	return nil
+
+}
+
 // --------------------------- Getting values from input ---------------------------
 
 // YesOrNo checks the user input for a yes or no response.
@@ -165,7 +178,7 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 	durHour := parsedDuration[1]
 	durMin := parsedDuration[2]
 
-	//fmt.Println("Parsed times:", durHour, durMin, durSec)
+	// fmt.Println("Parsed times:", durHour, durMin, durSec)
 	intDurHour, err := strconv.Atoi(durHour)
 	if err != nil {
 		return -1, fmt.Errorf("error converting hour to int: %s", err)
