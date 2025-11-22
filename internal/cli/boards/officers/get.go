@@ -33,7 +33,7 @@ func init() {
 func getOfficers(id, port, host string) {
 	// prepare url
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/officers/", id)
+	path := fmt.Sprint("v1/board/officers/", id)
 
 	getURL := &url.URL{
 		Scheme: "http",

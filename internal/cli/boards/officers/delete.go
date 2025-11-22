@@ -39,7 +39,7 @@ func deleteOfficer(id, host, port string) {
 
 	// prepare url
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/officer/", id)
+	path := fmt.Sprint("v1/board/officers/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",

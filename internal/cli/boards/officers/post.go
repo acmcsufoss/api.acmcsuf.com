@@ -179,7 +179,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 	}
 
 	host = fmt.Sprint(host, ":", port)
-	path := "v1/officers"
+	path := "v1/board/officers/"
 
 	postURL := &url.URL{
 		Scheme: "http",

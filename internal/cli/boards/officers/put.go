@@ -73,7 +73,7 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 
 	// construct url
 	hostPort := fmt.Sprint(host, ":", port)
-	path := "v1/officers/" + id
+	path := "v1/board/officers/" + id
 
 	u := &url.URL{
 		Scheme: "http",
