@@ -6,7 +6,10 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"os"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
@@ -20,6 +23,21 @@ import (
 // It waits for the context to be canceled to initiate a graceful shutdown.
 func Run(ctx context.Context) {
 	cfg := config.Load()
+	botToken := os.Getenv("DISCORD_BOT_TOKEN")
+
+	if botToken == "" && cfg.Env != "development" {
+		log.Fatal("Error: DISCORD_BOT_TOKEN si not set")
+	}
+	var botSession *discordgo.Session
+	if botToken != "" {
+		botSession, err := discordgo.New("Bot " + botToken)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+		botSession.Open()
+		defer botSession.Close()
+	}
+
 	db, closer, err := db.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
@@ -50,4 +68,24 @@ func Run(ctx context.Context) {
 	// is received.
 	<-ctx.Done()
 	log.Println("\x1b[32mServer shut down.\x1b[0m")
+}
+
+func DiscordAuthMiddleware(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// expects the header 'Authorization: Bearer <access_token>'
+		authHeader := c.GetHeader("Authorization")
+
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing Authorization header"})
+			return
+		}
+
+		// dev mode bypass (ENV=development)
+		if config.Load().Env == "development" && authHeader == "Bearer dev-token" {
+			c.Set("userID", "dev-user-id")
+			c.Next()
+			return
+		}
+	}
+
 }
