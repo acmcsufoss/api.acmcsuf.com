@@ -9,6 +9,7 @@ on:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
+      - ".github/workflows/godoc.yaml"
 
 jobs:
   build:
