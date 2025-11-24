@@ -6,9 +6,7 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
@@ -22,20 +20,6 @@ import (
 // It waits for the context to be canceled to initiate a graceful shutdown.
 func Run(ctx context.Context) {
 	cfg := config.Load()
-	botToken := os.Getenv("DISCORD_BOT_TOKEN")
-
-	if botToken == "" && cfg.Env != "development" {
-		log.Fatal("Error: DISCORD_BOT_TOKEN is not set")
-	}
-	var botSession *discordgo.Session
-	if botToken != "" {
-		botSession, err := discordgo.New("Bot " + botToken)
-		if err != nil {
-			log.Fatalf("%v", err)
-		}
-		botSession.Open()
-		defer botSession.Close()
-	}
 
 	db, closer, err := db.New(ctx, cfg.DatabaseURL)
 	if err != nil {
