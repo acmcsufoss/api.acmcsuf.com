@@ -19,7 +19,7 @@ type cacheEntry struct {
 	expiresAt time.Time
 }
 
-func DiscordAuthMiddleware(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
+func DiscordAuth(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// expects the header 'Authorization: Bearer <access_token>'
 		authHeader := c.GetHeader("Authorization")
