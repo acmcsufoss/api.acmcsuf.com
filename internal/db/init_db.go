@@ -8,8 +8,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+type BoardService struct {
+	q  *models.Queries
+	db models.DBTX
+}
 
 type Officer struct {
 	FullName  string `json:"fullName"`
@@ -40,6 +46,7 @@ func main() {
 	defer db.Close()
 
 	// Create tables if they don't exist
+	// DIRECT SQL CALL (will remove later)
 	_, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS officer (
             uuid CHAR(4) PRIMARY KEY,
@@ -73,18 +80,21 @@ func main() {
 	}
 
 	// Prepare statements
+	// DIRECT SQL CALL (will remove later)
 	officerStmt, err := db.Prepare("INSERT OR IGNORE INTO officer (uuid, full_name, picture, discord) VALUES (?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal("Error preparing officer statement:", err)
 	}
 	defer officerStmt.Close()
 
+	// DIRECT SQL CALL (will remove later)
 	tierStmt, err := db.Prepare("INSERT OR IGNORE INTO tier (tier, title) VALUES (?, ?)")
 	if err != nil {
 		log.Fatal("Error preparing tier statement:", err)
 	}
 	defer tierStmt.Close()
 
+	// DIRECT SQL CALL (will remove later)
 	positionStmt, err := db.Prepare("INSERT OR IGNORE INTO position (oid, semester, tier, full_name, title) VALUES (?, ?, ?, ?, ?)")
 	if err != nil {
 		log.Fatal("Error preparing position statement:", err)
@@ -97,6 +107,7 @@ func main() {
 		sequentialID := fmt.Sprintf("%04d", i+1)
 
 		// Insert officer
+		// DIRECT SQL CALL (will remove later)
 		_, err = officerStmt.Exec(sequentialID, officer.FullName, officer.Picture, officer.Discord)
 		if err != nil {
 			log.Printf("Error inserting officer %s: %v", officer.FullName, err)
@@ -107,6 +118,7 @@ func main() {
 		for semester, positions := range officer.Positions {
 			for _, pos := range positions {
 				// Insert tier if it doesn't exist yet
+				// DIRECT SQL CALL (will remove later)
 				_, err = tierStmt.Exec(pos.Tier, pos.Title)
 				if err != nil {
 					log.Printf("Error inserting tier %d for officer %s: %v", pos.Tier, officer.FullName, err)
@@ -114,6 +126,7 @@ func main() {
 				}
 
 				// Insert position
+				// DIRECT SQL CALL (will remove later)
 				_, err = positionStmt.Exec(
 					sequentialID,
 					strings.ToUpper(semester),
