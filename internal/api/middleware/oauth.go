@@ -11,6 +11,11 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 )
 
+var RoleMap = map[string]string{
+	"123": "Board",
+	"456": "President",
+}
+
 var roleCache = sync.Map{}
 
 type cacheEntry struct {
@@ -81,11 +86,31 @@ func DiscordAuth(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
 			ExpiresAt: time.Now().Add(time.Minute * 5),
 		})
 
+		if checkRoles(member.Roles, requiredRole) {
+			c.Set("userID", user.ID)
+			c.Next()
+		} else {
+			c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"error": "Insufficient permissions",
+			})
+		}
+
 	}
 }
 
-func checkRoles(roles []string, requiredRole string) bool {
-	_ = roles
-	_ = requiredRole
-	return true
+func checkRoles(userRoleIDs []string, requiredRole string) bool {
+	for _, id := range userRoleIDs {
+		roleName, exists := RoleMap[id]
+		if !exists {
+			continue
+		}
+
+		if roleName == requiredRole {
+			return true
+		}
+		if roleName == "President" && requiredRole == "Board" {
+			return true
+		}
+	}
+	return false
 }
