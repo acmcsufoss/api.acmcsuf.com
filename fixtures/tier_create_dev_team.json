@@ -1,0 +1,15 @@
+{
+  "tier": 3,
+  "title": {
+    "string": "Developer",
+    "valid": true
+  },
+  "t_index": {
+    "int64": 300,
+    "valid": true
+  },
+  "team": {
+    "string": "Dev Team",
+    "valid": true
+  }
+}

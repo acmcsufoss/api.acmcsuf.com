@@ -1,0 +1,13 @@
+{
+  "uuid": "spring-kickoff-2024",
+  "visibility": "public",
+  "announce_at": 1712851200000,
+  "discord_channel_id": {
+    "string": "1234567890123456789",
+    "valid": true
+  },
+  "discord_message_id": {
+    "string": "9876543210987654321",
+    "valid": true
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "tier": 1,
+  "title": {
+    "string": "President",
+    "valid": true
+  },
+  "t_index": {
+    "int64": 100,
+    "valid": true
+  },
+  "team": {
+    "string": "Executive",
+    "valid": true
+  }
+}

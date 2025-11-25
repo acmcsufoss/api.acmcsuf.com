@@ -1,0 +1,17 @@
+{
+  "uuid": "workshop-intro-to-git",
+  "location": {
+    "string": "Virtual - Discord",
+    "valid": true
+  },
+  "start_at": 1712865600000,
+  "end_at": 1712872800000,
+  "is_all_day": {
+    "bool": false,
+    "valid": true
+  },
+  "host": {
+    "string": "ACM AI",
+    "valid": true
+  }
+}
