@@ -7,14 +7,14 @@ on:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/ci.yaml"
   pull_request:
     branches: ["main"]
     paths:
       - "**/*.go"
       - "go.mod"
       - "go.sum"
-      - ".github/workflows/ci.yml"
+      - ".github/workflows/ci.yaml"
 
 jobs:
   build:
