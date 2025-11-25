@@ -158,7 +158,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 	// confirmation
 	for {
 		fmt.Println("Is your officer data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, false)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

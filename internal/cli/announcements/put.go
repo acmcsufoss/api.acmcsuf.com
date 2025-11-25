@@ -238,7 +238,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, true)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

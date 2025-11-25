@@ -212,7 +212,7 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 	// Confirm
 	for {
 		fmt.Println("Is the officer data correct? (y/n)")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, false)
 		scanner.Scan()
 		confirmation := scanner.Bytes()
 

@@ -198,7 +198,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 	// Confirm
 	for {
 		fmt.Println("Is the tier data correct? (y/n)")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, false)
 		scanner.Scan()
 		confirmation := scanner.Bytes()
 

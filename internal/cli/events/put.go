@@ -292,7 +292,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	// TODO: Fix put
 	for {
 		fmt.Println("Are these changes okay?[y/n]")
-		utils.PrintStruct(updatePayload)
+		utils.PrintStruct(updatePayload, true)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error scanning confirmation:", err)

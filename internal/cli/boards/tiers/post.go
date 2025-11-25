@@ -26,12 +26,13 @@ var PostTier = &cobra.Command{
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		payload.Tier, _ = cmd.Flags().GetInt64("tier")
 		title, _ := cmd.Flags().GetString("")
-		payload.Title = utils.StringtoNullString(title)
 		tindex, _ := cmd.Flags().GetInt64("tindex")
-		payload.TIndex = utils.Int64toNullInt64(tindex)
 		team, _ := cmd.Flags().GetString("team")
+
+		payload.Tier, _ = cmd.Flags().GetInt64("tier")
+		payload.Title = utils.StringtoNullString(title)
+		payload.TIndex = utils.Int64toNullInt64(tindex)
 		payload.Team = utils.StringtoNullString(team)
 
 		changedFlags := tierFlags{
@@ -150,7 +151,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 	// confirmation
 	for {
 		fmt.Println("Is your tier data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, false)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

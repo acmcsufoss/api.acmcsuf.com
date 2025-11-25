@@ -80,7 +80,7 @@ func getAnnouncement(host string, port string, uuid string) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			utils.PrintStruct(getPayload[i], true)
 		}
 	} else {
 		var getPayload models.CreateAnnouncementParams
@@ -90,7 +90,7 @@ func getAnnouncement(host string, port string, uuid string) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		utils.PrintStruct(getPayload, true)
 	}
 
 }

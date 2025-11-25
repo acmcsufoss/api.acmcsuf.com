@@ -85,7 +85,7 @@ func getEvents(id string, port string, host string) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			utils.PrintStruct(getPayload[i], true)
 		}
 	} else {
 		var getPayload models.CreateEventParams
@@ -95,7 +95,7 @@ func getEvents(id string, port string, host string) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		utils.PrintStruct(getPayload, true)
 	}
 
 }

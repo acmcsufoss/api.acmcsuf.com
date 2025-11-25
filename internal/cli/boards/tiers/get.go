@@ -70,7 +70,7 @@ func getTiers(id, port, host string) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			utils.PrintStruct(getPayload[i], false)
 		}
 	} else {
 		var getPayload models.CreateTierParams
@@ -80,6 +80,6 @@ func getTiers(id, port, host string) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		utils.PrintStruct(getPayload, false)
 	}
 }

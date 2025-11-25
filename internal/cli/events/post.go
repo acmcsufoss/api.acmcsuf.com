@@ -225,7 +225,7 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		utils.PrintStruct(payload, true)
 
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
