@@ -108,6 +108,61 @@ All timestamps are in Unix milliseconds (e.g., `1712851200000` = April 11, 2024)
 
 ## Usage Examples
 
+### Using xh
+
+```bash
+# Create an event
+xh POST :8080/v1/events < fixtures/event_create.json
+
+# Update an event
+xh PUT :8080/v1/events/workshop-intro-to-git < fixtures/event_update_location.json
+
+# Get an event
+xh GET :8080/v1/events/workshop-intro-to-git
+
+# Get all events
+xh GET :8080/v1/events
+
+# Filter events by host
+xh GET :8080/v1/events host==ACM
+
+# Create an announcement
+xh POST :8080/v1/announcements < fixtures/announcement_create.json
+
+# Update an announcement
+xh PUT :8080/v1/announcements/spring-kickoff-2024 < fixtures/announcement_update.json
+
+# Delete an announcement
+xh DELETE :8080/v1/announcements/spring-kickoff-2024
+
+# Create an officer
+xh POST :8080/v1/board/officers < fixtures/officer_create.json
+
+# Update an officer
+xh PUT :8080/v1/board/officers/alice-johnson-uuid < fixtures/officer_update.json
+
+# Get all officers
+xh GET :8080/v1/board/officers
+
+# Create a tier
+xh POST :8080/v1/board/tiers < fixtures/tier_create.json
+
+# Update a tier
+xh PUT :8080/v1/board/tiers/1 < fixtures/tier_update.json
+
+# Get all tiers
+xh GET :8080/v1/board/tiers
+
+# Create a position
+xh POST :8080/v1/board/positions < fixtures/position_create.json
+
+# Update a position
+xh PUT :8080/v1/board/positions < fixtures/position_update.json
+
+# Delete a position
+xh DELETE :8080/v1/board/positions < fixtures/position_delete.json
+```
+
 ### Using curl
 
 ```bash
@@ -120,16 +175,6 @@ curl -X POST http://localhost:8080/v1/events \
 curl -X PUT http://localhost:8080/v1/events/workshop-intro-to-git \
   -H "Content-Type: application/json" \
   -d @fixtures/event_update_location.json
-
-# Create an officer
-curl -X POST http://localhost:8080/v1/board/officers \
-  -H "Content-Type: application/json" \
-  -d @fixtures/officer_create.json
-
-# Delete a position
-curl -X DELETE http://localhost:8080/v1/board/positions \
-  -H "Content-Type: application/json" \
-  -d @fixtures/position_delete.json
 ```
 
 ## Notes
