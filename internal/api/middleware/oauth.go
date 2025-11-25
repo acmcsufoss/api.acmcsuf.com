@@ -16,7 +16,7 @@ var roleCache = sync.Map{}
 type cacheEntry struct {
 	Roles     []string
 	UserID    string
-	expiresAt time.Time
+	ExpiresAt time.Time
 }
 
 func DiscordAuth(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
@@ -25,16 +25,67 @@ func DiscordAuth(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
 		authHeader := c.GetHeader("Authorization")
 
 		if authHeader == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing Authorization header"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Missing Authorization header",
+			})
 			return
 		}
 
 		// dev mode bypass (ENV=development)
-		if config.Load().Env == "development" && authHeader == "Bearer dev-token" {
+		cfg := config.Load()
+		if cfg.Env == "development" && authHeader == "Bearer dev-token" {
 			c.Set("userID", "dev-user-id")
 			c.Next()
 			return
 		}
-	}
 
+		// using a cache is required since discord has pretty strict rate limits on their API
+		if value, ok := roleCache.Load(authHeader); ok {
+			cached := value.(cacheEntry)
+			if time.Now().Before(cached.ExpiresAt) {
+				if checkRoles(cached.Roles, requiredRole) {
+					c.Set("userID", cached.UserID)
+					c.Next()
+					return
+				} else {
+					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+						"error": "Insufficient permissions (cached)",
+					})
+					return
+				}
+			} else {
+				roleCache.Delete(authHeader)
+			}
+
+		}
+
+		userSession, _ := discordgo.New(authHeader)
+		user, err := userSession.User("@me")
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid or expired Discord token",
+			})
+			return
+		}
+
+		member, err := bot.GuildMember(cfg.GuildID, user.ID)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "You are not a member of the Discord server",
+			})
+		}
+
+		roleCache.Store(authHeader, cacheEntry{
+			Roles:     member.Roles,
+			UserID:    user.ID,
+			ExpiresAt: time.Now().Add(time.Minute * 5),
+		})
+
+	}
+}
+
+func checkRoles(roles []string, requiredRole string) bool {
+	_ = roles
+	_ = requiredRole
+	return true
 }
