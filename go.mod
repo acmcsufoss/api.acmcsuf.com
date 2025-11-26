@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/bwmarrin/discordgo v0.29.0
+	github.com/cli/browser v1.3.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/spf13/cobra v1.10.1
 	github.com/swaggo/files v1.0.1
