@@ -23,9 +23,9 @@ type TokenResponse struct {
 	Scope        string `json:"scope"`
 }
 
-func NewRequestWithAuth(method, url string, body io.Reader) (*http.Request, error) {
+func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request, error) {
 	cfg := config.Load()
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest(method, targetURL, body)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func NewRequestWithAuth(method, url string, body io.Reader) (*http.Request, erro
 			fmt.Fprintf(w, "Got code! You can close this window.")
 
 			data := url.Values{}
-			data.Set("client_id", clientID)
+			// data.Set("client_id", clientID)
 			data.Set("client_secret", clientSecret)
 			data.Set("grant_type", "authorization_code")
 			data.Set("code", code)
