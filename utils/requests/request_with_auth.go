@@ -60,11 +60,11 @@ func NewRequestWithAuth(method, url string, body io.Reader) (*http.Request, erro
 			fmt.Fprintf(w, "Got code! You can close this window.")
 
 			data := url.Values{}
-			data.set("client_id", clientID)
-			data.set("client_secret", clientSecret)
-			data.set("grant_type", "authorization_code")
-			data.set("code", code)
-			data.set("redirect_uri", redirectURI)
+			data.Set("client_id", clientID)
+			data.Set("client_secret", clientSecret)
+			data.Set("grant_type", "authorization_code")
+			data.Set("code", code)
+			data.Set("redirect_uri", redirectURI)
 
 			resp, err := http.PostForm("https://discord.com/api/oauth2/token", data)
 			if err != nil {
