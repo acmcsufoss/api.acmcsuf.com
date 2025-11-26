@@ -1,17 +1,16 @@
 package events
 
 import (
-	// "encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 
-	// "github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
+	"github.com/tidwall/pretty"
 )
 
 var GetEvent = &cobra.Command{
@@ -89,27 +88,6 @@ func getEvents(id string, port string, host string) {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
 	}
 
-	fmt.Println(string(body))
-	// if id == "" {
-	// 	var getPayload []models.CreateEventParams
-	// 	err = json.NewDecoder(req.Body).Decode(&getPayload)
-	// 	if err != nil {
-	// 		fmt.Println("Failed to read response body without id:", err)
-	// 		return
-	// 	}
-	//
-	// 	for i := range getPayload {
-	// 		utils.PrintStruct(getPayload[i])
-	// 	}
-	// } else {
-	// 	var getPayload models.CreateEventParams
-	// 	err = json.NewDecoder(req.Body).Decode(&getPayload)
-	// 	if err != nil {
-	// 		fmt.Println("Failed to read response body with id:", err)
-	// 		return
-	// 	}
-	//
-	// 	utils.PrintStruct(getPayload)
-	// }
-
+	prettyJSON := pretty.Pretty(body)
+	fmt.Println(string(prettyJSON))
 }
