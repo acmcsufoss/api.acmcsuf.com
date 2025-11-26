@@ -60,7 +60,7 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			fmt.Fprintf(w, "Got code! You can close this window.")
 
 			data := url.Values{}
-			// data.Set("client_id", clientID)
+			data.Set("client_id", clientID)
 			data.Set("client_secret", clientSecret)
 			data.Set("grant_type", "authorization_code")
 			data.Set("code", code)
