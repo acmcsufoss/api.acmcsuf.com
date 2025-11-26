@@ -76,7 +76,7 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			respBody, _ := io.ReadAll(resp.Body)
 
 			if resp.StatusCode != http.StatusOK {
-				errChan <- fmt.Errorf("Discord API error: %s", string(respBody))
+				errChan <- fmt.Errorf("discord API error: %s", string(respBody))
 			}
 
 			var tokenResp TokenResponse
