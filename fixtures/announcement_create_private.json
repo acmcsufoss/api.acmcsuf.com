@@ -1,0 +1,13 @@
+{
+  "uuid": "officer-meeting-reminder",
+  "visibility": "private",
+  "announce_at": 1712880000000,
+  "discord_channel_id": {
+    "string": "officer-channel-id",
+    "valid": true
+  },
+  "discord_message_id": {
+    "string": "",
+    "valid": false
+  }
+}
