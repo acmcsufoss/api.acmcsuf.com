@@ -3,17 +3,41 @@
 package routes
 
 import (
+	"log"
+	"os"
+
+	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 )
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 
+	cfg := config.Load()
+	botToken := os.Getenv("DISCORD_BOT_TOKEN")
+	if botToken == "" && cfg.Env != "development" {
+		log.Fatal("Error: DISCORD_BOT_TOKEN is not set")
+	}
+
+	var botSession *discordgo.Session
+	if botToken != "" {
+		botSession, err := discordgo.New("Bot " + botToken)
+		if err != nil {
+			log.Fatalf("%v", err)
+		}
+		botSession.Open()
+		defer botSession.Close()
+	}
+
 	// Version 1 routes
 	v1 := router.Group("/v1")
+	// All v1 routes are protected
+	v1.Use(middleware.DiscordAuth(botSession, "board"))
 	{
 		events := v1.Group("/events")
 		{
