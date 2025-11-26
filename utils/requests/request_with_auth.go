@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -8,7 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 
 	"github.com/cli/browser"
 
@@ -34,13 +34,68 @@ func NewRequestWithAuth(method, url string, body io.Reader) (*http.Request, erro
 	if cfg.Env == "development" {
 		token = "dev-token"
 	} else {
+		// Production OAuth2 Flow
 		clientID := os.Getenv("DISCORD_CLIENT_ID")
 		if clientID == "" {
 			return nil, errors.New("DISCORD_CLIENT_ID is unset")
 		}
+		clientSecret := os.Getenv("DISCORD_CLIENT_SECRET")
+		if clientSecret == "" {
+			return nil, errors.New("DISCORD_CLIENT_SECRET is unset")
+		}
 		// TODO: check that this port isn't being used first
 		const redirectURI = "http://localhost:8888"
 		const scope = "identify"
+
+		tokenChan := make(chan string)
+		errChan := make(chan error)
+		mux := http.NewServeMux()
+		server := &http.Server{Addr: ":8888", Handler: mux}
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			code := r.URL.Query().Get("code")
+			if code == "" {
+				fmt.Fprintln(w, "No code found")
+				return
+			}
+			fmt.Fprintf(w, "Got code! You can close this window.")
+
+			data := url.Values{}
+			data.set("client_id", clientID)
+			data.set("client_secret", clientSecret)
+			data.set("grant_type", "authorization_code")
+			data.set("code", code)
+			data.set("redirect_uri", redirectURI)
+
+			resp, err := http.PostForm("https://discord.com/api/oauth2/token", data)
+			if err != nil {
+				errChan <- fmt.Errorf("failed to exchange token: %w", err)
+				return
+			}
+			defer resp.Body.Close()
+
+			respBody, _ := io.ReadAll(resp.Body)
+
+			if resp.StatusCode != http.StatusOK {
+				errChan <- fmt.Errorf("Discord API error: %s", string(respBody))
+			}
+
+			var tokenResp TokenResponse
+			if err := json.Unmarshal(respBody, &tokenResp); err != nil {
+				errChan <- fmt.Errorf("JSON parse error: %w", err)
+			}
+
+			tokenChan <- tokenResp.AccessToken
+		})
+
+		// So server doesn't block
+		go func() {
+			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				errChan <- err
+			}
+		}()
+
+		// Human needs to open browser to get the token
+		// A web client can do this more gracefully, but we have to do this since we're on a CLI
 		params := url.Values{}
 		params.Add("client_id", clientID)
 		params.Add("redirect_uri", redirectURI)
@@ -49,62 +104,19 @@ func NewRequestWithAuth(method, url string, body io.Reader) (*http.Request, erro
 
 		authURL := "https://discord.com/oauth2/authorize" + params.Encode()
 		fmt.Println("Opening browser to:", authURL)
-		browser.OpenURL(authURL)
 		// TODO: "Press enter to open the following link in your browser"
-		http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			code := r.URL.Query().Get("code")
-			if code != "" {
-				fmt.Fprintf(w, "Got code! You can close this window.\n\nCode: %s", code)
-				fmt.Printf("Success! Auth code: %s\n", code)
+		browser.OpenURL(authURL)
 
-				fmt.Println("Exchanging code for access token...")
-				data := url.Values{}
-				data.set("client_id", clientID)
-				clientSecret := os.Getenv("DISCORD_CLIENT_SECRET")
-				if clientSecret == "" {
-					fmt.Fprintf(os.Stderr, "DISCORD_CLIENT_SECRET is unset")
-					return
-				}
-				data.set("client_secret", clientSecret)
-				data.set("grant_type", "authorization_code")
-				data.set("code", code)
-				data.set("redirectURI", redirectURI)
+		// Block until we get a token or err
+		select {
+		case t := <-tokenChan:
+			token = t
+		case e := <-errChan:
+			server.Shutdown(context.Background())
+			return nil, e
+		}
 
-				req, _ := http.NewRequest("POST", "https://discord.com/api/oauth2/token",
-					strings.NewReader(data.Encode()))
-				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-				client := &http.Client{}
-				resp, err := client.Do(req)
-				if err != nil {
-					fmt.Printf("Error exchanging token: %v\n", err)
-					return
-				}
-
-				defer resp.Body.Close()
-				body, _ := io.ReadAll(resp.Body)
-
-				var tokenResp TokenResponse
-				if err := json.Unmarshal(body, &tokenResp); err != nil {
-					fmt.Printf("Error parsing JSON: %v\nResponse Body: %s\n", err, string(body))
-					return
-				}
-
-				if tokenResp.AccessToken != "" {
-					token = tokenResp.AccessToken
-				} else {
-					fmt.Fprintf(os.Stderr, "Error: Failed to get token. Discord said:\n%s\n", string(body))
-				}
-
-				go func() {
-					return
-				}()
-			} else {
-				fmt.Fprintln(os.Stderr, "Error: no code in URL")
-			}
-		})
-
-		http.ListenAndServe(":8888", nil)
+		server.Shutdown(context.Background())
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
