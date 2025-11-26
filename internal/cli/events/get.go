@@ -89,5 +89,6 @@ func getEvents(id string, port string, host string) {
 	}
 
 	prettyJSON := pretty.Pretty(body)
-	fmt.Println(string(prettyJSON))
+	colorfulJSON := pretty.Color(prettyJSON, nil)
+	fmt.Println(string(colorfulJSON))
 }
