@@ -1,0 +1,16 @@
+{
+  "uuid": "alice-johnson-uuid",
+  "full_name": "Alice Johnson",
+  "picture": {
+    "string": "https://example.com/photos/alice.jpg",
+    "valid": true
+  },
+  "github": {
+    "string": "alicejohnson",
+    "valid": true
+  },
+  "discord": {
+    "string": "alice#1234",
+    "valid": true
+  }
+}

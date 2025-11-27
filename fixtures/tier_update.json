@@ -1,0 +1,15 @@
+{
+  "tier": 1,
+  "title": {
+    "string": "Club President",
+    "valid": true
+  },
+  "t_index": {
+    "int64": 50,
+    "valid": true
+  },
+  "team": {
+    "string": "Leadership",
+    "valid": true
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "uuid": "website-announcement",
+  "visibility": "public",
+  "announce_at": 1713110400000,
+  "discord_channel_id": {
+    "string": "",
+    "valid": false
+  },
+  "discord_message_id": {
+    "string": "",
+    "valid": false
+  }
+}

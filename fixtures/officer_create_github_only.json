@@ -1,0 +1,16 @@
+{
+  "uuid": "charlie-dev-uuid",
+  "full_name": "Charlie Developer",
+  "picture": {
+    "string": "",
+    "valid": false
+  },
+  "github": {
+    "string": "charliedev",
+    "valid": true
+  },
+  "discord": {
+    "string": "",
+    "valid": false
+  }
+}
