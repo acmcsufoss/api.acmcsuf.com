@@ -1,4 +1,4 @@
-package tiers
+package positions
 
 import (
 	"fmt"
@@ -10,28 +10,28 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var DeleteTier = &cobra.Command{
-	Use:   "delete --tier <uuid>",
-	Short: "Delete a tier",
+var DeletePosition = &cobra.Command{
+	Use:   "delete --oid <oid>",
+	Short: "Delete a position",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := cmd.Flags().GetString("tier")
+		oid, _ := cmd.Flags().GetString("oid")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		deleteTier(id, host, port)
+		deletePosition(oid, host, port)
 	},
 }
 
 func init() {
-	DeleteTier.Flags().String("tier", "", "Delete a tier")
-	DeleteTier.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteTier.Flags().String("port", "8080", "Set a custom port")
+	DeletePosition.Flags().String("oid", "", "Delete a position")
+	DeletePosition.Flags().String("host", "127.0.0.1", "Set a custom host")
+	DeletePosition.Flags().String("port", "8080", "Set a custom port")
 
-	DeleteTier.MarkFlagRequired("tier")
+	DeletePosition.MarkFlagRequired("oid")
 }
 
-func deleteTier(id, host, port string) {
+func deletePosition(id, host, port string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -41,13 +41,13 @@ func deleteTier(id, host, port string) {
 
 	// req id
 	if id == "" {
-		fmt.Println("ID is required to delete!")
+		fmt.Println("oid is required to delete!")
 		return
 	}
 
 	// prepare url
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/tiers/", id)
+	path := fmt.Sprint("v1/board/positions/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",

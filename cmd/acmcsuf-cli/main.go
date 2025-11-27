@@ -6,6 +6,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/boards/officers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/boards/positions"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/boards/tiers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
 
@@ -35,6 +36,7 @@ func init() {
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
 	rootCmd.AddCommand(tiers.CLITiers)
+	rootCmd.AddCommand(positions.CLIPositions)
 }
 
 func main() {
