@@ -1,4 +1,4 @@
-package officers
+package positions
 
 import (
 	"fmt"
@@ -10,29 +10,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var DeleteOfficers = &cobra.Command{
-	Use:   "delete --id <uuid>",
-	Short: "Delete an officer with their id",
+var DeletePosition = &cobra.Command{
+	Use:   "delete --oid <oid>",
+	Short: "Delete a position",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := cmd.Flags().GetString("id")
+		oid, _ := cmd.Flags().GetString("oid")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		deleteOfficer(id, host, port)
+		deletePosition(oid, host, port)
 	},
 }
 
 func init() {
 	// ----- URL Flags -----
-	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
-	DeleteOfficers.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteOfficers.Flags().String("port", "8080", "Set a custom port")
+	DeletePosition.Flags().String("oid", "", "Delete a position")
+	DeletePosition.Flags().String("host", "127.0.0.1", "Set a custom host")
+	DeletePosition.Flags().String("port", "8080", "Set a custom port")
 
-	DeleteOfficers.MarkFlagRequired("id")
+	DeletePosition.MarkFlagRequired("oid")
 }
 
-func deleteOfficer(id, host, port string) {
+func deletePosition(id, host, port string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -42,13 +42,13 @@ func deleteOfficer(id, host, port string) {
 
 	// ----- Req id -----
 	if id == "" {
-		fmt.Println("ID is required to delete!")
+		fmt.Println("oid is required to delete!")
 		return
 	}
 
 	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/officers/", id)
+	path := fmt.Sprint("v1/board/positions/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",
