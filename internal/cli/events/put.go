@@ -22,6 +22,7 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.CreateEventParams{}
 
 		// CLI for url
@@ -54,6 +55,7 @@ var PutEvents = &cobra.Command{
 			}
 		}
 
+		// ----- Check for Flags Used -----
 		changedFlags := eventFlags{
 			uuid:     cmd.Flags().Lookup("uuid").Changed,
 			location: cmd.Flags().Lookup("location").Changed,
@@ -233,7 +235,6 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	}
 
 	// ----- All day -----
-	// This is kind of awkward but I don't know have a workaround at the moment
 	for {
 		if changedFlags.isallday {
 			break
@@ -278,7 +279,6 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	}
 
 	// ----- PUT the payload -----
-
 	updatePayload := models.UpdateEventParams{
 		Uuid:     payload.Uuid,
 		Location: utils.StringtoNullString(payload.Location),
@@ -289,7 +289,6 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	}
 
 	// Confirmation
-	// TODO: Fix put
 	for {
 		fmt.Println("Are these changes okay?[y/n]")
 		utils.PrintStruct(updatePayload, true)

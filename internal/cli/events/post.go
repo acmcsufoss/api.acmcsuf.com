@@ -21,6 +21,7 @@ var PostEvent = &cobra.Command{
 	Short: "Post a new event.",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.CreateEventParams{}
 
 		urlhost, _ := cmd.Flags().GetString("urlhost")
@@ -54,6 +55,7 @@ var PostEvent = &cobra.Command{
 			fmt.Printf("--startat is required in order to use --duration")
 		}
 
+		// ----- Check for Flags Used -----
 		changedFlags := eventFlags{
 			uuid:     cmd.Flags().Lookup("uuid").Changed,
 			location: cmd.Flags().Lookup("location").Changed,

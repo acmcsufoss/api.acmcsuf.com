@@ -20,6 +20,7 @@ var PutAnnouncements = &cobra.Command{
 	Short: "update an existing announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.UpdateAnnouncementParams{}
 
 		host, _ := cmd.Flags().GetString("host")
@@ -46,6 +47,7 @@ var PutAnnouncements = &cobra.Command{
 			payload.AnnounceAt = utils.Int64toNullInt64(announceAtUnix)
 		}
 
+		// ----- Check for Flags Used -----
 		changedFlags := announcementFlags{
 			id:         cmd.Flags().Lookup("uuid").Changed,
 			visibility: cmd.Flags().Lookup("visibility").Changed,

@@ -21,6 +21,7 @@ var PostAnnouncement = &cobra.Command{
 	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.CreateAnnouncementParams{}
 
 		host, _ := cmd.Flags().GetString("host")
@@ -44,6 +45,7 @@ var PostAnnouncement = &cobra.Command{
 			}
 		}
 
+		// ----- Check for Flags Used -----
 		changedFlags := announcementFlags{
 			id:         cmd.Flags().Lookup("uuid").Changed,
 			visibility: cmd.Flags().Lookup("visibility").Changed,

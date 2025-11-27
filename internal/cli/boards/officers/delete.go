@@ -24,6 +24,7 @@ var DeleteOfficers = &cobra.Command{
 }
 
 func init() {
+	// ----- URL Flags -----
 	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
 	DeleteOfficers.Flags().String("host", "127.0.0.1", "Set a custom host")
 	DeleteOfficers.Flags().String("port", "8080", "Set a custom port")
@@ -39,13 +40,13 @@ func deleteOfficer(id, host, port string) {
 		return
 	}
 
-	// req id
+	// ----- Req id -----
 	if id == "" {
 		fmt.Println("ID is required to delete!")
 		return
 	}
 
-	// prepare url
+	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
 	path := fmt.Sprint("v1/board/officers/", id)
 
@@ -55,7 +56,7 @@ func deleteOfficer(id, host, port string) {
 		Path:   path,
 	}
 
-	// send delete request
+	// ----- Send delete request -----
 	client := &http.Client{}
 
 	request, err := http.NewRequest(http.MethodDelete, deleteURL.String(), nil)

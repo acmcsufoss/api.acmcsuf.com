@@ -21,6 +21,7 @@ var PostTier = &cobra.Command{
 	Short: "Post a new tier",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		var payload models.CreateTierParams
 
 		host, _ := cmd.Flags().GetString("host")
@@ -35,6 +36,7 @@ var PostTier = &cobra.Command{
 		payload.TIndex = utils.Int64toNullInt64(tindex)
 		payload.Team = utils.StringtoNullString(team)
 
+		// ----- Check for Flags Used -----
 		changedFlags := tierFlags{
 			tier:   cmd.Flags().Lookup("tier").Changed,
 			title:  cmd.Flags().Lookup("title").Changed,
@@ -47,11 +49,11 @@ var PostTier = &cobra.Command{
 }
 
 func init() {
-	// Url flags
+	// ----- Url flags  -----
 	PostTier.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PostTier.Flags().String("port", "8080", "Set a custom port")
 
-	// Tier flags
+	// ----- Tier flags  -----
 	PostTier.Flags().Int64P("tier", "i", 0, "Set tier")
 	PostTier.Flags().StringP("title", "t", "", "Set the tier's title")
 	PostTier.Flags().Int64P("tindex", "T", 0, "Set the tier index")
@@ -68,7 +70,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Tier
+	// ----- Tier  -----
 	for {
 		if cf.tier {
 			break
@@ -91,7 +93,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 		break
 	}
 
-	// Title
+	// ----- Title  -----
 	for {
 		if cf.title {
 			break
@@ -108,7 +110,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 		break
 	}
 
-	// TIndex
+	// ----- Tindex  -----
 	for {
 		if cf.tindex {
 			break
@@ -131,7 +133,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 		break
 	}
 
-	// Team
+	// ----- Team  ------
 	for {
 		if cf.team {
 			break
@@ -148,7 +150,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 		break
 	}
 
-	// confirmation
+	// ----- Confirmation  -----
 	for {
 		fmt.Println("Is your tier data correct? If not, type n or no.")
 		utils.PrintStruct(payload, false)
@@ -164,14 +166,14 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
-			// Sorry :(
+			// ----- Sorry :(  -----
 			return
 		} else {
 			break
 		}
 	}
 
-	// marshal to json, and prepare url
+	// ----- Marshal to json, and prepare url  -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("error formating payload to json: ", err)
@@ -187,7 +189,7 @@ func postTier(payload *models.CreateTierParams, cf *tierFlags, host, port string
 		Path:   path,
 	}
 
-	// post payload
+	// ----- Post payload  -----
 	response, err := http.Post(postURL.String(), "application/json", strings.NewReader(string(jsonPayload)))
 	if err != nil {
 		fmt.Println("error with post: ", err)

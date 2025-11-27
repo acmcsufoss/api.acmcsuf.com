@@ -18,9 +18,10 @@ import (
 
 var PutPosition = &cobra.Command{
 	Use:   "put --id <uuid> [flags]",
-	Short: "update an existing officer by id",
+	Short: "update an existing position by id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.UpdatePositionParams{}
 
 		host, _ := cmd.Flags().GetString("host")
@@ -30,6 +31,7 @@ var PutPosition = &cobra.Command{
 		payload.Semester, _ = cmd.Flags().GetString("semester")
 		payload.Tier, _ = cmd.Flags().GetInt64("tier")
 
+		// ----- Check for Flags Used -----
 		changedFlags := positionFlags{
 			oid:      cmd.Flags().Lookup("oid").Changed,
 			semester: cmd.Flags().Lookup("semester").Changed,
@@ -41,10 +43,11 @@ var PutPosition = &cobra.Command{
 }
 
 func init() {
+	// ----- URL Flags -----
 	PutPosition.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PutPosition.Flags().String("port", "8080", "Set a custom port")
 
-	// Position flags
+	// ----- Position Flags -----
 	PutPosition.Flags().StringP("oid", "o", "", "Set the oid for position")
 	PutPosition.Flags().StringP("semester", "s", "", "Set the semester for position")
 	PutPosition.Flags().Int64P("tier", "t", 0, "Set the tier for position")
@@ -65,7 +68,7 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		return
 	}
 
-	// construct url
+	// ----- Construct url -----
 	hostPort := fmt.Sprint(host, ":", port)
 	path := "v1/board/positions/" + id
 
@@ -75,7 +78,7 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		Path:   path,
 	}
 
-	// getting old positions
+	// ----- Getting old positions -----
 	resp, err := http.Get(u.String())
 	if err != nil {
 		fmt.Printf("error retrieving %s: %s\n", id, err)
@@ -95,13 +98,13 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 
 	var old models.CreatePositionParams
 	if err := json.Unmarshal(body, &old); err != nil {
-		fmt.Println("error unmarshaling previous officer data:", err)
+		fmt.Println("error unmarshaling previous postion's data:", err)
 		return
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Oid
+	// ----- Oid -----
 	for {
 		if flags.oid {
 			break
@@ -120,7 +123,7 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		break
 	}
 
-	// Semester
+	// ----- Semester -----
 	for {
 		if flags.semester {
 			break
@@ -139,7 +142,7 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		break
 	}
 
-	// Tier
+	// ----- Tier -----
 	for {
 		if flags.tier {
 			break
@@ -162,7 +165,7 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		}
 		break
 	}
-	// Confirm
+	// ----- Confirm -----
 	for {
 		fmt.Println("Is the position data correct? (y/n)")
 		utils.PrintStruct(payload, false)
@@ -180,14 +183,14 @@ func putPosition(host, port, id string, payload *models.UpdatePositionParams, fl
 		break
 	}
 
-	// marshal payload
+	// ----- Marshal payload -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("Error marshaling data:", err)
 		return
 	}
 
-	// PUT
+	// ----- Put -----
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {

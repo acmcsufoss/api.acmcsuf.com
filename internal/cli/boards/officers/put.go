@@ -20,6 +20,7 @@ var PutOfficer = &cobra.Command{
 	Short: "update an existing officer by id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.UpdateOfficerParams{}
 
 		host, _ := cmd.Flags().GetString("host")
@@ -38,6 +39,7 @@ var PutOfficer = &cobra.Command{
 		payload.Discord = utils.StringtoNullString(discord)
 		payload.Uuid = uuid
 
+		// ----- Check for Flags Used -----
 		flags := officerFlags{
 			fullname: cmd.Flags().Lookup("fullname").Changed,
 			picture:  cmd.Flags().Lookup("picture").Changed,
@@ -51,9 +53,11 @@ var PutOfficer = &cobra.Command{
 }
 
 func init() {
+	// ----- URL Flags -----
 	PutOfficer.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PutOfficer.Flags().String("port", "8080", "Set a custom port")
 
+	// ----- Officer Flags -----
 	PutOfficer.Flags().String("id", "", "Officer ID to update")
 
 	PutOfficer.Flags().String("fullname", "", "Change full name")

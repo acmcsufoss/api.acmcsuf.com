@@ -18,12 +18,13 @@ import (
 
 var PostPosition = &cobra.Command{
 	Use:   "post [flags]",
-	Short: "Post a new tier",
+	Short: "Post a new position",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 
-		// NOTE: Using update positions params since it covers all possible fields position in DB has,
-		// compared to CreatePositionParams which only carries: oid, semester, and tier
+		// ----- Note: using update positions params since it covers all possible fields position in db has, -----
+		// ----- Compared to createpositionparams which only carries: oid, semester, and tier -----
 		var payload models.UpdatePositionParams
 
 		host, _ := cmd.Flags().GetString("host")
@@ -39,6 +40,7 @@ var PostPosition = &cobra.Command{
 		payload.Semester, _ = cmd.Flags().GetString("semester")
 		payload.Tier, _ = cmd.Flags().GetInt64("tier")
 
+		// ----- Check for Flags Used -----
 		changedFlags := positionFlags{
 			oid:      cmd.Flags().Lookup("oid").Changed,
 			semester: cmd.Flags().Lookup("semester").Changed,
@@ -53,11 +55,11 @@ var PostPosition = &cobra.Command{
 }
 
 func init() {
-	// Url flags
+	// ----- Url flags -----
 	PostPosition.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PostPosition.Flags().String("port", "8080", "Set a custom port")
 
-	// Position flags
+	// ----- Position Flags -----
 	PostPosition.Flags().StringP("oid", "o", "", "Set the oid for position")
 	PostPosition.Flags().StringP("semester", "s", "", "Set the semester for position")
 	PostPosition.Flags().Int64P("tier", "t", 0, "Set the tier for position")
@@ -76,7 +78,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Name
+	// ----- Name -----
 	for {
 		if cf.fullname {
 			break
@@ -93,7 +95,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		break
 	}
 
-	// title
+	// ----- Title -----
 	for {
 		if cf.title {
 			break
@@ -110,7 +112,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		break
 	}
 
-	// team
+	// ----- Team -----
 	for {
 		if cf.team {
 			break
@@ -126,7 +128,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		payload.Team = utils.StringtoNullString(string(scanner.Bytes()))
 		break
 	}
-	// Oid
+	// ----- Oid -----
 	for {
 		if cf.oid {
 			break
@@ -143,7 +145,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		break
 	}
 
-	// Title
+	// ----- Title -----
 	for {
 		if cf.semester {
 			break
@@ -160,7 +162,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		break
 	}
 
-	// TIndex
+	// ----- Tindex -----
 	for {
 		if cf.tier {
 			break
@@ -183,7 +185,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		break
 	}
 
-	// confirmation
+	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your position data correct? If not, type n or no.")
 		utils.PrintStruct(payload, false)
@@ -199,14 +201,14 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
-			// Sorry :(
+			// ----- Sorry :( -----
 			return
 		} else {
 			break
 		}
 	}
 
-	// marshal to json, and prepare url
+	// ----- Marshal to json, and prepare url -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("error formating payload to json: ", err)
@@ -222,7 +224,7 @@ func postPosition(payload *models.UpdatePositionParams, cf *positionFlags, host,
 		Path:   path,
 	}
 
-	// post payload
+	// ----- Post payload -----
 	response, err := http.Post(postURL.String(), "application/json", strings.NewReader(string(jsonPayload)))
 	if err != nil {
 		fmt.Println("error with post: ", err)

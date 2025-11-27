@@ -18,9 +18,10 @@ import (
 
 var PutTier = &cobra.Command{
 	Use:   "put --id <uuid> [flags]",
-	Short: "update an existing officer by id",
+	Short: "update an existing tier by id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		payload := models.UpdateTierParams{}
 
 		host, _ := cmd.Flags().GetString("host")
@@ -37,6 +38,7 @@ var PutTier = &cobra.Command{
 
 		tier := strconv.Itoa(int(payload.Tier))
 
+		// ----- Check for Flags Used -----
 		flags := tierFlags{
 			tier:   cmd.Flags().Lookup("tier").Changed,
 			title:  cmd.Flags().Lookup("title").Changed,
@@ -44,14 +46,16 @@ var PutTier = &cobra.Command{
 			team:   cmd.Flags().Lookup("team").Changed,
 		}
 
-		putOfficer(host, port, tier, &payload, flags)
+		putTier(host, port, tier, &payload, flags)
 	},
 }
 
 func init() {
+	// ----- URL Flags -----
 	PutTier.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PutTier.Flags().String("port", "8080", "Set a custom port")
 
+	// ----- Tier Flags -----
 	PutTier.Flags().Int64P("tier", "i", 0, "Set tier")
 	PutTier.Flags().StringP("title", "t", "", "Set the tier's title")
 	PutTier.Flags().Int64P("tindex", "T", 0, "Set the tier index")
@@ -60,7 +64,7 @@ func init() {
 	PutTier.MarkFlagRequired("tier")
 }
 
-func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags tierFlags) {
+func putTier(host, port, id string, payload *models.UpdateTierParams, flags tierFlags) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -73,7 +77,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		return
 	}
 
-	// construct url
+	// ----- Construct Url -----
 	hostPort := fmt.Sprint(host, ":", port)
 	path := "v1/board/tiers/" + id
 
@@ -83,7 +87,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		Path:   path,
 	}
 
-	// getting old tiers
+	// ----- Getting Old Tiers -----
 	resp, err := http.Get(u.String())
 	if err != nil {
 		fmt.Printf("error retrieving %s: %s\n", id, err)
@@ -103,13 +107,13 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 
 	var old models.CreateTierParams
 	if err := json.Unmarshal(body, &old); err != nil {
-		fmt.Println("error unmarshaling previous officer data:", err)
+		fmt.Println("error unmarshaling previous tier's data:", err)
 		return
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Tier
+	// ----- Tier -----
 	for {
 		if flags.tier {
 			break
@@ -133,7 +137,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		break
 	}
 
-	// Title
+	// ----- Title -----
 	for {
 		if flags.title {
 			break
@@ -152,7 +156,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		break
 	}
 
-	// TIndex
+	// ----- TIndex -----
 	for {
 		if flags.tindex {
 			break
@@ -176,7 +180,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		break
 	}
 
-	// Team
+	// ----- Team -----
 	for {
 		if flags.team {
 			break
@@ -195,7 +199,7 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		break
 	}
 
-	// Confirm
+	// ----- Confirm -----
 	for {
 		fmt.Println("Is the tier data correct? (y/n)")
 		utils.PrintStruct(payload, false)
@@ -213,14 +217,14 @@ func putOfficer(host, port, id string, payload *models.UpdateTierParams, flags t
 		break
 	}
 
-	// marshal payload
+	// ----- Marshal Payload -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("Error marshaling data:", err)
 		return
 	}
 
-	// PUT
+	// ----- PUT -----
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {

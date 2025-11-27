@@ -24,6 +24,7 @@ var DeletePosition = &cobra.Command{
 }
 
 func init() {
+	// ----- URL Flags -----
 	DeletePosition.Flags().String("oid", "", "Delete a position")
 	DeletePosition.Flags().String("host", "127.0.0.1", "Set a custom host")
 	DeletePosition.Flags().String("port", "8080", "Set a custom port")
@@ -39,13 +40,13 @@ func deletePosition(id, host, port string) {
 		return
 	}
 
-	// req id
+	// ----- Req id -----
 	if id == "" {
 		fmt.Println("oid is required to delete!")
 		return
 	}
 
-	// prepare url
+	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
 	path := fmt.Sprint("v1/board/positions/", id)
 
@@ -55,7 +56,7 @@ func deletePosition(id, host, port string) {
 		Path:   path,
 	}
 
-	// send delete request
+	// ----- Send delete request -----
 	client := &http.Client{}
 
 	request, err := http.NewRequest(http.MethodDelete, deleteURL.String(), nil)

@@ -20,6 +20,7 @@ var PostOfficer = &cobra.Command{
 	Short: "Post a new officer",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		// ----- Populate Payload if Flag Data Given -----
 		var payload models.CreateOfficerParams
 
 		host, _ := cmd.Flags().GetString("host")
@@ -34,6 +35,7 @@ var PostOfficer = &cobra.Command{
 		disc, _ := cmd.Flags().GetString("discord")
 		payload.Discord = utils.StringtoNullString(disc)
 
+		// ----- Check for Flags Used -----
 		changedFlags := officerFlags{
 			uuid:     cmd.Flags().Lookup("uuid").Changed,
 			fullname: cmd.Flags().Lookup("name").Changed,
@@ -47,11 +49,11 @@ var PostOfficer = &cobra.Command{
 }
 
 func init() {
-	// Url flags
+	// ----- URL Flags -----
 	PostOfficer.Flags().String("host", "127.0.0.1", "Set a custom host")
 	PostOfficer.Flags().String("port", "8080", "Set a custom port")
 
-	// Officer flags
+	// ----- Officer Flags -----
 	PostOfficer.Flags().StringP("uuid", "u", "", "Set uuid of this officer")
 	PostOfficer.Flags().StringP("name", "n", "", "Set the full name of this officer")
 	PostOfficer.Flags().StringP("picture", "p", "", "Set the picture of this officer")
@@ -69,7 +71,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// uuid
+	// ----- Uuid -----
 	for {
 		if cf.uuid {
 			break
@@ -86,7 +88,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		break
 	}
 
-	// full name
+	// ----- Full name -----
 	for {
 		if cf.fullname {
 			break
@@ -103,7 +105,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		break
 	}
 
-	// picture
+	// ----- Picture -----
 	for {
 		if cf.picture {
 			break
@@ -120,7 +122,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		break
 	}
 
-	// github
+	// ----- Github -----
 	for {
 		if cf.github {
 			break
@@ -137,7 +139,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		break
 	}
 
-	// discord
+	// ----- Discord -----
 	for {
 		if cf.discord {
 			break
@@ -155,7 +157,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 
 	}
 
-	// confirmation
+	// ----- Confirmation -----
 	for {
 		fmt.Println("Is your officer data correct? If not, type n or no.")
 		utils.PrintStruct(payload, false)
@@ -171,14 +173,14 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 			fmt.Println("error with reading confirmation:", err)
 		}
 		if !confirmationBool {
-			// Sorry :(
+			// ----- Sorry :( -----
 			return
 		} else {
 			break
 		}
 	}
 
-	// marshal to json, and prepare url
+	// ----- Marshal to json, and prepare url -----
 	jsonPayload, err := json.Marshal(*payload)
 	if err != nil {
 		fmt.Println("error formating payload to json: ", err)
@@ -194,7 +196,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		Path:   path,
 	}
 
-	// post payload
+	// ----- Post payload -----
 	response, err := http.Post(postURL.String(), "application/json", strings.NewReader(string(jsonPayload)))
 	if err != nil {
 		fmt.Println("error with post: ", err)

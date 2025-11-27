@@ -25,6 +25,7 @@ var GetPositions = &cobra.Command{
 }
 
 func init() {
+	// ----- URL Flags -----
 	GetPositions.Flags().String("tier", "", "Get a specific tier")
 	GetPositions.Flags().String("host", "127.0.0.1", "Custom host")
 	GetPositions.Flags().String("port", "8080", "Custom port")
@@ -38,7 +39,7 @@ func getPositions(id, port, host string) {
 		return
 	}
 
-	// prepare url
+	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
 	path := fmt.Sprint("v1/board/positions/", id)
 
@@ -48,7 +49,7 @@ func getPositions(id, port, host string) {
 		Path:   path,
 	}
 
-	// getting tier(s)
+	// ----- Getting Positions(s) -----
 	response, err := http.Get(getURL.String())
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
