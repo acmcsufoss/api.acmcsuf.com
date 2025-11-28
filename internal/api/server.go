@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
+	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db"
@@ -36,6 +37,7 @@ func Run(ctx context.Context) {
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
 	routes.SetupV1(router, eventsService, announcementService, boardService)
+	router.Use(mw.Cors())
 
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", cfg.Port)
