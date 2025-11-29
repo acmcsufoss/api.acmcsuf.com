@@ -102,10 +102,12 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 		params.Add("scope", scope)
 		params.Add("response_type", "code")
 
-		authURL := "https://discord.com/oauth2/authorize" + params.Encode()
-		fmt.Println("Opening browser to:", authURL)
+		baseURL := "https://discord.com/oauth2/authorize"
+		u, _ := url.Parse(baseURL)
+		u.RawQuery = params.Encode()
+		fmt.Println("Opening browser to:", u.String())
 		// TODO: "Press enter to open the following link in your browser"
-		browser.OpenURL(authURL)
+		browser.OpenURL(u.String())
 
 		// Block until we get a token or err
 		select {
