@@ -49,7 +49,7 @@ func FormatUnix(unixTime int64) string {
 }
 
 // Print the struct passed into it in a nice display in the terminal
-func PrintStruct(s any) {
+func PrintStruct(s any, timeDisplay bool) {
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)
 
@@ -82,7 +82,11 @@ func PrintStruct(s any) {
 		case reflect.TypeOf(sql.NullInt64{}):
 			n := v.Interface().(sql.NullInt64)
 			if n.Valid {
-				display = FormatUnix(n.Int64)
+				if timeDisplay {
+					display = FormatUnix(n.Int64)
+				} else {
+					display = fmt.Sprintf("%v", n.Int64)
+				}
 			} else {
 				display = "NULL"
 			}
@@ -106,11 +110,15 @@ func PrintStruct(s any) {
 		default:
 			switch v.Kind() {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				display = FormatUnix(v.Int())
+				if timeDisplay {
+					display = FormatUnix(v.Int())
+				} else {
+					display = fmt.Sprintf("%v", v.Int())
+				}
 
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				u := v.Uint()
-				if u <= math.MaxInt64 {
+				if u <= math.MaxInt64 && timeDisplay {
 					display = FormatUnix(int64(u))
 				} else {
 					display = fmt.Sprintf("%v", u)
