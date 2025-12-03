@@ -78,6 +78,7 @@ func DiscordAuth(bot *discordgo.Session, requiredRole string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "You are not a member of the Discord server",
 			})
+			return
 		}
 
 		roleCache.Store(authHeader, cacheEntry{
