@@ -25,12 +25,16 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	}
 
 	var botSession *discordgo.Session
+	var err error
 	if botToken != "" {
-		botSession, err := discordgo.New("Bot " + botToken)
+		botSession, err = discordgo.New("Bot " + botToken)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
-		botSession.Open()
+		err = botSession.Open()
+		if err != nil {
+			log.Fatalf("Failed to open bot session: %v", err)
+		}
 		defer botSession.Close()
 	}
 
