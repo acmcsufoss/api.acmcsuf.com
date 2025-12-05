@@ -26,9 +26,9 @@ type TokenResponse struct {
 }
 
 type StoredToken struct {
-	AccessToken  string    `json:"access_token`
-	RefreshToken string    `json:"refresh_token`
-	Expiry       time.Time `json:expiry`
+	AccessToken  string    `json:"access_token"`
+	RefreshToken string    `json:"refresh_token"`
+	Expiry       time.Time `json:"expiry"`
 }
 
 func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request, error) {
@@ -43,91 +43,101 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 		token = "dev-token"
 	} else {
 		// Production OAuth2 Flow
-		clientID := os.Getenv("DISCORD_CLIENT_ID")
-		if clientID == "" {
-			return nil, errors.New("DISCORD_CLIENT_ID is unset")
-		}
-		clientSecret := os.Getenv("DISCORD_CLIENT_SECRET")
-		if clientSecret == "" {
-			return nil, errors.New("DISCORD_CLIENT_SECRET is unset")
-		}
-		// TODO: check that this port isn't being used first
-		const redirectURI = "http://localhost:8888"
-		const scope = "identify"
+		if storedToken, err := loadToken(); err == nil {
+			token = storedToken
+		} else {
+			fmt.Println("No valid session found. Authenticating...")
 
-		tokenChan := make(chan string)
-		errChan := make(chan error)
-		mux := http.NewServeMux()
-		// NOTE: port :8888 is hardcoded here. Maybe we can we use `:0` and `server.Addr` to find the port it was assigned?
-		server := &http.Server{Addr: ":8888", Handler: mux}
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			code := r.URL.Query().Get("code")
-			if code == "" {
-				fmt.Fprintln(w, "No code found")
-				return
+			clientID := os.Getenv("DISCORD_CLIENT_ID")
+			if clientID == "" {
+				return nil, errors.New("DISCORD_CLIENT_ID is unset")
 			}
-			fmt.Fprintf(w, "Got code! You can close this window.")
-
-			data := url.Values{}
-			data.Set("client_id", clientID)
-			data.Set("client_secret", clientSecret)
-			data.Set("grant_type", "authorization_code")
-			data.Set("code", code)
-			data.Set("redirect_uri", redirectURI)
-
-			resp, err := http.PostForm("https://discord.com/api/oauth2/token", data)
-			if err != nil {
-				errChan <- fmt.Errorf("failed to exchange token: %w", err)
-				return
+			clientSecret := os.Getenv("DISCORD_CLIENT_SECRET")
+			if clientSecret == "" {
+				return nil, errors.New("DISCORD_CLIENT_SECRET is unset")
 			}
-			defer resp.Body.Close()
+			// TODO: check that this port isn't being used first
+			const redirectURI = "http://localhost:8888"
+			const scope = "identify"
 
-			respBody, _ := io.ReadAll(resp.Body)
+			tokenChan := make(chan string)
+			errChan := make(chan error)
+			mux := http.NewServeMux()
+			// NOTE: port :8888 is hardcoded here. Maybe we can we use `:0` and `server.Addr` to find the port it was assigned?
+			server := &http.Server{Addr: ":8888", Handler: mux}
+			mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+				code := r.URL.Query().Get("code")
+				if code == "" {
+					fmt.Fprintln(w, "No code found")
+					return
+				}
+				fmt.Fprintf(w, "Got code! You can close this window.")
 
-			if resp.StatusCode != http.StatusOK {
-				errChan <- fmt.Errorf("discord API error: %s", string(respBody))
+				data := url.Values{}
+				data.Set("client_id", clientID)
+				data.Set("client_secret", clientSecret)
+				data.Set("grant_type", "authorization_code")
+				data.Set("code", code)
+				data.Set("redirect_uri", redirectURI)
+
+				resp, err := http.PostForm("https://discord.com/api/oauth2/token", data)
+				if err != nil {
+					errChan <- fmt.Errorf("failed to exchange token: %w", err)
+					return
+				}
+				defer resp.Body.Close()
+
+				respBody, _ := io.ReadAll(resp.Body)
+
+				if resp.StatusCode != http.StatusOK {
+					errChan <- fmt.Errorf("discord API error: %s", string(respBody))
+				}
+
+				var tokenResp TokenResponse
+				if err := json.Unmarshal(respBody, &tokenResp); err != nil {
+					errChan <- fmt.Errorf("JSON parse error: %w", err)
+				}
+
+				// save token to disk HERE >:)
+				if err := saveToken(tokenResp); err != nil {
+					fmt.Printf("Warning: failed to save auth token: %v\n", err)
+				}
+				tokenChan <- tokenResp.AccessToken
+			})
+
+			// So server doesn't block
+			go func() {
+				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					errChan <- err
+				}
+			}()
+
+			// Human needs to open browser to get the token
+			// A web client can do this more gracefully, but we have to do this since we're on a CLI
+			params := url.Values{}
+			params.Add("client_id", clientID)
+			params.Add("redirect_uri", redirectURI)
+			params.Add("scope", scope)
+			params.Add("response_type", "code")
+
+			baseURL := "https://discord.com/oauth2/authorize"
+			u, _ := url.Parse(baseURL)
+			u.RawQuery = params.Encode()
+			fmt.Println("Opening browser to:", u.String())
+			// TODO: "Press enter to open the following link in your browser"
+			browser.OpenURL(u.String())
+
+			// Block until we get a token or err
+			select {
+			case t := <-tokenChan:
+				token = t
+			case e := <-errChan:
+				server.Shutdown(context.Background())
+				return nil, e
 			}
 
-			var tokenResp TokenResponse
-			if err := json.Unmarshal(respBody, &tokenResp); err != nil {
-				errChan <- fmt.Errorf("JSON parse error: %w", err)
-			}
-
-			tokenChan <- tokenResp.AccessToken
-		})
-
-		// So server doesn't block
-		go func() {
-			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				errChan <- err
-			}
-		}()
-
-		// Human needs to open browser to get the token
-		// A web client can do this more gracefully, but we have to do this since we're on a CLI
-		params := url.Values{}
-		params.Add("client_id", clientID)
-		params.Add("redirect_uri", redirectURI)
-		params.Add("scope", scope)
-		params.Add("response_type", "code")
-
-		baseURL := "https://discord.com/oauth2/authorize"
-		u, _ := url.Parse(baseURL)
-		u.RawQuery = params.Encode()
-		fmt.Println("Opening browser to:", u.String())
-		// TODO: "Press enter to open the following link in your browser"
-		browser.OpenURL(u.String())
-
-		// Block until we get a token or err
-		select {
-		case t := <-tokenChan:
-			token = t
-		case e := <-errChan:
 			server.Shutdown(context.Background())
-			return nil, e
 		}
-
-		server.Shutdown(context.Background())
 	}
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
