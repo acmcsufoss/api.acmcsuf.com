@@ -20,6 +20,7 @@ import (
 // It waits for the context to be canceled to initiate a graceful shutdown.
 func Run(ctx context.Context) {
 	cfg := config.Load()
+
 	db, closer, err := db.New(ctx, cfg.DatabaseURL)
 	if err != nil {
 		log.Fatal(err)
