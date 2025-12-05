@@ -15,8 +15,8 @@ import (
 // map lets us use the role names in our code for readability reasons. Maybe this could be made
 // more portable in the future for testing reasons.
 var RoleMap = map[string]string{
-	"1446729257236697168": "Board",
-	"1446729292389159063": "President",
+	"1445971950584205554": "Board",
+	"456":                 "President",
 }
 
 var roleCache = sync.Map{}
