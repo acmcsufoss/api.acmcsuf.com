@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/cli/browser"
 
@@ -21,6 +23,12 @@ type TokenResponse struct {
 	ExpiresIn    int    `json:"expires_in"`
 	RefreshToken string `json:"refresh_token"`
 	Scope        string `json:"scope"`
+}
+
+type StoredToken struct {
+	AccessToken  string    `json:"access_token`
+	RefreshToken string    `json:"refresh_token`
+	Expiry       time.Time `json:expiry`
 }
 
 func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request, error) {
@@ -126,4 +134,63 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 	req.Header.Set("Content-Type", "application/json")
 
 	return req, nil
+}
+
+// ============== persistence helper functions ==============
+
+func getTokenPath() (string, error) {
+	configDir, err := os.UserConfigDir()
+	if err != nil {
+		return "", err
+	}
+	// ''~/.config/acmcsuf-cli/token.json' on Unix systems
+	appDir := filepath.Join(configDir, "acmcsuf-cli")
+	if err := os.MkdirAll(appDir, 0700); err != nil {
+		return "", err
+	}
+	return filepath.Join(appDir, "token.json"), nil
+}
+
+func saveToken(resp TokenResponse) error {
+	path, err := getTokenPath()
+	if err != nil {
+		return err
+	}
+
+	stored := StoredToken{
+		AccessToken:  resp.AccessToken,
+		RefreshToken: resp.RefreshToken,
+		Expiry:       time.Now().Add(time.Duration(resp.ExpiresIn-10) * time.Second),
+	}
+
+	file, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	return json.NewEncoder(file).Encode(stored)
+}
+
+func loadToken() (string, error) {
+	path, err := getTokenPath()
+	if err != nil {
+		return "", err
+	}
+
+	file, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+
+	var stored StoredToken
+	if err := json.NewDecoder(file).Decode(&stored); err != nil {
+		return "", err
+	}
+
+	if time.Now().After(stored.Expiry) {
+		return "", errors.New("token expired")
+	}
+
+	return stored.AccessToken, nil
 }
