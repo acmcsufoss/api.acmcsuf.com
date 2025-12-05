@@ -24,7 +24,7 @@ func Load() *Config {
 		DatabaseURL:    utils.GetEnv("DATABASE_URL", "file:dev.db?cache=shared&mode=rwc"),
 		TrustedProxies: utils.GetEnvAsSlice("TRUSTED_PROXIES", []string{"127.0.0.1/32"}),
 		AllowedOrigins: utils.GetEnvAsSlice("ALLOWED_ORIGINS", []string{"*"}),
-		GuildID:        utils.GetEnv("GUILD_ID", "710225099923521558"),
+		GuildID:        utils.GetEnv("GUILD_ID", "710225099923521558"), // acmcsuf's GuildID
 
 		// Sensitive (no default)
 		DiscordBotToken: os.Getenv("DISCORD_BOT_TOKEN"),

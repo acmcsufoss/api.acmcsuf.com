@@ -11,6 +11,9 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 )
 
+// NOTE: Hardcoded relation of role IDs -> role names. Discord's API works with the IDs, and this
+// map lets us use the role names in our code for readability reasons. Maybe this could be made
+// more portable in the future for testing reasons.
 var RoleMap = map[string]string{
 	"123": "Board",
 	"456": "President",
