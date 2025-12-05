@@ -50,6 +50,7 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 		tokenChan := make(chan string)
 		errChan := make(chan error)
 		mux := http.NewServeMux()
+		// NOTE: port :8888 is hardcoded here. Maybe we can we use `:0` and `server.Addr` to find the port it was assigned?
 		server := &http.Server{Addr: ":8888", Handler: mux}
 		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 			code := r.URL.Query().Get("code")
