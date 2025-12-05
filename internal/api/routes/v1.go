@@ -38,7 +38,9 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 	// Version 1 routes
 	v1 := router.Group("/v1")
-	// All v1 routes are protected
+	// All v1 routes are protected for now
+	// TODO: We don't actually want ALL routes to be protected. Making routes like
+	// /v1/events public will be much more useful for display on the website
 	v1.Use(middleware.DiscordAuth(botSession, "board"))
 	{
 		events := v1.Group("/events")
