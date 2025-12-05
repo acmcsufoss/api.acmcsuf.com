@@ -31,6 +31,11 @@ type StoredToken struct {
 	Expiry       time.Time `json:"expiry"`
 }
 
+// NOTE: As far as I can tell this port must be hardcoded as it needs to match the port
+// specified in the discord developer portal. It's chosen arbitrarily and is hopefully random
+// enough to not run into port conflicts.
+const redirectAddr = ":61234"
+
 func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request, error) {
 	cfg := config.Load()
 	req, err := http.NewRequest(method, targetURL, body)
@@ -57,14 +62,14 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 				return nil, errors.New("DISCORD_CLIENT_SECRET is unset")
 			}
 			// TODO: check that this port isn't being used first
-			const redirectURI = "http://localhost:8888"
+			redirectURI := fmt.Sprintf("http://localhost%s", redirectAddr)
 			const scope = "identify"
 
 			tokenChan := make(chan string)
 			errChan := make(chan error)
 			mux := http.NewServeMux()
 			// NOTE: port :8888 is hardcoded here. Maybe we can we use `:0` and `server.Addr` to find the port it was assigned?
-			server := &http.Server{Addr: ":8888", Handler: mux}
+			server := &http.Server{Addr: redirectAddr, Handler: mux}
 			mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				code := r.URL.Query().Get("code")
 				if code == "" {
