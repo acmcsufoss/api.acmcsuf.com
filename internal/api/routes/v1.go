@@ -4,7 +4,6 @@ package routes
 
 import (
 	"log"
-	"os"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
@@ -19,15 +18,14 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 
 	cfg := config.Load()
-	botToken := os.Getenv("DISCORD_BOT_TOKEN")
-	if botToken == "" && cfg.Env != "development" {
+	if cfg.DiscordBotToken == "" && cfg.Env != "development" {
 		log.Fatal("Error: DISCORD_BOT_TOKEN is not set")
 	}
 
 	var botSession *discordgo.Session
 	var err error
-	if botToken != "" {
-		botSession, err = discordgo.New("Bot " + botToken)
+	if cfg.DiscordBotToken != "" {
+		botSession, err = discordgo.New("Bot " + cfg.DiscordBotToken)
 		if err != nil {
 			log.Fatalf("%v", err)
 		}
