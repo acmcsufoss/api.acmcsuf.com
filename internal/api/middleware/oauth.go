@@ -12,8 +12,8 @@ import (
 )
 
 var RoleMap = map[string]string{
-	"123": "Board",
-	"456": "President",
+	"1445971950584205554": "Board",
+	"456":                 "President",
 }
 
 var roleCache = sync.Map{}

@@ -41,7 +41,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	// Version 1 routes
 	v1 := router.Group("/v1")
 	// All v1 routes are protected
-	v1.Use(middleware.DiscordAuth(botSession, "board"))
+	v1.Use(middleware.DiscordAuth(botSession, "Board"))
 	{
 		events := v1.Group("/events")
 		{
