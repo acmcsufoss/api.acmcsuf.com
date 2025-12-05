@@ -24,3 +24,15 @@ API sits behind a reverse proxy in production.
 - `ALLOWED_ORIGINS`: To be used with CORS middleware. Controls which web origins
   are allowed to make cross-origin requests to the API.
     - Default: `*` (change in production)
+- `DISCORD_BOT_TOKEN`: Discord bot token used by the API server to validate user
+tokens and check server membership/roles. Required in production.
+    - Default: (none, required in production)
+- `GUILD_ID`: The Discord server/guild ID where user membership and roles are
+checked.
+    - Default: (none, required in production)
+- `DISCORD_CLIENT_ID`: OAuth2 application client ID used by the CLI for Discord
+authentication.
+    - Default: (none, required for CLI OAuth)
+- `DISCORD_CLIENT_SECRET`: OAuth2 application client secret used by the CLI for
+token exchange.
+    - Default: (none, required for CLI OAuth)
