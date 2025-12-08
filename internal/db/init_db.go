@@ -16,7 +16,8 @@ type BoardService struct {
 	db models.DBTX
 }
 
-type Officer struct {
+// Needed because the officers.json file stores officer and position data together
+type OfficerPositions struct {
 	FullName  string `json:"fullName"`
 	Picture   string `json:"picture"`
 	Positions map[string][]struct {
@@ -24,6 +25,7 @@ type Officer struct {
 		Tier  int    `json:"tier"`
 	} `json:"positions"`
 	Discord string `json:"discord,omitempty"`
+	Github  string `json:"github,omitempty"`
 }
 
 func main() {
@@ -52,10 +54,29 @@ func main() {
 		log.Fatal("Error reading JSON file:", err)
 	}
 
-	var officers []Officer
-	err = json.Unmarshal(data, &officers)
+	var officerPositions []OfficerPositions
+	err = json.Unmarshal(data, &officerPositions)
 	if err != nil {
 		log.Fatal("Error unmarshaling JSON:", err)
+	}
+
+	var officer models.CreateOfficerParams
+	var position []models.CreatePositionParams
+
+	// Splits up officerPositions into officer data and position data, then populates
+	for i := range officerPositions {
+		officer.Uuid = fmt.Sprintf("%04d", i+1)
+		officer.FullName = officerPositions[i].FullName
+		officer.Picture = officerPositions[i].Picture
+		officer.Discord = officerPositions[i].Discord
+		officer.Github = ""
+
+		s.q.CreateOfficer(ctx, officer)
+
+		for n := range len(officerPositions[i].Positions) {
+			position[n].Title = officerPositions[i].Positions.Title
+			position[n].Tier = officerPositions[i].Positions.Tier
+		}
 	}
 
 	/*
@@ -177,5 +198,5 @@ func main() {
 	*/
 
 	fmt.Println("Database population completed successfully!")
-	fmt.Printf("Processed %d officers\n", len(officers))
+	fmt.Printf("Processed %d officers\n", len(officerPositions))
 }
