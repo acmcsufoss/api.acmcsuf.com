@@ -61,14 +61,13 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			if clientSecret == "" {
 				return nil, errors.New("DISCORD_CLIENT_SECRET is unset")
 			}
-			// TODO: check that this port isn't being used first
+
 			redirectURI := fmt.Sprintf("http://localhost%s", redirectAddr)
 			const scope = "identify"
 
 			tokenChan := make(chan string)
 			errChan := make(chan error)
 			mux := http.NewServeMux()
-			// NOTE: port :8888 is hardcoded here. Maybe we can we use `:0` and `server.Addr` to find the port it was assigned?
 			server := &http.Server{Addr: redirectAddr, Handler: mux}
 			mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 				code := r.URL.Query().Get("code")
