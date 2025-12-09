@@ -7,10 +7,10 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 	"github.com/tidwall/pretty"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var GetEvent = &cobra.Command{
@@ -62,7 +62,7 @@ func getEvents(id string, port string, host string) {
 	}
 
 	// ----- Get -----
-	req, err := requests.NewRequestWithAuth("GET", getURL.String(), nil)
+	req, err := http.NewRequest("GET", getURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error getting the request:", err)
 		return
