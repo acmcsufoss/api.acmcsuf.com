@@ -36,57 +36,61 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 		defer botSession.Close()
 	}
 
-	// Version 1 routes
-	v1 := router.Group("/v1")
-	// All v1 routes are protected for now
-	// TODO: We don't actually want ALL routes to be protected. Making routes like
-	// /v1/events public will be much more useful for display on the website
-	v1.Use(middleware.DiscordAuth(botSession, "board"))
+	eh := handlers.NewEventHandler(eventService)
+	ah := handlers.NewAnnouncementHandler(announcementService)
+	bh := handlers.NewBoardHandler(boardService)
+
+	// Public version 1 routes (read-only stuff)
+	publicV1 := router.Group("/v1")
 	{
-		events := v1.Group("/events")
+		publicV1.GET("/events", eh.GetEvents)
+		publicV1.GET("/events/:id", eh.GetEvent)
+
+		publicV1.GET("/announcements", ah.GetAnnouncements)
+		publicV1.GET("/announcements/:id", ah.GetAnnouncements)
+
+		board := publicV1.Group("/board")
 		{
-			h := handlers.NewEventHandler(eventService)
-			events.GET("", h.GetEvents)
-			events.GET(":id", h.GetEvent)
-			events.POST("", h.CreateEvent)
-			events.PUT(":id", h.UpdateEvent)
-			events.DELETE(":id", h.DeleteEvent)
+			board.GET("/officers", bh.GetOfficers)
+			board.GET("/officers/:id", bh.GetOfficer)
+
+			board.GET("/tiers", bh.GetTiers)
+			board.GET("/tiers/:id", bh.GetTier)
+
+			board.GET("/positions", bh.GetPositions)
+			board.GET("/positions/:id", bh.GetPosition)
 		}
+	}
 
-		announcements := v1.Group("/announcements")
+	// Protected version 1 routes (write operations)
+	protectedV1 := router.Group("/v1")
+	protectedV1.Use(middleware.DiscordAuth(botSession, "Board"))
+	{
+		protectedV1.POST("/events", eh.CreateEvent)
+		protectedV1.PUT("/events/:id", eh.UpdateEvent)
+		protectedV1.DELETE("/events/:id", eh.DeleteEvent)
+
+		protectedV1.POST("announcements", ah.CreateAnnouncement)
+		protectedV1.PUT("announcements/:id", ah.UpdateAnnouncement)
+		protectedV1.DELETE("announcements/:id", ah.DeleteAnnouncement)
+
+		board := protectedV1.Group("/board")
 		{
-			h := handlers.NewAnnouncementHandler(announcementService)
-			announcements.GET("", h.GetAnnouncements)
-			announcements.GET(":id", h.GetAnnouncement)
-			announcements.POST("", h.CreateAnnouncement)
-			announcements.PUT(":id", h.UpdateAnnouncement)
-			announcements.DELETE(":id", h.DeleteAnnouncement)
-		}
-
-		board := v1.Group("/board")
-		{
-			h := handlers.NewBoardHandler(boardService)
-
 			// Officers
-			board.GET("/officers", h.GetOfficers)
-			board.GET("/officers/:id", h.GetOfficer)
-			board.POST("/officers", h.CreateOfficer)
-			board.PUT("/officers/:id", h.UpdateOfficer)
-			board.DELETE("/officers/:id", h.DeleteOfficer)
+			board.POST("/officers", bh.CreateOfficer)
+			board.PUT("/officers/:id", bh.UpdateOfficer)
+			board.DELETE("/officers/:id", bh.DeleteOfficer)
 
 			// Tiers
-			board.GET("/tiers", h.GetTiers)
-			board.GET("/tiers/:id", h.GetTier)
-			board.POST("/tiers", h.CreateTier)
-			board.PUT("/tiers/:id", h.UpdateTier)
-			board.DELETE("/tiers/:id", h.DeleteTier)
+			board.POST("/tiers", bh.CreateTier)
+			board.PUT("/tiers/:id", bh.UpdateTier)
+			board.DELETE("/tiers/:id", bh.DeleteTier)
 
 			// Positions
-			board.GET("/positions", h.GetPositions)
-			board.GET("/positions/:id", h.GetPosition)
-			board.POST("/positions", h.CreatePosition)
-			board.PUT("/positions", h.UpdatePosition)
-			board.DELETE("/positions", h.DeletePosition)
+			board.POST("/positions", bh.CreatePosition)
+			board.PUT("/positions", bh.UpdatePosition)
+			board.DELETE("/positions", bh.DeletePosition)
 		}
+
 	}
 }
