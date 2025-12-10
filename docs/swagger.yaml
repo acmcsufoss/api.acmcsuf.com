@@ -214,7 +214,6 @@ definitions:
   sql.NullInt64:
     properties:
       int64:
-        format: int64
         type: integer
       valid:
         description: Valid is true if Int64 is not NULL
