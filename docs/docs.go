@@ -1624,8 +1624,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "int64": {
-                    "type": "integer",
-                    "format": "int64"
+                    "type": "integer"
                 },
                 "valid": {
                     "description": "Valid is true if Int64 is not NULL",
