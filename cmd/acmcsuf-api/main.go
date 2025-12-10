@@ -1,6 +1,6 @@
 package main
 
-//go:generate swag init -d .,../../internal/api/handlers,../../internal/db/models -o ../../docs --parseDependency
+//go:generate swag init -d .,../../internal/api/handlers,../../internal/db/models -o ../../swagger --parseDependency
 
 import (
 	"context"
