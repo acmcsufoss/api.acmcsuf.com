@@ -1,4 +1,4 @@
-package officers
+package tiers
 
 import (
 	"encoding/json"
@@ -11,27 +11,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var GetOfficers = &cobra.Command{
+var GetTiers = &cobra.Command{
 	Use:   "get [flags]",
-	Short: "Get Officers",
+	Short: "Get Tiers",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		getOfficers(id, port, host)
+		getTiers(id, port, host)
 	},
 }
 
 func init() {
 	// ----- URL Flags -----
-	GetOfficers.Flags().String("id", "", "Get a specific officer")
-	GetOfficers.Flags().String("host", "127.0.0.1", "Custom host")
-	GetOfficers.Flags().String("port", "8080", "Custom port")
+	GetTiers.Flags().String("tier", "", "Get a specific tier")
+	GetTiers.Flags().String("host", "127.0.0.1", "Custom host")
+	GetTiers.Flags().String("port", "8080", "Custom port")
 }
 
-func getOfficers(id, port, host string) {
+func getTiers(id, port, host string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -41,7 +41,7 @@ func getOfficers(id, port, host string) {
 
 	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/officers/", id)
+	path := fmt.Sprint("v1/board/tiers/", id)
 
 	getURL := &url.URL{
 		Scheme: "http",
@@ -49,7 +49,7 @@ func getOfficers(id, port, host string) {
 		Path:   path,
 	}
 
-	// ----- Getting officer(s) -----
+	// ----- Getting tier(s) -----
 	response, err := http.Get(getURL.String())
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
@@ -63,7 +63,7 @@ func getOfficers(id, port, host string) {
 	defer response.Body.Close()
 
 	if id == "" {
-		var getPayload []models.GetOfficerRow
+		var getPayload []models.CreateTierParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -74,7 +74,7 @@ func getOfficers(id, port, host string) {
 			utils.PrintStruct(getPayload[i], false)
 		}
 	} else {
-		var getPayload models.GetOfficerRow
+		var getPayload models.CreateTierParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)

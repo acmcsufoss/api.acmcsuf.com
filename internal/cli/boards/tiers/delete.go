@@ -1,4 +1,4 @@
-package officers
+package tiers
 
 import (
 	"fmt"
@@ -10,29 +10,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var DeleteOfficers = &cobra.Command{
-	Use:   "delete --id <uuid>",
-	Short: "Delete an officer with their id",
+var DeleteTier = &cobra.Command{
+	Use:   "delete --tier <uuid>",
+	Short: "Delete a tier",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := cmd.Flags().GetString("id")
+		id, _ := cmd.Flags().GetString("tier")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		deleteOfficer(id, host, port)
+		deleteTier(id, host, port)
 	},
 }
 
 func init() {
 	// ----- URL Flags -----
-	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
-	DeleteOfficers.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteOfficers.Flags().String("port", "8080", "Set a custom port")
+	DeleteTier.Flags().String("tier", "", "Delete a tier")
+	DeleteTier.Flags().String("host", "127.0.0.1", "Set a custom host")
+	DeleteTier.Flags().String("port", "8080", "Set a custom port")
 
-	DeleteOfficers.MarkFlagRequired("id")
+	DeleteTier.MarkFlagRequired("tier")
 }
 
-func deleteOfficer(id, host, port string) {
+func deleteTier(id, host, port string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -48,7 +48,7 @@ func deleteOfficer(id, host, port string) {
 
 	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/officers/", id)
+	path := fmt.Sprint("v1/board/tiers/", id)
 
 	deleteURL := &url.URL{
 		Scheme: "http",

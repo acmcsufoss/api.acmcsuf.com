@@ -1,4 +1,4 @@
-package officers
+package positions
 
 import (
 	"encoding/json"
@@ -11,27 +11,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var GetOfficers = &cobra.Command{
+var GetPositions = &cobra.Command{
 	Use:   "get [flags]",
-	Short: "Get Officers",
+	Short: "Get Positions",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		id, _ := cmd.Flags().GetString("id")
+		oid, _ := cmd.Flags().GetString("oid")
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
-		getOfficers(id, port, host)
+		getPositions(oid, port, host)
 	},
 }
 
 func init() {
 	// ----- URL Flags -----
-	GetOfficers.Flags().String("id", "", "Get a specific officer")
-	GetOfficers.Flags().String("host", "127.0.0.1", "Custom host")
-	GetOfficers.Flags().String("port", "8080", "Custom port")
+	GetPositions.Flags().String("tier", "", "Get a specific tier")
+	GetPositions.Flags().String("host", "127.0.0.1", "Custom host")
+	GetPositions.Flags().String("port", "8080", "Custom port")
 }
 
-func getOfficers(id, port, host string) {
+func getPositions(id, port, host string) {
 
 	err := utils.CheckConnection()
 	if err != nil {
@@ -41,7 +41,7 @@ func getOfficers(id, port, host string) {
 
 	// ----- Prepare url -----
 	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/officers/", id)
+	path := fmt.Sprint("v1/board/positions/", id)
 
 	getURL := &url.URL{
 		Scheme: "http",
@@ -49,7 +49,7 @@ func getOfficers(id, port, host string) {
 		Path:   path,
 	}
 
-	// ----- Getting officer(s) -----
+	// ----- Getting Positions(s) -----
 	response, err := http.Get(getURL.String())
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
@@ -63,7 +63,7 @@ func getOfficers(id, port, host string) {
 	defer response.Body.Close()
 
 	if id == "" {
-		var getPayload []models.GetOfficerRow
+		var getPayload []models.CreatePositionParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -74,7 +74,7 @@ func getOfficers(id, port, host string) {
 			utils.PrintStruct(getPayload[i], false)
 		}
 	} else {
-		var getPayload models.GetOfficerRow
+		var getPayload models.CreatePositionParams
 		err = json.NewDecoder(response.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
