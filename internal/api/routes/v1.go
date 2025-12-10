@@ -3,62 +3,94 @@
 package routes
 
 import (
+	"log"
+
+	"github.com/bwmarrin/discordgo"
 	"github.com/gin-gonic/gin"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 )
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
 
-	// Version 1 routes
-	v1 := router.Group("/v1")
-	{
-		events := v1.Group("/events")
-		{
-			h := handlers.NewEventHandler(eventService)
-			events.GET("", h.GetEvents)
-			events.GET(":id", h.GetEvent)
-			events.POST("", h.CreateEvent)
-			events.PUT(":id", h.UpdateEvent)
-			events.DELETE(":id", h.DeleteEvent)
-		}
+	cfg := config.Load()
+	if cfg.DiscordBotToken == "" && cfg.Env != "development" {
+		log.Fatal("Error: DISCORD_BOT_TOKEN is not set")
+	}
 
-		announcements := v1.Group("/announcements")
-		{
-			h := handlers.NewAnnouncementHandler(announcementService)
-			announcements.GET("", h.GetAnnouncements)
-			announcements.GET(":id", h.GetAnnouncement)
-			announcements.POST("", h.CreateAnnouncement)
-			announcements.PUT(":id", h.UpdateAnnouncement)
-			announcements.DELETE(":id", h.DeleteAnnouncement)
+	var botSession *discordgo.Session
+	var err error
+	if cfg.DiscordBotToken != "" {
+		botSession, err = discordgo.New("Bot " + cfg.DiscordBotToken)
+		if err != nil {
+			log.Fatalf("%v", err)
 		}
+		err = botSession.Open()
+		if err != nil {
+			log.Fatalf("Failed to open bot session: %v", err)
+		}
+		defer botSession.Close()
+	}
+
+	eh := handlers.NewEventHandler(eventService)
+	ah := handlers.NewAnnouncementHandler(announcementService)
+	bh := handlers.NewBoardHandler(boardService)
+
+	v1 := router.Group("/v1")
+
+	// Public (read-only) routes
+	{
+		v1.GET("/events", eh.GetEvents)
+		v1.GET("/events/:id", eh.GetEvent)
+
+		v1.GET("/announcements", ah.GetAnnouncements)
+		v1.GET("/announcements/:id", ah.GetAnnouncement)
 
 		board := v1.Group("/board")
 		{
-			h := handlers.NewBoardHandler(boardService)
+			board.GET("/officers", bh.GetOfficers)
+			board.GET("/officers/:id", bh.GetOfficer)
 
+			board.GET("/tiers", bh.GetTiers)
+			board.GET("/tiers/:id", bh.GetTier)
+
+			board.GET("/positions", bh.GetPositions)
+			board.GET("/positions/:id", bh.GetPosition)
+		}
+	}
+
+	// Protected (write) routes
+	protected := v1.Group("/")
+	protected.Use(middleware.DiscordAuth(botSession, "Board"))
+	{
+		protected.POST("/events", eh.CreateEvent)
+		protected.PUT("/events/:id", eh.UpdateEvent)
+		protected.DELETE("/events/:id", eh.DeleteEvent)
+
+		protected.POST("/announcements", ah.CreateAnnouncement)
+		protected.PUT("/announcements/:id", ah.UpdateAnnouncement)
+		protected.DELETE("/announcements/:id", ah.DeleteAnnouncement)
+
+		board := protected.Group("/board")
+		{
 			// Officers
-			board.GET("/officers", h.GetOfficers)
-			board.GET("/officers/:id", h.GetOfficer)
-			board.POST("/officers", h.CreateOfficer)
-			board.PUT("/officers/:id", h.UpdateOfficer)
-			board.DELETE("/officers/:id", h.DeleteOfficer)
+			board.POST("/officers", bh.CreateOfficer)
+			board.PUT("/officers/:id", bh.UpdateOfficer)
+			board.DELETE("/officers/:id", bh.DeleteOfficer)
 
 			// Tiers
-			board.GET("/tiers", h.GetTiers)
-			board.GET("/tiers/:id", h.GetTier)
-			board.POST("/tiers", h.CreateTier)
-			board.PUT("/tiers/:id", h.UpdateTier)
-			board.DELETE("/tiers/:id", h.DeleteTier)
+			board.POST("/tiers", bh.CreateTier)
+			board.PUT("/tiers/:id", bh.UpdateTier)
+			board.DELETE("/tiers/:id", bh.DeleteTier)
 
 			// Positions
-			board.GET("/positions", h.GetPositions)
-			board.GET("/positions/:id", h.GetPosition)
-			board.POST("/positions", h.CreatePosition)
-			board.PUT("/positions", h.UpdatePosition)
-			board.DELETE("/positions", h.DeletePosition)
+			board.POST("/positions", bh.CreatePosition)
+			board.PUT("/positions", bh.UpdatePosition)
+			board.DELETE("/positions", bh.DeletePosition)
 		}
 	}
 }
