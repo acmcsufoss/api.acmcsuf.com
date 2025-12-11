@@ -4,11 +4,13 @@ go 1.25.0
 
 require (
 	github.com/bwmarrin/discordgo v0.29.0
+	github.com/cli/browser v1.3.0
 	github.com/gin-gonic/gin v1.11.0
 	github.com/spf13/cobra v1.10.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.1
 	github.com/swaggo/swag v1.16.6
+	github.com/tidwall/pretty v1.2.1
 	modernc.org/sqlite v1.40.1
 )
 

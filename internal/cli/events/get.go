@@ -1,14 +1,16 @@
 package events
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
+	"github.com/tidwall/pretty"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var GetEvent = &cobra.Command{
@@ -60,42 +62,33 @@ func getEvents(id string, port string, host string) {
 	}
 
 	// ----- Get -----
-	response, err := http.Get(getURL.String())
+	req, err := http.NewRequest("GET", getURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error getting the request:", err)
 		return
 	}
 
-	if response == nil {
+	client := http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if req == nil {
 		fmt.Println("no response received")
 		return
 	}
 
-	defer response.Body.Close()
-
 	// ----- Read Response Information -----
-	fmt.Println("Response status:", response.Status)
+	fmt.Println("Response status:", resp.Status)
 
-	if id == "" {
-		var getPayload []models.CreateEventParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body without id:", err)
-			return
-		}
-
-		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
-		}
-	} else {
-		var getPayload models.CreateEventParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body with id:", err)
-			return
-		}
-
-		utils.PrintStruct(getPayload)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
 	}
 
+	prettyJSON := pretty.Pretty(body)
+	colorfulJSON := pretty.Color(prettyJSON, nil)
+	fmt.Println(string(colorfulJSON))
 }

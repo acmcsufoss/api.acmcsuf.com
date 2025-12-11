@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var DeleteEvent = &cobra.Command{
@@ -60,7 +62,7 @@ func deleteEvent(id string, host string, port string) {
 	client := &http.Client{}
 
 	// ----- Delete Request -----
-	request, err := http.NewRequest(http.MethodDelete, deleteURL.String(), nil)
+	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error making delete request:", err)
 		return
