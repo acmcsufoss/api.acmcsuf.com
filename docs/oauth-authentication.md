@@ -98,7 +98,7 @@ The CLI client (defined in [`utils/requests/request_with_auth.go`](../utils/requ
 
 ## Environment Variables
 
-See [`developer-docs/env-vars.md`](./env-vars.md) for the complete list, but OAuth-specific variables include:
+See [`docs/env-vars.md`](./env-vars.md) for the complete list, but OAuth-specific variables include:
 
 - `ENV`: Set to `production` to enable OAuth (default: `development`)
 - `DISCORD_BOT_TOKEN`: Bot token for server-side API authentication
