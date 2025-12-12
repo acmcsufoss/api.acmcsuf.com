@@ -12,8 +12,8 @@ This document provides an overview of the project's directory structure and the 
     - `services/`: Business logic for the API.
   - `cli/`: Logic for the CLI application.
   - `db/`: Database-related code, including schema, queries, and models.
-- `developer-docs/`: Documentation for developers.
-- `docs/`: Swagger/OpenAPI documentation.
+- `docs/`: Documentation for developers.
+- `swagger/`: Swagger/OpenAPI documentation.
 - `fixtures/`: JSON payloads for testing.
 - `nix/`: Nix dev shell and package definitions.
 - `utils/`: Shared utility functions.
