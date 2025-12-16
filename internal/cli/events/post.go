@@ -10,10 +10,13 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
+
+	// TODO: db params shouldn't be exposed here
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-
-	"github.com/spf13/cobra"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PostEvent = &cobra.Command{
@@ -23,8 +26,10 @@ var PostEvent = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
 
-		urlhost, _ := cmd.Flags().GetString("urlhost")
-		port, _ := cmd.Flags().GetString("port")
+		var overrides config.ConfigOverrides
+		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
+		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
+		cfg, _ := config.Load(&overrides)
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
@@ -63,29 +68,26 @@ var PostEvent = &cobra.Command{
 			host:     cmd.Flags().Lookup("host").Changed,
 		}
 
-		postEvent(urlhost, port, &payload, changedFlags)
+		postEvent(&payload, changedFlags, cfg)
 	},
 }
 
 func init() {
-	// URL Flags
-	PostEvent.Flags().String("urlhost", "127.0.0.1", "Custom host")
-	PostEvent.Flags().String("port", "8080", "Custom port")
-
-	// Payload flags
 	PostEvent.Flags().StringP("uuid", "u", "", "Set uuid of new event")
 	PostEvent.Flags().StringP("location", "l", "", "Set location of new event")
 	PostEvent.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
 	PostEvent.Flags().StringP("duration", "d", "", "Set the duration of new event (Format: 03:04:05)")
-
 	PostEvent.Flags().StringP("host", "H", "", "Set host of new event")
 	PostEvent.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
 }
 
-func postEvent(urlhost string, port string, payload *models.CreateEventParams, changedFlag eventFlags) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
+		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
@@ -254,38 +256,32 @@ func postEvent(urlhost string, port string, payload *models.CreateEventParams, c
 		return
 	}
 
-	// ----- Construct Url -----
-	urlhost = fmt.Sprint(urlhost, ":", port)
-	path := "v1/events"
-
-	postUrl := &url.URL{
-		Scheme: "http",
-		Host:   urlhost,
-		Path:   path,
-	}
+	postURL := baseURL.JoinPath("v1/events")
 
 	// ----- Post -----
-	response, err := http.Post(postUrl.String(), "application/json", strings.NewReader(string(jsonEvent)))
+	request, err := requests.NewRequestWithAuth(http.MethodPost, postURL.String(),
+		strings.NewReader(string(jsonEvent)))
+	if err != nil {
+		fmt.Println("Error creating post request: %v", err)
+	}
+
+	client := &http.Client{}
+	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Failed to post event:", err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
-		return
-	}
-
-	defer response.Body.Close()
-
 	// ----- Read Response Info -----
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("Response status", response.Status)
+	}
 	fmt.Println("Response Status:", response.Status)
-
+	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Failed to read response body:", err)
 		return
 	}
-
-	fmt.Println("Response body:", string(body))
+	utils.PrettyPrintJSON(body)
 }
