@@ -27,7 +27,7 @@ var defaultConfig = Config{
 // 1. Start with default config
 // 2. Load values from config file if present
 // 3. Provide any overrides passed in thruogh command line flags (if any)
-func Load() (*Config, error) {
+func Load(overrides *Config) (*Config, error) {
 	// Load default config
 	cfg := &defaultConfig
 
@@ -43,6 +43,12 @@ func Load() (*Config, error) {
 	}
 
 	// Override with args passed with command line args
+	if overrides.Host != "" {
+		cfg.Host = overrides.Host
+	}
+	if overrides.Port != "" {
+		cfg.Port = overrides.Port
+	}
 
 	return cfg, nil
 }
