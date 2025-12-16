@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var DeleteOfficers = &cobra.Command{
@@ -16,10 +18,13 @@ var DeleteOfficers = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.PersistentFlags().GetString("host")
-		port, _ := cmd.PersistentFlags().GetString("port")
 
-		deleteOfficer(id, host, port)
+		var overrides config.Config
+		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
+		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
+		cfg, _ := config.Load(&overrides)
+
+		deleteOfficer(id, cfg)
 	},
 }
 
@@ -28,29 +33,23 @@ func init() {
 	DeleteOfficers.MarkFlagRequired("id")
 }
 
-func deleteOfficer(id, host, port string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func deleteOfficer(id string, cfg *config.Config) {
+	// prepare url
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
+		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
 
-	// req id
 	if id == "" {
 		fmt.Println("ID is required to delete!")
 		return
 	}
-
-	// prepare url
-	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/board/officers/", id)
-
-	deleteURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	deleteURL := baseURL.JoinPath(fmt.Sprint("v1/board/officers/", id))
 
 	// send delete request
 	client := &http.Client{}
