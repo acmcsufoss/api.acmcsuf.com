@@ -8,7 +8,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tidwall/pretty"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
