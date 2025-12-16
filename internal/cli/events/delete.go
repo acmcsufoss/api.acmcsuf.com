@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
@@ -18,46 +19,33 @@ var DeleteEvent = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 
-		deleteEvent(id, host, port)
+		var overrides config.ConfigOverrides
+		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
+		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
+		cfg, _ := config.Load(&overrides)
+
+		deleteEvent(id, cfg)
 	},
 }
 
 func init() {
-
-	// Url flags
 	DeleteEvent.Flags().String("id", "", "Delete the identified event")
-	DeleteEvent.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteEvent.Flags().String("port", "8080", "Set a custom port")
-
 	DeleteEvent.MarkFlagRequired("id")
-
 }
 
-func deleteEvent(id string, host string, port string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func deleteEvent(id string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
+		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
 
-	// ----- Check if Event Id was Given -----
-	if id == "" {
-		fmt.Println("Event ID is required to delete!")
-		return
-	}
-
-	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/events/", id)
-
-	deleteURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	deleteURL := baseURL.JoinPath(fmt.Sprint("/v1/events/", id))
 
 	client := &http.Client{}
 
