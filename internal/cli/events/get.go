@@ -88,7 +88,5 @@ func getEvents(id string, port string, host string) {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
 	}
 
-	prettyJSON := pretty.Pretty(body)
-	colorfulJSON := pretty.Color(prettyJSON, nil)
-	fmt.Println(string(colorfulJSON))
+	utils.PrettyPrintJSON(body)
 }
