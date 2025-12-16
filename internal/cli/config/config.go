@@ -29,7 +29,7 @@ var defaultConfig = Config{
 // 2. Load values from config file if present
 // 3. Provide any overrides passed in thruogh command line flags (if any)
 func Load() (*Config, error) {
-	// cfg := &defaultConfig
+	cfg := &defaultConfig
 	var err error
 	path, err := getConfigPath()
 	if err != nil {
@@ -41,7 +41,7 @@ func Load() (*Config, error) {
 	if err != nil {
 		// If file doesn't exist, create one with the default config and open it
 		if errors.Is(err, os.ErrNotExist) {
-			err = createDefaultConfig()
+			err = createDefaultConfigFile()
 			if err != nil {
 				panic(err)
 			}
@@ -77,7 +77,8 @@ func getConfigPath() (string, error) {
 	return filepath.Join(appDir, "config.json"), nil
 }
 
-func createDefaultConfig() error {
+func createDefaultConfigFile() error {
+	// TODO: This will go being a `acmcsuf-cli init` subcommand or something similar
 	path, err := getConfigPath()
 	if err != nil {
 		return err
@@ -87,11 +88,6 @@ func createDefaultConfig() error {
 		return err
 	}
 	defer file.Close()
-	// Default settings ==========================================
-	defaultConfig := &Config{
-		ServerURI: "http://localhost:8080",
-	}
-	// ===========================================================
 	encoder := json.NewEncoder(file)
 	encoder.SetIndent("", "  ")                           // pretty print
 	if err := encoder.Encode(defaultConfig); err != nil { // writes to file here
@@ -103,5 +99,5 @@ func createDefaultConfig() error {
 func main() {
 	path, _ := getConfigPath()
 	fmt.Printf("path: '%s'\n", path)
-	_ = createDefaultConfig()
+	_ = createDefaultConfigFile()
 }
