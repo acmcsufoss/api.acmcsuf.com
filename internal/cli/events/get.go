@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -20,45 +21,31 @@ var GetEvent = &cobra.Command{
 
 		// If these where global, unexpected behavior would be expected :(
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
+		var overrides config.ConfigOverrides
+		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
+		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
+		cfg, _ := config.Load(&overrides)
 
-		getEvents(id, port, host)
+		getEvents(id, cfg)
 	},
 }
 
 func init() {
-
-	// Url Flags
 	GetEvent.Flags().String("id", "", "Get a specific event")
-	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
-	GetEvent.Flags().String("port", "8080", "Custom port")
-
 }
 
-func getEvents(id string, port string, host string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func getEvents(id string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
+		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
 
-	// ----- Constructing url -----
-	// Combining Host and port
-	host = fmt.Sprint(host, ":", port)
-
-	// Constructing Path
-	path := "v1/events"
-	if id != "" {
-		path = fmt.Sprint(path, "/", id)
-	}
-
-	getURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/"))
 
 	// ----- Get -----
 	req, err := http.NewRequest("GET", getURL.String(), nil)
@@ -72,20 +59,15 @@ func getEvents(id string, port string, host string) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
 	}
-	defer resp.Body.Close()
-
-	if req == nil {
-		fmt.Println("no response received")
-		return
-	}
 
 	// ----- Read Response Information -----
-	fmt.Println("Response status:", resp.Status)
-
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", resp.Status)
+	}
+	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
 	}
-
 	utils.PrettyPrintJSON(body)
 }
