@@ -1,6 +1,4 @@
-package cli
-
-// package config
+package config
 
 import (
 	"encoding/json"
