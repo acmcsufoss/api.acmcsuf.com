@@ -4,10 +4,11 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 type ConfigSource string
@@ -29,39 +30,23 @@ var defaultConfig = Config{
 // 2. Load values from config file if present
 // 3. Provide any overrides passed in thruogh command line flags (if any)
 func Load() (*Config, error) {
+	// Load default config
 	cfg := &defaultConfig
-	var err error
+
+	// Override with stuff from config file (if present)
 	path, err := getConfigPath()
 	if err != nil {
-		return nil, err
-	}
-
-	var file *os.File
-	file, err = os.Open(path)
-	if err != nil {
-		// If file doesn't exist, create one with the default config and open it
-		if errors.Is(err, os.ErrNotExist) {
-			err = createDefaultConfigFile()
-			if err != nil {
-				panic(err)
-			}
-			// Try to open file again (shuold be created now)
-			file, err = os.Open(path)
-			if err != nil {
-				panic(err)
-			}
-		} else {
-			panic(err)
+		// TODO: Set to warning level when we have a better logger
+		log.Printf("Warning: could not get config path. Reason: %v", err)
+	} else { // Skips loading config from file if couldn't get path
+		if data, err := os.ReadFile(path); err == nil {
+			json.Unmarshal(data, cfg)
 		}
 	}
-	defer file.Close()
 
-	var config *Config
-	if err := json.NewDecoder(file).Decode(&config); err != nil {
-		return nil, err
-	}
+	// Override with args passed with command line args
 
-	return config, nil
+	return cfg, nil
 }
 
 func getConfigPath() (string, error) {
@@ -97,7 +82,8 @@ func createDefaultConfigFile() error {
 }
 
 func main() {
-	path, _ := getConfigPath()
-	fmt.Printf("path: '%s'\n", path)
-	_ = createDefaultConfigFile()
+	// createDefaultConfigFile()
+	cfg, _ := Load()
+	body, _ := json.Marshal(cfg)
+	utils.PrettyPrintJSON(body)
 }
