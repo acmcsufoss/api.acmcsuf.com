@@ -16,8 +16,8 @@ var DeleteOfficers = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
+		host, _ := cmd.PersistentFlags().GetString("host")
+		port, _ := cmd.PersistentFlags().GetString("port")
 
 		deleteOfficer(id, host, port)
 	},
@@ -25,9 +25,6 @@ var DeleteOfficers = &cobra.Command{
 
 func init() {
 	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
-	DeleteOfficers.Flags().String("host", "127.0.0.1", "Set a custom host")
-	DeleteOfficers.Flags().String("port", "8080", "Set a custom port")
-
 	DeleteOfficers.MarkFlagRequired("id")
 }
 
