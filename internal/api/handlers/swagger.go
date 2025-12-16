@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	docs "github.com/acmcsufoss/api.acmcsuf.com/docs"
+	docs "github.com/acmcsufoss/api.acmcsuf.com/internal/api/docs"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
