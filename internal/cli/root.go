@@ -5,8 +5,8 @@ import (
 	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/officers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/officers"
 
 	"github.com/spf13/cobra"
 )
@@ -35,6 +35,9 @@ func init() {
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
+
+	rootCmd.PersistentFlags().String("host", "", "Override configured/default host")
+	rootCmd.PersistentFlags().String("port", "", "Override configured/default port")
 }
 
 // Function that gets called by main
