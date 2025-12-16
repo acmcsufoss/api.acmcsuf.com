@@ -157,7 +157,7 @@ func getTokenPath() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	// ''~/.config/acmcsuf-cli/token.json' on Unix systems
+	// '~/.config/acmcsuf-cli/token.json' on Unix systems
 	appDir := filepath.Join(configDir, "acmcsuf-cli")
 	if err := os.MkdirAll(appDir, 0700); err != nil {
 		return "", err
