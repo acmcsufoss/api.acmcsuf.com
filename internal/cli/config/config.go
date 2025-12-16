@@ -13,10 +13,23 @@ import (
 type ConfigSource string
 
 type Config struct {
-	ServerURI string `json:"server_uri"`
+	Host     string `json:"host"`
+	Port     string `json:"port"`
+	LogLevel string `json:"log_level"`
 }
 
+var defaultConfig = Config{
+	Host:     "localhost",
+	Port:     "8080",
+	LogLevel: "info",
+}
+
+// Loads config with three layers of precedence
+// 1. Start with default config
+// 2. Load values from config file if present
+// 3. Provide any overrides passed in thruogh command line flags (if any)
 func Load() (*Config, error) {
+	// cfg := &defaultConfig
 	var err error
 	path, err := getConfigPath()
 	if err != nil {
