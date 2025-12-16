@@ -47,8 +47,6 @@ func deleteEvent(id string, cfg *config.Config) {
 
 	deleteURL := baseURL.JoinPath(fmt.Sprint("/v1/events/", id))
 
-	client := &http.Client{}
-
 	// ----- Delete Request -----
 	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
@@ -56,27 +54,22 @@ func deleteEvent(id string, cfg *config.Config) {
 		return
 	}
 
+	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Error with delete response:", err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
-		return
-	}
-
-	defer response.Body.Close()
-
 	// ----- Read Response Info -----
-	fmt.Println("Response status:", response.Status)
-
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", response.Status)
+	}
+	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Error reading delete response body:", err)
 		return
 	}
-
-	fmt.Println(string(body))
+	utils.PrettyPrintJSON(body)
 }

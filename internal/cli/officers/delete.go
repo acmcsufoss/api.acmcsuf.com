@@ -10,6 +10,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var DeleteOfficers = &cobra.Command{
@@ -46,33 +47,27 @@ func deleteOfficer(id string, cfg *config.Config) {
 
 	deleteURL := baseURL.JoinPath(fmt.Sprint("v1/board/officers/", id))
 
-	// send delete request
-	client := &http.Client{}
-
-	request, err := http.NewRequest(http.MethodDelete, deleteURL.String(), nil)
+	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error making delete request:", err)
 		return
 	}
 
+	client := &http.Client{}
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("Error with delete response:", err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
-		return
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", response.Status)
 	}
-
 	defer response.Body.Close()
-
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Error reading delete response body:", err)
 		return
 	}
-
-	fmt.Println(string(body))
+	utils.PrettyPrintJSON(body)
 }
