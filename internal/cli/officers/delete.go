@@ -19,7 +19,7 @@ var DeleteOfficers = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
 
-		var overrides config.Config
+		var overrides config.ConfigOverrides
 		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
 		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
 		cfg, _ := config.Load(&overrides)
@@ -40,15 +40,10 @@ func deleteOfficer(id string, cfg *config.Config) {
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
 	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
 
-	if id == "" {
-		fmt.Println("ID is required to delete!")
-		return
-	}
 	deleteURL := baseURL.JoinPath(fmt.Sprint("v1/board/officers/", id))
 
 	// send delete request

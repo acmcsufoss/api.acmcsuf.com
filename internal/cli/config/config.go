@@ -17,6 +17,12 @@ type Config struct {
 	LogLevel string `json:"log_level"`
 }
 
+// Subset of Config struct that can be overridden with command line flags
+type ConfigOverrides struct {
+	Host string
+	Port string
+}
+
 var defaultConfig = Config{
 	Host:     "localhost",
 	Port:     "8080",
@@ -27,7 +33,7 @@ var defaultConfig = Config{
 // 1. Start with default config
 // 2. Load values from config file if present
 // 3. Provide any overrides passed in thruogh command line flags (if any)
-func Load(overrides *Config) (*Config, error) {
+func Load(overrides *ConfigOverrides) (*Config, error) {
 	// Load default config
 	cfg := &defaultConfig
 
