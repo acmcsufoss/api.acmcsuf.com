@@ -10,11 +10,13 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-	"strings"
 
+	"github.com/spf13/cobra"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/spf13/cobra"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PutEvents = &cobra.Command{
@@ -22,14 +24,9 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.CreateEventParams{}
-
-		// CLI for url
-		host, _ := cmd.Flags().GetString("urlhost")
-		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
-		// CLI for payload
+		payload := models.CreateEventParams{}
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
 		startAtString, _ := cmd.Flags().GetString("startat")
@@ -63,7 +60,12 @@ var PutEvents = &cobra.Command{
 			host:     cmd.Flags().Lookup("host").Changed,
 		}
 
-		updateEvent(id, host, port, &payload, changedFlags)
+		var overrides config.ConfigOverrides
+		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
+		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
+		cfg, _ := config.Load(&overrides)
+
+		updateEvent(id, &payload, changedFlags, cfg)
 	},
 }
 
@@ -85,53 +87,33 @@ func init() {
 	PutEvents.MarkFlagRequired("id")
 }
 
-func updateEvent(id string, host string, port string, payload *models.CreateEventParams, changedFlags eventFlags) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func updateEvent(id string, payload *models.CreateEventParams, changedFlags eventFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// ----- Check for Event Id -----
-	if id == "" {
-		fmt.Println("Event ID is required!")
-		return
-	}
-
-	// ----- Constructing Url -----
-	host = fmt.Sprint(host, ":", port)
-
-	path := fmt.Sprint("v1/events", "/", id)
-
-	retrievalURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
-
 	// ----- Retrieve payload -----
+	retrievalURL := baseURL.JoinPath(fmt.Sprintf("v1/events/", id))
 	getResponse, err := http.Get(retrievalURL.String())
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
 
-	if getResponse == nil {
-		fmt.Println("no response received")
-		return
-	}
-
 	defer getResponse.Body.Close()
-
 	body, err := io.ReadAll(getResponse.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
 		return
 	}
 
-	if strings.Contains(getResponse.Status, "404") {
-		fmt.Println("error 404 retrieved. event does not exist")
+	if getResponse.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", getResponse.Status)
 		return
 	}
 
@@ -139,7 +121,6 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	err = json.Unmarshal(body, &oldpayload)
 	if err != nil {
 		fmt.Println("error unmarshalling previous event data:", err)
-
 		return
 	}
 
@@ -322,7 +303,7 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 
 	client := &http.Client{}
 
-	request, err := http.NewRequest(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
+	request, err := requests.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
@@ -334,20 +315,14 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 		return
 	}
 
-	if putResponse == nil {
-		fmt.Println("no response received")
-		return
+	if putResponse.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", putResponse.Status)
 	}
 	defer putResponse.Body.Close()
-
-	// ----- Read Response Info -----
-	fmt.Println("Response status:", putResponse.Status)
-
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
 		fmt.Println("Error with body:", err)
 		return
 	}
-
-	fmt.Println(string(body))
+	utils.PrettyPrintJSON(body)
 }
