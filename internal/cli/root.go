@@ -31,8 +31,6 @@ var rootCmd = &cobra.Command{
 	Version: Version,
 }
 
-var cfg *config.Config
-
 // init() is a special function that always gets run before main
 func init() {
 	rootCmd.AddCommand(events.CLIEvents)
@@ -48,7 +46,7 @@ func init() {
 			Port: cmd.Flag("host").Value.String(),
 		}
 		var err error
-		cfg, err = config.Load(overrides)
+		config.Cfg, err = config.Load(overrides)
 		return err
 	}
 }
