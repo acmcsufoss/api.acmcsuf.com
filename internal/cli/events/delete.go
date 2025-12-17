@@ -40,7 +40,6 @@ func deleteEvent(id string, cfg *config.Config) {
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
 	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}

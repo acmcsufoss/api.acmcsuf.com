@@ -87,7 +87,6 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
 	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println("URL: %s", baseURL.String())
 		fmt.Println(err)
 		return
 	}
