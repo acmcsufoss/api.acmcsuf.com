@@ -46,7 +46,7 @@ func getEvents(id string, cfg *config.Config) {
 		return
 	}
 
-	client := http.Client{}
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
