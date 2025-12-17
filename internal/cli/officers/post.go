@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -21,9 +22,6 @@ var PostOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var payload models.CreateOfficerParams
-
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.FullName, _ = cmd.Flags().GetString("name")
@@ -42,15 +40,11 @@ var PostOfficer = &cobra.Command{
 			discord:  cmd.Flags().Lookup("discord").Changed,
 		}
 
-		postOfficer(&payload, &changedFlags, host, port)
+		postOfficer(&payload, &changedFlags, config.Cfg)
 	},
 }
 
 func init() {
-	// Url flags
-	PostOfficer.Flags().String("host", "127.0.0.1", "Set a custom host")
-	PostOfficer.Flags().String("port", "8080", "Set a custom port")
-
 	// Officer flags
 	PostOfficer.Flags().StringP("uuid", "u", "", "Set uuid of this officer")
 	PostOfficer.Flags().StringP("name", "n", "", "Set the full name of this officer")
@@ -59,10 +53,12 @@ func init() {
 	PostOfficer.Flags().StringP("discord", "d", "", "Set the discord of this officer")
 }
 
-func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, port string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -185,14 +181,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		return
 	}
 
-	host = fmt.Sprint(host, ":", port)
-	path := "v1/board/officers/"
-
-	postURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	postURL := baseURL.JoinPath("v1/board/officers/")
 
 	// post payload
 	response, err := http.Post(postURL.String(), "application/json", strings.NewReader(string(jsonPayload)))

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -16,44 +17,32 @@ var GetAnnouncement = &cobra.Command{
 	Short: "Get an announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
-
-		getAnnouncement(host, port, uuid)
+		getAnnouncement(uuid, config.Cfg)
 	},
 }
 
 func init() {
-
-	// Url flags
-	GetAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
-	GetAnnouncement.Flags().String("port", "8080", "Set a custom port")
-
 	GetAnnouncement.Flags().String("id", "", "Get a specific announcement by its id")
-
 }
 
-func getAnnouncement(host string, port string, uuid string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func getAnnouncement(uuid string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// ----- Constructing the url -----
-	host = fmt.Sprint(host, ":", port)
 	path := "v1/announcements"
 	if uuid != "" {
 		path = fmt.Sprint(path, "/", uuid)
 	}
 
-	getUrl := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	getUrl := baseURL.JoinPath(path)
 
 	// ----- Requesting Get -----
 	response, err := http.Get(getUrl.String())

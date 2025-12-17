@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
 )
@@ -15,28 +16,22 @@ var DeleteAnnouncements = &cobra.Command{
 	Short: "delete an announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
-
-		deleteAnnouncement(host, port, uuid)
+		deleteAnnouncement(uuid, config.Cfg)
 	},
 }
 
 func init() {
-
-	// Url flags
-	DeleteAnnouncements.Flags().String("host", "127.0.0.1", "set a custom host")
-	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port")
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
-
 	DeleteAnnouncements.MarkFlagRequired("id")
 }
 
-func deleteAnnouncement(host string, port string, id string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func deleteAnnouncement(id string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -47,14 +42,7 @@ func deleteAnnouncement(host string, port string, id string) {
 	}
 
 	// ----- Constructing Url -----
-	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/announcements/", id)
-
-	deleteUrl := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	deleteUrl := baseURL.JoinPath("v1/announcements/", id)
 
 	// ----- Delete -----
 	request, err := http.NewRequest(http.MethodDelete, deleteUrl.String(), nil)
