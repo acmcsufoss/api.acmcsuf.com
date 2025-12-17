@@ -44,7 +44,9 @@ func Load(overrides *ConfigOverrides) (*Config, error) {
 		log.Printf("Warning: could not get config path. Reason: %v", err)
 	} else { // Skips loading config from file if couldn't get path
 		if data, err := os.ReadFile(path); err == nil {
-			json.Unmarshal(data, cfg)
+			if err := json.Unmarshal(data, cfg); err != nil {
+				log.Printf("Warning: failed to parse config file: %v", err)
+			}
 		}
 	}
 
