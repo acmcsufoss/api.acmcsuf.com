@@ -29,6 +29,9 @@ var defaultConfig = Config{
 	LogLevel: "info",
 }
 
+// Global config variable
+var Cfg *Config
+
 // Loads config with three layers of precedence
 // 1. Start with default config
 // 2. Load values from config file if present

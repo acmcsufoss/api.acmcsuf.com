@@ -60,12 +60,7 @@ var PutEvents = &cobra.Command{
 			host:     cmd.Flags().Lookup("host").Changed,
 		}
 
-		var overrides config.ConfigOverrides
-		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
-		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
-		cfg, _ := config.Load(&overrides)
-
-		updateEvent(id, &payload, changedFlags, cfg)
+		updateEvent(id, &payload, changedFlags, config.Cfg)
 	},
 }
 

@@ -26,11 +26,6 @@ var PostEvent = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
 
-		var overrides config.ConfigOverrides
-		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
-		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
-		cfg, _ := config.Load(&overrides)
-
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
 		startAtString, _ := cmd.Flags().GetString("startat")
@@ -68,7 +63,7 @@ var PostEvent = &cobra.Command{
 			host:     cmd.Flags().Lookup("host").Changed,
 		}
 
-		postEvent(&payload, changedFlags, cfg)
+		postEvent(&payload, changedFlags, config.Cfg)
 	},
 }
 
