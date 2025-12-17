@@ -5,8 +5,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 type ConfigSource string
@@ -94,11 +92,4 @@ func createDefaultConfigFile() error {
 		return err
 	}
 	return nil
-}
-
-func main() {
-	// createDefaultConfigFile()
-	cfg, _ := Load()
-	body, _ := json.Marshal(cfg)
-	utils.PrettyPrintJSON(body)
 }
