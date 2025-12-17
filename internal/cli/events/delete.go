@@ -19,13 +19,7 @@ var DeleteEvent = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-
-		var overrides config.ConfigOverrides
-		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
-		overrides.Port, _ = cmd.PersistentFlags().GetString("port")
-		cfg, _ := config.Load(&overrides)
-
-		deleteEvent(id, cfg)
+		deleteEvent(id, config.Cfg)
 	},
 }
 
