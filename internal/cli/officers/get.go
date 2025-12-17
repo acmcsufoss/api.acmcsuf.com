@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -17,36 +18,28 @@ var GetOfficers = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
-
-		getOfficers(id, port, host)
+		getOfficers(id, config.Cfg)
 	},
 }
 
 func init() {
 	GetOfficers.Flags().String("id", "", "Get a specific officer")
-	GetOfficers.Flags().String("host", "127.0.0.1", "Custom host")
-	GetOfficers.Flags().String("port", "8080", "Custom port")
 }
 
-func getOfficers(id, port, host string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func getOfficers(id string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// prepare url
-	host = fmt.Sprint(host, ":", port)
 	path := fmt.Sprint("v1/board/officers/", id)
 
-	getURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	getURL := baseURL.JoinPath(path)
 
 	// getting officer(s)
 	response, err := http.Get(getURL.String())
