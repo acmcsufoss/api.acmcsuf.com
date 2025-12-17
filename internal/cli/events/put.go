@@ -93,7 +93,7 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	}
 
 	// ----- Retrieve payload -----
-	retrievalURL := baseURL.JoinPath(fmt.Sprintf("v1/events/", id))
+	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
 	getResponse, err := http.Get(retrievalURL.String())
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)

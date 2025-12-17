@@ -37,7 +37,7 @@ func getEvents(id string, cfg *config.Config) {
 		return
 	}
 
-	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/"))
+	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
 
 	// ----- Get -----
 	req, err := http.NewRequest("GET", getURL.String(), nil)
