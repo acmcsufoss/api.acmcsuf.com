@@ -18,8 +18,6 @@ var GetEvent = &cobra.Command{
 	Short: "Get events",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// If these where global, unexpected behavior would be expected :(
 		id, _ := cmd.Flags().GetString("id")
 		var overrides config.ConfigOverrides
 		overrides.Host, _ = cmd.PersistentFlags().GetString("host")
