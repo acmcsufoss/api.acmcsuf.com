@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -22,8 +23,6 @@ var PutOfficer = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateOfficerParams{}
 
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
 		fullname, _ := cmd.Flags().GetString("fullname")
@@ -46,14 +45,11 @@ var PutOfficer = &cobra.Command{
 			uuid:     cmd.Flags().Lookup("uuid").Changed,
 		}
 
-		putOfficer(host, port, id, &payload, flags)
+		putOfficer(id, &payload, flags, config.Cfg)
 	},
 }
 
 func init() {
-	PutOfficer.Flags().String("host", "127.0.0.1", "Set a custom host")
-	PutOfficer.Flags().String("port", "8080", "Set a custom port")
-
 	PutOfficer.Flags().String("id", "", "Officer ID to update")
 
 	PutOfficer.Flags().String("fullname", "", "Change full name")
@@ -65,10 +61,12 @@ func init() {
 	PutOfficer.MarkFlagRequired("id")
 }
 
-func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flags officerFlags) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -79,14 +77,7 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 	}
 
 	// construct url
-	hostPort := fmt.Sprint(host, ":", port)
-	path := "v1/board/officers/" + id
-
-	u := &url.URL{
-		Scheme: "http",
-		Host:   hostPort,
-		Path:   path,
-	}
+	u := baseURL.JoinPath("v1/board/officers/", id)
 
 	// getting old officer
 	resp, err := http.Get(u.String())

@@ -30,7 +30,7 @@ run: build ## Build and run the api
 build: generate ## Build the api and cli binaries
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
+	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
 vet: ## Vet all go files
 	go vet ./...

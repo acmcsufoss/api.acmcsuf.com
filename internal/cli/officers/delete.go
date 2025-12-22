@@ -1,4 +1,4 @@
-package events
+package officers
 
 import (
 	"fmt"
@@ -13,22 +13,23 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
-var DeleteEvent = &cobra.Command{
-	Use:   "delete",
-	Short: "Delete an event with its id",
+var DeleteOfficers = &cobra.Command{
+	Use:   "delete --id <uuid>",
+	Short: "Delete an officer with their id",
 
 	Run: func(cmd *cobra.Command, args []string) {
 		id, _ := cmd.Flags().GetString("id")
-		deleteEvent(id, config.Cfg)
+		deleteOfficer(id, config.Cfg)
 	},
 }
 
 func init() {
-	DeleteEvent.Flags().String("id", "", "Delete the identified event")
-	DeleteEvent.MarkFlagRequired("id")
+	DeleteOfficers.Flags().String("id", "", "Delete an officer by their id")
+	DeleteOfficers.MarkFlagRequired("id")
 }
 
-func deleteEvent(id string, cfg *config.Config) {
+func deleteOfficer(id string, cfg *config.Config) {
+	// prepare url
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -38,9 +39,8 @@ func deleteEvent(id string, cfg *config.Config) {
 		return
 	}
 
-	deleteURL := baseURL.JoinPath(fmt.Sprint("/v1/events/", id))
+	deleteURL := baseURL.JoinPath(fmt.Sprint("v1/board/officers/", id))
 
-	// ----- Delete Request -----
 	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error making delete request:", err)
@@ -54,7 +54,6 @@ func deleteEvent(id string, cfg *config.Config) {
 		return
 	}
 
-	// ----- Read Response Info -----
 	if response.StatusCode != http.StatusOK {
 		fmt.Println("Response status:", response.Status)
 	}
