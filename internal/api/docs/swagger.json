@@ -24,7 +24,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateAnnouncementParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams"
                         }
                     }
                 ],
@@ -83,7 +83,7 @@
                     "200": {
                         "description": "Announcement details",
                         "schema": {
-                            "$ref": "#/definitions/models.Announcement"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement"
                         }
                     },
                     "404": {
@@ -132,7 +132,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateAnnouncementParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams"
                         }
                     }
                 ],
@@ -246,7 +246,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Officer"
+                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer"
                             }
                         }
                     },
@@ -280,7 +280,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateOfficerParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateOfficerParams"
                         }
                     }
                 ],
@@ -339,7 +339,7 @@
                     "200": {
                         "description": "Officer details",
                         "schema": {
-                            "$ref": "#/definitions/models.Officer"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer"
                         }
                     },
                     "404": {
@@ -388,7 +388,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateOfficerParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateOfficerParams"
                         }
                     }
                 ],
@@ -502,7 +502,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Position"
+                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position"
                             }
                         }
                     },
@@ -536,7 +536,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdatePositionParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdatePositionParams"
                         }
                     }
                 ],
@@ -598,7 +598,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreatePositionParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreatePositionParams"
                         }
                     }
                 ],
@@ -649,7 +649,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DeletePositionParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.DeletePositionParams"
                         }
                     }
                 ],
@@ -719,7 +719,7 @@
                     "200": {
                         "description": "Position details",
                         "schema": {
-                            "$ref": "#/definitions/models.Position"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position"
                         }
                     },
                     "404": {
@@ -762,7 +762,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Tier"
+                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier"
                             }
                         }
                     },
@@ -796,7 +796,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTierParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateTierParams"
                         }
                     }
                 ],
@@ -855,7 +855,7 @@
                     "200": {
                         "description": "Tier details",
                         "schema": {
-                            "$ref": "#/definitions/models.Tier"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier"
                         }
                     },
                     "400": {
@@ -913,7 +913,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTierParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateTierParams"
                         }
                     }
                 ],
@@ -1044,7 +1044,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Event"
+                                "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
                             }
                         }
                     },
@@ -1078,7 +1078,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateEventParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams"
                         }
                     }
                 ],
@@ -1137,7 +1137,7 @@
                     "200": {
                         "description": "Event details",
                         "schema": {
-                            "$ref": "#/definitions/models.Event"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event"
                         }
                     },
                     "404": {
@@ -1186,7 +1186,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateEventParams"
+                            "$ref": "#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams"
                         }
                     }
                 ],
@@ -1283,7 +1283,7 @@
         }
     },
     "definitions": {
-        "models.Announcement": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1303,7 +1303,7 @@
                 }
             }
         },
-        "models.CreateAnnouncementParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1323,7 +1323,7 @@
                 }
             }
         },
-        "models.CreateEventParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1346,7 +1346,7 @@
                 }
             }
         },
-        "models.CreateOfficerParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateOfficerParams": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1366,7 +1366,7 @@
                 }
             }
         },
-        "models.CreatePositionParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreatePositionParams": {
             "type": "object",
             "properties": {
                 "oid": {
@@ -1380,7 +1380,7 @@
                 }
             }
         },
-        "models.CreateTierParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateTierParams": {
             "type": "object",
             "properties": {
                 "t_index": {
@@ -1397,7 +1397,7 @@
                 }
             }
         },
-        "models.DeletePositionParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.DeletePositionParams": {
             "type": "object",
             "properties": {
                 "oid": {
@@ -1411,7 +1411,7 @@
                 }
             }
         },
-        "models.Event": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1434,7 +1434,7 @@
                 }
             }
         },
-        "models.Officer": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1454,7 +1454,7 @@
                 }
             }
         },
-        "models.Position": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position": {
             "type": "object",
             "properties": {
                 "full_name": {
@@ -1477,7 +1477,7 @@
                 }
             }
         },
-        "models.Tier": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier": {
             "type": "object",
             "properties": {
                 "t_index": {
@@ -1494,7 +1494,7 @@
                 }
             }
         },
-        "models.UpdateAnnouncementParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1514,7 +1514,7 @@
                 }
             }
         },
-        "models.UpdateEventParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1537,7 +1537,7 @@
                 }
             }
         },
-        "models.UpdateOfficerParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateOfficerParams": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1557,7 +1557,7 @@
                 }
             }
         },
-        "models.UpdatePositionParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdatePositionParams": {
             "type": "object",
             "properties": {
                 "full_name": {
@@ -1580,7 +1580,7 @@
                 }
             }
         },
-        "models.UpdateTierParams": {
+        "github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateTierParams": {
             "type": "object",
             "properties": {
                 "t_index": {

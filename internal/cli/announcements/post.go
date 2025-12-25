@@ -82,7 +82,6 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.id {
 			break
 		}
-
 		fmt.Println("Please enter the announcement's uuid:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {

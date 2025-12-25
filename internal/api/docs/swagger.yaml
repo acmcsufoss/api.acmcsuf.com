@@ -1,5 +1,5 @@
 definitions:
-  models.Announcement:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement:
     properties:
       announce_at:
         type: integer
@@ -12,7 +12,7 @@ definitions:
       visibility:
         type: string
     type: object
-  models.CreateAnnouncementParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams:
     properties:
       announce_at:
         type: integer
@@ -25,7 +25,7 @@ definitions:
       visibility:
         type: string
     type: object
-  models.CreateEventParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams:
     properties:
       end_at:
         type: integer
@@ -40,7 +40,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.CreateOfficerParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateOfficerParams:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
@@ -53,7 +53,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.CreatePositionParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreatePositionParams:
     properties:
       oid:
         type: string
@@ -62,7 +62,7 @@ definitions:
       tier:
         type: integer
     type: object
-  models.CreateTierParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateTierParams:
     properties:
       t_index:
         $ref: '#/definitions/sql.NullInt64'
@@ -73,7 +73,7 @@ definitions:
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
-  models.DeletePositionParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.DeletePositionParams:
     properties:
       oid:
         type: string
@@ -82,7 +82,7 @@ definitions:
       tier:
         type: integer
     type: object
-  models.Event:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event:
     properties:
       end_at:
         type: integer
@@ -97,7 +97,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.Officer:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
@@ -110,7 +110,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.Position:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position:
     properties:
       full_name:
         type: string
@@ -125,7 +125,7 @@ definitions:
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
-  models.Tier:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier:
     properties:
       t_index:
         $ref: '#/definitions/sql.NullInt64'
@@ -136,7 +136,7 @@ definitions:
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
-  models.UpdateAnnouncementParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams:
     properties:
       announce_at:
         $ref: '#/definitions/sql.NullInt64'
@@ -149,7 +149,7 @@ definitions:
       visibility:
         $ref: '#/definitions/sql.NullString'
     type: object
-  models.UpdateEventParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams:
     properties:
       end_at:
         $ref: '#/definitions/sql.NullInt64'
@@ -164,7 +164,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.UpdateOfficerParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateOfficerParams:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
@@ -177,7 +177,7 @@ definitions:
       uuid:
         type: string
     type: object
-  models.UpdatePositionParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdatePositionParams:
     properties:
       full_name:
         type: string
@@ -192,7 +192,7 @@ definitions:
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
-  models.UpdateTierParams:
+  github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateTierParams:
     properties:
       t_index:
         $ref: '#/definitions/sql.NullInt64'
@@ -242,7 +242,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreateAnnouncementParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateAnnouncementParams'
       produces:
       - application/json
       responses:
@@ -317,7 +317,7 @@ paths:
         "200":
           description: Announcement details
           schema:
-            $ref: '#/definitions/models.Announcement'
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Announcement'
         "404":
           description: Not Found
           schema:
@@ -348,7 +348,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateAnnouncementParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateAnnouncementParams'
       produces:
       - application/json
       responses:
@@ -391,7 +391,7 @@ paths:
           description: List of officers
           schema:
             items:
-              $ref: '#/definitions/models.Officer'
+              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer'
             type: array
         "500":
           description: Internal Server Error
@@ -412,7 +412,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreateOfficerParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateOfficerParams'
       produces:
       - application/json
       responses:
@@ -487,7 +487,7 @@ paths:
         "200":
           description: Officer details
           schema:
-            $ref: '#/definitions/models.Officer'
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Officer'
         "404":
           description: Not Found
           schema:
@@ -518,7 +518,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateOfficerParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateOfficerParams'
       produces:
       - application/json
       responses:
@@ -561,7 +561,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.DeletePositionParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.DeletePositionParams'
       produces:
       - application/json
       responses:
@@ -603,7 +603,7 @@ paths:
           description: List of positions
           schema:
             items:
-              $ref: '#/definitions/models.Position'
+              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position'
             type: array
         "500":
           description: Internal Server Error
@@ -624,7 +624,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreatePositionParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreatePositionParams'
       produces:
       - application/json
       responses:
@@ -658,7 +658,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdatePositionParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdatePositionParams'
       produces:
       - application/json
       responses:
@@ -706,7 +706,7 @@ paths:
         "200":
           description: Position details
           schema:
-            $ref: '#/definitions/models.Position'
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Position'
         "404":
           description: Not Found
           schema:
@@ -734,7 +734,7 @@ paths:
           description: List of tiers
           schema:
             items:
-              $ref: '#/definitions/models.Tier'
+              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier'
             type: array
         "500":
           description: Internal Server Error
@@ -755,7 +755,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreateTierParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateTierParams'
       produces:
       - application/json
       responses:
@@ -836,7 +836,7 @@ paths:
         "200":
           description: Tier details
           schema:
-            $ref: '#/definitions/models.Tier'
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Tier'
         "400":
           description: Bad Request
           schema:
@@ -873,7 +873,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateTierParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateTierParams'
       produces:
       - application/json
       responses:
@@ -921,7 +921,7 @@ paths:
           description: List of events
           schema:
             items:
-              $ref: '#/definitions/models.Event'
+              $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
             type: array
         "500":
           description: Internal Server Error
@@ -942,7 +942,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.CreateEventParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.CreateEventParams'
       produces:
       - application/json
       responses:
@@ -1017,7 +1017,7 @@ paths:
         "200":
           description: Event details
           schema:
-            $ref: '#/definitions/models.Event'
+            $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.Event'
         "404":
           description: Not Found
           schema:
@@ -1048,7 +1048,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateEventParams'
+          $ref: '#/definitions/github_com_acmcsufoss_api_acmcsuf_com_internal_db_models.UpdateEventParams'
       produces:
       - application/json
       responses:
