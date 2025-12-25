@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"fmt"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -85,7 +84,6 @@ func postAnnouncement(host string, port string, payload *models.CreateAnnounceme
 		if changedFlags.id {
 			break
 		}
-
 		fmt.Println("Please enter the announcement's uuid:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
