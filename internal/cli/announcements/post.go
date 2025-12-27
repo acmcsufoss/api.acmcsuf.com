@@ -14,8 +14,8 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/spf13/cobra"
 	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 )
 
 var PostAnnouncement = &cobra.Command{

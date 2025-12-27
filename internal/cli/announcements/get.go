@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"net/http"
+	"net/url"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
