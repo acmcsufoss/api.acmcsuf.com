@@ -8,7 +8,7 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
-//Main Menu
+// Main Menu
 type mainMenuState struct {
 	menuOptions string
 }
@@ -41,7 +41,7 @@ func beginning() {
 	}
 }
 
-//Commands for CLI option
+// Commands for CLI option
 type commandCli struct {
 	options string
 }
@@ -78,7 +78,7 @@ func commands() {
 	}
 }
 
-//About CLI
+// About CLI
 type flags struct {
 	options string
 }
@@ -108,11 +108,11 @@ func about() {
 		beginning()
 	}
 	if flagState.options == "version" {
-		
+
 	}
 }
 
-//announcement menu
+// announcement menu
 type announcementOptions struct {
 	options string
 }
@@ -141,15 +141,80 @@ func announcementsMenu() {
 		os.Exit(1)
 	}
 	if announcementState.options == "delete" {
-
+		var uuid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Delete:").
+			Description("Please enter the announcement's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		announcements.CLIAnnouncements.SetArgs([]string{"delete", "--id", uuid})
+		announcements.GetAnnouncement.Execute()
 	}
 	if announcementState.options == "get" {
 		announcements.CLIAnnouncements.SetArgs([]string{"get"})
 		announcements.GetAnnouncement.Execute()
 	}
 	if announcementState.options == "post" {
-		announcements.CLIAnnouncements.SetArgs([]string{"post"})
-		announcements.GetAnnouncement.Execute()
+		var uuid string
+		var visibility string
+		var announceAt string
+		var channelid string
+		var messageid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's visibility:").
+			Prompt("> ").
+			Value(&visibility).
+			Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]").
+			Prompt("> ").
+			Value(&announceAt).
+			Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's discord channel id:").
+			Prompt("> ").
+			Value(&channelid).
+			Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's message id:").
+			Prompt("> ").
+			Value(&messageid).
+			Run()
+		announcements.CLIAnnouncements.SetArgs([]string{"post", "--uuid", uuid, "-v", visibility, "-a", announceAt, "--channelid", channelid, "--messageid", messageid})
+		announcements.CLIAnnouncements.Execute()
+
+	}
+	if announcementState.options == "put" {
+		var uuid string
+		valid := false
+		args:= []string{"put",}
+		for !valid {
+			huh.NewInput().
+				Title("ACMCSUF-CLI Announcements Put:").
+				Description("Please enter the announcement's uuid:").
+				Prompt("> ").
+				Value(&uuid).
+				Run()
+			if uuid != "" {
+				valid = true
+				args = append(args, "--id", uuid)
+			} else {
+			}
+		}
+		announcements.CLIAnnouncements.SetArgs(args)
+		announcements.CLIAnnouncements.Execute()
+
 	}
 }
 func main() {
