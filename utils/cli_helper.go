@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"github.com/charmbracelet/huh"
 )
 
 // Reoccuring functions for CLI files
@@ -19,19 +20,27 @@ import (
 
 // Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
 func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
-	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading input: %s", err)
-	}
-	userInput := scanner.Bytes()
-
-	changeData, err := YesOrNo(userInput, scanner)
-	if err != nil {
-		return nil, err
-	}
-	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
+	var option string
+	question := fmt.Sprintf("Would you like to change this %s's \x1b[1m%s\x1b[0m?\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
+	huh.NewSelect[string]().
+		Title("ACMCSUF-CLI Put:").
+		Description(question).
+		Options(
+			huh.NewOption("Yes", "yes"),
+			huh.NewOption("No", "n"),
+		).
+		Value(&option).
+		Run()
+	if option == "yes" {
+		var input string
+		newInputText := fmt.Sprintf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
+		huh.NewInput().
+			Title("ACMCSUF-CLI Post:").
+			Description(newInputText).
+			Prompt("> ").
+			Value(&input).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(input))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)

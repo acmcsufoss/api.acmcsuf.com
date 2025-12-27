@@ -15,6 +15,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
+	"github.com/charmbracelet/huh"
 )
 
 var PostAnnouncement = &cobra.Command{
@@ -178,8 +179,18 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no.")
+		var option string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Is your event data correct? If not, type n or no.").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
 		utils.PrintStruct(payload)
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
