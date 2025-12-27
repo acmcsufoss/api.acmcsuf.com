@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"database/sql"
 	"fmt"
+	"github.com/charmbracelet/huh"
 	"math"
 	"net/http"
 	"reflect"
@@ -11,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"github.com/charmbracelet/huh"
 )
 
 // Reoccuring functions for CLI files

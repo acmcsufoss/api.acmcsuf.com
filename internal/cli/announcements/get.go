@@ -3,11 +3,11 @@ package announcements
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/url"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
+	"net/http"
+	"net/url"
 )
 
 var GetAnnouncement = &cobra.Command{
