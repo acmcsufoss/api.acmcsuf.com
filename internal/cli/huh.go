@@ -198,7 +198,7 @@ func announcementsMenu() {
 	if announcementState.options == "put" {
 		var uuid string
 		valid := false
-		args:= []string{"put",}
+		args := []string{"put"}
 		for !valid {
 			huh.NewInput().
 				Title("ACMCSUF-CLI Announcements Put:").
