@@ -9,10 +9,12 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -202,7 +204,17 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 
 	// Confirm
 	for {
-		fmt.Println("Is the officer data correct? (y/n)")
+		var option string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Is your event data correct? If not, type n or no.").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		utils.PrintStruct(payload)
 		scanner.Scan()
 		confirmation := scanner.Bytes()

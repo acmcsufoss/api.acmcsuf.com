@@ -13,6 +13,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -153,7 +154,17 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 	// confirmation
 	for {
-		fmt.Println("Is your officer data correct? If not, type n or no.")
+		var option string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Is your event data correct? If not, type n or no.").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		utils.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
