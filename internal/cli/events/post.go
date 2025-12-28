@@ -16,7 +16,10 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
+	"github.com/spf13/cobra"
 )
 
 var PostEvent = &cobra.Command{
@@ -220,9 +223,17 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
-
+		var option string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Is your event data correct? If not, type n or no.").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
