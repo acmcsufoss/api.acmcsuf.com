@@ -35,7 +35,7 @@ func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Sca
 		var input string
 		newInputText := fmt.Sprintf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
 		huh.NewInput().
-			Title("ACMCSUF-CLI Post:").
+			Title("ACMCSUF-CLI Put:").
 			Description(newInputText).
 			Prompt("> ").
 			Value(&input).
