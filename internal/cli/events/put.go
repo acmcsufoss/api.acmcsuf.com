@@ -14,6 +14,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -291,8 +292,17 @@ func updateEvent(id string, host string, port string, payload *models.CreateEven
 	// Confirmation
 	// TODO: Fix put
 	for {
-		fmt.Println("Are these changes okay?[y/n]")
-		utils.PrintStruct(updatePayload)
+		var option string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Put:").
+			Description("Is your event data correct? If not, type n or no.").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error scanning confirmation:", err)
