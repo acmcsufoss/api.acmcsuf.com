@@ -2,13 +2,13 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type BoardService struct {
@@ -18,14 +18,14 @@ type BoardService struct {
 
 // Needed because the officers.json file stores officer and position data together
 type OfficerPositions struct {
-	FullName  string `json:"fullName"`
-	Picture   string `json:"picture"`
+	FullName  string         `json:"fullName"`
+	Picture   sql.NullString `json:"picture"`
 	Positions map[string][]struct {
 		Title string `json:"title"`
 		Tier  int    `json:"tier"`
 	} `json:"positions"`
-	Discord string `json:"discord,omitempty"`
-	Github  string `json:"github,omitempty"`
+	Discord sql.NullString `json:"discord,omitempty"`
+	Github  sql.NullString `json:"github,omitempty"`
 }
 
 func main() {
@@ -69,13 +69,15 @@ func main() {
 		officer.FullName = officerPositions[i].FullName
 		officer.Picture = officerPositions[i].Picture
 		officer.Discord = officerPositions[i].Discord
-		officer.Github = ""
+		officer.Github = officerPositions[i].Github
 
 		s.q.CreateOfficer(ctx, officer)
 
 		for n := range len(officerPositions[i].Positions) {
-			position[n].Title = officerPositions[i].Positions.Title
+			position[n].Oid = officer.Uuid
+			position[n].Semester = officerPositions[i].Positions.Semester
 			position[n].Tier = officerPositions[i].Positions.Tier
+			s.q.CreatePosition(ctx, position[n])
 		}
 	}
 
