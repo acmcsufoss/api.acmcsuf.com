@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -47,7 +48,10 @@ func init() {
 		}
 		var err error
 		config.Cfg, err = config.Load(overrides)
-		return err
+		if err != nil {
+			return fmt.Errorf("failed to load config: %w", err)
+		}
+		return nil
 	}
 }
 
