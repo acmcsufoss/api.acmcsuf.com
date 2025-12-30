@@ -256,7 +256,7 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 	request, err := requests.NewRequestWithAuth(http.MethodPost, postURL.String(),
 		strings.NewReader(string(jsonEvent)))
 	if err != nil {
-		fmt.Println("Error creating post request: %v", err)
+		fmt.Fprintf(os.Stderr, "Error creating post request: %v", err)
 	}
 
 	client := &http.Client{}

@@ -77,21 +77,23 @@ func getConfigPath() (string, error) {
 	return filepath.Join(appDir, "config.json"), nil
 }
 
-// func createDefaultConfigFile() error {
-// 	// TODO: This will go being a `acmcsuf-cli init` subcommand or something similar
-// 	path, err := getConfigPath()
-// 	if err != nil {
-// 		return err
-// 	}
-// 	file, err := os.Create(path)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer file.Close()
-// 	encoder := json.NewEncoder(file)
-// 	encoder.SetIndent("", "  ")                           // pretty print
-// 	if err := encoder.Encode(defaultConfig); err != nil { // writes to file here
-// 		return err
-// 	}
-// 	return nil
-// }
+// TODO: implement this func behind a `acmcsuf-cli config init` subcommand
+/*
+func createDefaultConfigFile() error {
+	path, err := getConfigPath()
+	if err != nil {
+		return err
+	}
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")                           // pretty print
+	if err := encoder.Encode(defaultConfig); err != nil { // writes to file here
+		return err
+	}
+	return nil
+}
+*/
