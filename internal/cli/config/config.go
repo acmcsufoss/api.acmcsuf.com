@@ -33,10 +33,14 @@ var Cfg *Config
 // Loads config with three layers of precedence
 // 1. Start with default config
 // 2. Load values from config file if present
-// 3. Provide any overrides passed in thruogh command line flags (if any)
+// 3. Provide any overrides passed in through command line flags (if any)
 func Load(overrides *ConfigOverrides) (*Config, error) {
 	// Load default config
-	cfg := &defaultConfig
+	cfg := &Config{
+		Host:     defaultConfig.Host,
+		Port:     defaultConfig.Port,
+		LogLevel: defaultConfig.LogLevel,
+	}
 
 	// Override with stuff from config file (if present)
 	path, err := getConfigPath()
