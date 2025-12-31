@@ -26,3 +26,5 @@ var configInitCmd = &cobra.Command{
 		}
 	},
 }
+
+// TODO: implement `config show` subcommand
