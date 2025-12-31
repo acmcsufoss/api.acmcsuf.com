@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"os"
 	"path/filepath"
@@ -77,12 +78,14 @@ func getConfigPath() (string, error) {
 	return filepath.Join(appDir, "config.json"), nil
 }
 
-// TODO: implement this func behind a `acmcsuf-cli config init` subcommand
-/*
 func createDefaultConfigFile() error {
 	path, err := getConfigPath()
 	if err != nil {
 		return err
+	}
+	// Check if file exists and error out if it does (don't want to overwrite or truncate)
+	if _, err := os.Stat(path); err == nil {
+		return errors.New("config file already exists (refusing to overwrite)")
 	}
 	file, err := os.Create(path)
 	if err != nil {
@@ -96,4 +99,3 @@ func createDefaultConfigFile() error {
 	}
 	return nil
 }
-*/
