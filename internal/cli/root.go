@@ -37,6 +37,7 @@ func init() {
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
+	rootCmd.AddCommand(config.ConfigCmd)
 
 	rootCmd.PersistentFlags().String("host", "", "Override configured/default host")
 	rootCmd.PersistentFlags().String("port", "", "Override configured/default port")
