@@ -131,16 +131,14 @@ func PrintStruct(s any) {
 	fmt.Println("----------------------------------------------------------------")
 }
 
-func CheckConnection() error {
-
-	_, err := http.Get("http://localhost:8080/health")
+func CheckConnection(url string) error {
+	_, err := http.Get(url)
 	if err != nil {
 		return fmt.Errorf("\x1b[1;37;41mUNABLE TO CONNECT\x1b[0m | %s\n\t↳ %v",
 			"Did you forget to start the server?",
 			err)
 	}
 	return nil
-
 }
 
 // --------------------------- Getting values from input ---------------------------

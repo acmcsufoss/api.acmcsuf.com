@@ -11,6 +11,7 @@ import (
 
 	"fmt"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -23,8 +24,6 @@ var PostAnnouncement = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateAnnouncementParams{}
 
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		announceString, _ := cmd.Flags().GetString("announceat")
@@ -52,15 +51,11 @@ var PostAnnouncement = &cobra.Command{
 			messageid:  cmd.Flags().Lookup("messageid").Changed,
 		}
 
-		postAnnouncement(host, port, &payload, changedFlags)
+		postAnnouncement(&payload, changedFlags, config.Cfg)
 	},
 }
 
 func init() {
-	// URL flags
-	PostAnnouncement.Flags().String("host", "127.0.0.1", "Set a custom host")
-	PostAnnouncement.Flags().String("port", "8080", "Set a custom port")
-
 	// Payload flags
 	PostAnnouncement.Flags().String("uuid", "", "Set this announcement's id")
 	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
@@ -70,10 +65,12 @@ func init() {
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
 
-func postAnnouncement(host string, port string, payload *models.CreateAnnouncementParams, changedFlags announcementFlags) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -211,14 +208,7 @@ func postAnnouncement(host string, port string, payload *models.CreateAnnounceme
 	}
 
 	// ----- Constructing the Url -----
-	host = fmt.Sprint(host, ":", port)
-	path := "v1/announcements"
-
-	postURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	postURL := baseURL.JoinPath("v1/announcements")
 
 	fmt.Println(postURL.String())
 	// ----- Post -----

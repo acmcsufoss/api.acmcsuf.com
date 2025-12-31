@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/spf13/cobra"
@@ -22,8 +23,6 @@ var PutAnnouncements = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateAnnouncementParams{}
 
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
@@ -54,15 +53,11 @@ var PutAnnouncements = &cobra.Command{
 			messageid:  cmd.Flags().Lookup("messageid").Changed,
 		}
 
-		putAnnouncements(host, port, id, &payload, changedFlags)
+		putAnnouncements(id, &payload, changedFlags, config.Cfg)
 	},
 }
 
 func init() {
-	// Url flags
-	PutAnnouncements.Flags().String("host", "127.0.0.1", "Set a custom host")
-	PutAnnouncements.Flags().String("port", "8080", "Set a custom port")
-
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
 
 	// Payload flags
@@ -76,10 +71,12 @@ func init() {
 	PutAnnouncements.MarkFlagRequired("id")
 }
 
-func putAnnouncements(host string, port string, id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -92,14 +89,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 
 	// ----- Retrieving old Announcement -----
 	// ----- Constructing Url -----
-	host = fmt.Sprint(host, ":", port)
-	path := fmt.Sprint("v1/announcements/", id)
-
-	oldPayloadUrl := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	oldPayloadUrl := baseURL.JoinPath("v1/announcements/", id)
 
 	// ----- Get the Announcement We Want to Update -----
 	response, err := http.Get(oldPayloadUrl.String())

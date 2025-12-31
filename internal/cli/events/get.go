@@ -8,8 +8,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/tidwall/pretty"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -18,48 +18,26 @@ var GetEvent = &cobra.Command{
 	Short: "Get events",
 
 	Run: func(cmd *cobra.Command, args []string) {
-
-		// If these where global, unexpected behavior would be expected :(
 		id, _ := cmd.Flags().GetString("id")
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
-
-		getEvents(id, port, host)
+		getEvents(id, config.Cfg)
 	},
 }
 
 func init() {
-
-	// Url Flags
 	GetEvent.Flags().String("id", "", "Get a specific event")
-	GetEvent.Flags().String("host", "127.0.0.1", "Custom host")
-	GetEvent.Flags().String("port", "8080", "Custom port")
-
 }
 
-func getEvents(id string, port string, host string) {
-
-	err := utils.CheckConnection()
-	if err != nil {
+func getEvents(id string, cfg *config.Config) {
+	baseURL := &url.URL{
+		Scheme: "http",
+		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+	}
+	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// ----- Constructing url -----
-	// Combining Host and port
-	host = fmt.Sprint(host, ":", port)
-
-	// Constructing Path
-	path := "v1/events"
-	if id != "" {
-		path = fmt.Sprint(path, "/", id)
-	}
-
-	getURL := &url.URL{
-		Scheme: "http",
-		Host:   host,
-		Path:   path,
-	}
+	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
 
 	// ----- Get -----
 	req, err := http.NewRequest("GET", getURL.String(), nil)
@@ -68,27 +46,20 @@ func getEvents(id string, port string, host string) {
 		return
 	}
 
-	client := http.Client{}
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
 	}
-	defer resp.Body.Close()
-
-	if req == nil {
-		fmt.Println("no response received")
-		return
-	}
 
 	// ----- Read Response Information -----
-	fmt.Println("Response status:", resp.Status)
-
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", resp.Status)
+	}
+	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
 	}
-
-	prettyJSON := pretty.Pretty(body)
-	colorfulJSON := pretty.Color(prettyJSON, nil)
-	fmt.Println(string(colorfulJSON))
+	utils.PrettyPrintJSON(body)
 }
