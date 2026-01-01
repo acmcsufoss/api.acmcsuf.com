@@ -12,6 +12,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +21,56 @@ var GetAnnouncement = &cobra.Command{
 	Short: "Get an announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var flagsChosen []string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Announcement Get").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo get all announcements, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+						huh.NewOption("Get Specific ID", "id"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			var uuidVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			case "id":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the announcement's ID:").
+					Prompt("> ").
+					Value(&uuidVal).
+					Run()
+				cmd.Flags().Set("id", uuidVal)
+			}
+			_ = index
+		}
+
+		host, _ := cmd.Flags().GetString("host")
+		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
 		getAnnouncement(uuid, config.Cfg)
 	},

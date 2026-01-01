@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"fmt"
@@ -24,7 +23,45 @@ var PostAnnouncement = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateAnnouncementParams{}
-
+		var flagsChosen []string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Announcement Put").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Put:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Put:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
+		host, _ := cmd.Flags().GetString("host")
+		port, _ := cmd.Flags().GetString("port")
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		announceString, _ := cmd.Flags().GetString("announceat")
@@ -76,14 +113,19 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// ----- Uuid -----
 	for {
 		if changedFlags.id {
 			break
 		}
-		fmt.Println("Please enter the announcement's uuid:")
+		var uuid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error with reading uuid:", err)
@@ -101,7 +143,14 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.visibility {
 			break
 		}
-		fmt.Println("Please enter this announcement's visibility:")
+		var visibility string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's visibility:").
+			Prompt("> ").
+			Value(&visibility).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(visibility))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error with reading visibility:", err)
@@ -119,9 +168,14 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.announceat {
 			break
 		}
-
-		fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]")
-		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		var announceAt string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+			Prompt("> ").
+			Value(&announceAt).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(announceAt))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading anounce at:", err)
@@ -145,8 +199,14 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.channelid {
 			break
 		}
-
-		fmt.Println("Please enter this announcement's discord channel id:")
+		var discordid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's discord channel id:").
+			Prompt("> ").
+			Value(&discordid).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(discordid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading  discord channel id:", err)
@@ -164,8 +224,14 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.messageid {
 			break
 		}
-
-		fmt.Println("Please enter this announcement's message id:")
+		var messageid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's message id:").
+			Prompt("> ").
+			Value(&messageid).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(messageid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading message id:", err)
