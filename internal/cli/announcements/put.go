@@ -23,7 +23,51 @@ var PutAnnouncements = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateAnnouncementParams{}
-
+		var flagsChosen []string
+		var uuidVal string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Announcement Put").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcement Put:").
+			Description("Please enter the announcement's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Put:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Put:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
@@ -75,7 +119,6 @@ func init() {
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
 
-	PutAnnouncements.MarkFlagRequired("id")
 }
 
 func putAnnouncements(host string, port string, id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags) {
@@ -88,7 +131,7 @@ func putAnnouncements(host string, port string, id string, payload *models.Updat
 
 	// ----- Check if Id was Given -----
 	if id == "" {
-		fmt.Println("Announcement id required for put! Please use the --id flag")
+		fmt.Println("Announcement id cannot be empty!")
 		return
 	}
 

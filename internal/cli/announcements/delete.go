@@ -7,6 +7,7 @@ import (
 	"net/url"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -15,6 +16,51 @@ var DeleteAnnouncements = &cobra.Command{
 	Short: "delete an announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var flagsChosen []string
+		var uuidVal string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Announcement Put").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Announcement Put:").
+			Description("Please enter the announcement's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
@@ -30,7 +76,6 @@ func init() {
 	DeleteAnnouncements.Flags().String("port", "8080", "set a custom port")
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
 
-	DeleteAnnouncements.MarkFlagRequired("id")
 }
 
 func deleteAnnouncement(host string, port string, id string) {
