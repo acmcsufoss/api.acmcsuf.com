@@ -1,6 +1,10 @@
 package announcements
 
 import (
+	"fmt"
+	"os"
+
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -22,4 +26,36 @@ func init() {
 	CLIAnnouncements.AddCommand(PostAnnouncement)
 	CLIAnnouncements.AddCommand(DeleteAnnouncements)
 	CLIAnnouncements.AddCommand(PutAnnouncements)
+}
+
+func ShowMenu(backCallback func()) {
+	var announcementState string
+	announcementMenu := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				Title("ACMCSUF-CLI Announcements").
+				Description("Choose an option to your heart's content.").
+				Options(
+					huh.NewOption("Delete", "delete"),
+					huh.NewOption("Get", "get"),
+					huh.NewOption("Post", "post"),
+					huh.NewOption("Put", "put"),
+					huh.NewOption("Back", "back"),
+				).
+				Value(&announcementState),
+		),
+	)
+	err := announcementMenu.Run()
+	if err != nil {
+		fmt.Println("Uh oh:", err)
+		os.Exit(1)
+	}
+
+	if announcementState != "back" && announcementState != "" {
+		CLIAnnouncements.SetArgs([]string{announcementState})
+		CLIAnnouncements.Execute()
+		backCallback()
+	} else if announcementState == "back" {
+		backCallback()
+	}
 }
