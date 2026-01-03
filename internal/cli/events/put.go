@@ -27,6 +27,55 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		payload := models.CreateEventParams{}
+		var flagsChosen []string
+		var uuidVal string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Event Put").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Put:").
+			Description("Please enter the event's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Put:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Put:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
+		// CLI for url
+		host, _ := cmd.Flags().GetString("urlhost")
+		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
 		payload := models.CreateEventParams{}

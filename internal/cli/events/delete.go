@@ -11,6 +11,8 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 )
 
 var DeleteEvent = &cobra.Command{
@@ -18,6 +20,51 @@ var DeleteEvent = &cobra.Command{
 	Short: "Delete an event with its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var flagsChosen []string
+		var uuidVal string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Event Delete").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Delete:").
+			Description("Please enter the event's uuid:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Delete:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Delete:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
 		id, _ := cmd.Flags().GetString("id")
 		deleteEvent(id, config.Cfg)
 	},

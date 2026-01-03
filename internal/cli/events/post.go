@@ -28,6 +28,45 @@ var PostEvent = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
+		var flagsChosen []string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Event Post").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Post:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Event Post:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
+		urlhost, _ := cmd.Flags().GetString("urlhost")
+		port, _ := cmd.Flags().GetString("port")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
@@ -89,15 +128,20 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// ----- Uuid -----
 	for {
 		if changedFlag.uuid {
 			break
 		}
 
-		fmt.Println("Please enter event's uuid:")
+		var uuid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter event's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -115,6 +159,14 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
+		var location string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the event's location:").
+			Prompt("> ").
+			Value(&location).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(location))
 		fmt.Println("please enter the event's location:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -134,8 +186,14 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]")
-		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		var timeStart string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+			Prompt("> ").
+			Value(&timeStart).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(timeStart))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading start time:", err)
@@ -159,9 +217,14 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]")
-		fmt.Println("For example: \x1b[93m03:04\x1b[0m")
-
+		var duration string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the duration of the event in the following format:\n [Hour]:[Minute]\nFor example: \x1b[93m03:04\x1b[0m").
+			Prompt("> ").
+			Value(&duration).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(duration))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading end time:", err)
@@ -186,7 +249,17 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Is the event all day?")
+		var allDayYes string
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Is your event all day?").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&allDayYes).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(allDayYes))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -209,7 +282,14 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the event host:")
+		var host string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the event host").
+			Prompt("> ").
+			Value(&host).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(host))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
