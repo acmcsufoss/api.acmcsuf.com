@@ -28,7 +28,7 @@ var PostAnnouncement = &cobra.Command{
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Announcement Put").
+					Title("ACMCSUF-CLI Announcement Post").
 					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
 					Options(
 						huh.NewOption("Change Host", "host"),
@@ -43,7 +43,7 @@ var PostAnnouncement = &cobra.Command{
 			switch flag {
 			case "host":
 				huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Put:").
+					Title("ACMCSUF-CLI Announcement Post:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
 					Value(&hostVal).
@@ -51,7 +51,7 @@ var PostAnnouncement = &cobra.Command{
 				cmd.Flags().Set("host", hostVal)
 			case "port":
 				huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Put:").
+					Title("ACMCSUF-CLI Announcement Post:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
 					Value(&portVal).

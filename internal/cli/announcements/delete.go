@@ -23,7 +23,7 @@ var DeleteAnnouncements = &cobra.Command{
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Announcement Put").
+					Title("ACMCSUF-CLI Announcement Delete").
 					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
 					Options(
 						huh.NewOption("Change Host", "host"),
@@ -33,7 +33,7 @@ var DeleteAnnouncements = &cobra.Command{
 			),
 		).Run()
 		huh.NewInput().
-			Title("ACMCSUF-CLI Announcement Put:").
+			Title("ACMCSUF-CLI Announcement Delete:").
 			Description("Please enter the announcement's ID:").
 			Prompt("> ").
 			Value(&uuidVal).
@@ -45,7 +45,7 @@ var DeleteAnnouncements = &cobra.Command{
 			switch flag {
 			case "host":
 				huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Get:").
+					Title("ACMCSUF-CLI Announcement Delete:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
 					Value(&hostVal).
@@ -53,7 +53,7 @@ var DeleteAnnouncements = &cobra.Command{
 				cmd.Flags().Set("host", hostVal)
 			case "port":
 				huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Get:").
+					Title("ACMCSUF-CLI Announcement Delete:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
 					Value(&portVal).
