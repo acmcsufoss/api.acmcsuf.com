@@ -7,7 +7,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
@@ -22,7 +21,43 @@ var PostOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var payload models.CreateOfficerParams
-
+		var flagsChosen []string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Board Post").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Post:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Post:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 
@@ -68,15 +103,20 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// uuid
 	for {
 		if cf.uuid {
 			break
 		}
 
-		fmt.Println("Please enter officer's uuid:")
+		var uuid string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Please enter officer's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -93,6 +133,14 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 			break
 		}
 
+		var fullName string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Please enter officer's full name:").
+			Prompt("> ").
+			Value(&fullName).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(fullName))
 		fmt.Println("Please enter the officer's full name:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -110,7 +158,14 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 			break
 		}
 
-		fmt.Println("Please enter the picture link for officer:")
+		var picLink string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Please enter the picture link for officer:").
+			Prompt("> ").
+			Value(&picLink).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(picLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -127,7 +182,14 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 			break
 		}
 
-		fmt.Println("Please enter the github link for officer:")
+		var githubLink string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Please enter the github link for officer:").
+			Prompt("> ").
+			Value(&githubLink).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(githubLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -144,7 +206,14 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, host, po
 			break
 		}
 
-		fmt.Println("Please enter the discord link for officer:")
+		var discordLink string
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Post:").
+			Description("Please enter the discord link for officer").
+			Prompt("> ").
+			Value(&discordLink).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(discordLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

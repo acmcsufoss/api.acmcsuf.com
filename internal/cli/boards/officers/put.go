@@ -23,7 +23,51 @@ var PutOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateOfficerParams{}
-
+		var flagsChosen []string
+		var uuidVal string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Board Put").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Board Put:").
+			Description("Please enter the officer's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Put:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Put:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			}
+			_ = index
+		}
 		host, _ := cmd.Flags().GetString("host")
 		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
@@ -215,7 +259,7 @@ func putOfficer(host, port, id string, payload *models.UpdateOfficerParams, flag
 	for {
 		var option string
 		huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Board Put:").
 			Description("Is your event data correct? If not, type n or no.").
 			Options(
 				huh.NewOption("Yes", "yes"),
