@@ -9,6 +9,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +18,53 @@ var GetOfficers = &cobra.Command{
 	Short: "Get Officers",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var flagsChosen []string
+		huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Board Get").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo get all officers, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+						huh.NewOption("Get Specific ID", "id"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		for index, flag := range flagsChosen {
+			var hostVal string
+			var portVal string
+			var uuidVal string
+			switch flag {
+			case "host":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Get:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&hostVal).
+					Run()
+				cmd.Flags().Set("host", hostVal)
+			case "port":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Get:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&portVal).
+					Run()
+				cmd.Flags().Set("port", portVal)
+			case "id":
+				huh.NewInput().
+					Title("ACMCSUF-CLI Board Get:").
+					Description("Please enter the officer's ID:").
+					Prompt("> ").
+					Value(&uuidVal).
+					Run()
+				cmd.Flags().Set("id", uuidVal)
+			}
+			_ = index
+		}
 		id, _ := cmd.Flags().GetString("id")
 		getOfficers(id, config.Cfg)
 	},
