@@ -51,9 +51,17 @@ func ShowMenu(backCallback func()) {
 		os.Exit(1)
 	}
 
-	if announcementState != "back" && announcementState != "" {
-		CLIAnnouncements.SetArgs([]string{announcementState})
-		CLIAnnouncements.Execute()
+	if announcementState == "delete" {
+		DeleteAnnouncements.Run(DeleteAnnouncements, []string{})
+		backCallback()
+	} else if announcementState == "get" {
+		GetAnnouncement.Run(GetAnnouncement, []string{})
+		backCallback()
+	} else if announcementState == "post" {
+		PostAnnouncement.Run(PostAnnouncement, []string{})
+		backCallback()
+	} else if announcementState == "put" {
+		PutAnnouncements.Run(PutAnnouncements, []string{})
 		backCallback()
 	} else if announcementState == "back" {
 		backCallback()
