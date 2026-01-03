@@ -59,20 +59,18 @@ func menu() {
 		fmt.Println("Uh oh:", err)
 		os.Exit(1)
 	}
-	if commandState == "back" {
-
-	}
 	if commandState == "announcements" {
 		announcements.ShowMenu(menu)
 	}
 	if commandState == "officers" {
-
+		officers.ShowMenu(menu)
 	}
 	if commandState == "events" {
-
+		events.ShowMenu(menu)
 	}
-	if commandState == "completion" {
-
+	if commandState == "version" {
+		fmt.Println("ACMCSUF-CLI Version:", Version)
+		menu()
 	}
 }
 func main() {
