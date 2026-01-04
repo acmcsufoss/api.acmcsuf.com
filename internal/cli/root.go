@@ -26,10 +26,23 @@ const (
 
 var Version = "dev"
 
+var allowedArgs []string = []string{
+	"events",
+	"announcements",
+	"officers",
+	"config",
+	"help",
+	"--help",
+	"--host",
+	"--port",
+	"--version",
+}
+
 var rootCmd = &cobra.Command{
-	Use:     os.Args[0],
-	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
-	Version: Version,
+	Use:       os.Args[0],
+	Short:     "A CLI tool to help manage the API of the CSUF ACM website",
+	Version:   Version,
+	ValidArgs: allowedArgs,
 }
 
 // init() is a special function that always gets run before main

@@ -4,6 +4,7 @@
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
+SHELL := /bin/bash
 BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
@@ -31,6 +32,8 @@ build: generate ## Build the api and cli binaries
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
+	cd $(BIN_DIR) &&  ./$(CLI_NAME) completion bash > completion 
+	chmod +x $(BIN_DIR)/completion
 
 vet: ## Vet all go files
 	go vet ./...
