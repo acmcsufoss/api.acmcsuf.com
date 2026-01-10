@@ -18,6 +18,9 @@ var Version = "dev"
 var rootCmd = &cobra.Command{
 	Use:     os.Args[0],
 	Version: Version,
+	Run: func(cmd *cobra.Command, args []string) {
+		//do nothing
+	},
 }
 
 func Execute() {
@@ -34,6 +37,7 @@ func init() {
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
+
 }
 
 func menu() {
