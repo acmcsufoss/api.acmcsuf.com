@@ -167,7 +167,6 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			Value(&location).
 			Run()
 		scanner := bufio.NewScanner(strings.NewReader(location))
-		fmt.Println("please enter the event's location:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
