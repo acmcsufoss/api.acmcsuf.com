@@ -45,12 +45,13 @@ func getEvents(id string, cfg *config.Config) {
 		fmt.Println("Error getting the request:", err)
 		return
 	}
-
+	req.Header.Set("Origin", "http://acmcsuf-api-dev")
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
 	}
+	fmt.Println(req.Header.Get("Origin"))
 
 	// ----- Read Response Information -----
 	if resp.StatusCode != http.StatusOK {
