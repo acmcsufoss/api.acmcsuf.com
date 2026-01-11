@@ -13,6 +13,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -80,16 +81,25 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	u := baseURL.JoinPath("v1/board/officers/", id)
 
 	// getting old officer
-	resp, err := http.Get(u.String())
+	client := http.Client{}
+	getReq, err := requests.NewRequestWithAuth(http.MethodGet, u.String(), nil)
 	if err != nil {
-		fmt.Printf("error retrieving %s: %s\n", id, err)
+		fmt.Printf("error making request %s: %s\n", id, err)
 		return
 	}
+	requests.AddOrigin(getReq)
+
+	resp, err := client.Do(getReq)
+	if err != nil {
+		fmt.Println("error getting response", err)
+		return
+	}
+	defer resp.Body.Close()
+
 	if resp == nil {
 		fmt.Println("no response received")
 		return
 	}
-	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -226,12 +236,12 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 
 	// PUT
-	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
+	req, err := requests.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
+	requests.AddOrigin(req)
 
 	putResp, err := client.Do(req)
 	if err != nil {

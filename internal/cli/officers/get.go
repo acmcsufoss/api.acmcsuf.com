@@ -9,6 +9,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -42,21 +43,29 @@ func getOfficers(id string, cfg *config.Config) {
 	getURL := baseURL.JoinPath(path)
 
 	// getting officer(s)
-	response, err := http.Get(getURL.String())
+	client := http.Client{}
+	req, err := requests.NewRequestWithAuth(http.MethodGet, getURL.String(), nil)
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
 		return
 	}
-	if response == nil {
+	requests.AddOrigin(req)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error with getting response", err)
+		return
+	}
+	defer res.Body.Close()
+
+	if res == nil {
 		fmt.Println("no response recieved")
 		return
 	}
 
-	defer response.Body.Close()
-
 	if id == "" {
 		var getPayload []models.GetOfficerRow
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
 			return
@@ -67,7 +76,7 @@ func getOfficers(id string, cfg *config.Config) {
 		}
 	} else {
 		var getPayload models.GetOfficerRow
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
 			return
