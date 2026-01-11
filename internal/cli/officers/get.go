@@ -58,11 +58,6 @@ func getOfficers(id string, cfg *config.Config) {
 	}
 	defer res.Body.Close()
 
-	if res == nil {
-		fmt.Println("no response recieved")
-		return
-	}
-
 	if id == "" {
 		var getPayload []models.GetOfficerRow
 		err = json.NewDecoder(res.Body).Decode(&getPayload)

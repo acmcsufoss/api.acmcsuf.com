@@ -109,12 +109,6 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	}
 	defer getRes.Body.Close()
 
-	if getRes == nil {
-		fmt.Println("no response received")
-		return
-	}
-	defer getRes.Body.Close()
-
 	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)

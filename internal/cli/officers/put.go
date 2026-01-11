@@ -96,11 +96,6 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 	defer resp.Body.Close()
 
-	if resp == nil {
-		fmt.Println("no response received")
-		return
-	}
-
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("error reading response body:", err)

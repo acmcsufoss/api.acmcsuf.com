@@ -57,13 +57,9 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println("error getting announcements:", err)
-	}
-	defer res.Body.Close()
-
-	if res == nil {
-		fmt.Println("no response received")
 		return
 	}
+	defer res.Body.Close()
 
 	fmt.Println("Response status:", res.Status)
 

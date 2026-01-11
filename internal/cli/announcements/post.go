@@ -228,11 +228,6 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 	}
 	defer res.Body.Close()
 
-	if res == nil {
-		fmt.Println("no response received")
-		return
-	}
-
 	fmt.Println("Response status:", res.Status)
 
 	body, err := io.ReadAll(res.Body)

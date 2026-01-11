@@ -200,11 +200,6 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 	}
 	defer res.Body.Close()
 
-	if res == nil {
-		fmt.Println("error, no response recieved")
-		return
-	}
-
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("error reading body: ", err)
