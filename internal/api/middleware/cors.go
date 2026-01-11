@@ -17,14 +17,12 @@ import (
 func Cors() gin.HandlerFunc {
 
 	cfg := config.Load()
-	fmt.Println("RUN CORS----------------------------------------------------\n", cfg.AllowedOrigins)
 
 	return func(c *gin.Context) {
 		origin := c.Request.Header.Get("Origin")
-		fmt.Println(">>>>>>>>>>>>>>>>>>>>>>> ORIGIN:", origin)
 
 		if !allowedOrigin(origin, cfg) {
-			c.AbortWithError(http.StatusForbidden, fmt.Errorf("request is not allowed from this origin"))
+			c.AbortWithError(http.StatusForbidden, fmt.Errorf("request is not allowed from this origin: %s", origin))
 			return
 		}
 
@@ -43,7 +41,12 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
+// Later when deployed, this can block dev origin and only accept ones used in prod
 func allowedOrigin(o string, cfg *config.Config) bool {
+	if cfg.Env == "production" && o == "development" {
+		return false
+	}
+
 	for _, elm := range cfg.AllowedOrigins {
 		if elm == o {
 			return true

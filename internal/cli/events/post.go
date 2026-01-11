@@ -258,6 +258,7 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating post request: %v", err)
 	}
+	requests.AddOrigin(request)
 
 	client := &http.Client{}
 	response, err := client.Do(request)

@@ -93,22 +93,31 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	}
 
 	// ----- Retrieve payload -----
+	client := &http.Client{}
+
 	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
-	getResponse, err := http.Get(retrievalURL.String())
+	getResponse, err := requests.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
-
+	requests.AddOrigin(getResponse)
 	defer getResponse.Body.Close()
-	body, err := io.ReadAll(getResponse.Body)
+
+	getBody, err := client.Do(getResponse)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		fmt.Println("Error getting request:", err)
 		return
 	}
 
-	if getResponse.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", getResponse.Status)
+	if getBody.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", getBody.Status)
+		return
+	}
+
+	body, err := io.ReadAll(getBody.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
 		return
 	}
 
@@ -265,7 +274,6 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	}
 
 	// Confirmation
-	// TODO: Fix put
 	for {
 		fmt.Println("Are these changes okay?[y/n]")
 		utils.PrintStruct(updatePayload)
@@ -296,13 +304,12 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		return
 	}
 
-	client := &http.Client{}
-
 	request, err := requests.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
+	requests.AddOrigin(request)
 
 	putResponse, err := client.Do(request)
 	if err != nil {

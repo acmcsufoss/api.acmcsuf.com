@@ -11,6 +11,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var GetEvent = &cobra.Command{
@@ -40,12 +41,13 @@ func getEvents(id string, cfg *config.Config) {
 	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
 
 	// ----- Get -----
-	req, err := http.NewRequest("GET", getURL.String(), nil)
+	req, err := requests.NewRequestWithAuth(http.MethodGet, getURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error getting the request:", err)
 		return
 	}
-	req.Header.Set("Origin", "http://acmcsuf-api-dev")
+	requests.AddOrigin(req)
+
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
