@@ -9,6 +9,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -45,24 +46,30 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	getUrl := baseURL.JoinPath(path)
 
 	// ----- Requesting Get -----
-	response, err := http.Get(getUrl.String())
+	client := http.Client{}
+	req, err := requests.NewRequestWithAuth(http.MethodGet, getUrl.String(), nil)
 	if err != nil {
 		fmt.Println("error with request:", err)
 		return
 	}
+	requests.AddOrigin(req)
 
-	if response == nil {
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error getting announcements:", err)
+	}
+	defer res.Body.Close()
+
+	if res == nil {
 		fmt.Println("no response received")
 		return
 	}
 
-	defer response.Body.Close()
-
-	fmt.Println("Response status:", response.Status)
+	fmt.Println("Response status:", res.Status)
 
 	if uuid == "" {
 		var getPayload []models.CreateAnnouncementParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
 			return
@@ -73,7 +80,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 		}
 	} else {
 		var getPayload models.CreateAnnouncementParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
 			return

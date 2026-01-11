@@ -96,26 +96,26 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	client := &http.Client{}
 
 	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
-	getResponse, err := requests.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
+	getReq, err := requests.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
-	requests.AddOrigin(getResponse)
-	defer getResponse.Body.Close()
+	requests.AddOrigin(getReq)
 
-	getBody, err := client.Do(getResponse)
+	getRes, err := client.Do(getReq)
 	if err != nil {
 		fmt.Println("Error getting request:", err)
 		return
 	}
+	defer getRes.Body.Close()
 
-	if getBody.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", getBody.Status)
+	if getRes.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", getRes.Status)
 		return
 	}
 
-	body, err := io.ReadAll(getBody.Body)
+	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
 		return
