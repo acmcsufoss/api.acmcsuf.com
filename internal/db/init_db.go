@@ -16,16 +16,18 @@ type BoardService struct {
 	db models.DBTX
 }
 
+type Position struct {
+	Title string `json:"title"`
+	Tier  int64  `json:"tier"`
+}
+
 // Needed because the officers.json file stores officer and position data together
 type OfficerPositions struct {
-	FullName  string         `json:"fullName"`
-	Picture   sql.NullString `json:"picture"`
-	Positions map[string][]struct {
-		Title string `json:"title"`
-		Tier  int    `json:"tier"`
-	} `json:"positions"`
-	Discord sql.NullString `json:"discord,omitempty"`
-	Github  sql.NullString `json:"github,omitempty"`
+	FullName  string                `json:"fullName"`
+	Picture   sql.NullString        `json:"picture"`
+	Positions map[string][]Position `json:"positions"`
+	Discord   sql.NullString        `json:"discord,omitempty"`
+	Github    sql.NullString        `json:"github,omitempty"`
 }
 
 func main() {
@@ -61,7 +63,7 @@ func main() {
 	}
 
 	var officer models.CreateOfficerParams
-	var position []models.CreatePositionParams
+	var position models.CreatePositionParams
 
 	// Splits up officerPositions into officer data and position data, then populates
 	for i := range officerPositions {
@@ -73,11 +75,15 @@ func main() {
 
 		s.q.CreateOfficer(ctx, officer)
 
-		for n := range len(officerPositions[i].Positions) {
-			position[n].Oid = officer.Uuid
-			position[n].Semester = officerPositions[i].Positions.Semester
-			position[n].Tier = officerPositions[i].Positions.Tier
-			s.q.CreatePosition(ctx, position[n])
+		position.Oid = officer.Uuid
+
+		for semester, value := range officerPositions[i].Positions {
+			position.Semester = semester
+
+			for _, role := range value {
+				position.Tier = role.Tier
+				s.q.CreatePosition(ctx, position)
+			}
 		}
 	}
 
