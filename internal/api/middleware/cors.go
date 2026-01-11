@@ -28,7 +28,7 @@ func Cors() gin.HandlerFunc {
 			return
 		}
 
-		cors.New(cors.Config{
+		corsCfg := cors.New(cors.Config{
 			AllowOrigins:     cfg.AllowedOrigins,
 			AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
 			AllowHeaders:     []string{},
@@ -36,6 +36,8 @@ func Cors() gin.HandlerFunc {
 			AllowCredentials: false,
 			MaxAge:           time.Hour * 24,
 		})
+
+		corsCfg(c)
 
 		c.Next()
 	}
