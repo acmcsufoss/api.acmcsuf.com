@@ -5,8 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"math"
-	"os"
 	"net/http"
+	"os"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -24,7 +24,7 @@ import (
 func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
 	var option string
 	question := fmt.Sprintf("Would you like to change this %s's \x1b[1m%s\x1b[0m?\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
-	err :=huh.NewSelect[string]().
+	err := huh.NewSelect[string]().
 		Title("ACMCSUF-CLI Put:").
 		Description(question).
 		Options(

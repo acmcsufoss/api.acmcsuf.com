@@ -46,7 +46,7 @@ var PutAnnouncements = &cobra.Command{
 			fmt.Println("Uh oh:", err)
 			os.Exit(1)
 		}
-		err =huh.NewInput().
+		err = huh.NewInput().
 			Title("ACMCSUF-CLI Announcement Put:").
 			Description("Please enter the announcement's ID:").
 			Prompt("> ").

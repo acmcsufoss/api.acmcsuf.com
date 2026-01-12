@@ -134,7 +134,7 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 			break
 		}
 		var uuid string
-		err :=huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Announcements Post:").
 			Description("Please enter the announcement's uuid:").
 			Prompt("> ").
@@ -236,7 +236,7 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 			break
 		}
 		var discordid string
-		err :=huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Announcements Post:").
 			Description("Please enter the announcement's discord channel id:").
 			Prompt("> ").

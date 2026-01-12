@@ -24,7 +24,7 @@ var DeleteEvent = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var flagsChosen []string
 		var uuidVal string
-		err :=huh.NewForm(
+		err := huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
