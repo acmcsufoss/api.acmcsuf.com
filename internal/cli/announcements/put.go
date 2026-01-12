@@ -26,7 +26,7 @@ var PutAnnouncements = &cobra.Command{
 		payload := models.UpdateAnnouncementParams{}
 		var flagsChosen []string
 		var uuidVal string
-		huh.NewForm(
+		err := huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
@@ -39,19 +39,33 @@ var PutAnnouncements = &cobra.Command{
 					Value(&flagsChosen),
 			),
 		).Run()
-		huh.NewInput().
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		err =huh.NewInput().
 			Title("ACMCSUF-CLI Announcement Put:").
 			Description("Please enter the announcement's ID:").
 			Prompt("> ").
 			Value(&uuidVal).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		cmd.Flags().Set("id", uuidVal)
 		for index, flag := range flagsChosen {
 			var hostVal string
 			var portVal string
 			switch flag {
 			case "host":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Announcement Put:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
@@ -59,13 +73,20 @@ var PutAnnouncements = &cobra.Command{
 					Run()
 				cmd.Flags().Set("host", hostVal)
 			case "port":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Announcement Put:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
 					Value(&portVal).
 					Run()
 				cmd.Flags().Set("port", portVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
 			}
 			_ = index
 		}
@@ -275,16 +296,23 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	// ----- Confirmation -----
 	for {
 		var option string
-		huh.NewSelect[string]().
+		description := "Is your announcement data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
 			Title("ACMCSUF-CLI Announcements Put:").
-			Description("Is your event data correct? If not, type n or no.").
+			Description(description).
 			Options(
 				huh.NewOption("Yes", "yes"),
 				huh.NewOption("No", "n"),
 			).
 			Value(&option).
 			Run()
-		utils.PrintStruct(payload)
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {

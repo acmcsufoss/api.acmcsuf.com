@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
@@ -19,7 +20,7 @@ var GetOfficers = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var flagsChosen []string
-		huh.NewForm(
+		err := huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
@@ -33,13 +34,20 @@ var GetOfficers = &cobra.Command{
 					Value(&flagsChosen),
 			),
 		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		for index, flag := range flagsChosen {
 			var hostVal string
 			var portVal string
 			var uuidVal string
 			switch flag {
 			case "host":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Board Get:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
@@ -47,7 +55,7 @@ var GetOfficers = &cobra.Command{
 					Run()
 				cmd.Flags().Set("host", hostVal)
 			case "port":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Board Get:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
@@ -55,13 +63,20 @@ var GetOfficers = &cobra.Command{
 					Run()
 				cmd.Flags().Set("port", portVal)
 			case "id":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Board Get:").
 					Description("Please enter the officer's ID:").
 					Prompt("> ").
 					Value(&uuidVal).
 					Run()
 				cmd.Flags().Set("id", uuidVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
 			}
 			_ = index
 		}

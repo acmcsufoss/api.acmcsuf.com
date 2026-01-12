@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -23,7 +24,7 @@ var DeleteEvent = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		var flagsChosen []string
 		var uuidVal string
-		huh.NewForm(
+		err :=huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
@@ -36,19 +37,33 @@ var DeleteEvent = &cobra.Command{
 					Value(&flagsChosen),
 			),
 		).Run()
-		huh.NewInput().
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		err = huh.NewInput().
 			Title("ACMCSUF-CLI Event Delete:").
 			Description("Please enter the event's uuid:").
 			Prompt("> ").
 			Value(&uuidVal).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		cmd.Flags().Set("id", uuidVal)
 		for index, flag := range flagsChosen {
 			var hostVal string
 			var portVal string
 			switch flag {
 			case "host":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Event Delete:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
@@ -56,13 +71,20 @@ var DeleteEvent = &cobra.Command{
 					Run()
 				cmd.Flags().Set("host", hostVal)
 			case "port":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Event Delete:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
 					Value(&portVal).
 					Run()
 				cmd.Flags().Set("port", portVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
 			}
 			_ = index
 		}

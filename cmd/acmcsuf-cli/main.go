@@ -60,6 +60,10 @@ func menu() {
 	)
 	err := commandMenu.Run()
 	if err != nil {
+		if err == huh.ErrUserAborted {
+			fmt.Println("User canceled the form — exiting.")
+			return
+		}
 		fmt.Println("Uh oh:", err)
 		os.Exit(1)
 	}

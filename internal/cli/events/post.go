@@ -29,7 +29,7 @@ var PostEvent = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
 		var flagsChosen []string
-		huh.NewForm(
+		err := huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
@@ -42,12 +42,19 @@ var PostEvent = &cobra.Command{
 					Value(&flagsChosen),
 			),
 		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		for index, flag := range flagsChosen {
 			var hostVal string
 			var portVal string
 			switch flag {
 			case "host":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Event Post:").
 					Description("Please enter the custom host:").
 					Prompt("> ").
@@ -55,13 +62,20 @@ var PostEvent = &cobra.Command{
 					Run()
 				cmd.Flags().Set("host", hostVal)
 			case "port":
-				huh.NewInput().
+				err = huh.NewInput().
 					Title("ACMCSUF-CLI Event Post:").
 					Description("Please enter the custom port:").
 					Prompt("> ").
 					Value(&portVal).
 					Run()
 				cmd.Flags().Set("port", portVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
 			}
 			_ = index
 		}
@@ -135,12 +149,19 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var uuid string
-		huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Please enter event's uuid:").
 			Prompt("> ").
 			Value(&uuid).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -160,12 +181,19 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var location string
-		huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Please enter the event's location:").
 			Prompt("> ").
 			Value(&location).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(location))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -186,12 +214,19 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var timeStart string
-		huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
 			Prompt("> ").
 			Value(&timeStart).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(timeStart))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -217,12 +252,19 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var duration string
-		huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Please enter the duration of the event in the following format:\n [Hour]:[Minute]\nFor example: \x1b[93m03:04\x1b[0m").
 			Prompt("> ").
 			Value(&duration).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(duration))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -249,7 +291,7 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var allDayYes string
-		huh.NewSelect[string]().
+		err := huh.NewSelect[string]().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Is your event all day?").
 			Options(
@@ -258,6 +300,13 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			).
 			Value(&allDayYes).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(allDayYes))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -282,12 +331,19 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		}
 
 		var host string
-		huh.NewInput().
+		err := huh.NewInput().
 			Title("ACMCSUF-CLI Event Post:").
 			Description("Please enter the event host").
 			Prompt("> ").
 			Value(&host).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(host))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
@@ -303,15 +359,23 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 	// ----- Confirmation -----
 	for {
 		var option string
-		huh.NewSelect[string]().
+		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
 			Title("ACMCSUF-CLI Event Post:").
-			Description("Is your event data correct? If not, type n or no.").
+			Description(description).
 			Options(
 				huh.NewOption("Yes", "yes"),
 				huh.NewOption("No", "n"),
 			).
 			Value(&option).
 			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
