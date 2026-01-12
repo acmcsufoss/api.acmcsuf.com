@@ -111,7 +111,7 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	defer getRes.Body.Close()
 
 	if getRes.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", getRes.Status)
+		fmt.Println("get response status:", getRes.Status)
 		return
 	}
 
@@ -316,11 +316,13 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		fmt.Println("Error with response:", err)
 		return
 	}
+	defer putResponse.Body.Close()
 
 	if putResponse.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", putResponse.Status)
+		fmt.Println("put response status:", putResponse.Status)
+		return
 	}
-	defer putResponse.Body.Close()
+
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
 		fmt.Println("Error with body:", err)

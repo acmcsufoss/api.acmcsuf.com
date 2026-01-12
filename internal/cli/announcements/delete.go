@@ -60,6 +60,10 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 		fmt.Println("error with delete response:", err)
 		return
 	}
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("response status:", response.Status)
+		return
+	}
 
 	if response == nil {
 		fmt.Println("no response received")

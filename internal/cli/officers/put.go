@@ -96,6 +96,11 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("get response code:", resp.Status)
+		return
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Println("error reading response body:", err)
@@ -248,6 +253,11 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 		return
 	}
 	defer putResp.Body.Close()
+
+	if putResp.StatusCode != http.StatusOK {
+		fmt.Println("put response status:", putResp.Status)
+		return
+	}
 
 	fmt.Println("PUT status:", putResp.Status)
 

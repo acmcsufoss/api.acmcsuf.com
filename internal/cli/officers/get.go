@@ -58,6 +58,11 @@ func getOfficers(id string, cfg *config.Config) {
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("response status:", res.Status)
+		return
+	}
+
 	if id == "" {
 		var getPayload []models.GetOfficerRow
 		err = json.NewDecoder(res.Body).Decode(&getPayload)

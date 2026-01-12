@@ -54,12 +54,14 @@ func deleteEvent(id string, cfg *config.Config) {
 		fmt.Println("Error with delete response:", err)
 		return
 	}
+	defer response.Body.Close()
 
 	// ----- Read Response Info -----
 	if response.StatusCode != http.StatusOK {
 		fmt.Println("Response status:", response.Status)
+		return
 	}
-	defer response.Body.Close()
+
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Error reading delete response body:", err)

@@ -200,6 +200,11 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 	}
 	defer res.Body.Close()
 
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("response status:", res.Status)
+		return
+	}
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("error reading body: ", err)

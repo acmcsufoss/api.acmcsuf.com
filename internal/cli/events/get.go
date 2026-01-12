@@ -53,13 +53,14 @@ func getEvents(id string, cfg *config.Config) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
 	}
-	fmt.Println(req.Header.Get("Origin"))
+	defer resp.Body.Close()
 
 	// ----- Read Response Information -----
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Response status:", resp.Status)
+		return
 	}
-	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)

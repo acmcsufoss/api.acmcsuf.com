@@ -61,7 +61,10 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	}
 	defer res.Body.Close()
 
-	fmt.Println("Response status:", res.Status)
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", res.Status)
+		return
+	}
 
 	if uuid == "" {
 		var getPayload []models.CreateAnnouncementParams

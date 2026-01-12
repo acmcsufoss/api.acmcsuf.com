@@ -228,7 +228,10 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 	}
 	defer res.Body.Close()
 
-	fmt.Println("Response status:", res.Status)
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", res.Status)
+		return
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {

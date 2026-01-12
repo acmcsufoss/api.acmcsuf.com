@@ -109,6 +109,11 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	}
 	defer getRes.Body.Close()
 
+	if getRes.StatusCode != http.StatusOK {
+		fmt.Println("get response status:", getRes.Status)
+		return
+	}
+
 	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
@@ -274,13 +279,17 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 		fmt.Println("Error with response:", err)
 		return
 	}
+	defer putResponse.Body.Close()
 
 	if putResponse == nil {
 		fmt.Println("no response received")
 		return
 	}
 
-	defer putResponse.Body.Close()
+	if putResponse.StatusCode != http.StatusOK {
+		fmt.Println("put response status:", putResponse.Status)
+		return
+	}
 
 	// ----- Reading Response Status -----
 	fmt.Println("PUT status:", putResponse.Status)
