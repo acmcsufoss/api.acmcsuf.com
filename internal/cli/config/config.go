@@ -12,18 +12,21 @@ type Config struct {
 	Host     string `json:"host"`
 	Port     string `json:"port"`
 	LogLevel string `json:"log_level"`
+	Origin   string `json:"origin"`
 }
 
 // Subset of Config struct that can be overridden with command line flags
 type ConfigOverrides struct {
-	Host string
-	Port string
+	Host   string
+	Port   string
+	Origin string
 }
 
 var defaultConfig = Config{
 	Host:     "localhost",
 	Port:     "8080",
 	LogLevel: "info",
+	Origin:   "http://acmcsuf-api-dev",
 }
 
 // Global config variable
@@ -39,6 +42,7 @@ func Load(overrides *ConfigOverrides) (*Config, error) {
 		Host:     defaultConfig.Host,
 		Port:     defaultConfig.Port,
 		LogLevel: defaultConfig.LogLevel,
+		Origin:   defaultConfig.Origin,
 	}
 
 	// Override with stuff from config file (if present)
@@ -60,6 +64,9 @@ func Load(overrides *ConfigOverrides) (*Config, error) {
 	}
 	if overrides.Port != "" {
 		cfg.Port = overrides.Port
+	}
+	if overrides.Origin != "" {
+		cfg.Origin = overrides.Origin
 	}
 
 	return cfg, nil

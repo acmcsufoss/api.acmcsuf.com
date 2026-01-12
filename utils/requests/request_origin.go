@@ -3,12 +3,11 @@ package requests
 import (
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 )
 
 func AddOrigin(r *http.Request) {
-	cfg := config.Load()
-	org := cfg.AllowedOrigins[0]
+	org := config.Cfg.Origin
 
 	r.Header.Set("Origin", org)
 }

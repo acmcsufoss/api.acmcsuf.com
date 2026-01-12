@@ -41,11 +41,13 @@ func init() {
 
 	rootCmd.PersistentFlags().String("host", "", "Override configured/default host")
 	rootCmd.PersistentFlags().String("port", "", "Override configured/default port")
+	rootCmd.PersistentFlags().String("origin", "", "Override configured/default origin")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		overrides := &config.ConfigOverrides{
-			Host: cmd.Flag("host").Value.String(),
-			Port: cmd.Flag("port").Value.String(),
+			Host:   cmd.Flag("host").Value.String(),
+			Port:   cmd.Flag("port").Value.String(),
+			Origin: cmd.Flag("origin").Value.String(),
 		}
 		var err error
 		config.Cfg, err = config.Load(overrides)
