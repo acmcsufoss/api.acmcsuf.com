@@ -281,11 +281,6 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	}
 	defer putResponse.Body.Close()
 
-	if putResponse == nil {
-		fmt.Println("no response received")
-		return
-	}
-
 	if putResponse.StatusCode != http.StatusOK {
 		fmt.Println("put response status:", putResponse.Status)
 		return
