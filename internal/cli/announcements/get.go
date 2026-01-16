@@ -7,9 +7,6 @@ import (
 	"net/url"
 	"os"
 
-	"net/http"
-	"net/url"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
@@ -84,8 +81,6 @@ var GetAnnouncement = &cobra.Command{
 			_ = index
 		}
 
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
 		getAnnouncement(uuid, config.Cfg)
 	},

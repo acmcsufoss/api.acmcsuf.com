@@ -84,8 +84,6 @@ var DeleteAnnouncements = &cobra.Command{
 			}
 			_ = index
 		}
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		uuid, _ := cmd.Flags().GetString("id")
 		deleteAnnouncement(uuid, config.Cfg)
 	},

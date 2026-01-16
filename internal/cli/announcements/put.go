@@ -90,8 +90,6 @@ var PutAnnouncements = &cobra.Command{
 			}
 			_ = index
 		}
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")

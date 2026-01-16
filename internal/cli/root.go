@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
@@ -30,6 +31,9 @@ var rootCmd = &cobra.Command{
 	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
 	Version: Version,
+	Run: func(cmd *cobra.Command, args []string) {
+		// do nothing
+	},
 }
 
 // init() is a special function that always gets run before main
@@ -67,4 +71,47 @@ func Execute() exitCode {
 	}
 
 	return exitOK
+}
+
+// Menu function for huh library
+func Menu() {
+	var commandState string
+	commandMenu := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				//Ask the user what commands they want to use.
+				Title("ACMCSUF-CLI Available Commands").
+				Description("A CLI tool to help manage the API of the CSUF ACM website.").
+				Options(
+					huh.NewOption("Announcements", "announcements"),
+					huh.NewOption("Officers", "officers"),
+					huh.NewOption("Events", "events"),
+					huh.NewOption("Version", "version"),
+					huh.NewOption("Exit", "exit"),
+				).
+				Value(&commandState),
+		),
+	)
+	err := commandMenu.Run()
+	if err != nil {
+		if err == huh.ErrUserAborted {
+			fmt.Println("User canceled the form — exiting.")
+			return
+		}
+		fmt.Println("Uh oh:", err)
+		os.Exit(1)
+	}
+	if commandState == "announcements" {
+		announcements.ShowMenu(Menu)
+	}
+	if commandState == "officers" {
+		officers.ShowMenu(Menu)
+	}
+	if commandState == "events" {
+		events.ShowMenu(Menu)
+	}
+	if commandState == "version" {
+		fmt.Println("ACMCSUF-CLI Version:", Version)
+		Menu()
+	}
 }

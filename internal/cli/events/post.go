@@ -10,8 +10,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	// TODO: db params shouldn't be exposed here
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
@@ -79,8 +77,6 @@ var PostEvent = &cobra.Command{
 			}
 			_ = index
 		}
-		urlhost, _ := cmd.Flags().GetString("urlhost")
-		port, _ := cmd.Flags().GetString("port")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")

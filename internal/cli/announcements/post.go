@@ -75,8 +75,6 @@ var PostAnnouncement = &cobra.Command{
 			}
 			_ = index
 		}
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		announceString, _ := cmd.Flags().GetString("announceat")
@@ -220,7 +218,6 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 
 		announceatBuffer := scanner.Bytes()
 
-		var err error
 		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
 		if err != nil {
 			fmt.Println("error converting byte slice to unix time (of type int64):", err)

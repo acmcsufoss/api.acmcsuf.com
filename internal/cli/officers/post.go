@@ -74,8 +74,6 @@ var PostOfficer = &cobra.Command{
 			}
 			_ = index
 		}
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.FullName, _ = cmd.Flags().GetString("name")

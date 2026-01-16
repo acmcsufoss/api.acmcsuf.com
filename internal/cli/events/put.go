@@ -12,8 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
@@ -27,7 +25,6 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.CreateEventParams{}
 		var flagsChosen []string
 		var uuidVal string
 		err := huh.NewForm(
@@ -95,8 +92,7 @@ var PutEvents = &cobra.Command{
 			_ = index
 		}
 		// CLI for url
-		host, _ := cmd.Flags().GetString("urlhost")
-		port, _ := cmd.Flags().GetString("port")
+
 		id, _ := cmd.Flags().GetString("id")
 
 		payload := models.CreateEventParams{}

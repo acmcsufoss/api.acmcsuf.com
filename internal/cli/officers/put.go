@@ -69,8 +69,6 @@ var PutOfficer = &cobra.Command{
 			}
 			_ = index
 		}
-		host, _ := cmd.Flags().GetString("host")
-		port, _ := cmd.Flags().GetString("port")
 		id, _ := cmd.Flags().GetString("id")
 
 		fullname, _ := cmd.Flags().GetString("fullname")
