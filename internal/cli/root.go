@@ -45,9 +45,8 @@ func init() {
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		overrides := &config.ConfigOverrides{
-			Host:   cmd.Flag("host").Value.String(),
-			Port:   cmd.Flag("port").Value.String(),
-			Origin: cmd.Flag("origin").Value.String(),
+			Host: cmd.Flag("host").Value.String(),
+			Port: cmd.Flag("port").Value.String(),
 		}
 		var err error
 		config.Cfg, err = config.Load(overrides)

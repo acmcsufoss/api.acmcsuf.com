@@ -219,7 +219,6 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		fmt.Println("error with post:", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	res, err := client.Do(req)
 	if err != nil {

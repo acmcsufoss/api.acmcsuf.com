@@ -191,7 +191,6 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 		fmt.Println("error with post: ", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	res, err := client.Do(req)
 	if err != nil {

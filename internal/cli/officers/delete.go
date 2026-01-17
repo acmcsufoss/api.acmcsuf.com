@@ -46,7 +46,6 @@ func deleteOfficer(id string, cfg *config.Config) {
 		fmt.Println("Error making delete request:", err)
 		return
 	}
-	requests.AddOrigin(request)
 
 	client := &http.Client{}
 	response, err := client.Do(request)

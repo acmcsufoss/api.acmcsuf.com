@@ -52,7 +52,6 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 		fmt.Println("error with request:", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	res, err := client.Do(req)
 	if err != nil {

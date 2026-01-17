@@ -100,7 +100,6 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
 		return
 	}
-	requests.AddOrigin(getReq)
 
 	getRes, err := client.Do(getReq)
 	if err != nil {
@@ -272,7 +271,6 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
-	requests.AddOrigin(putRequest)
 
 	putResponse, err := client.Do(putRequest)
 	if err != nil {

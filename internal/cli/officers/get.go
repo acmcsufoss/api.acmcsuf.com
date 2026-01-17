@@ -49,7 +49,6 @@ func getOfficers(id string, cfg *config.Config) {
 		fmt.Println("error getting the request: ", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	res, err := client.Do(req)
 	if err != nil {

@@ -87,7 +87,6 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 		fmt.Printf("error making request %s: %s\n", id, err)
 		return
 	}
-	requests.AddOrigin(getReq)
 
 	resp, err := client.Do(getReq)
 	if err != nil {
@@ -241,7 +240,6 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	putResp, err := client.Do(req)
 	if err != nil {

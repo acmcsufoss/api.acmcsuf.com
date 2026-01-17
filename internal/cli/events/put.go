@@ -101,7 +101,6 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
-	requests.AddOrigin(getReq)
 
 	getRes, err := client.Do(getReq)
 	if err != nil {
@@ -309,7 +308,6 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
-	requests.AddOrigin(request)
 
 	putResponse, err := client.Do(request)
 	if err != nil {

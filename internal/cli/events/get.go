@@ -46,7 +46,6 @@ func getEvents(id string, cfg *config.Config) {
 		fmt.Println("Error getting the request:", err)
 		return
 	}
-	requests.AddOrigin(req)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

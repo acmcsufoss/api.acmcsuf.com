@@ -51,7 +51,6 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 		fmt.Println("error with delete request:", err)
 		return
 	}
-	requests.AddOrigin(request)
 
 	client := http.Client{}
 
