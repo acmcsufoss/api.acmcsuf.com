@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -47,10 +48,8 @@ func allowedOrigin(o string, cfg *config.Config) bool {
 		return false
 	}
 
-	for _, elm := range cfg.AllowedOrigins {
-		if elm == o {
-			return true
-		}
+	if slices.Contains(cfg.AllowedOrigins, o) {
+		return true
 	}
 	return false
 }
