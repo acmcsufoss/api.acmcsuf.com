@@ -16,39 +16,44 @@ import (
 // Using cors we can say what we want to access our api
 // Like from specific sites for example.
 func Cors() gin.HandlerFunc {
-
 	cfg := config.Load()
 
-	return func(c *gin.Context) {
-		origin := c.Request.Header.Get("Origin")
+	corsMiddleware := cors.New(cors.Config{
+		AllowOrigins:     cfg.AllowedOrigins,
+		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           time.Hour * 24,
+	})
 
-		if !allowedOrigin(origin, cfg) {
-			c.AbortWithError(http.StatusForbidden, fmt.Errorf("request is not allowed from this origin: %s", origin))
+	return func(ctx *gin.Context) {
+		origin := ctx.Request.Header.Get("Origin")
+
+		// allow non-browser clients
+		if origin == "" {
+			ctx.Next()
 			return
 		}
 
-		corsCfg := cors.New(cors.Config{
-			AllowOrigins:     cfg.AllowedOrigins,
-			AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
-			AllowHeaders:     []string{},
-			ExposeHeaders:    []string{},
-			AllowCredentials: false,
-			MaxAge:           time.Hour * 24,
-		})
+		if !allowedOrigin(origin, cfg) {
+			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+				"error": fmt.Sprintf("request is not allowed from this origin: %s", origin),
+			})
+			return
+		}
 
-		corsCfg(c)
-
-		c.Next()
+		corsMiddleware(ctx)
 	}
 }
 
 // Later when deployed, this can block dev origin and only accept ones used in prod
-func allowedOrigin(o string, cfg *config.Config) bool {
-	if cfg.Env == "production" && o == "development" {
+func allowedOrigin(origin string, cfg *config.Config) bool {
+	if cfg.Env == "production" && origin == "development" {
 		return false
 	}
 
-	if slices.Contains(cfg.AllowedOrigins, o) {
+	if slices.Contains(cfg.AllowedOrigins, origin) {
 		return true
 	}
 	return false
