@@ -9,7 +9,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -44,7 +43,7 @@ func getOfficers(id string, cfg *config.Config) {
 
 	// getting officer(s)
 	client := http.Client{}
-	req, err := requests.NewRequestWithAuth(http.MethodGet, getURL.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, getURL.String(), nil)
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
 		return

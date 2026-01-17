@@ -9,7 +9,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +46,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 
 	// ----- Requesting Get -----
 	client := http.Client{}
-	req, err := requests.NewRequestWithAuth(http.MethodGet, getUrl.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, getUrl.String(), nil)
 	if err != nil {
 		fmt.Println("error with request:", err)
 		return
