@@ -235,13 +235,13 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 
 	// PUT
-	req, err := requests.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
+	putReq, err := requests.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
 
-	putResp, err := client.Do(req)
+	putResp, err := client.Do(putReq)
 	if err != nil {
 		fmt.Println("Error with response:", err)
 		return
