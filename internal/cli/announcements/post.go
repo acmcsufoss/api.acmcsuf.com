@@ -14,6 +14,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -212,21 +213,26 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 
 	fmt.Println(postURL.String())
 	// ----- Post -----
-	response, err := http.Post(postURL.String(), "application/json", strings.NewReader(string(jsonPayload)))
+	client := http.Client{}
+	req, err := requests.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
 	if err != nil {
 		fmt.Println("error with post:", err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error with requesting post", err)
 		return
 	}
-	defer response.Body.Close()
+	defer res.Body.Close()
 
-	fmt.Println("Response status:", response.Status)
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", res.Status)
+		return
+	}
 
-	body, err := io.ReadAll(response.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println("error reading body:", err)
 		return

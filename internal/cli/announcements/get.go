@@ -45,24 +45,28 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	getUrl := baseURL.JoinPath(path)
 
 	// ----- Requesting Get -----
-	response, err := http.Get(getUrl.String())
+	client := http.Client{}
+	req, err := http.NewRequest(http.MethodGet, getUrl.String(), nil)
 	if err != nil {
 		fmt.Println("error with request:", err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error getting announcements:", err)
+		return
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("Response status:", res.Status)
 		return
 	}
 
-	defer response.Body.Close()
-
-	fmt.Println("Response status:", response.Status)
-
 	if uuid == "" {
 		var getPayload []models.CreateAnnouncementParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
 			return
@@ -73,7 +77,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 		}
 	} else {
 		var getPayload models.CreateAnnouncementParams
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
 			return

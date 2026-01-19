@@ -8,6 +8,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -45,7 +46,7 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 	deleteUrl := baseURL.JoinPath("v1/announcements/", id)
 
 	// ----- Delete -----
-	request, err := http.NewRequest(http.MethodDelete, deleteUrl.String(), nil)
+	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteUrl.String(), nil)
 	if err != nil {
 		fmt.Println("error with delete request:", err)
 		return
@@ -56,6 +57,10 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 	response, err := client.Do(request)
 	if err != nil {
 		fmt.Println("error with delete response:", err)
+		return
+	}
+	if response.StatusCode != http.StatusOK {
+		fmt.Println("response status:", response.Status)
 		return
 	}
 

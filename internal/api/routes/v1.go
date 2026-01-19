@@ -10,7 +10,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/handlers"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
+	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 )
 
@@ -41,7 +41,6 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	bh := handlers.NewBoardHandler(boardService)
 
 	v1 := router.Group("/v1")
-
 	// Public (read-only) routes
 	{
 		v1.GET("/events", eh.GetEvents)
@@ -65,7 +64,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 	// Protected (write) routes
 	protected := v1.Group("/")
-	protected.Use(middleware.DiscordAuth(botSession, "Board"))
+	protected.Use(mw.DiscordAuth(botSession, "Board"))
 	{
 		protected.POST("/events", eh.CreateEvent)
 		protected.PUT("/events/:id", eh.UpdateEvent)

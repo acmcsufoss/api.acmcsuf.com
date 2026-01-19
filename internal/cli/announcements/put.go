@@ -13,6 +13,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/spf13/cobra"
 )
 
@@ -92,20 +93,27 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	oldPayloadUrl := baseURL.JoinPath("v1/announcements/", id)
 
 	// ----- Get the Announcement We Want to Update -----
-	response, err := http.Get(oldPayloadUrl.String())
+	client := http.Client{}
+
+	getReq, err := requests.NewRequestWithAuth(http.MethodGet, oldPayloadUrl.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
 		return
 	}
 
-	if response == nil {
-		fmt.Println("no response received")
+	getRes, err := client.Do(getReq)
+	if err != nil {
+		fmt.Println("error getting old payload", err)
+		return
+	}
+	defer getRes.Body.Close()
+
+	if getRes.StatusCode != http.StatusOK {
+		fmt.Println("get response status:", getRes.Status)
 		return
 	}
 
-	defer response.Body.Close()
-
-	body, err := io.ReadAll(response.Body)
+	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
 		fmt.Println("Error reading response body:", err)
 		return
@@ -257,9 +265,8 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 	}
 
 	// ----- Put Payload -----
-	client := &http.Client{}
 
-	putRequest, err := http.NewRequest(http.MethodPut, oldPayloadUrl.String(), bytes.NewBuffer(jsonPayload))
+	putRequest, err := requests.NewRequestWithAuth(http.MethodPut, oldPayloadUrl.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
@@ -270,13 +277,12 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 		fmt.Println("Error with response:", err)
 		return
 	}
+	defer putResponse.Body.Close()
 
-	if putResponse == nil {
-		fmt.Println("no response received")
+	if putResponse.StatusCode != http.StatusOK {
+		fmt.Println("put response status:", putResponse.Status)
 		return
 	}
-
-	defer putResponse.Body.Close()
 
 	// ----- Reading Response Status -----
 	fmt.Println("PUT status:", putResponse.Status)
