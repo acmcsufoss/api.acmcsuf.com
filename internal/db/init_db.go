@@ -1,4 +1,4 @@
-package db
+package main
 
 import (
 	"context"
@@ -21,6 +21,11 @@ type Position struct {
 	Tier  int64  `json:"tier"`
 }
 
+type TierJSON struct {
+	ID    int64 `json:"id"`
+	Index int64 `json:"index"`
+}
+
 // Needed because the officers.json file stores officer and position data together
 type OfficerPositions struct {
 	FullName  string                `json:"fullName"`
@@ -32,7 +37,19 @@ type OfficerPositions struct {
 
 func main() {
 	var s *BoardService
-	var ctx context.Context
+	ctx := context.Background()
+
+	db, err := sql.Open("sqlite3", "./dev.db")
+	if err != nil {
+		log.Fatal("Error opening database:", err)
+	}
+	defer db.Close()
+
+	/*
+		var tier models.CreateTierParams
+		var officer models.CreateOfficerParams
+		var position models.CreatePositionParams
+	*/
 
 	// Populating tiers
 	data, err := os.ReadFile("tiers.json")
@@ -40,18 +57,33 @@ func main() {
 		log.Fatal("Error reading JSON file:", err)
 	}
 
-	var tiers []models.CreateTierParams
+	tiers := make(map[string]TierJSON)
 	err = json.Unmarshal(data, &tiers)
 	if err != nil {
 		log.Fatal("Error unmarshaling JSON:", err)
 	}
 
-	for i := range tiers {
-		s.q.CreateTier(ctx, tiers[i])
+	for title, t := range tiers {
+		/*
+			tier.Tier = t.ID
+			tier.Title = title
+			tier.TIndex = t.Index
+			tier.Team = sql.NullString
+		*/
+
+		tier := models.CreateTierParams{
+			Tier:   t.ID,
+			Title:  sql.NullString{String: title, Valid: true},
+			TIndex: sql.NullInt64{Int64: t.Index, Valid: true},
+		}
+
+		if _, err := s.q.CreateTier(ctx, tier); err != nil {
+			log.Fatal("Error creating tier:", err)
+		}
 	}
 
 	// Populating officers and positions
-	data, err = os.ReadFile("officers.json")
+	data, err := os.ReadFile("officers.json")
 	if err != nil {
 		log.Fatal("Error reading JSON file:", err)
 	}
@@ -61,9 +93,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error unmarshaling JSON:", err)
 	}
-
-	var officer models.CreateOfficerParams
-	var position models.CreatePositionParams
 
 	// Splits up officerPositions into officer data and position data, then populates
 	for i := range officerPositions {
