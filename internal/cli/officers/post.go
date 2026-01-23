@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
-  
+
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 

@@ -10,10 +10,9 @@ import (
 	"net/url"
 	"os"
 	"strings"
-  
-  "github.com/charmbracelet/huh"
-	"github.com/spf13/cobra"
 
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
