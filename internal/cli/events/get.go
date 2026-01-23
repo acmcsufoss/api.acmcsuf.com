@@ -102,7 +102,7 @@ func getEvents(id string, cfg *config.Config) {
 	getURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
 
 	// ----- Get -----
-	req, err := http.NewRequest("GET", getURL.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, getURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error getting the request:", err)
 		return
@@ -113,12 +113,14 @@ func getEvents(id string, cfg *config.Config) {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't make GET request: %v", err)
 	}
+	defer resp.Body.Close()
 
 	// ----- Read Response Information -----
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("Response status:", resp.Status)
+		return
 	}
-	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)

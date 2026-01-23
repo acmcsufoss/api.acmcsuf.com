@@ -105,21 +105,28 @@ func getOfficers(id string, cfg *config.Config) {
 	getURL := baseURL.JoinPath(path)
 
 	// getting officer(s)
-	response, err := http.Get(getURL.String())
+	client := http.Client{}
+	req, err := http.NewRequest(http.MethodGet, getURL.String(), nil)
 	if err != nil {
 		fmt.Println("error getting the request: ", err)
 		return
 	}
-	if response == nil {
-		fmt.Println("no response recieved")
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error with getting response", err)
+		return
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		fmt.Println("response status:", res.Status)
 		return
 	}
 
-	defer response.Body.Close()
-
 	if id == "" {
 		var getPayload []models.GetOfficerRow
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
 			return
@@ -130,7 +137,7 @@ func getOfficers(id string, cfg *config.Config) {
 		}
 	} else {
 		var getPayload models.GetOfficerRow
-		err = json.NewDecoder(response.Body).Decode(&getPayload)
+		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
 			return

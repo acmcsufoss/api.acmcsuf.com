@@ -10,12 +10,15 @@ import (
 	"net/url"
 	"os"
 	"strings"
+  
+  "github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
+
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/charmbracelet/huh"
-	"github.com/spf13/cobra"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PutOfficer = &cobra.Command{
@@ -126,16 +129,24 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	u := baseURL.JoinPath("v1/board/officers/", id)
 
 	// getting old officer
-	resp, err := http.Get(u.String())
+	client := http.Client{}
+	getReq, err := requests.NewRequestWithAuth(http.MethodGet, u.String(), nil)
 	if err != nil {
-		fmt.Printf("error retrieving %s: %s\n", id, err)
+		fmt.Printf("error making request %s: %s\n", id, err)
 		return
 	}
-	if resp == nil {
-		fmt.Println("no response received")
+
+	resp, err := client.Do(getReq)
+	if err != nil {
+		fmt.Println("error getting response", err)
 		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Println("get response code:", resp.Status)
+		return
+	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -282,14 +293,13 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 
 	// PUT
-	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
+	putReq, err := requests.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
 	}
 
-	putResp, err := client.Do(req)
+	putResp, err := client.Do(putReq)
 	if err != nil {
 		fmt.Println("Error with response:", err)
 		return
@@ -299,6 +309,11 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 		return
 	}
 	defer putResp.Body.Close()
+
+	if putResp.StatusCode != http.StatusOK {
+		fmt.Println("put response status:", putResp.Status)
+		return
+	}
 
 	fmt.Println("PUT status:", putResp.Status)
 

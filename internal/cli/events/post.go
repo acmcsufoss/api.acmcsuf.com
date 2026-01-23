@@ -415,13 +415,14 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		fmt.Println("Failed to post event:", err)
 		return
 	}
+	defer response.Body.Close()
 
 	// ----- Read Response Info -----
 	if response.StatusCode != http.StatusOK {
 		fmt.Println("Response status", response.Status)
+		return
 	}
-	fmt.Println("Response Status:", response.Status)
-	defer response.Body.Close()
+
 	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		fmt.Println("Failed to read response body:", err)

@@ -162,22 +162,30 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	}
 
 	// ----- Retrieve payload -----
+	client := &http.Client{}
+
 	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
-	getResponse, err := http.Get(retrievalURL.String())
+	getReq, err := requests.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
 	}
 
-	defer getResponse.Body.Close()
-	body, err := io.ReadAll(getResponse.Body)
+	getRes, err := client.Do(getReq)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		fmt.Println("Error getting request:", err)
+		return
+	}
+	defer getRes.Body.Close()
+
+	if getRes.StatusCode != http.StatusOK {
+		fmt.Println("get response status:", getRes.Status)
 		return
 	}
 
-	if getResponse.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", getResponse.Status)
+	body, err := io.ReadAll(getRes.Body)
+	if err != nil {
+		fmt.Println("Error reading response body:", err)
 		return
 	}
 
@@ -334,7 +342,6 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 	}
 
 	// Confirmation
-	// TODO: Fix put
 	for {
 		var option string
 		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
@@ -382,8 +389,6 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		return
 	}
 
-	client := &http.Client{}
-
 	request, err := requests.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
@@ -395,11 +400,13 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		fmt.Println("Error with response:", err)
 		return
 	}
+	defer putResponse.Body.Close()
 
 	if putResponse.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", putResponse.Status)
+		fmt.Println("put response status:", putResponse.Status)
+		return
 	}
-	defer putResponse.Body.Close()
+
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
 		fmt.Println("Error with body:", err)
