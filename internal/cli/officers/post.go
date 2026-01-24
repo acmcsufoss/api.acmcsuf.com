@@ -25,56 +25,13 @@ var PostOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var payload models.CreateOfficerParams
-		var flagsChosen []string
-		err := huh.NewForm(
-			huh.NewGroup(
-				huh.NewMultiSelect[string]().
-					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Board Post").
-					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
-					Options(
-						huh.NewOption("Change Host", "host"),
-						huh.NewOption("Change Port", "port"),
-					).
-					Value(&flagsChosen),
-			),
-		).Run()
+		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
 				fmt.Println("User canceled the form — exiting.")
 			}
 			fmt.Println("Uh oh:", err)
 			os.Exit(1)
-		}
-		for index, flag := range flagsChosen {
-			var hostVal string
-			var portVal string
-			switch flag {
-			case "host":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Post:").
-					Description("Please enter the custom host:").
-					Prompt("> ").
-					Value(&hostVal).
-					Run()
-				cmd.Flags().Set("host", hostVal)
-			case "port":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Post:").
-					Description("Please enter the custom port:").
-					Prompt("> ").
-					Value(&portVal).
-					Run()
-				cmd.Flags().Set("port", portVal)
-			}
-			if err != nil {
-				if err == huh.ErrUserAborted {
-					fmt.Println("User canceled the form — exiting.")
-				}
-				fmt.Println("Uh oh:", err)
-				os.Exit(1)
-			}
-			_ = index
 		}
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
@@ -125,7 +82,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 		var uuid string
 		err := huh.NewInput().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description("Please enter officer's uuid:").
 			Prompt("> ").
 			Value(&uuid).
@@ -156,7 +113,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 		var fullName string
 		err := huh.NewInput().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description("Please enter officer's full name:").
 			Prompt("> ").
 			Value(&fullName).
@@ -169,7 +126,6 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 			os.Exit(1)
 		}
 		scanner := bufio.NewScanner(strings.NewReader(fullName))
-		fmt.Println("Please enter the officer's full name:")
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -188,7 +144,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 		var picLink string
 		err := huh.NewInput().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description("Please enter the picture link for officer:").
 			Prompt("> ").
 			Value(&picLink).
@@ -219,7 +175,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 		var githubLink string
 		err := huh.NewInput().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description("Please enter the github link for officer:").
 			Prompt("> ").
 			Value(&githubLink).
@@ -250,7 +206,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 		var discordLink string
 		err := huh.NewInput().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description("Please enter the discord link for officer").
 			Prompt("> ").
 			Value(&discordLink).
@@ -279,7 +235,7 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 		var option string
 		description := "Is your board data correct?\n" + utils.PrintStruct(payload)
 		err := huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Board Post:").
+			Title("ACMCSUF-CLI Officer Post:").
 			Description(description).
 			Options(
 				huh.NewOption("Yes", "yes"),

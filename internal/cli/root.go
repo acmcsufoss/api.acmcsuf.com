@@ -147,6 +147,10 @@ func Menu() {
 					Value(&config.CfgOverride.Host).
 					Run()
 				overrides.Host = config.CfgOverride.Host
+				if err != nil {
+					fmt.Println("uh oh:", err)
+					os.Exit(1)
+				}
 			case "port":
 				err = huh.NewInput().
 					Title("ACMCSUF-CLI Config Override:").
@@ -154,12 +158,15 @@ func Menu() {
 					Prompt("> ").
 					Value(&config.CfgOverride.Port).
 					Run()
+				if err != nil {
+					fmt.Println("uh oh:", err)
+					os.Exit(1)
+				}
 				overrides.Port = config.CfgOverride.Port
 			}
-			var err error
 			config.Cfg, err = config.Load(overrides)
 			if err != nil {
-				fmt.Printf("failed to load config: %w\n", err)
+				fmt.Printf("failed to load config: %s\n", err)
 			}
 			if err != nil {
 				if err == huh.ErrUserAborted {

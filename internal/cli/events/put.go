@@ -25,21 +25,8 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var flagsChosen []string
 		var uuidVal string
-		err := huh.NewForm(
-			huh.NewGroup(
-				huh.NewMultiSelect[string]().
-					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Event Put").
-					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
-					Options(
-						huh.NewOption("Change Host", "host"),
-						huh.NewOption("Change Port", "port"),
-					).
-					Value(&flagsChosen),
-			),
-		).Run()
+		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
 				fmt.Println("User canceled the form — exiting.")
@@ -61,38 +48,8 @@ var PutEvents = &cobra.Command{
 			os.Exit(1)
 		}
 		cmd.Flags().Set("id", uuidVal)
-		for index, flag := range flagsChosen {
-			var hostVal string
-			var portVal string
-			switch flag {
-			case "host":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Event Put:").
-					Description("Please enter the custom host:").
-					Prompt("> ").
-					Value(&hostVal).
-					Run()
-				cmd.Flags().Set("host", hostVal)
-			case "port":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Event Put:").
-					Description("Please enter the custom port:").
-					Prompt("> ").
-					Value(&portVal).
-					Run()
-				cmd.Flags().Set("port", portVal)
-			}
-			if err != nil {
-				if err == huh.ErrUserAborted {
-					fmt.Println("User canceled the form — exiting.")
-				}
-				fmt.Println("Uh oh:", err)
-				os.Exit(1)
-			}
-			_ = index
-		}
-		// CLI for url
 
+		// CLI for url
 		id, _ := cmd.Flags().GetString("id")
 
 		payload := models.CreateEventParams{}
@@ -156,8 +113,14 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
+
 	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	if id == "" {
+		fmt.Println("Event id required for put!")
 		return
 	}
 

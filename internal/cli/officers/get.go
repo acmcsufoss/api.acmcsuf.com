@@ -24,11 +24,9 @@ var GetOfficers = &cobra.Command{
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
 					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Board Get").
+					Title("ACMCSUF-CLI Officers Get").
 					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo get all officers, simply click enter.").
 					Options(
-						huh.NewOption("Change Host", "host"),
-						huh.NewOption("Change Port", "port"),
 						huh.NewOption("Get Specific ID", "id"),
 					).
 					Value(&flagsChosen),
@@ -41,30 +39,12 @@ var GetOfficers = &cobra.Command{
 			fmt.Println("Uh oh:", err)
 			os.Exit(1)
 		}
-		for index, flag := range flagsChosen {
-			var hostVal string
-			var portVal string
+		for _, flag := range flagsChosen {
 			var uuidVal string
 			switch flag {
-			case "host":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Get:").
-					Description("Please enter the custom host:").
-					Prompt("> ").
-					Value(&hostVal).
-					Run()
-				cmd.Flags().Set("host", hostVal)
-			case "port":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Get:").
-					Description("Please enter the custom port:").
-					Prompt("> ").
-					Value(&portVal).
-					Run()
-				cmd.Flags().Set("port", portVal)
 			case "id":
 				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Get:").
+					Title("ACMCSUF-CLI Officers Get:").
 					Description("Please enter the officer's ID:").
 					Prompt("> ").
 					Value(&uuidVal).
@@ -78,8 +58,8 @@ var GetOfficers = &cobra.Command{
 				fmt.Println("Uh oh:", err)
 				os.Exit(1)
 			}
-			_ = index
 		}
+
 		id, _ := cmd.Flags().GetString("id")
 		getOfficers(id, config.Cfg)
 	},

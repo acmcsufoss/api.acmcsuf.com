@@ -19,21 +19,8 @@ var DeleteOfficers = &cobra.Command{
 	Short: "Delete an officer with their id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var flagsChosen []string
 		var uuidVal string
-		err := huh.NewForm(
-			huh.NewGroup(
-				huh.NewMultiSelect[string]().
-					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Board Delete").
-					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
-					Options(
-						huh.NewOption("Change Host", "host"),
-						huh.NewOption("Change Port", "port"),
-					).
-					Value(&flagsChosen),
-			),
-		).Run()
+		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
 				fmt.Println("User canceled the form — exiting.")
@@ -55,36 +42,7 @@ var DeleteOfficers = &cobra.Command{
 			os.Exit(1)
 		}
 		cmd.Flags().Set("id", uuidVal)
-		for index, flag := range flagsChosen {
-			var hostVal string
-			var portVal string
-			switch flag {
-			case "host":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Delete:").
-					Description("Please enter the custom host:").
-					Prompt("> ").
-					Value(&hostVal).
-					Run()
-				cmd.Flags().Set("host", hostVal)
-			case "port":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Board Delete:").
-					Description("Please enter the custom port:").
-					Prompt("> ").
-					Value(&portVal).
-					Run()
-				cmd.Flags().Set("port", portVal)
-			}
-			if err != nil {
-				if err == huh.ErrUserAborted {
-					fmt.Println("User canceled the form — exiting.")
-				}
-				fmt.Println("Uh oh:", err)
-				os.Exit(1)
-			}
-			_ = index
-		}
+
 		id, _ := cmd.Flags().GetString("id")
 		deleteOfficer(id, config.Cfg)
 	},

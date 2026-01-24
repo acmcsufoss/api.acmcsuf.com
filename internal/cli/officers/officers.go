@@ -33,7 +33,7 @@ func ShowMenu(backCallback func()) {
 	boardMenu := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				Title("ACMCSUF-CLI Board").
+				Title("ACMCSUF-CLI Officers").
 				Description("Choose an option to your heart's content.").
 				Options(
 					huh.NewOption("Delete", "delete"),

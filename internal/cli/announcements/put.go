@@ -26,21 +26,8 @@ var PutAnnouncements = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateAnnouncementParams{}
-		var flagsChosen []string
 		var uuidVal string
-		err := huh.NewForm(
-			huh.NewGroup(
-				huh.NewMultiSelect[string]().
-					//Ask the user what commands they want to use.
-					Title("ACMCSUF-CLI Announcement Put").
-					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
-					Options(
-						huh.NewOption("Change Host", "host"),
-						huh.NewOption("Change Port", "port"),
-					).
-					Value(&flagsChosen),
-			),
-		).Run()
+		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
 				fmt.Println("User canceled the form — exiting.")
@@ -62,36 +49,7 @@ var PutAnnouncements = &cobra.Command{
 			os.Exit(1)
 		}
 		cmd.Flags().Set("id", uuidVal)
-		for index, flag := range flagsChosen {
-			var hostVal string
-			var portVal string
-			switch flag {
-			case "host":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Put:").
-					Description("Please enter the custom host:").
-					Prompt("> ").
-					Value(&hostVal).
-					Run()
-				cmd.Flags().Set("host", hostVal)
-			case "port":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Announcement Put:").
-					Description("Please enter the custom port:").
-					Prompt("> ").
-					Value(&portVal).
-					Run()
-				cmd.Flags().Set("port", portVal)
-			}
-			if err != nil {
-				if err == huh.ErrUserAborted {
-					fmt.Println("User canceled the form — exiting.")
-				}
-				fmt.Println("Uh oh:", err)
-				os.Exit(1)
-			}
-			_ = index
-		}
+
 		id, _ := cmd.Flags().GetString("id")
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
@@ -151,7 +109,7 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 
 	// ----- Check if Id was Given -----
 	if id == "" {
-		fmt.Println("Announcement id cannot be empty!")
+		fmt.Println("Announcement id required to use put!")
 		return
 	}
 
