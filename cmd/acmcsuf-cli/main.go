@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	exitCode := cli.Execute()
 	cli.Menu()
+	exitCode := cli.Execute()
 	os.Exit(int(exitCode))
 }

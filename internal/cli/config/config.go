@@ -28,6 +28,11 @@ var defaultConfig = Config{
 
 // Global config variable
 var Cfg *Config
+var CfgOverride ConfigOverrides
+
+func init() {
+	Cfg = &Config{}
+}
 
 // Loads config with three layers of precedence
 // 1. Start with default config

@@ -87,6 +87,7 @@ func Menu() {
 					huh.NewOption("Announcements", "announcements"),
 					huh.NewOption("Officers", "officers"),
 					huh.NewOption("Events", "events"),
+					huh.NewOption("Overide Config", "config"),
 					huh.NewOption("Version", "version"),
 					huh.NewOption("Exit", "exit"),
 				).
@@ -110,6 +111,64 @@ func Menu() {
 	}
 	if commandState == "events" {
 		events.ShowMenu(Menu)
+	}
+	if commandState == "config" {
+		var flagsChosen []string
+		err := huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Config Override").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+						huh.NewOption("Change Origin", "origin"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		for index, flag := range flagsChosen {
+			switch flag {
+			case "host":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Config Override:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&config.CfgOverride.Host).
+					Run()
+			case "port":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Config Override:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&config.CfgOverride.Port).
+					Run()
+			case "origin":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Config Override:").
+					Description("Please enter the custom origin:").
+					Prompt("> ").
+					Run()
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
+			}
+			_ = index
+		}
+		Menu()
+
 	}
 	if commandState == "version" {
 		fmt.Println("ACMCSUF-CLI Version:", Version)
