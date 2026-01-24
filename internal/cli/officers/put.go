@@ -259,9 +259,10 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	// Confirm
 	for {
 		var option string
+		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
 		huh.NewSelect[string]().
 			Title("ACMCSUF-CLI Board Put:").
-			Description("Is your event data correct? If not, type n or no.").
+			Description(description).
 			Options(
 				huh.NewOption("Yes", "yes"),
 				huh.NewOption("No", "n"),

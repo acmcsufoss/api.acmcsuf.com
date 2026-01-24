@@ -133,7 +133,7 @@ func getOfficers(id string, cfg *config.Config) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
 		var getPayload models.GetOfficerRow
@@ -143,6 +143,6 @@ func getOfficers(id string, cfg *config.Config) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		fmt.Println(utils.PrintStruct(getPayload))
 	}
 }

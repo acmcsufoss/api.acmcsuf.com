@@ -1,13 +1,14 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -121,9 +122,25 @@ func getEvents(id string, cfg *config.Config) {
 		return
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: couldn't read response body: %v", err)
+	if id == "" {
+		var getPayload []models.CreateEventParams
+		err = json.NewDecoder(resp.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body without id:", err)
+			return
+		}
+
+		for i := range getPayload {
+			fmt.Println(utils.PrintStruct(getPayload[i]))
+		}
+	} else {
+		var getPayload models.CreateAnnouncementParams
+		err = json.NewDecoder(resp.Body).Decode(&getPayload)
+		if err != nil {
+			fmt.Println("Failed to read response body with id:", err)
+			return
+		}
+
+		fmt.Println(utils.PrintStruct(getPayload))
 	}
-	utils.PrettyPrintJSON(body)
 }

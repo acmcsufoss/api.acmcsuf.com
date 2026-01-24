@@ -43,7 +43,7 @@ var DeleteOfficers = &cobra.Command{
 		}
 		err = huh.NewInput().
 			Title("ACMCSUF-CLI Board Delete:").
-			Description("Please enter the announcement's ID:").
+			Description("Please enter the officer's ID:").
 			Prompt("> ").
 			Value(&uuidVal).
 			Run()
