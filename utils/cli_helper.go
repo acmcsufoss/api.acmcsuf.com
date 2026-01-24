@@ -150,8 +150,9 @@ func PrintStruct(s any) string {
 			}
 		}
 
-		params += fmt.Sprintf("\t%-20s | %s\n", t.Name, display)
+		params += fmt.Sprintf("\033[94m\t%-20s\033[0m| \033[92m%s\033[0m\n", t.Name, display)
 	}
+	params += "------------------------------------------------------------------"
 
 	return params
 }
