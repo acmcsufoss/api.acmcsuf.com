@@ -76,6 +76,8 @@ func Execute() exitCode {
 
 // Menu function for huh library
 func Menu() {
+	overrides := &config.ConfigOverrides{}
+
 	var commandState string
 	commandMenu := huh.NewForm(
 		huh.NewGroup(
@@ -144,6 +146,7 @@ func Menu() {
 					Prompt("> ").
 					Value(&config.CfgOverride.Host).
 					Run()
+				overrides.Host = config.CfgOverride.Host
 			case "port":
 				err = huh.NewInput().
 					Title("ACMCSUF-CLI Config Override:").
@@ -151,12 +154,12 @@ func Menu() {
 					Prompt("> ").
 					Value(&config.CfgOverride.Port).
 					Run()
-			case "origin":
-				err = huh.NewInput().
-					Title("ACMCSUF-CLI Config Override:").
-					Description("Please enter the custom origin:").
-					Prompt("> ").
-					Run()
+				overrides.Port = config.CfgOverride.Port
+			}
+			var err error
+			config.Cfg, err = config.Load(overrides)
+			if err != nil {
+				fmt.Printf("failed to load config: %w\n", err)
 			}
 			if err != nil {
 				if err == huh.ErrUserAborted {
