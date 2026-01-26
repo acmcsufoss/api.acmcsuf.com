@@ -19,6 +19,8 @@ var GetAnnouncement = &cobra.Command{
 	Short: "Get an announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		blankUUID := ""
+		cmd.Flags().Set("id", blankUUID)
 		var flagsChosen []string
 		err := huh.NewForm(
 			huh.NewGroup(
@@ -59,7 +61,6 @@ var GetAnnouncement = &cobra.Command{
 				os.Exit(1)
 			}
 		}
-
 		uuid, _ := cmd.Flags().GetString("id")
 		getAnnouncement(uuid, config.Cfg)
 	},
