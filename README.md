@@ -1,6 +1,6 @@
 # api.acmcsuf.com
 
-ACM at CSUF club API for managing events, announcements, forms, and other services! Keep reading for information on setting up this project locally, and see the [contributor guide](./.github/CONTRIBUTING.md) and [`developer-docs/`](./developer-docs) for more information on using and contributing to this project.
+ACM at CSUF club API for managing events, announcements, forms, and other services! Keep reading for information on setting up this project locally, and see the [contributor guide](./docs/CONTRIBUTING.md) and [`docs/`](./docs) for more information on using and contributing to this project.
 
 ---
 
