@@ -19,6 +19,8 @@ var GetOfficers = &cobra.Command{
 	Short: "Get Officers",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		blankUUID := ""
+		cmd.Flags().Set("id", blankUUID)
 		var flagsChosen []string
 		err := huh.NewForm(
 			huh.NewGroup(
