@@ -5,7 +5,7 @@ Thanks for contributing!
 ## Getting Started
 
 Take a look at [the readme](/README.md) for information on getting the project running
-locally. Read [the developer docs](/developer-docs/api-testing.md) for some tips
+locally. Read [the developer docs](/docs/api-testing.md) for some tips
 on testing the api.
 
 ---
