@@ -21,7 +21,6 @@ jobs:
               - "**/*.sql"
               - "go.mod"
               - "go.sum"
-              - ".github/workflows/ci.yaml"
 
   ci:
     needs: changes
