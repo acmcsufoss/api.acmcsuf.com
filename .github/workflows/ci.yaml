@@ -1,29 +1,35 @@
 name: CI
 
 on:
-  push:
-    branches: ["main"]
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/ci.yaml"
   pull_request:
     branches: ["main"]
-    paths:
-      - "**/*.go"
-      - "go.mod"
-      - "go.sum"
-      - ".github/workflows/ci.yaml"
 
 jobs:
-  build:
-    name: CI Checks
+  changes:
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
-      id-token: "write"
+    outputs:
+      source_code: ${{ steps.filter.outputs.source_code }}
+    steps:
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            source_code:
+              - "**/*.go"
+              - "**/*.sql"
+              - "go.mod"
+              - "go.sum"
+              - ".github/workflows/ci.yaml"
 
+  ci:
+    needs: changes
+    if: ${{ needs.changes.outputs.source_code == 'true' }}
+    permissions:
+      contents: "read"
+      id-token: "write"
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
