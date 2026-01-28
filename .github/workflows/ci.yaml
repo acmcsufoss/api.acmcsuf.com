@@ -1,17 +1,17 @@
-name: CI
-
 on:
   pull_request:
     branches: ["main"]
 
 jobs:
-  changes:
+  ci:
     runs-on: ubuntu-latest
     permissions:
       contents: "read"
+      id-token: "write"
     outputs:
       source_code: ${{ steps.filter.outputs.source_code }}
     steps:
+      - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -22,30 +22,26 @@ jobs:
               - "go.mod"
               - "go.sum"
 
-  ci:
-    needs: changes
-    if: ${{ needs.changes.outputs.source_code == 'true' }}
-    permissions:
-      contents: "read"
-      id-token: "write"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
       - name: Install Nix
+        if: steps.filter.outputs.source_code == 'true'
         uses: DeterminateSystems/nix-installer-action@main
 
       - name: Format check
+        if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c bash -c "make fmt && git diff --exit-code"
 
       - name: Check
+        if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c make check
 
       - name: Sql check
+        if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c make check-sql
 
       - name: Build
+        if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c make build
 
       - name: Test
+        if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c make test
