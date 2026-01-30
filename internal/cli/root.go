@@ -48,6 +48,7 @@ func init() {
 	var err error
 	config.Cfg, err = config.Load(overrides)
 	if err != nil {
+		fmt.Printf("failed to load config: %s", err)
 		return
 	}
 
@@ -187,6 +188,10 @@ func Menu() {
 			_ = index
 		}
 		config.Cfg, err = config.Load(overrides)
+		if err != nil {
+			fmt.Printf("failed to load config: %s", err)
+			return
+		}
 		Menu()
 
 	}
