@@ -27,6 +27,7 @@ var PutOfficer = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateOfficerParams{}
 		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
 		huh.NewForm().Run()
 		huh.NewInput().
 			Title("ACMCSUF-CLI Officer Put:").

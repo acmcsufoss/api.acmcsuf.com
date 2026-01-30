@@ -27,6 +27,7 @@ var PutAnnouncements = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateAnnouncementParams{}
 		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -94,7 +95,6 @@ func init() {
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
-
 }
 
 func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {

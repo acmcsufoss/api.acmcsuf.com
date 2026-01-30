@@ -21,6 +21,7 @@ var DeleteAnnouncements = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
