@@ -7,7 +7,7 @@ buildGoModule {
   name = "acmcsuf-api";
   src = ../.;
   version = version;
-  vendorHash = "sha256-3BpLbfoLmv5dwBxEHW7i//MlgIsrGMT8ZILrze7WM18=";
+  vendorHash = "sha256-qr5wgHUKVv+Sv7TQGgOX9zRx9O6OgqFA16xwBTSysb4=";
   subPackages = ["cmd/acmcsuf-api" "cmd/acmcsuf-cli"];
   ldflags = ["-X main.Version=${version}"];
 
