@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := build
 
+include .env
+
 .PHONY: help
 help: ## Display this help screen
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -8,15 +10,18 @@ BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
+MIGRATE_DIR := migrations
+
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) internal/db/sqlc.yaml $(wildcard internal/api/handlers/*.go)
 GENERATE_MARKER := .generate.marker
 
-.PHONY:fmt run build vet check test check-sql fix-sql clean release generate
+.PHONY:fmt run build vet check test check-sql fix-sql clean release generate migrate-up migrate-down
 
 fmt: ## Format all go files
 	@go fmt ./...
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
+
 
 $(GENERATE_MARKER): $(GENERATE_DEPS)
 	go generate ./...
@@ -58,3 +63,9 @@ clean: ## Clean up all generated files and binaries
 	go clean
 	rm -f $(GENERATE_MARKER)
 	rm -rf $(BIN_DIR) result
+
+migrate-up:
+	migrate -path $(MIGRATE_DIR) -database  ${DATABASE_URL} up
+
+migrate-down:
+	migrate -path $(MIGRATE_DIR) -database ${DATABASE_URL} down 1 

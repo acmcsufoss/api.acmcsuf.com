@@ -21,6 +21,9 @@ bin/
 # Dependency directories (remove the comment below to include it)
 vendor/
 
+# Migrations file
+migrations/
+
 # Go workspace file
 go.work
 *.sqlite
