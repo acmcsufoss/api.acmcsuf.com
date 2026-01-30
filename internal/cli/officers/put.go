@@ -9,12 +9,15 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
+
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
-	"github.com/spf13/cobra"
 )
 
 var PutOfficer = &cobra.Command{
@@ -23,7 +26,16 @@ var PutOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateOfficerParams{}
-
+		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
+		huh.NewForm().Run()
+		huh.NewInput().
+			Title("ACMCSUF-CLI Officer Put:").
+			Description("Please enter the officer's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		cmd.Flags().Set("id", uuidVal)
 		id, _ := cmd.Flags().GetString("id")
 
 		fullname, _ := cmd.Flags().GetString("fullname")
@@ -73,7 +85,7 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 	}
 
 	if id == "" {
-		fmt.Println("Officer id required for put! Use --id")
+		fmt.Println("Officer id required for put!")
 		return
 	}
 
@@ -211,7 +223,18 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 
 	// Confirm
 	for {
-		fmt.Println("Is the officer data correct? (y/n)")
+		var option string
+		description := "Is your board data correct?\n" + utils.PrintStruct(payload)
+		huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Officer Put:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		utils.PrintStruct(payload)
 		scanner.Scan()
 		confirmation := scanner.Bytes()

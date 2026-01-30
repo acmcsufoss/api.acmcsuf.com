@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
@@ -26,14 +27,31 @@ const (
 
 var Version = "dev"
 
+var overrides *config.ConfigOverrides
+
 var rootCmd = &cobra.Command{
 	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
 	Version: Version,
+	Run: func(cmd *cobra.Command, args []string) {
+		// do nothing
+	},
 }
 
 // init() is a special function that always gets run before main
 func init() {
+	overrides = &config.ConfigOverrides{
+		Host: "",
+		Port: "",
+	}
+
+	var err error
+	config.Cfg, err = config.Load(overrides)
+	if err != nil {
+		fmt.Printf("failed to load config: %s", err)
+		return
+	}
+
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
@@ -44,11 +62,10 @@ func init() {
 	rootCmd.PersistentFlags().String("origin", "", "Override configured/default origin")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		overrides := &config.ConfigOverrides{
+		overrides = &config.ConfigOverrides{
 			Host: cmd.Flag("host").Value.String(),
 			Port: cmd.Flag("port").Value.String(),
 		}
-		var err error
 		config.Cfg, err = config.Load(overrides)
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
@@ -68,4 +85,118 @@ func Execute() exitCode {
 	}
 
 	return exitOK
+}
+
+// Menu function for huh library
+func Menu() {
+	var commandState string
+	commandMenu := huh.NewForm(
+		huh.NewGroup(
+			huh.NewSelect[string]().
+				// Ask the user what commands they want to use.
+				Title("ACMCSUF-CLI Available Commands").
+				Description("A CLI tool to help manage the API of the CSUF ACM website.").
+				Options(
+					huh.NewOption("Announcements", "announcements"),
+					huh.NewOption("Officers", "officers"),
+					huh.NewOption("Events", "events"),
+					huh.NewOption("Overide Config", "config"),
+					huh.NewOption("Version", "version"),
+					huh.NewOption("Exit", "exit"),
+				).
+				Value(&commandState),
+		),
+	)
+	err := commandMenu.Run()
+	if err != nil {
+		if err == huh.ErrUserAborted {
+			fmt.Println("User canceled the form — exiting.")
+			return
+		}
+		fmt.Println("Uh oh:", err)
+		os.Exit(1)
+	}
+	if commandState == "announcements" {
+		announcements.ShowMenu(Menu)
+	}
+	if commandState == "officers" {
+		officers.ShowMenu(Menu)
+	}
+	if commandState == "events" {
+		events.ShowMenu(Menu)
+	}
+	if commandState == "config" {
+		var flagsChosen []string
+		err := huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					// Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Config Override").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
+					Options(
+						huh.NewOption("Change Host", "host"),
+						huh.NewOption("Change Port", "port"),
+						huh.NewOption("Change Origin", "origin"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		for index, flag := range flagsChosen {
+			switch flag {
+			case "host":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Config Override:").
+					Description("Please enter the custom host:").
+					Prompt("> ").
+					Value(&config.CfgOverride.Host).
+					Run()
+				overrides.Host = config.CfgOverride.Host
+				if err != nil {
+					fmt.Println("uh oh:", err)
+					os.Exit(1)
+				}
+			case "port":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Config Override:").
+					Description("Please enter the custom port:").
+					Prompt("> ").
+					Value(&config.CfgOverride.Port).
+					Run()
+				if err != nil {
+					fmt.Println("uh oh:", err)
+					os.Exit(1)
+				}
+				overrides.Port = config.CfgOverride.Port
+			}
+			if err != nil {
+				fmt.Printf("failed to load config: %s\n", err)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
+			}
+			_ = index
+		}
+		config.Cfg, err = config.Load(overrides)
+		if err != nil {
+			fmt.Printf("failed to load config: %s", err)
+			return
+		}
+		Menu()
+
+	}
+	if commandState == "version" {
+		fmt.Println("ACMCSUF-CLI Version:", Version)
+		Menu()
+	}
 }

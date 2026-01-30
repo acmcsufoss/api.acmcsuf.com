@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +19,49 @@ var GetOfficers = &cobra.Command{
 	Short: "Get Officers",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		blankUUID := ""
+		cmd.Flags().Set("id", blankUUID)
+		var flagsChosen []string
+		err := huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Officers Get").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo get all officers, simply click enter.").
+					Options(
+						huh.NewOption("Get Specific ID", "id"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		for _, flag := range flagsChosen {
+			var uuidVal string
+			switch flag {
+			case "id":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Officers Get:").
+					Description("Please enter the officer's ID:").
+					Prompt("> ").
+					Value(&uuidVal).
+					Run()
+				cmd.Flags().Set("id", uuidVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
+			}
+		}
+
 		id, _ := cmd.Flags().GetString("id")
 		getOfficers(id, config.Cfg)
 	},
@@ -70,7 +115,7 @@ func getOfficers(id string, cfg *config.Config) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
 		var getPayload models.GetOfficerRow
@@ -80,6 +125,6 @@ func getOfficers(id string, cfg *config.Config) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		fmt.Println(utils.PrintStruct(getPayload))
 	}
 }

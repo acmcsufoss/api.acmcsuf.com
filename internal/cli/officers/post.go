@@ -10,11 +10,13 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
-	"github.com/spf13/cobra"
 )
 
 var PostOfficer = &cobra.Command{
@@ -23,6 +25,14 @@ var PostOfficer = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var payload models.CreateOfficerParams
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.FullName, _ = cmd.Flags().GetString("name")
@@ -64,15 +74,27 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// uuid
 	for {
 		if cf.uuid {
 			break
 		}
 
-		fmt.Println("Please enter officer's uuid:")
+		var uuid string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description("Please enter officer's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -89,7 +111,21 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 			break
 		}
 
-		fmt.Println("Please enter the officer's full name:")
+		var fullName string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description("Please enter officer's full name:").
+			Prompt("> ").
+			Value(&fullName).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(fullName))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -106,7 +142,21 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 			break
 		}
 
-		fmt.Println("Please enter the picture link for officer:")
+		var picLink string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description("Please enter the picture link for officer:").
+			Prompt("> ").
+			Value(&picLink).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(picLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -123,7 +173,21 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 			break
 		}
 
-		fmt.Println("Please enter the github link for officer:")
+		var githubLink string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description("Please enter the github link for officer:").
+			Prompt("> ").
+			Value(&githubLink).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(githubLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -140,7 +204,21 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 			break
 		}
 
-		fmt.Println("Please enter the discord link for officer:")
+		var discordLink string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description("Please enter the discord link for officer").
+			Prompt("> ").
+			Value(&discordLink).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(discordLink))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -154,7 +232,25 @@ func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *con
 
 	// confirmation
 	for {
-		fmt.Println("Is your officer data correct? If not, type n or no.")
+		var option string
+		description := "Is your board data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Officer Post:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		utils.PrintStruct(payload)
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {

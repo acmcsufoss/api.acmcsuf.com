@@ -6,11 +6,14 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"os"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/charmbracelet/huh"
 )
 
 // Reoccuring functions for CLI files
@@ -19,19 +22,41 @@ import (
 
 // Returns a byte slice, if nil, no changes shall be made. Else, if a byte slice were to return, change the payload value
 func ChangePrompt(dataToBeChanged string, currentData string, scanner *bufio.Scanner, entity string) ([]byte, error) {
-	fmt.Printf("Would you like to change this %s's \x1b[1m%s\x1b[0m?[y/n]\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
-	scanner.Scan()
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading input: %s", err)
-	}
-	userInput := scanner.Bytes()
-
-	changeData, err := YesOrNo(userInput, scanner)
+	var option string
+	question := fmt.Sprintf("Would you like to change this %s's \x1b[1m%s\x1b[0m?\nCurrent %s's %s: \x1b[93m%s\x1b[0m\n", entity, dataToBeChanged, entity, dataToBeChanged, currentData)
+	err := huh.NewSelect[string]().
+		Title("ACMCSUF-CLI Put:").
+		Description(question).
+		Options(
+			huh.NewOption("Yes", "yes"),
+			huh.NewOption("No", "n"),
+		).
+		Value(&option).
+		Run()
 	if err != nil {
-		return nil, err
+		if err == huh.ErrUserAborted {
+			fmt.Println("User canceled the form — exiting.")
+		}
+		fmt.Println("Uh oh:", err)
+		os.Exit(1)
 	}
-	if changeData {
-		fmt.Printf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
+	if option == "yes" {
+		var input string
+		newInputText := fmt.Sprintf("Please enter a new \x1b[1m%s\x1b[0m for the %s:\n", dataToBeChanged, entity)
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Put:").
+			Description(newInputText).
+			Prompt("> ").
+			Value(&input).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(input))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			return nil, fmt.Errorf("error reading new %s: %s", dataToBeChanged, err)
@@ -49,7 +74,8 @@ func FormatUnix(unixTime int64) string {
 }
 
 // Print the struct passed into it in a nice display in the terminal
-func PrintStruct(s any) {
+func PrintStruct(s any) string {
+	params := ""
 	val := reflect.ValueOf(s)
 	typ := reflect.TypeOf(s)
 
@@ -61,10 +87,9 @@ func PrintStruct(s any) {
 
 	if val.Kind() != reflect.Struct {
 		fmt.Println("error, not a struct")
-		return
+		return ""
 	}
 
-	fmt.Printf("%s:\n", typ.Name())
 	for i := 0; i < val.NumField(); i++ {
 		v := val.Field(i)
 		t := typ.Field(i)
@@ -125,10 +150,11 @@ func PrintStruct(s any) {
 			}
 		}
 
-		fmt.Printf("\t%-20s | %s\n", t.Name, display)
+		params += fmt.Sprintf("\033[94m\t%-20s\033[0m| \033[92m%s\033[0m\n", t.Name, display)
 	}
+	params += "------------------------------------------------------------------"
 
-	fmt.Println("----------------------------------------------------------------")
+	return params
 }
 
 func CheckConnection(url string) error {

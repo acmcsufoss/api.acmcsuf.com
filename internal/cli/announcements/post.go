@@ -3,19 +3,20 @@ package announcements
 import (
 	"bufio"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 
-	"fmt"
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
-	"github.com/spf13/cobra"
 )
 
 var PostAnnouncement = &cobra.Command{
@@ -24,7 +25,14 @@ var PostAnnouncement = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateAnnouncementParams{}
-
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Visibility, _ = cmd.Flags().GetString("visibility")
 		announceString, _ := cmd.Flags().GetString("announceat")
@@ -76,15 +84,26 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// ----- Uuid -----
 	for {
 		if changedFlags.id {
 			break
 		}
-
-		fmt.Println("Please enter the announcement's uuid:")
+		var uuid string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error with reading uuid:", err)
@@ -102,7 +121,21 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.visibility {
 			break
 		}
-		fmt.Println("Please enter this announcement's visibility:")
+		var visibility string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's visibility:").
+			Prompt("> ").
+			Value(&visibility).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(visibility))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error with reading visibility:", err)
@@ -120,9 +153,21 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.announceat {
 			break
 		}
-
-		fmt.Println("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]")
-		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		var announceAt string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+			Prompt("> ").
+			Value(&announceAt).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(announceAt))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading anounce at:", err)
@@ -131,7 +176,6 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 
 		announceatBuffer := scanner.Bytes()
 
-		var err error
 		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
 		if err != nil {
 			fmt.Println("error converting byte slice to unix time (of type int64):", err)
@@ -146,8 +190,21 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.channelid {
 			break
 		}
-
-		fmt.Println("Please enter this announcement's discord channel id:")
+		var discordid string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's discord channel id:").
+			Prompt("> ").
+			Value(&discordid).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(discordid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading  discord channel id:", err)
@@ -165,8 +222,21 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 		if changedFlags.messageid {
 			break
 		}
-
-		fmt.Println("Please enter this announcement's message id:")
+		var messageid string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description("Please enter the announcement's message id:").
+			Prompt("> ").
+			Value(&messageid).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(messageid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading message id:", err)
@@ -180,8 +250,25 @@ func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags ann
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		var option string
+		description := "Is your announcement data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Announcements Post:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

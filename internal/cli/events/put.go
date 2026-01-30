@@ -10,13 +10,14 @@ import (
 	"net/url"
 	"os"
 	"strconv"
-
-	"github.com/spf13/cobra"
+	"strings"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 )
 
 var PutEvents = &cobra.Command{
@@ -24,6 +25,32 @@ var PutEvents = &cobra.Command{
 	Short: "Used to update an event",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		err = huh.NewInput().
+			Title("ACMCSUF-CLI Event Put:").
+			Description("Please enter the event's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		cmd.Flags().Set("id", uuidVal)
+
+		// CLI for url
 		id, _ := cmd.Flags().GetString("id")
 
 		payload := models.CreateEventParams{}
@@ -87,8 +114,14 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
+
 	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
 		fmt.Println(err)
+		return
+	}
+
+	if id == "" {
+		fmt.Println("Event id required for put!")
 		return
 	}
 
@@ -274,8 +307,25 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 
 	// Confirmation
 	for {
-		fmt.Println("Are these changes okay?[y/n]")
-		utils.PrintStruct(updatePayload)
+		var option string
+		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Put:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error scanning confirmation:", err)

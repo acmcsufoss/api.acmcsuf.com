@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 )
 
@@ -17,6 +19,48 @@ var GetAnnouncement = &cobra.Command{
 	Short: "Get an announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		blankUUID := ""
+		cmd.Flags().Set("id", blankUUID)
+		var flagsChosen []string
+		err := huh.NewForm(
+			huh.NewGroup(
+				huh.NewMultiSelect[string]().
+					//Ask the user what commands they want to use.
+					Title("ACMCSUF-CLI Announcement Get").
+					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo get all announcements, simply click enter.").
+					Options(
+						huh.NewOption("Get Specific ID", "id"),
+					).
+					Value(&flagsChosen),
+			),
+		).Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		for _, flag := range flagsChosen {
+			var uuidVal string
+			switch flag {
+			case "id":
+				err = huh.NewInput().
+					Title("ACMCSUF-CLI Announcement Get:").
+					Description("Please enter the announcement's ID:").
+					Prompt("> ").
+					Value(&uuidVal).
+					Run()
+				cmd.Flags().Set("id", uuidVal)
+			}
+			if err != nil {
+				if err == huh.ErrUserAborted {
+					fmt.Println("User canceled the form — exiting.")
+				}
+				fmt.Println("Uh oh:", err)
+				os.Exit(1)
+			}
+		}
 		uuid, _ := cmd.Flags().GetString("id")
 		getAnnouncement(uuid, config.Cfg)
 	},
@@ -73,7 +117,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 		}
 
 		for i := range getPayload {
-			utils.PrintStruct(getPayload[i])
+			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
 		var getPayload models.CreateAnnouncementParams
@@ -83,7 +127,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 			return
 		}
 
-		utils.PrintStruct(getPayload)
+		fmt.Println(utils.PrintStruct(getPayload))
 	}
 
 }

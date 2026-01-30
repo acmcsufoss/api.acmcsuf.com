@@ -10,13 +10,14 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
-
 	// TODO: db params shouldn't be exposed here
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
+	"github.com/charmbracelet/huh"
+
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
+	"github.com/spf13/cobra"
 )
 
 var PostEvent = &cobra.Command{
@@ -25,6 +26,14 @@ var PostEvent = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
@@ -86,15 +95,27 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 		return
 	}
 
-	scanner := bufio.NewScanner(os.Stdin)
-
 	// ----- Uuid -----
 	for {
 		if changedFlag.uuid {
 			break
 		}
 
-		fmt.Println("Please enter event's uuid:")
+		var uuid string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter event's uuid:").
+			Prompt("> ").
+			Value(&uuid).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(uuid))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -112,7 +133,21 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("please enter the event's location:")
+		var location string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the event's location:").
+			Prompt("> ").
+			Value(&location).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(location))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -131,8 +166,21 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]")
-		fmt.Println("For example: \x1b[93m01/02/06 03:04PM\x1b[0m")
+		var timeStart string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the start time of the event in the following format:\n [Month]/[Day]/[Year] [Hour]:[Minute][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+			Prompt("> ").
+			Value(&timeStart).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(timeStart))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading start time:", err)
@@ -156,9 +204,21 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the duration of the event in the following format:\n [Hour]:[Minute]")
-		fmt.Println("For example: \x1b[93m03:04\x1b[0m")
-
+		var duration string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the duration of the event in the following format:\n [Hour]:[Minute]\nFor example: \x1b[93m03:04\x1b[0m").
+			Prompt("> ").
+			Value(&duration).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(duration))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println("error reading end time:", err)
@@ -183,7 +243,24 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Is the event all day?")
+		var allDayYes string
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Is your event all day?").
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&allDayYes).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(allDayYes))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -206,7 +283,21 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 			break
 		}
 
-		fmt.Println("Please enter the event host:")
+		var host string
+		err := huh.NewInput().
+			Title("ACMCSUF-CLI Event Post:").
+			Description("Please enter the event host").
+			Prompt("> ").
+			Value(&host).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(host))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)
@@ -220,9 +311,25 @@ func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *c
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
-
+		var option string
+		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Event Post:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

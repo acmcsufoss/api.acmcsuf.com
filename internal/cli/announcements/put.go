@@ -9,12 +9,15 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
+
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
-	"github.com/spf13/cobra"
 )
 
 var PutAnnouncements = &cobra.Command{
@@ -23,6 +26,30 @@ var PutAnnouncements = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.UpdateAnnouncementParams{}
+		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		err = huh.NewInput().
+			Title("ACMCSUF-CLI Announcement Put:").
+			Description("Please enter the announcement's ID:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		cmd.Flags().Set("id", uuidVal)
 
 		id, _ := cmd.Flags().GetString("id")
 
@@ -68,8 +95,6 @@ func init() {
 	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
 	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
-
-	PutAnnouncements.MarkFlagRequired("id")
 }
 
 func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
@@ -84,7 +109,7 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 
 	// ----- Check if Id was Given -----
 	if id == "" {
-		fmt.Println("Announcement id required for put! Please use the --id flag")
+		fmt.Println("Announcement id required to use put!")
 		return
 	}
 
@@ -235,8 +260,25 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 
 	// ----- Confirmation -----
 	for {
-		fmt.Println("Is your event data correct? If not, type n or no.")
-		utils.PrintStruct(payload)
+		var option string
+		description := "Is your announcement data correct?\n" + utils.PrintStruct(payload)
+		err := huh.NewSelect[string]().
+			Title("ACMCSUF-CLI Announcements Put:").
+			Description(description).
+			Options(
+				huh.NewOption("Yes", "yes"),
+				huh.NewOption("No", "n"),
+			).
+			Value(&option).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		scanner := bufio.NewScanner(strings.NewReader(option))
 		scanner.Scan()
 		if err := scanner.Err(); err != nil {
 			fmt.Println(err)

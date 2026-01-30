@@ -5,12 +5,13 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-
-	"github.com/spf13/cobra"
+	"os"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
 )
 
 var DeleteEvent = &cobra.Command{
@@ -18,6 +19,30 @@ var DeleteEvent = &cobra.Command{
 	Short: "Delete an event with its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
+		var uuidVal string
+		cmd.Flags().Set("id", uuidVal)
+		err := huh.NewForm().Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		err = huh.NewInput().
+			Title("ACMCSUF-CLI Event Delete:").
+			Description("Please enter the event's uuid:").
+			Prompt("> ").
+			Value(&uuidVal).
+			Run()
+		if err != nil {
+			if err == huh.ErrUserAborted {
+				fmt.Println("User canceled the form — exiting.")
+			}
+			fmt.Println("Uh oh:", err)
+			os.Exit(1)
+		}
+		cmd.Flags().Set("id", uuidVal)
 		id, _ := cmd.Flags().GetString("id")
 		deleteEvent(id, config.Cfg)
 	},
