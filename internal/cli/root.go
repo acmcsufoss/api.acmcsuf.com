@@ -27,6 +27,8 @@ const (
 
 var Version = "dev"
 
+var overrides *config.ConfigOverrides
+
 var rootCmd = &cobra.Command{
 	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
@@ -38,6 +40,17 @@ var rootCmd = &cobra.Command{
 
 // init() is a special function that always gets run before main
 func init() {
+	overrides = &config.ConfigOverrides{
+		Host: "",
+		Port: "",
+	}
+
+	var err error
+	config.Cfg, err = config.Load(overrides)
+	if err != nil {
+		return
+	}
+
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
@@ -48,11 +61,10 @@ func init() {
 	rootCmd.PersistentFlags().String("origin", "", "Override configured/default origin")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		overrides := &config.ConfigOverrides{
+		overrides = &config.ConfigOverrides{
 			Host: cmd.Flag("host").Value.String(),
 			Port: cmd.Flag("port").Value.String(),
 		}
-		var err error
 		config.Cfg, err = config.Load(overrides)
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
@@ -76,13 +88,11 @@ func Execute() exitCode {
 
 // Menu function for huh library
 func Menu() {
-	overrides := &config.ConfigOverrides{}
-
 	var commandState string
 	commandMenu := huh.NewForm(
 		huh.NewGroup(
 			huh.NewSelect[string]().
-				//Ask the user what commands they want to use.
+				// Ask the user what commands they want to use.
 				Title("ACMCSUF-CLI Available Commands").
 				Description("A CLI tool to help manage the API of the CSUF ACM website.").
 				Options(
@@ -119,7 +129,7 @@ func Menu() {
 		err := huh.NewForm(
 			huh.NewGroup(
 				huh.NewMultiSelect[string]().
-					//Ask the user what commands they want to use.
+					// Ask the user what commands they want to use.
 					Title("ACMCSUF-CLI Config Override").
 					Description("Choose a command(s). Note: Use spacebar to select and if done click enter.\nTo skip, simply click enter.").
 					Options(
@@ -164,7 +174,6 @@ func Menu() {
 				}
 				overrides.Port = config.CfgOverride.Port
 			}
-			config.Cfg, err = config.Load(overrides)
 			if err != nil {
 				fmt.Printf("failed to load config: %s\n", err)
 			}
@@ -177,6 +186,7 @@ func Menu() {
 			}
 			_ = index
 		}
+		config.Cfg, err = config.Load(overrides)
 		Menu()
 
 	}
