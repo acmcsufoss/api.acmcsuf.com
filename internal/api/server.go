@@ -34,7 +34,10 @@ func Run(ctx context.Context) {
 	announcementService := services.NewAnnouncementService(queries)
 	boardService := services.NewBoardService(queries, db)
 	router := gin.Default()
-	router.Use(mw.Cors(), mw.Ratelimiter())
+	router.Use(mw.Cors())
+	if cfg.Env != "development" {
+		router.Use(mw.Ratelimiter())
+	}
 
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
