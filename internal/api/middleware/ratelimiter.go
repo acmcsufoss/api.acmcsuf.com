@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	maxRate  = 1
-	maxBurst = 5
+	maxRate  = 100
+	maxBurst = 200
 )
 
 var (
