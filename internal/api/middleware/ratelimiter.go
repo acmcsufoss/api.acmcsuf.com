@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 )
 
 var (
@@ -19,6 +20,11 @@ var (
 // overloads our server
 func Ratelimiter() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		if config.Load().Env == "development" {
+			ctx.Next()
+			return
+		}
+
 		ip := ctx.ClientIP()
 		rl := getClient(ip)
 
