@@ -4,9 +4,14 @@ import (
 	"net/http"
 	"sync"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/time/rate"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
+)
+
+const (
+	maxRate  = 1
+	maxBurst = 5
 )
 
 var (
@@ -48,7 +53,7 @@ func getClient(ip string) *rate.Limiter {
 		return lim
 	}
 
-	lim := rate.NewLimiter(1, 5)
+	lim := rate.NewLimiter(maxRate, maxBurst)
 	clients[ip] = lim
 
 	return lim
