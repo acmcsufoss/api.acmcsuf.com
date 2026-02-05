@@ -19,9 +19,9 @@ var (
 	mu      sync.Mutex
 )
 
-// The rate limter is an important middleware that
+// The rate limiter is an important middleware that
 // limits how many times a client can access our server
-// per second. This is usefull for preventing spam that
+// per second. This is useful for preventing spam that
 // overloads our server
 func Ratelimiter() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
