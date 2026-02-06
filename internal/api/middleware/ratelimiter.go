@@ -23,6 +23,7 @@ type client struct {
 var (
 	clients = make(map[string]*client)
 	mu      sync.Mutex
+	once    sync.Once
 )
 
 // The rate limiter is an important middleware that
@@ -30,7 +31,9 @@ var (
 // per second. This is useful for preventing spam that
 // overloads our server
 func Ratelimiter() gin.HandlerFunc {
-	go checkTTL()
+	once.Do(func() {
+		go checkTTL()
+	})
 	environment := config.Load().Env
 	return func(ctx *gin.Context) {
 		if environment == "development" {
@@ -75,13 +78,13 @@ func getClient(ip string) *rate.Limiter {
 	defer mu.Unlock()
 
 	if lim, ok := clients[ip]; ok {
-		newTTL := time.Now().Add(24 * time.Hour)
+		newTTL := time.Now().Add(2 * time.Hour)
 		lim.ttl = newTTL
 		return lim.rl
 	}
 
 	lim := rate.NewLimiter(maxRate, maxBurst)
-	newTTL := time.Now().Add(24 * time.Hour)
+	newTTL := time.Now().Add(2 * time.Hour)
 
 	newClient := &client{
 		rl:  lim,
