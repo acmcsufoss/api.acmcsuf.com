@@ -11,8 +11,11 @@ import (
 )
 
 const (
-	maxRate  = 100
-	maxBurst = 200
+	maxRate   = 100
+	maxBurst  = 200
+	cleanRate = 5 // minutes
+	ipTTL     = 2 // hours
+
 )
 
 type client struct {
@@ -59,7 +62,7 @@ func Ratelimiter() gin.HandlerFunc {
 // in 24 hours, we will remove them from the table
 func checkTTL() {
 	for {
-		time.Sleep(5 * time.Minute)
+		time.Sleep(cleanRate * time.Minute)
 		now := time.Now()
 		mu.Lock()
 		for key, elm := range clients {
@@ -78,13 +81,13 @@ func getClient(ip string) *rate.Limiter {
 	defer mu.Unlock()
 
 	if lim, ok := clients[ip]; ok {
-		newTTL := time.Now().Add(2 * time.Hour)
+		newTTL := time.Now().Add(ipTTL * time.Hour)
 		lim.ttl = newTTL
 		return lim.rl
 	}
 
 	lim := rate.NewLimiter(maxRate, maxBurst)
-	newTTL := time.Now().Add(2 * time.Hour)
+	newTTL := time.Now().Add(ipTTL * time.Hour)
 
 	newClient := &client{
 		rl:  lim,
