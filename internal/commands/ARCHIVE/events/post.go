@@ -26,14 +26,14 @@ var PostEvent = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		payload := models.CreateEventParams{}
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
+		// err := huh.NewForm().Run()
+		// if err != nil {
+		// 	if err == huh.ErrUserAborted {
+		// 		fmt.Println("User canceled the form — exiting.")
+		// 	}
+		// 	fmt.Println("Uh oh:", err)
+		// 	os.Exit(1)
+		//}
 
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
