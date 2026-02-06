@@ -3,6 +3,7 @@ package middleware
 import (
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/gin-gonic/gin"
@@ -14,8 +15,13 @@ const (
 	maxBurst = 200
 )
 
+type client struct {
+	rl  *rate.Limiter
+	ttl time.Time
+}
+
 var (
-	clients = make(map[string]*rate.Limiter)
+	clients = make(map[string]*client)
 	mu      sync.Mutex
 )
 
@@ -24,8 +30,10 @@ var (
 // per second. This is useful for preventing spam that
 // overloads our server
 func Ratelimiter() gin.HandlerFunc {
+	go checkTTL()
+	environment := config.Load().Env
 	return func(ctx *gin.Context) {
-		if config.Load().Env == "development" {
+		if environment == "development" {
 			ctx.Next()
 			return
 		}
@@ -43,18 +51,44 @@ func Ratelimiter() gin.HandlerFunc {
 	}
 }
 
-// Each client is able to send 5 requests a burst
-// While also gaining 1 request per second
+// Since we don't want to run out of memory while storing our clients
+// We will keep track of our clients for 24 hours, if they have not requested
+// in 24 hours, we will remove them from the table
+func checkTTL() {
+	for {
+		time.Sleep(5 * time.Minute)
+		now := time.Now()
+		mu.Lock()
+		for key, elm := range clients {
+			if elm.ttl.Before(now) {
+				delete(clients, key)
+			}
+		}
+		mu.Unlock()
+	}
+}
+
+// Each client is able to send 200 requests a burst
+// While also gaining 100 request per second
 func getClient(ip string) *rate.Limiter {
 	mu.Lock()
 	defer mu.Unlock()
 
 	if lim, ok := clients[ip]; ok {
-		return lim
+		newTTL := time.Now().Add(24 * time.Hour)
+		lim.ttl = newTTL
+		return lim.rl
 	}
 
 	lim := rate.NewLimiter(maxRate, maxBurst)
-	clients[ip] = lim
+	newTTL := time.Now().Add(24 * time.Hour)
+
+	newClient := &client{
+		rl:  lim,
+		ttl: newTTL,
+	}
+
+	clients[ip] = newClient
 
 	return lim
 }
