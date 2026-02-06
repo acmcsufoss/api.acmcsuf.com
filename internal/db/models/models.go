@@ -33,12 +33,6 @@ type Officer struct {
 	Discord  sql.NullString `json:"discord"`
 }
 
-type Person struct {
-	Uuid             string         `json:"uuid"`
-	Name             sql.NullString `json:"name"`
-	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
-}
-
 type Position struct {
 	Oid      string         `json:"oid"`
 	Semester string         `json:"semester"`
