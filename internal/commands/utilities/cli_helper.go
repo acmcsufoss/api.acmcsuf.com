@@ -1,4 +1,4 @@
-package utils
+package utilities
 
 import (
 	"bufio"
@@ -170,8 +170,14 @@ func CheckConnection(url string) error {
 // --------------------------- Getting values from input ---------------------------
 
 // YesOrNo checks the user input for a yes or no response.
-func YesOrNo(userInput []byte, scanner *bufio.Scanner) (bool, error) {
-	userInputString := strings.ToUpper(string(userInput))
+func YesOrNo(scan *bufio.Scanner) (bool, error) {
+	scan.Scan()
+	if err := scan.Err(); err != nil {
+		return false, fmt.Errorf("error scanning new input: %s", err)
+	}
+	userIn := getIn(scan)
+
+	userInputString := strings.ToUpper(string(userIn))
 
 	switch userInputString {
 	case "YES", "Y", "TRUE":
@@ -180,11 +186,11 @@ func YesOrNo(userInput []byte, scanner *bufio.Scanner) (bool, error) {
 		return false, nil
 	default:
 		fmt.Println("Invalid input, please try again.")
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
+		scan.Scan()
+		if err := scan.Err(); err != nil {
 			return false, fmt.Errorf("error scanning new input: %s", err)
 		}
-		return YesOrNo(scanner.Bytes(), scanner)
+		return YesOrNo(scan)
 	}
 }
 
