@@ -12,12 +12,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var PutEvents = &cobra.Command{
@@ -129,7 +130,7 @@ func updateEvent(id string, payload *dbmodels.CreateEventParams, changedFlags ev
 	client := &http.Client{}
 
 	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
-	getReq, err := requests.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
+	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieving %s: %s", id, err)
 		return
@@ -353,7 +354,7 @@ func updateEvent(id string, payload *dbmodels.CreateEventParams, changedFlags ev
 		return
 	}
 
-	request, err := requests.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
+	request, err := oauth.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return

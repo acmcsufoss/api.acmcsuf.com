@@ -10,14 +10,14 @@ import (
 	"os"
 	"strings"
 
+	"github.com/charmbracelet/huh"
+	"github.com/spf13/cobra"
+
 	// TODO: db params shouldn't be exposed here
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/charmbracelet/huh"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
-	"github.com/spf13/cobra"
 )
 
 var PostEvent = &cobra.Command{
@@ -360,7 +360,7 @@ func postEvent(payload *dbmodels.CreateEventParams, changedFlag eventFlags, cfg 
 	postURL := baseURL.JoinPath("v1/events")
 
 	// ----- Post -----
-	request, err := requests.NewRequestWithAuth(http.MethodPost, postURL.String(),
+	request, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(),
 		strings.NewReader(string(jsonEvent)))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating post request: %v", err)

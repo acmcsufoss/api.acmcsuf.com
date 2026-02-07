@@ -16,8 +16,8 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PutOfficer = &cobra.Command{
@@ -94,7 +94,7 @@ func putOfficer(id string, payload *dbmodels.UpdateOfficerParams, flags officerF
 
 	// getting old officer
 	client := http.Client{}
-	getReq, err := requests.NewRequestWithAuth(http.MethodGet, u.String(), nil)
+	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, u.String(), nil)
 	if err != nil {
 		fmt.Printf("error making request %s: %s\n", id, err)
 		return
@@ -258,7 +258,7 @@ func putOfficer(id string, payload *dbmodels.UpdateOfficerParams, flags officerF
 	}
 
 	// PUT
-	putReq, err := requests.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
+	putReq, err := oauth.NewRequestWithAuth(http.MethodPut, u.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return

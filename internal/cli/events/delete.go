@@ -7,11 +7,12 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var DeleteEvent = &cobra.Command{
@@ -66,7 +67,7 @@ func deleteEvent(id string, cfg *config.Config) {
 	deleteURL := baseURL.JoinPath(fmt.Sprint("/v1/events/", id))
 
 	// ----- Delete Request -----
-	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
+	request, err := oauth.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
 	if err != nil {
 		fmt.Println("Error making delete request:", err)
 		return

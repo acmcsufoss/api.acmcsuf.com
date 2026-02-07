@@ -16,8 +16,8 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PutAnnouncements = &cobra.Command{
@@ -120,7 +120,7 @@ func putAnnouncements(id string, payload *dbmodels.UpdateAnnouncementParams, cha
 	// ----- Get the Announcement We Want to Update -----
 	client := http.Client{}
 
-	getReq, err := requests.NewRequestWithAuth(http.MethodGet, oldPayloadUrl.String(), nil)
+	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, oldPayloadUrl.String(), nil)
 	if err != nil {
 		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
 		return
@@ -308,7 +308,7 @@ func putAnnouncements(id string, payload *dbmodels.UpdateAnnouncementParams, cha
 
 	// ----- Put Payload -----
 
-	putRequest, err := requests.NewRequestWithAuth(http.MethodPut, oldPayloadUrl.String(), bytes.NewBuffer(jsonPayload))
+	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, oldPayloadUrl.String(), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		fmt.Println("Problem with PUT:", err)
 		return
