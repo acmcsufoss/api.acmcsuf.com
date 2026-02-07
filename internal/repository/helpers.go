@@ -72,3 +72,34 @@ func convertDomaintoUpdateDBOfficer(dOfficer *domain.Officer) *dbmodels.UpdateOf
 		Discord:  sql.NullString{String: dOfficer.Discord, Valid: true},
 	}
 }
+
+// ---- Announcement Helper ----
+func convertDBAnnouncementToDomain(dbAnnouncement *dbmodels.Announcement) *domain.Announcement {
+	return &domain.Announcement{
+		Uuid:             dbAnnouncement.Uuid,
+		Visibility:       dbAnnouncement.Visibility,
+		AnnounceAt:       time.Unix(dbAnnouncement.AnnounceAt, 0),
+		DiscordChannelID: dbAnnouncement.DiscordChannelID.String,
+		DiscordMessageID: dbAnnouncement.DiscordMessageID.String,
+	}
+}
+
+func convertDomaintoCreateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.CreateAnnouncementParams {
+	return &dbmodels.CreateAnnouncementParams{
+		Uuid:             dAnnouncement.Uuid,
+		Visibility:       dAnnouncement.Visibility,
+		AnnounceAt:       dAnnouncement.AnnounceAt.Unix(),
+		DiscordChannelID: sql.NullString{String: dAnnouncement.DiscordChannelID, Valid: true},
+		DiscordMessageID: sql.NullString{String: dAnnouncement.DiscordMessageID, Valid: true},
+	}
+}
+
+func convertDomaintoUpdateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.UpdateAnnouncementParams {
+	return &dbmodels.UpdateAnnouncementParams{
+		Uuid:             dAnnouncement.Uuid,
+		Visibility:       sql.NullString{String: dAnnouncement.Visibility, Valid: true},
+		AnnounceAt:       sql.NullInt64{Int64: dAnnouncement.AnnounceAt.Unix(), Valid: true},
+		DiscordChannelID: sql.NullString{String: dAnnouncement.DiscordChannelID, Valid: true},
+		DiscordMessageID: sql.NullString{String: dAnnouncement.DiscordMessageID, Valid: true},
+	}
+}

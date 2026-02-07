@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Announcements struct {
+type Announcement struct {
 	Uuid             string
 	Visibility       string
 	AnnounceAt       time.Time
