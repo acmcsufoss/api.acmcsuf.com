@@ -10,7 +10,7 @@ BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
-MIGRATE_DIR := internal/db/sql/migrations
+MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
 GENERATE_DEPS := $(wildcard internal/api/handlers/*.go)
