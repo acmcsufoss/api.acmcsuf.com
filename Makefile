@@ -13,7 +13,7 @@ CLI_NAME := acmcsuf-cli
 MIGRATE_DIR := internal/db/sql/migrations
 DB_URL := sqlite3://dev.db
 
-GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) internal/db/sqlc.yaml $(wildcard internal/api/handlers/*.go)
+GENERATE_DEPS := $(wildcard internal/api/handlers/*.go)
 GENERATE_MARKER := .generate.marker
 
 .PHONY:fmt run build vet check test check-sql fix-sql clean release generate migrate-up migrate-down
