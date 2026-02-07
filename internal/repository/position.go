@@ -8,8 +8,8 @@ import (
 )
 
 type PositionRepository interface {
-	GetAllpositions(ctx context.Context) ([]*domain.Officer, error)
-	GetpositionByID(ctx context.Context, id string) (*domain.Officer, error)
+	GetAllPositions(ctx context.Context) ([]*domain.Position, error)
+	GetPositionByID(ctx context.Context, id string) (*domain.Position, error)
 	Create(ctx context.Context, args domain.Position) error
 	Update(ctx context.Context, args domain.Position) error
 	Delete(ctx context.Context, args domain.Position) error
@@ -19,7 +19,7 @@ type positionRepository struct {
 	db *dbmodels.Queries
 }
 
-func NewPositionRepository(db *dbmodels.Queries) OfficerRepository {
+func NewPositionRepository(db *dbmodels.Queries) PositionRepository {
 	return &positionRepository{db: db}
 }
 
