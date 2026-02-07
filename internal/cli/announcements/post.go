@@ -15,8 +15,8 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var PostAnnouncement = &cobra.Command{
@@ -301,7 +301,7 @@ func postAnnouncement(payload *dbmodels.CreateAnnouncementParams, changedFlags a
 	fmt.Println(postURL.String())
 	// ----- Post -----
 	client := http.Client{}
-	req, err := requests.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
+	req, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
 	if err != nil {
 		fmt.Println("error with post:", err)
 		return

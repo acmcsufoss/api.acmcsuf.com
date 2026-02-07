@@ -11,8 +11,8 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
-	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
 
 var DeleteAnnouncements = &cobra.Command{
@@ -73,7 +73,7 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 	deleteUrl := baseURL.JoinPath("v1/announcements/", id)
 
 	// ----- Delete -----
-	request, err := requests.NewRequestWithAuth(http.MethodDelete, deleteUrl.String(), nil)
+	request, err := oauth.NewRequestWithAuth(http.MethodDelete, deleteUrl.String(), nil)
 	if err != nil {
 		fmt.Println("error with delete request:", err)
 		return
