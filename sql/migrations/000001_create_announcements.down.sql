@@ -1,3 +1,3 @@
 -- Language: sqlite
 
-DROP TABLE IF EXISTS announcement
+DROP TABLE IF EXISTS announcement;
