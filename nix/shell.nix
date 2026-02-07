@@ -14,6 +14,8 @@
   cobra-cli,
   go-tools,
   go-migrate,
+  sqlite,
+  sqlite-web,
 }:
 
 let
@@ -37,6 +39,8 @@ mkShell {
     go-swag
     cobra-cli
     go-migrate-sqlite
+    sqlite
+    sqlite-web
   ];
 
   shellHook = ''
