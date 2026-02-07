@@ -5,7 +5,6 @@ sql:
     queries: "sql/queries/"
     gen:
       go:
-        package: "models"
-        out: "models"
+        out: "internal/api/dbmodels"
         json_tags_id_uppercase: true
         emit_json_tags: true

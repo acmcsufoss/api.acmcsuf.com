@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: announcement.sql
 
-package models
+package dbmodels
 
 import (
 	"context"

@@ -3,7 +3,7 @@ package services
 import (
 	"context"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"log"
 )
 
