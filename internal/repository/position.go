@@ -1,3 +1,4 @@
+/*
 package repository
 
 import (
@@ -63,7 +64,7 @@ func (r *officerRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *officerRepository) Create(ctx context.Context, args domain.Officer) error {
-	_, err := r.db.CreateOfficer(ctx, *convertDomainToCreateDBOfficer(&args))
+	_, err := r.db.CreateOfficer(ctx, *convertDomaintoCreateDBOfficer(&args))
 	if err != nil {
 		return err
 	}
@@ -71,9 +72,10 @@ func (r *officerRepository) Create(ctx context.Context, args domain.Officer) err
 }
 
 func (r *officerRepository) Update(ctx context.Context, args domain.Officer) error {
-	err := r.db.UpdateOfficer(ctx, *convertDomainToUpdateDBOfficer(&args))
+	err := r.db.UpdateOfficer(ctx, *convertDomaintoUpdateDBOfficer(&args))
 	if err != nil {
 		return err
 	}
 	return nil
 }
+*/
