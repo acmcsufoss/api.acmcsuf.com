@@ -13,7 +13,16 @@
   go-swag,
   cobra-cli,
   go-tools,
+  go-migrate,
+  sqlite,
+  sqlite-web,
 }:
+
+let
+	go-migrate-sqlite = go-migrate.overrideAttrs (oldAttrs: {
+		tags = [ "sqlite3" ];
+	});
+in
 mkShell {
   packages = [
     go
@@ -29,6 +38,9 @@ mkShell {
     jq
     go-swag
     cobra-cli
+    go-migrate-sqlite
+    sqlite
+    sqlite-web
   ];
 
   shellHook = ''

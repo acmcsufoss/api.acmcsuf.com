@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +27,7 @@ func NewBoardHandler(boardService services.BoardServicer) *BoardHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Success		200 {object} models.Officer "Officer details"
+//	@Success		200 {object} dbmodels.Officer "Officer details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers/{id} [get]
@@ -60,7 +60,7 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} models.Officer "List of officers"
+//	@Success		200 {array} dbmodels.Officer "List of officers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers [get]
 func (h *BoardHandler) GetOfficers(c *gin.Context) {
@@ -84,14 +84,14 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.CreateOfficerParams true "Officer data"
+//	@Param			body body dbmodels.CreateOfficerParams true "Officer data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers [post]
 func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.CreateOfficerParams
+	var params dbmodels.CreateOfficerParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -128,7 +128,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Param			body body models.UpdateOfficerParams true "Updated officer data"
+//	@Param			body body dbmodels.UpdateOfficerParams true "Updated officer data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -136,7 +136,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Router			/v1/board/officers/{id} [put]
 func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.UpdateOfficerParams
+	var params dbmodels.UpdateOfficerParams
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -194,7 +194,7 @@ func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} models.Tier "List of tiers"
+//	@Success		200 {array} dbmodels.Tier "List of tiers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [get]
 func (h *BoardHandler) GetTiers(c *gin.Context) {
@@ -219,7 +219,7 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Success		200 {object} models.Tier "Tier details"
+//	@Success		200 {object} dbmodels.Tier "Tier details"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -258,14 +258,14 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.CreateTierParams true "Tier data"
+//	@Param			body body dbmodels.CreateTierParams true "Tier data"
 //	@Success		200 {object} map[string]interface{} "Success message with tier number"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [post]
 func (h *BoardHandler) CreateTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.CreateTierParams
+	var params dbmodels.CreateTierParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -295,7 +295,7 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Param			body body models.UpdateTierParams true "Updated tier data"
+//	@Param			body body dbmodels.UpdateTierParams true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -303,7 +303,7 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 //	@Router			/v1/board/tiers/{id} [put]
 func (h *BoardHandler) UpdateTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.UpdateTierParams
+	var params dbmodels.UpdateTierParams
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -376,7 +376,7 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} models.Position "List of positions"
+//	@Success		200 {array} dbmodels.Position "List of positions"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [get]
 func (h *BoardHandler) GetPositions(c *gin.Context) {
@@ -401,7 +401,7 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer full name"
-//	@Success		200 {object} models.Position "Position details"
+//	@Success		200 {object} dbmodels.Position "Position details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions/{id} [get]
@@ -434,14 +434,14 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.CreatePositionParams true "Position data"
+//	@Param			body body dbmodels.CreatePositionParams true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [post]
 func (h *BoardHandler) CreatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.CreatePositionParams
+	var params dbmodels.CreatePositionParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -472,7 +472,7 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
+//	@Param			body body dbmodels.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -480,7 +480,7 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 //	@Router			/v1/board/positions [put]
 func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.UpdatePositionParams
+	var params dbmodels.UpdatePositionParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -511,7 +511,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.DeletePositionParams true "Position identifier"
+//	@Param			body body dbmodels.DeletePositionParams true "Position identifier"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -519,7 +519,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Router			/v1/board/positions [delete]
 func (h *BoardHandler) DeletePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.DeletePositionParams
+	var params dbmodels.DeletePositionParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

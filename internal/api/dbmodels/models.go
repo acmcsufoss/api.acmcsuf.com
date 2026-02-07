@@ -2,7 +2,7 @@
 // versions:
 //   sqlc v1.30.0
 
-package models
+package dbmodels
 
 import (
 	"database/sql"
@@ -31,12 +31,6 @@ type Officer struct {
 	Picture  sql.NullString `json:"picture"`
 	Github   sql.NullString `json:"github"`
 	Discord  sql.NullString `json:"discord"`
-}
-
-type Person struct {
-	Uuid             string         `json:"uuid"`
-	Name             sql.NullString `json:"name"`
-	PreferredPronoun sql.NullString `json:"preferred_pronoun"`
 }
 
 type Position struct {

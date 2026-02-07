@@ -4,33 +4,33 @@ package services
 import (
 	"context"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 )
 
 type EventsServicer interface {
-	Service[models.Event, string, models.CreateEventParams, models.UpdateEventParams]
+	Service[dbmodels.Event, string, dbmodels.CreateEventParams, dbmodels.UpdateEventParams]
 }
 
 type EventsService struct {
-	q *models.Queries
+	q *dbmodels.Queries
 }
 
 // this checks that EventsService implements EventsServicers at compile time
 var _ EventsServicer = (*EventsService)(nil)
 
-func NewEventsService(q *models.Queries) *EventsService {
+func NewEventsService(q *dbmodels.Queries) *EventsService {
 	return &EventsService{q: q}
 }
 
-func (s *EventsService) Get(ctx context.Context, uuid string) (models.Event, error) {
+func (s *EventsService) Get(ctx context.Context, uuid string) (dbmodels.Event, error) {
 	event, err := s.q.GetEvent(ctx, uuid)
 	if err != nil {
-		return models.Event{}, err
+		return dbmodels.Event{}, err
 	}
 	return event, nil
 }
 
-func (s *EventsService) Create(ctx context.Context, params models.CreateEventParams) error {
+func (s *EventsService) Create(ctx context.Context, params dbmodels.CreateEventParams) error {
 	if err := s.q.CreateEvent(ctx, params); err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (s *EventsService) Create(ctx context.Context, params models.CreateEventPar
 
 // TODO: Move filters to their own file or module or something
 type EventFilter interface {
-	Apply(events []models.Event) []models.Event
+	Apply(events []dbmodels.Event) []dbmodels.Event
 }
 
 type HostFilter struct {
@@ -49,12 +49,12 @@ type HostFilter struct {
 // Ensure HostFilter implements EventFilter
 var _ EventFilter = (*HostFilter)(nil)
 
-func (f *HostFilter) Apply(events []models.Event) []models.Event {
+func (f *HostFilter) Apply(events []dbmodels.Event) []dbmodels.Event {
 	if f.Host == "" {
 		return events
 	}
 
-	filtered := make([]models.Event, 0)
+	filtered := make([]dbmodels.Event, 0)
 	for _, event := range events {
 		if event.Host == f.Host {
 			filtered = append(filtered, event)
@@ -63,7 +63,7 @@ func (f *HostFilter) Apply(events []models.Event) []models.Event {
 	return filtered
 }
 
-func (s *EventsService) List(ctx context.Context, filters ...any) ([]models.Event, error) {
+func (s *EventsService) List(ctx context.Context, filters ...any) ([]dbmodels.Event, error) {
 	events, err := s.q.GetEvents(ctx)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]models.Even
 	return result, nil
 }
 
-func (s *EventsService) Update(ctx context.Context, uuid string, params models.UpdateEventParams) error {
+func (s *EventsService) Update(ctx context.Context, uuid string, params dbmodels.UpdateEventParams) error {
 	params.Uuid = uuid
 	if err := s.q.UpdateEvent(ctx, params); err != nil {
 		return err

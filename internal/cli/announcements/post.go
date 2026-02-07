@@ -13,8 +13,8 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/db/models"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils/requests"
 )
@@ -24,7 +24,7 @@ var PostAnnouncement = &cobra.Command{
 	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.CreateAnnouncementParams{}
+		payload := dbmodels.CreateAnnouncementParams{}
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -74,7 +74,7 @@ func init() {
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
 
-func postAnnouncement(payload *models.CreateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
+func postAnnouncement(payload *dbmodels.CreateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),

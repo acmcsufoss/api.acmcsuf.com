@@ -3,7 +3,7 @@
 //   sqlc v1.30.0
 // source: event.sql
 
-package models
+package dbmodels
 
 import (
 	"context"
