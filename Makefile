@@ -10,7 +10,8 @@ BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
-MIGRATE_DIR := migrations
+MIGRATE_DIR := internal/db/sql/migrations
+DB_URL := sqlite3://dev.db
 
 GENERATE_DEPS := $(wildcard internal/db/sql/schemas/*.sql) $(wildcard internal/db/sql/queries/*.sql) internal/db/sqlc.yaml $(wildcard internal/api/handlers/*.go)
 GENERATE_MARKER := .generate.marker
@@ -65,7 +66,7 @@ clean: ## Clean up all generated files and binaries
 	rm -rf $(BIN_DIR) result
 
 migrate-up:
-	migrate -path $(MIGRATE_DIR) -database  ${DATABASE_URL} up
+	migrate -database $(DB_URL) -path $(MIGRATE_DIR) up
 
 migrate-down:
-	migrate -path $(MIGRATE_DIR) -database ${DATABASE_URL} down 1 
+	migrate -database $(DB_URL) -path $(MIGRATE_DIR) down 1
