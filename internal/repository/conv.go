@@ -8,7 +8,9 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
-// ---- Event Helper ----
+// File for converting Database models into Doamin models
+
+// ---- Event Converter ----
 func convertDBEventToDomain(dbEvent *dbmodels.Event) *domain.Event {
 	return &domain.Event{
 		Uuid:     dbEvent.Uuid,
@@ -20,7 +22,7 @@ func convertDBEventToDomain(dbEvent *dbmodels.Event) *domain.Event {
 	}
 }
 
-func convertDomaintoCreateDBEvent(dEvent *domain.Event) *dbmodels.CreateEventParams {
+func convertDomainToCreateDBEvent(dEvent *domain.Event) *dbmodels.CreateEventParams {
 	return &dbmodels.CreateEventParams{
 		Uuid:     dEvent.Uuid,
 		Location: dEvent.Location,
@@ -31,7 +33,7 @@ func convertDomaintoCreateDBEvent(dEvent *domain.Event) *dbmodels.CreateEventPar
 	}
 }
 
-func convertDomaintoUpdateDBEvent(dEvent *domain.Event) *dbmodels.UpdateEventParams {
+func convertDomainToUpdateDBEvent(dEvent *domain.Event) *dbmodels.UpdateEventParams {
 	return &dbmodels.UpdateEventParams{
 		Uuid:     dEvent.Uuid,
 		Location: sql.NullString{String: dEvent.Location, Valid: true},
@@ -42,7 +44,7 @@ func convertDomaintoUpdateDBEvent(dEvent *domain.Event) *dbmodels.UpdateEventPar
 	}
 }
 
-// ---- Officer Helper ----
+// ---- Officer Converter ----
 func convertDBOfficerToDomain(dbOfficer *dbmodels.Officer) *domain.Officer {
 	return &domain.Officer{
 		Uuid:     dbOfficer.Uuid,
@@ -53,7 +55,7 @@ func convertDBOfficerToDomain(dbOfficer *dbmodels.Officer) *domain.Officer {
 	}
 }
 
-func convertDomaintoCreateDBOfficer(dOfficer *domain.Officer) *dbmodels.CreateOfficerParams {
+func convertDomainToCreateDBOfficer(dOfficer *domain.Officer) *dbmodels.CreateOfficerParams {
 	return &dbmodels.CreateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: dOfficer.FullName,
@@ -63,7 +65,7 @@ func convertDomaintoCreateDBOfficer(dOfficer *domain.Officer) *dbmodels.CreateOf
 	}
 }
 
-func convertDomaintoUpdateDBOfficer(dOfficer *domain.Officer) *dbmodels.UpdateOfficerParams {
+func convertDomainToUpdateDBOfficer(dOfficer *domain.Officer) *dbmodels.UpdateOfficerParams {
 	return &dbmodels.UpdateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: dOfficer.FullName,
@@ -73,7 +75,7 @@ func convertDomaintoUpdateDBOfficer(dOfficer *domain.Officer) *dbmodels.UpdateOf
 	}
 }
 
-// ---- Announcement Helper ----
+// ---- Announcement Converter ----
 func convertDBAnnouncementToDomain(dbAnnouncement *dbmodels.Announcement) *domain.Announcement {
 	return &domain.Announcement{
 		Uuid:             dbAnnouncement.Uuid,
@@ -84,7 +86,7 @@ func convertDBAnnouncementToDomain(dbAnnouncement *dbmodels.Announcement) *domai
 	}
 }
 
-func convertDomaintoCreateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.CreateAnnouncementParams {
+func convertDomainToCreateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.CreateAnnouncementParams {
 	return &dbmodels.CreateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       dAnnouncement.Visibility,
@@ -94,12 +96,65 @@ func convertDomaintoCreateDBAnnouncement(dAnnouncement *domain.Announcement) *db
 	}
 }
 
-func convertDomaintoUpdateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.UpdateAnnouncementParams {
+func convertDomainToUpdateDBAnnouncement(dAnnouncement *domain.Announcement) *dbmodels.UpdateAnnouncementParams {
 	return &dbmodels.UpdateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       sql.NullString{String: dAnnouncement.Visibility, Valid: true},
 		AnnounceAt:       sql.NullInt64{Int64: dAnnouncement.AnnounceAt.Unix(), Valid: true},
 		DiscordChannelID: sql.NullString{String: dAnnouncement.DiscordChannelID, Valid: true},
 		DiscordMessageID: sql.NullString{String: dAnnouncement.DiscordMessageID, Valid: true},
+	}
+}
+
+// ---- Tier Converter ----
+func convertDBTierToDomain(dbTier *dbmodels.Tier) *domain.Tier {
+	return &domain.Tier{
+		Tier:   int(dbTier.Tier),
+		Title:  dbTier.Title.String,
+		Tindex: int(dbTier.TIndex.Int64),
+		Team:   dbTier.Team.String,
+	}
+}
+
+func convertDomainToCreateDBTier(dTier *domain.Tier) *dbmodels.CreateTierParams {
+	return &dbmodels.CreateTierParams{
+		Tier:   int64(dTier.Tier),
+		Title:  sql.NullString{String: dTier.Title, Valid: true},
+		TIndex: sql.NullInt64{Int64: int64(dTier.Tindex), Valid: true},
+		Team:   sql.NullString{String: dTier.Team, Valid: true},
+	}
+}
+
+func convertDomainToUpdateDBTier(dTier *domain.Tier) *dbmodels.UpdateTierParams {
+	return &dbmodels.UpdateTierParams{
+		Tier:   int64(dTier.Tier),
+		Title:  sql.NullString{String: dTier.Title, Valid: true},
+		TIndex: sql.NullInt64{Int64: int64(dTier.Tindex), Valid: true},
+		Team:   sql.NullString{String: dTier.Team, Valid: true},
+	}
+}
+
+// ---- Position Converter ----
+func convertDBPositionToDomain(dbPosition *dbmodels.Position) *domain.Position {
+	return &domain.Position{
+		Oid:      dbPosition.Oid,
+		Semester: dbPosition.Semester,
+		Tier:     int(dbPosition.Tier),
+	}
+}
+
+func convertDomainToCreateDBPosition(dPositon *domain.Position) *dbmodels.CreatePositionParams {
+	return &dbmodels.CreatePositionParams{
+		Oid:      dPositon.Oid,
+		Semester: dPositon.Semester,
+		Tier:     int64(dPositon.Tier),
+	}
+}
+
+func convertDomainToUpdateDBPosition(dPositon *domain.Position) *dbmodels.UpdatePositionParams {
+	return &dbmodels.UpdatePositionParams{
+		Oid:      dPositon.Oid,
+		Semester: dPositon.Semester,
+		Tier:     int64(dPositon.Tier),
 	}
 }
