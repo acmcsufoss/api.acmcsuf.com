@@ -107,7 +107,7 @@ func getOfficers(id string, cfg *config.Config) {
 	}
 
 	if id == "" {
-		var getPayload []models.GetOfficerRow
+		var getPayload []dbmodels.GetOfficerRow
 		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -118,7 +118,7 @@ func getOfficers(id string, cfg *config.Config) {
 			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
-		var getPayload models.GetOfficerRow
+		var getPayload dbmodels.GetOfficerRow
 		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)

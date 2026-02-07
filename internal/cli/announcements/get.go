@@ -109,7 +109,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	}
 
 	if uuid == "" {
-		var getPayload []models.CreateAnnouncementParams
+		var getPayload []dbmodels.CreateAnnouncementParams
 		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -120,7 +120,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
-		var getPayload models.CreateAnnouncementParams
+		var getPayload dbmodels.CreateAnnouncementParams
 		err = json.NewDecoder(res.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)

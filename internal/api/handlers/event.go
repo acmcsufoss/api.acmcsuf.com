@@ -29,7 +29,7 @@ func NewEventHandler(eventService services.EventsServicer) *EventsHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Event ID"
-//	@Success		200 {object} models.Event "Event details"
+//	@Success		200 {object} dbmodels.Event "Event details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events/{id} [get]
@@ -63,14 +63,14 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body models.CreateEventParams true "Event data"
+//	@Param			body body dbmodels.CreateEventParams true "Event data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.CreateEventParams
+	var params dbmodels.CreateEventParams
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -107,7 +107,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			host query string false "Filter by host"
-//	@Success		200 {array} models.Event "List of events"
+//	@Success		200 {array} dbmodels.Event "List of events"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events [get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
@@ -137,7 +137,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//	 	@Param			body body models.UpdateEventParams true "Updated event data"
+//	 	@Param			body body dbmodels.UpdateEventParams true "Updated event data"
 //		@Success		200 {object} map[string]string "Success message"
 //		@Failure		400 {object} map[string]string
 //		@Failure		404 {object} map[string]string
@@ -145,7 +145,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Router			/v1/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params models.UpdateEventParams
+	var params dbmodels.UpdateEventParams
 	id := c.Param("id")
 
 	fmt.Println("UPDATE:", id)

@@ -53,7 +53,7 @@ var PutEvents = &cobra.Command{
 		// CLI for url
 		id, _ := cmd.Flags().GetString("id")
 
-		payload := models.CreateEventParams{}
+		payload := dbmodels.CreateEventParams{}
 		payload.Uuid, _ = cmd.Flags().GetString("uuid")
 		payload.Location, _ = cmd.Flags().GetString("location")
 		startAtString, _ := cmd.Flags().GetString("startat")
@@ -109,7 +109,7 @@ func init() {
 	PutEvents.MarkFlagRequired("id")
 }
 
-func updateEvent(id string, payload *models.CreateEventParams, changedFlags eventFlags, cfg *config.Config) {
+func updateEvent(id string, payload *dbmodels.CreateEventParams, changedFlags eventFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -153,7 +153,7 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 		return
 	}
 
-	var oldpayload models.CreateEventParams
+	var oldpayload dbmodels.CreateEventParams
 	err = json.Unmarshal(body, &oldpayload)
 	if err != nil {
 		fmt.Println("error unmarshalling previous event data:", err)
@@ -296,7 +296,7 @@ func updateEvent(id string, payload *models.CreateEventParams, changedFlags even
 
 	// ----- PUT the payload -----
 
-	updatePayload := models.UpdateEventParams{
+	updatePayload := dbmodels.UpdateEventParams{
 		Uuid:     payload.Uuid,
 		Location: utils.StringtoNullString(payload.Location),
 		StartAt:  utils.Int64toNullInt64(payload.StartAt),

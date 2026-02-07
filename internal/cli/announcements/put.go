@@ -25,7 +25,7 @@ var PutAnnouncements = &cobra.Command{
 	Short: "update an existing announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.UpdateAnnouncementParams{}
+		payload := dbmodels.UpdateAnnouncementParams{}
 		var uuidVal string
 		cmd.Flags().Set("id", uuidVal)
 		err := huh.NewForm().Run()
@@ -97,7 +97,7 @@ func init() {
 	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
 }
 
-func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
+func putAnnouncements(id string, payload *dbmodels.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -144,7 +144,7 @@ func putAnnouncements(id string, payload *models.UpdateAnnouncementParams, chang
 		return
 	}
 
-	var oldPayload models.CreateAnnouncementParams
+	var oldPayload dbmodels.CreateAnnouncementParams
 	err = json.Unmarshal(body, &oldPayload)
 	if err != nil {
 		fmt.Println("error unmarshaling previous announcement data:", err)

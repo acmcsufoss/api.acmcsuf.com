@@ -24,7 +24,7 @@ var PostOfficer = &cobra.Command{
 	Short: "Post a new officer",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var payload models.CreateOfficerParams
+		var payload dbmodels.CreateOfficerParams
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -64,7 +64,7 @@ func init() {
 	PostOfficer.Flags().StringP("discord", "d", "", "Set the discord of this officer")
 }
 
-func postOfficer(payload *models.CreateOfficerParams, cf *officerFlags, cfg *config.Config) {
+func postOfficer(payload *dbmodels.CreateOfficerParams, cf *officerFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),

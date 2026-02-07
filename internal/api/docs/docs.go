@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateAnnouncementParams"
+                            "$ref": "#/definitions/dbmodels.CreateAnnouncementParams"
                         }
                     }
                 ],
@@ -94,7 +94,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Announcement details",
                         "schema": {
-                            "$ref": "#/definitions/models.Announcement"
+                            "$ref": "#/definitions/dbmodels.Announcement"
                         }
                     },
                     "404": {
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateAnnouncementParams"
+                            "$ref": "#/definitions/dbmodels.UpdateAnnouncementParams"
                         }
                     }
                 ],
@@ -257,7 +257,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Officer"
+                                "$ref": "#/definitions/dbmodels.Officer"
                             }
                         }
                     },
@@ -291,7 +291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateOfficerParams"
+                            "$ref": "#/definitions/dbmodels.CreateOfficerParams"
                         }
                     }
                 ],
@@ -350,7 +350,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Officer details",
                         "schema": {
-                            "$ref": "#/definitions/models.Officer"
+                            "$ref": "#/definitions/dbmodels.Officer"
                         }
                     },
                     "404": {
@@ -399,7 +399,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateOfficerParams"
+                            "$ref": "#/definitions/dbmodels.UpdateOfficerParams"
                         }
                     }
                 ],
@@ -513,7 +513,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Position"
+                                "$ref": "#/definitions/dbmodels.Position"
                             }
                         }
                     },
@@ -547,7 +547,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdatePositionParams"
+                            "$ref": "#/definitions/dbmodels.UpdatePositionParams"
                         }
                     }
                 ],
@@ -609,7 +609,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreatePositionParams"
+                            "$ref": "#/definitions/dbmodels.CreatePositionParams"
                         }
                     }
                 ],
@@ -660,7 +660,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.DeletePositionParams"
+                            "$ref": "#/definitions/dbmodels.DeletePositionParams"
                         }
                     }
                 ],
@@ -730,7 +730,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Position details",
                         "schema": {
-                            "$ref": "#/definitions/models.Position"
+                            "$ref": "#/definitions/dbmodels.Position"
                         }
                     },
                     "404": {
@@ -773,7 +773,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Tier"
+                                "$ref": "#/definitions/dbmodels.Tier"
                             }
                         }
                     },
@@ -807,7 +807,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateTierParams"
+                            "$ref": "#/definitions/dbmodels.CreateTierParams"
                         }
                     }
                 ],
@@ -866,7 +866,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Tier details",
                         "schema": {
-                            "$ref": "#/definitions/models.Tier"
+                            "$ref": "#/definitions/dbmodels.Tier"
                         }
                     },
                     "400": {
@@ -924,7 +924,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateTierParams"
+                            "$ref": "#/definitions/dbmodels.UpdateTierParams"
                         }
                     }
                 ],
@@ -1055,7 +1055,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Event"
+                                "$ref": "#/definitions/dbmodels.Event"
                             }
                         }
                     },
@@ -1089,7 +1089,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateEventParams"
+                            "$ref": "#/definitions/dbmodels.CreateEventParams"
                         }
                     }
                 ],
@@ -1148,7 +1148,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Event details",
                         "schema": {
-                            "$ref": "#/definitions/models.Event"
+                            "$ref": "#/definitions/dbmodels.Event"
                         }
                     },
                     "404": {
@@ -1197,7 +1197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateEventParams"
+                            "$ref": "#/definitions/dbmodels.UpdateEventParams"
                         }
                     }
                 ],
@@ -1294,7 +1294,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Announcement": {
+        "dbmodels.Announcement": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1314,7 +1314,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateAnnouncementParams": {
+        "dbmodels.CreateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1334,7 +1334,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateEventParams": {
+        "dbmodels.CreateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1357,7 +1357,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateOfficerParams": {
+        "dbmodels.CreateOfficerParams": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1377,7 +1377,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreatePositionParams": {
+        "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
                 "oid": {
@@ -1391,7 +1391,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.CreateTierParams": {
+        "dbmodels.CreateTierParams": {
             "type": "object",
             "properties": {
                 "t_index": {
@@ -1408,7 +1408,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DeletePositionParams": {
+        "dbmodels.DeletePositionParams": {
             "type": "object",
             "properties": {
                 "oid": {
@@ -1422,7 +1422,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Event": {
+        "dbmodels.Event": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1445,7 +1445,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Officer": {
+        "dbmodels.Officer": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1465,7 +1465,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Position": {
+        "dbmodels.Position": {
             "type": "object",
             "properties": {
                 "full_name": {
@@ -1488,7 +1488,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Tier": {
+        "dbmodels.Tier": {
             "type": "object",
             "properties": {
                 "t_index": {
@@ -1505,7 +1505,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateAnnouncementParams": {
+        "dbmodels.UpdateAnnouncementParams": {
             "type": "object",
             "properties": {
                 "announce_at": {
@@ -1525,7 +1525,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateEventParams": {
+        "dbmodels.UpdateEventParams": {
             "type": "object",
             "properties": {
                 "end_at": {
@@ -1548,7 +1548,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateOfficerParams": {
+        "dbmodels.UpdateOfficerParams": {
             "type": "object",
             "properties": {
                 "discord": {
@@ -1568,7 +1568,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdatePositionParams": {
+        "dbmodels.UpdatePositionParams": {
             "type": "object",
             "properties": {
                 "full_name": {
@@ -1591,7 +1591,7 @@ const docTemplate = `{
                 }
             }
         },
-        "models.UpdateTierParams": {
+        "dbmodels.UpdateTierParams": {
             "type": "object",
             "properties": {
                 "t_index": {

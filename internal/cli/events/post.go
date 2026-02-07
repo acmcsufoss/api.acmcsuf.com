@@ -25,7 +25,7 @@ var PostEvent = &cobra.Command{
 	Short: "Post a new event.",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.CreateEventParams{}
+		payload := dbmodels.CreateEventParams{}
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -85,7 +85,7 @@ func init() {
 	PostEvent.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
 }
 
-func postEvent(payload *models.CreateEventParams, changedFlag eventFlags, cfg *config.Config) {
+func postEvent(payload *dbmodels.CreateEventParams, changedFlag eventFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),

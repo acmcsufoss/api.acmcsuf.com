@@ -8,31 +8,31 @@ import (
 )
 
 type AnnouncementServicer interface {
-	Service[models.Announcement, string, models.CreateAnnouncementParams,
-		models.UpdateAnnouncementParams]
+	Service[dbmodels.Announcement, string, dbmodels.CreateAnnouncementParams,
+		dbmodels.UpdateAnnouncementParams]
 }
 
 type AnnouncementService struct {
-	q *models.Queries
+	q *dbmodels.Queries
 }
 
 // compile time check
 var _ AnnouncementServicer = (*AnnouncementService)(nil)
 
-func NewAnnouncementService(q *models.Queries) *AnnouncementService {
+func NewAnnouncementService(q *dbmodels.Queries) *AnnouncementService {
 	return &AnnouncementService{q: q}
 }
 
-func (s *AnnouncementService) Get(ctx context.Context, uuid string) (models.Announcement, error) {
+func (s *AnnouncementService) Get(ctx context.Context, uuid string) (dbmodels.Announcement, error) {
 	announcement, err := s.q.GetAnnouncement(ctx, uuid)
 	if err != nil {
-		return models.Announcement{}, err
+		return dbmodels.Announcement{}, err
 	}
 	return announcement, nil
 }
 
 func (s *AnnouncementService) Create(ctx context.Context,
-	params models.CreateAnnouncementParams) error {
+	params dbmodels.CreateAnnouncementParams) error {
 
 	if err := s.q.CreateAnnouncement(ctx, params); err != nil {
 		return err
@@ -41,11 +41,11 @@ func (s *AnnouncementService) Create(ctx context.Context,
 }
 
 type AnnouncementFilter interface {
-	Apply(events []models.Announcement) []models.Announcement
+	Apply(events []dbmodels.Announcement) []dbmodels.Announcement
 }
 
 func (s *AnnouncementService) List(ctx context.Context,
-	filters ...any) ([]models.Announcement, error) {
+	filters ...any) ([]dbmodels.Announcement, error) {
 
 	announcements, err := s.q.GetAnnouncements(ctx)
 	if err != nil {
@@ -62,7 +62,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 }
 
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
-	params models.UpdateAnnouncementParams) error {
+	params dbmodels.UpdateAnnouncementParams) error {
 
 	err := s.q.UpdateAnnouncement(ctx, params)
 	if err != nil {

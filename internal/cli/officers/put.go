@@ -25,7 +25,7 @@ var PutOfficer = &cobra.Command{
 	Short: "update an existing officer by id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := models.UpdateOfficerParams{}
+		payload := dbmodels.UpdateOfficerParams{}
 		var uuidVal string
 		cmd.Flags().Set("id", uuidVal)
 		huh.NewForm().Run()
@@ -74,7 +74,7 @@ func init() {
 	PutOfficer.MarkFlagRequired("id")
 }
 
-func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFlags, cfg *config.Config) {
+func putOfficer(id string, payload *dbmodels.UpdateOfficerParams, flags officerFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -118,7 +118,7 @@ func putOfficer(id string, payload *models.UpdateOfficerParams, flags officerFla
 		return
 	}
 
-	var old models.CreateOfficerParams
+	var old dbmodels.CreateOfficerParams
 	if err := json.Unmarshal(body, &old); err != nil {
 		fmt.Println("error unmarshaling previous officer data:", err)
 		return

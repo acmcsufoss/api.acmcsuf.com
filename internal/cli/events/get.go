@@ -104,7 +104,7 @@ func getEvents(id string, cfg *config.Config) {
 	}
 
 	if id == "" {
-		var getPayload []models.CreateEventParams
+		var getPayload []dbmodels.CreateEventParams
 		err = json.NewDecoder(resp.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body without id:", err)
@@ -115,7 +115,7 @@ func getEvents(id string, cfg *config.Config) {
 			fmt.Println(utils.PrintStruct(getPayload[i]))
 		}
 	} else {
-		var getPayload models.CreateEventParams
+		var getPayload dbmodels.CreateEventParams
 		err = json.NewDecoder(resp.Body).Decode(&getPayload)
 		if err != nil {
 			fmt.Println("Failed to read response body with id:", err)
