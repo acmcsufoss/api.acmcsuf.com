@@ -158,3 +158,11 @@ func convertDomainToUpdateDBPosition(dPositon *domain.Position) *dbmodels.Update
 		Tier:     int64(dPositon.Tier),
 	}
 }
+
+func convertDomainToDeleteDBPosition(dPositon *domain.Position) *dbmodels.DeletePositionParams {
+	return &dbmodels.DeletePositionParams{
+		Oid:      dPositon.Oid,
+		Semester: dPositon.Semester,
+		Tier:     int64(dPositon.Tier),
+	}
+}

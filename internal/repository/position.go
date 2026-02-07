@@ -1,4 +1,3 @@
-/*
 package repository
 
 import (
@@ -8,74 +7,64 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
-type OfficerRepository interface {
-	GetAllOfficers(ctx context.Context) ([]*domain.Officer, error)
-	GetOfficerByID(ctx context.Context, id string) (*domain.Officer, error)
-	Create(ctx context.Context, args domain.Officer) error
-	Update(ctx context.Context, args domain.Officer) error
-	Delete(ctx context.Context, id string) error
+type PositionRepository interface {
+	GetAllpositions(ctx context.Context) ([]*domain.Officer, error)
+	GetpositionByID(ctx context.Context, id string) (*domain.Officer, error)
+	Create(ctx context.Context, args domain.Position) error
+	Update(ctx context.Context, args domain.Position) error
+	Delete(ctx context.Context, args domain.Position) error
 }
 
-type officerRepository struct {
+type positionRepository struct {
 	db *dbmodels.Queries
 }
 
-func NewOfficerRepository(db *dbmodels.Queries) OfficerRepository {
-	return &officerRepository{db: db}
+func NewPositionRepository(db *dbmodels.Queries) OfficerRepository {
+	return &positionRepository{db: db}
 }
 
-func (r *officerRepository) GetAllOfficers(ctx context.Context) ([]*domain.Officer, error) {
-	dbOfficers, err := r.db.GetOfficers(ctx)
+func (r *positionRepository) GetAllPositions(ctx context.Context) ([]*domain.Position, error) {
+	dbPositions, err := r.db.GetPositions(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var officers []*domain.Officer
-	for _, dbOfficer := range dbOfficers {
-		officers = append(officers, convertDBOfficerToDomain(&dbOfficer))
+	var positions []*domain.Position
+	for _, dbPosition := range dbPositions {
+		positions = append(positions, convertDBPositionToDomain(&dbPosition))
 	}
-	return officers, nil
+	return positions, nil
 }
 
-func (r *officerRepository) GetOfficerByID(ctx context.Context, id string) (*domain.Officer, error) {
-	row, err := r.db.GetOfficer(ctx, id) // Get officers and get officers return completly different things?
-
+func (r *positionRepository) GetPositionByID(ctx context.Context, id string) (*domain.Position, error) {
+	dbPosition, err := r.db.GetPosition(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	dbOfficer := dbmodels.Officer{
-		Uuid:     id,
-		FullName: row.FullName,
-		Picture:  row.Picture,
-		Github:   row.Github,
-		Discord:  row.Discord,
-	}
-
-	return convertDBOfficerToDomain(&dbOfficer), nil
+	return convertDBPositionToDomain(&dbPosition), nil
 }
 
-func (r *officerRepository) Delete(ctx context.Context, id string) error {
-	err := r.db.DeleteOfficer(ctx, id)
+func (r *positionRepository) Delete(ctx context.Context, args domain.Position) error {
+	err := r.db.DeletePosition(ctx, *convertDomainToDeleteDBPosition(&args))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *officerRepository) Create(ctx context.Context, args domain.Officer) error {
-	_, err := r.db.CreateOfficer(ctx, *convertDomaintoCreateDBOfficer(&args))
+func (r *positionRepository) Create(ctx context.Context, args domain.Position) error {
+	_, err := r.db.CreatePosition(ctx, *convertDomainToCreateDBPosition(&args))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *officerRepository) Update(ctx context.Context, args domain.Officer) error {
-	err := r.db.UpdateOfficer(ctx, *convertDomaintoUpdateDBOfficer(&args))
+func (r *positionRepository) Update(ctx context.Context, args domain.Position) error {
+	err := r.db.UpdatePosition(ctx, *convertDomainToUpdateDBPosition(&args))
 	if err != nil {
 		return err
 	}
 	return nil
 }
-*/
