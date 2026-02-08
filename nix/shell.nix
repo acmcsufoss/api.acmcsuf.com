@@ -16,6 +16,7 @@
   go-migrate,
   sqlite,
   sqlite-web,
+  flyctl,
 }:
 
 let
@@ -41,6 +42,7 @@ mkShell {
     go-migrate-sqlite
     sqlite
     sqlite-web
+    flyctl
   ];
 
   shellHook = ''
