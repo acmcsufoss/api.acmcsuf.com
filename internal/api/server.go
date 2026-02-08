@@ -42,8 +42,8 @@ func Run(ctx context.Context) {
 	routes.SetupV1(router, eventsService, announcementService, boardService)
 
 	go func() {
-		serverAddr := fmt.Sprintf("localhost:%s", cfg.Port)
-		log.Printf("\x1b[32mServer started on http://%s\x1b[0m", serverAddr)
+		serverAddr := fmt.Sprintf(":%s", cfg.Port)
+		log.Printf("\x1b[32mServer started on port %s\x1b[0m", cfg.Port)
 
 		if err := router.Run(serverAddr); err != nil {
 			log.Fatalf("Failed to start server: %v", err)
