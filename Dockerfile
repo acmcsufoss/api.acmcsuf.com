@@ -5,7 +5,10 @@ WORKDIR /usr/src/app
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 COPY . .
-RUN go build -v -o /run-app .
+ENV GIN_MODE=release
+ENV ENV=production
+ENV PORT=80
+RUN go build -v -o /run-app ./cmd/acmcsuf-api
 
 
 FROM debian:bookworm
