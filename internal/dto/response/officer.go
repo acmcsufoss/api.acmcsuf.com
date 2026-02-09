@@ -1,4 +1,4 @@
-package domain
+package dto_response
 
 type Officer struct {
 	FullName string `json:"full_name"`
