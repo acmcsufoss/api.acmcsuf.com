@@ -7,6 +7,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -35,7 +36,6 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	id := c.Param("id")
 
 	announcement, err := h.announcementService.Get(ctx, id)
-
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -80,7 +80,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Router			/v1/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateAnnouncementParams
+	var params dto_request.Announcement
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

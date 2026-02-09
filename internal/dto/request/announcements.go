@@ -1,4 +1,4 @@
-package domain
+package dto_request
 
 type Announcement struct {
 	Uuid             string `json:"uuid"`

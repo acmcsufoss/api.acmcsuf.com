@@ -1,4 +1,4 @@
-package domain
+package dto_request
 
 type Position struct {
 	Oid      string `json:"oid"`

@@ -1,4 +1,4 @@
-package domain
+package dto_request
 
 type Event struct {
 	Location string `json:"location"`

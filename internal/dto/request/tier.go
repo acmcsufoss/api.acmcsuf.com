@@ -1,4 +1,4 @@
-package domain
+package dto_request
 
 type Tier struct {
 	Tier   int    `json:"tier"`
