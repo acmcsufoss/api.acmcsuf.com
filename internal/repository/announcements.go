@@ -8,9 +8,9 @@ import (
 )
 
 type AnnouncementRepository interface {
-	GetAll(ctx context.Context) ([]*domain.Announcement, error)
+	GetAll(ctx context.Context) ([]domain.Announcement, error)
 
-	GetByID(ctx context.Context, id string) (*domain.Announcement, error)
+	GetByID(ctx context.Context, id string) (domain.Announcement, error)
 	Delete(ctx context.Context, id string) error
 
 	Create(ctx context.Context, args domain.Announcement) error
@@ -25,24 +25,24 @@ func NewAnnouncementRepository(db *dbmodels.Queries) AnnouncementRepository {
 	return &announcementRepository{db: db}
 }
 
-func (r *announcementRepository) GetByID(ctx context.Context, id string) (*domain.Announcement, error) {
+func (r *announcementRepository) GetByID(ctx context.Context, id string) (domain.Announcement, error) {
 	dbAnnouncement, err := r.db.GetAnnouncement(ctx, id)
 	if err != nil {
-		return nil, err
+		return domain.Announcement{}, err
 	}
 
-	return convertDBAnnouncementToDomain(&dbAnnouncement), nil
+	return convertDBAnnouncementToDomain(dbAnnouncement), nil
 }
 
-func (r *announcementRepository) GetAll(ctx context.Context) ([]*domain.Announcement, error) {
+func (r *announcementRepository) GetAll(ctx context.Context) ([]domain.Announcement, error) {
 	dbAnnouncement, err := r.db.GetAnnouncements(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var eventSlice []*domain.Announcement
+	var eventSlice []domain.Announcement
 	for _, elm := range dbAnnouncement {
-		eventSlice = append(eventSlice, convertDBAnnouncementToDomain(&elm))
+		eventSlice = append(eventSlice, convertDBAnnouncementToDomain(elm))
 	}
 	return eventSlice, nil
 }
@@ -56,7 +56,7 @@ func (r *announcementRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *announcementRepository) Create(ctx context.Context, args domain.Announcement) error {
-	err := r.db.CreateAnnouncement(ctx, *convertDomainToCreateDBAnnouncement(&args))
+	err := r.db.CreateAnnouncement(ctx, convertDomainToCreateDBAnnouncement(args))
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (r *announcementRepository) Create(ctx context.Context, args domain.Announc
 }
 
 func (r *announcementRepository) Update(ctx context.Context, args domain.Announcement) error {
-	err := r.db.UpdateAnnouncement(ctx, *convertDomainToUpdateDBAnnouncement(&args))
+	err := r.db.UpdateAnnouncement(ctx, convertDomainToUpdateDBAnnouncement(args))
 	if err != nil {
 		return err
 	}

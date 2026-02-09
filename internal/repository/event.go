@@ -8,9 +8,9 @@ import (
 )
 
 type EventRepository interface {
-	GetAll(ctx context.Context) ([]*domain.Event, error)
+	GetAll(ctx context.Context) ([]domain.Event, error)
 
-	GetByID(ctx context.Context, id string) (*domain.Event, error)
+	GetByID(ctx context.Context, id string) (domain.Event, error)
 	Delete(ctx context.Context, id string) error
 
 	Create(ctx context.Context, args domain.Event) error
@@ -25,24 +25,24 @@ func NewEventRepository(db *dbmodels.Queries) EventRepository {
 	return &eventRepository{db: db}
 }
 
-func (r *eventRepository) GetByID(ctx context.Context, id string) (*domain.Event, error) {
+func (r *eventRepository) GetByID(ctx context.Context, id string) (domain.Event, error) {
 	dbEvent, err := r.db.GetEvent(ctx, id)
 	if err != nil {
-		return nil, err
+		return domain.Event{}, err
 	}
 
-	return convertDBEventToDomain(&dbEvent), nil
+	return convertDBEventToDomain(dbEvent), nil
 }
 
-func (r *eventRepository) GetAll(ctx context.Context) ([]*domain.Event, error) {
+func (r *eventRepository) GetAll(ctx context.Context) ([]domain.Event, error) {
 	dbEvent, err := r.db.GetEvents(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var eventSlice []*domain.Event
+	var eventSlice []domain.Event
 	for _, elm := range dbEvent {
-		eventSlice = append(eventSlice, convertDBEventToDomain(&elm))
+		eventSlice = append(eventSlice, convertDBEventToDomain(elm))
 	}
 	return eventSlice, nil
 }
@@ -56,7 +56,7 @@ func (r *eventRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *eventRepository) Create(ctx context.Context, args domain.Event) error {
-	err := r.db.CreateEvent(ctx, *convertDomainToCreateDBEvent(&args))
+	err := r.db.CreateEvent(ctx, convertDomainToCreateDBEvent(args))
 	if err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (r *eventRepository) Create(ctx context.Context, args domain.Event) error {
 }
 
 func (r *eventRepository) Update(ctx context.Context, args domain.Event) error {
-	err := r.db.UpdateEvent(ctx, *convertDomainToUpdateDBEvent(&args))
+	err := r.db.UpdateEvent(ctx, convertDomainToUpdateDBEvent(args))
 	if err != nil {
 		return err
 	}

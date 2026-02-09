@@ -8,8 +8,8 @@ import (
 )
 
 type PositionRepository interface {
-	GetAll(ctx context.Context) ([]*domain.Position, error)
-	GetByID(ctx context.Context, id string) (*domain.Position, error)
+	GetAll(ctx context.Context) ([]domain.Position, error)
+	GetByID(ctx context.Context, id string) (domain.Position, error)
 	Create(ctx context.Context, args domain.Position) error
 	Update(ctx context.Context, args domain.Position) error
 	Delete(ctx context.Context, args domain.Position) error
@@ -23,30 +23,30 @@ func NewPositionRepository(db *dbmodels.Queries) PositionRepository {
 	return &positionRepository{db: db}
 }
 
-func (r *positionRepository) GetAll(ctx context.Context) ([]*domain.Position, error) {
+func (r *positionRepository) GetAll(ctx context.Context) ([]domain.Position, error) {
 	dbPositions, err := r.db.GetPositions(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var positions []*domain.Position
+	var positions []domain.Position
 	for _, dbPosition := range dbPositions {
-		positions = append(positions, convertDBPositionToDomain(&dbPosition))
+		positions = append(positions, convertDBPositionToDomain(dbPosition))
 	}
 	return positions, nil
 }
 
-func (r *positionRepository) GetByID(ctx context.Context, id string) (*domain.Position, error) {
+func (r *positionRepository) GetByID(ctx context.Context, id string) (domain.Position, error) {
 	dbPosition, err := r.db.GetPosition(ctx, id)
 	if err != nil {
-		return nil, err
+		return domain.Position{}, err
 	}
 
-	return convertDBPositionToDomain(&dbPosition), nil
+	return convertDBPositionToDomain(dbPosition), nil
 }
 
 func (r *positionRepository) Delete(ctx context.Context, args domain.Position) error {
-	err := r.db.DeletePosition(ctx, *convertDomainToDeleteDBPosition(&args))
+	err := r.db.DeletePosition(ctx, convertDomainToDeleteDBPosition(args))
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func (r *positionRepository) Delete(ctx context.Context, args domain.Position) e
 }
 
 func (r *positionRepository) Create(ctx context.Context, args domain.Position) error {
-	_, err := r.db.CreatePosition(ctx, *convertDomainToCreateDBPosition(&args))
+	_, err := r.db.CreatePosition(ctx, convertDomainToCreateDBPosition(args))
 	if err != nil {
 		return err
 	}
@@ -62,7 +62,7 @@ func (r *positionRepository) Create(ctx context.Context, args domain.Position) e
 }
 
 func (r *positionRepository) Update(ctx context.Context, args domain.Position) error {
-	err := r.db.UpdatePosition(ctx, *convertDomainToUpdateDBPosition(&args))
+	err := r.db.UpdatePosition(ctx, convertDomainToUpdateDBPosition(args))
 	if err != nil {
 		return err
 	}

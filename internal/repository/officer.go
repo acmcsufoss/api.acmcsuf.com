@@ -8,8 +8,8 @@ import (
 )
 
 type OfficerRepository interface {
-	GetAll(ctx context.Context) ([]*domain.Officer, error)
-	GetByID(ctx context.Context, id string) (*domain.Officer, error)
+	GetAll(ctx context.Context) ([]domain.Officer, error)
+	GetByID(ctx context.Context, id string) (domain.Officer, error)
 	Create(ctx context.Context, args domain.Officer) error
 	Update(ctx context.Context, args domain.Officer) error
 	Delete(ctx context.Context, id string) error
@@ -23,24 +23,23 @@ func NewOfficerRepository(db *dbmodels.Queries) OfficerRepository {
 	return &officerRepository{db: db}
 }
 
-func (r *officerRepository) GetAll(ctx context.Context) ([]*domain.Officer, error) {
+func (r *officerRepository) GetAll(ctx context.Context) ([]domain.Officer, error) {
 	dbOfficers, err := r.db.GetOfficers(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	var officers []*domain.Officer
+	var officers []domain.Officer
 	for _, dbOfficer := range dbOfficers {
-		officers = append(officers, convertDBOfficerToDomain(&dbOfficer))
+		officers = append(officers, convertDBOfficerToDomain(dbOfficer))
 	}
 	return officers, nil
 }
 
-func (r *officerRepository) GetByID(ctx context.Context, id string) (*domain.Officer, error) {
+func (r *officerRepository) GetByID(ctx context.Context, id string) (domain.Officer, error) {
 	row, err := r.db.GetOfficer(ctx, id) // Get officers and get officers return completly different things?
-
 	if err != nil {
-		return nil, err
+		return domain.Officer{}, err
 	}
 
 	dbOfficer := dbmodels.Officer{
@@ -51,7 +50,7 @@ func (r *officerRepository) GetByID(ctx context.Context, id string) (*domain.Off
 		Discord:  row.Discord,
 	}
 
-	return convertDBOfficerToDomain(&dbOfficer), nil
+	return convertDBOfficerToDomain(dbOfficer), nil
 }
 
 func (r *officerRepository) Delete(ctx context.Context, id string) error {
@@ -63,7 +62,7 @@ func (r *officerRepository) Delete(ctx context.Context, id string) error {
 }
 
 func (r *officerRepository) Create(ctx context.Context, args domain.Officer) error {
-	_, err := r.db.CreateOfficer(ctx, *convertDomainToCreateDBOfficer(&args))
+	_, err := r.db.CreateOfficer(ctx, convertDomainToCreateDBOfficer(args))
 	if err != nil {
 		return err
 	}
@@ -71,7 +70,7 @@ func (r *officerRepository) Create(ctx context.Context, args domain.Officer) err
 }
 
 func (r *officerRepository) Update(ctx context.Context, args domain.Officer) error {
-	err := r.db.UpdateOfficer(ctx, *convertDomainToUpdateDBOfficer(&args))
+	err := r.db.UpdateOfficer(ctx, convertDomainToUpdateDBOfficer(args))
 	if err != nil {
 		return err
 	}
