@@ -8,8 +8,8 @@ import (
 )
 
 type OfficerRepository interface {
-	GetAllOfficers(ctx context.Context) ([]*domain.Officer, error)
-	GetOfficerByID(ctx context.Context, id string) (*domain.Officer, error)
+	GetAll(ctx context.Context) ([]*domain.Officer, error)
+	GetByID(ctx context.Context, id string) (*domain.Officer, error)
 	Create(ctx context.Context, args domain.Officer) error
 	Update(ctx context.Context, args domain.Officer) error
 	Delete(ctx context.Context, id string) error
@@ -23,7 +23,7 @@ func NewOfficerRepository(db *dbmodels.Queries) OfficerRepository {
 	return &officerRepository{db: db}
 }
 
-func (r *officerRepository) GetAllOfficers(ctx context.Context) ([]*domain.Officer, error) {
+func (r *officerRepository) GetAll(ctx context.Context) ([]*domain.Officer, error) {
 	dbOfficers, err := r.db.GetOfficers(ctx)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (r *officerRepository) GetAllOfficers(ctx context.Context) ([]*domain.Offic
 	return officers, nil
 }
 
-func (r *officerRepository) GetOfficerByID(ctx context.Context, id string) (*domain.Officer, error) {
+func (r *officerRepository) GetByID(ctx context.Context, id string) (*domain.Officer, error) {
 	row, err := r.db.GetOfficer(ctx, id) // Get officers and get officers return completly different things?
 
 	if err != nil {

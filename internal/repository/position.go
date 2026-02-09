@@ -8,8 +8,8 @@ import (
 )
 
 type PositionRepository interface {
-	GetAllPositions(ctx context.Context) ([]*domain.Position, error)
-	GetPositionByID(ctx context.Context, id string) (*domain.Position, error)
+	GetAll(ctx context.Context) ([]*domain.Position, error)
+	GetByID(ctx context.Context, id string) (*domain.Position, error)
 	Create(ctx context.Context, args domain.Position) error
 	Update(ctx context.Context, args domain.Position) error
 	Delete(ctx context.Context, args domain.Position) error
@@ -23,7 +23,7 @@ func NewPositionRepository(db *dbmodels.Queries) PositionRepository {
 	return &positionRepository{db: db}
 }
 
-func (r *positionRepository) GetAllPositions(ctx context.Context) ([]*domain.Position, error) {
+func (r *positionRepository) GetAll(ctx context.Context) ([]*domain.Position, error) {
 	dbPositions, err := r.db.GetPositions(ctx)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (r *positionRepository) GetAllPositions(ctx context.Context) ([]*domain.Pos
 	return positions, nil
 }
 
-func (r *positionRepository) GetPositionByID(ctx context.Context, id string) (*domain.Position, error) {
+func (r *positionRepository) GetByID(ctx context.Context, id string) (*domain.Position, error) {
 	dbPosition, err := r.db.GetPosition(ctx, id)
 	if err != nil {
 		return nil, err

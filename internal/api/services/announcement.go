@@ -3,8 +3,11 @@ package services
 import (
 	"context"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"log"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
 
 type AnnouncementServicer interface {
@@ -19,11 +22,11 @@ type AnnouncementService struct {
 // compile time check
 var _ AnnouncementServicer = (*AnnouncementService)(nil)
 
-func NewAnnouncementService(q *dbmodels.Queries) *AnnouncementService {
+func NewAnnouncementService(q *dbmodels.Queries) *repository.AnnouncementService {
 	return &AnnouncementService{q: q}
 }
 
-func (s *AnnouncementService) Get(ctx context.Context, uuid string) (dbmodels.Announcement, error) {
+func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Announcement, error) {
 	announcement, err := s.q.GetAnnouncement(ctx, uuid)
 	if err != nil {
 		return dbmodels.Announcement{}, err

@@ -8,9 +8,9 @@ import (
 )
 
 type EventRepository interface {
-	GetAllEvents(ctx context.Context) ([]*domain.Event, error)
+	GetAll(ctx context.Context) ([]*domain.Event, error)
 
-	GetEventByID(ctx context.Context, id string) (*domain.Event, error)
+	GetByID(ctx context.Context, id string) (*domain.Event, error)
 	Delete(ctx context.Context, id string) error
 
 	Create(ctx context.Context, args domain.Event) error
@@ -25,7 +25,7 @@ func NewEventRepository(db *dbmodels.Queries) EventRepository {
 	return &eventRepository{db: db}
 }
 
-func (r *eventRepository) GetEventByID(ctx context.Context, id string) (*domain.Event, error) {
+func (r *eventRepository) GetByID(ctx context.Context, id string) (*domain.Event, error) {
 	dbEvent, err := r.db.GetEvent(ctx, id)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (r *eventRepository) GetEventByID(ctx context.Context, id string) (*domain.
 	return convertDBEventToDomain(&dbEvent), nil
 }
 
-func (r *eventRepository) GetAllEvents(ctx context.Context) ([]*domain.Event, error) {
+func (r *eventRepository) GetAll(ctx context.Context) ([]*domain.Event, error) {
 	dbEvent, err := r.db.GetEvents(ctx)
 	if err != nil {
 		return nil, err

@@ -8,8 +8,8 @@ import (
 )
 
 type TierRepository interface {
-	GetAllTiers(ctx context.Context) ([]*domain.Tier, error)
-	GetTierByID(ctx context.Context, id int64) (*domain.Tier, error)
+	GetAll(ctx context.Context) ([]*domain.Tier, error)
+	GetByID(ctx context.Context, id int64) (*domain.Tier, error)
 	Create(ctx context.Context, args domain.Tier) error
 	Update(ctx context.Context, args domain.Tier) error
 	Delete(ctx context.Context, id int64) error
@@ -23,7 +23,7 @@ func NewTierRepository(db *dbmodels.Queries) TierRepository {
 	return &tierRepository{db: db}
 }
 
-func (r *tierRepository) GetAllTiers(ctx context.Context) ([]*domain.Tier, error) {
+func (r *tierRepository) GetAll(ctx context.Context) ([]*domain.Tier, error) {
 	dbTiers, err := r.db.GetTiers(ctx)
 	if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (r *tierRepository) GetAllTiers(ctx context.Context) ([]*domain.Tier, error
 	return Tiers, nil
 }
 
-func (r *tierRepository) GetTierByID(ctx context.Context, id int64) (*domain.Tier, error) {
+func (r *tierRepository) GetByID(ctx context.Context, id int64) (*domain.Tier, error) {
 	dbTier, err := r.db.GetTier(ctx, id)
 
 	if err != nil {
