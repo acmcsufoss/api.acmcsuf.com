@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +38,6 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 	id := c.Param("id")
 
 	event, err := h.eventsService.Get(ctx, id)
-
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -70,7 +69,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 //	@Router			/v1/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateEventParams
+	var params dto_request.Event
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -86,7 +85,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	err := h.eventsService.Create(ctx, params)
+	err := h.eventsService.Create(ctx, params.ToDomain())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
@@ -95,7 +94,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event created successfully",
-		"uuid":    params.Uuid,
+		"uuid":    params.ToDomain().Uuid,
 	})
 }
 
@@ -145,7 +144,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Router			/v1/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateEventParams
+	var params dto_request.Event
 	id := c.Param("id")
 
 	fmt.Println("UPDATE:", id)
@@ -156,16 +155,17 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	if err := h.eventsService.Update(ctx, id, params); err != nil {
+	if err := h.eventsService.Update(ctx, id, params.ToDomain()); err != nil {
 		error := fmt.Sprint("Failed to update event: ", err, " | ", ctx, " | ", id, " | ", params)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": error,
 		})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event updated successfully",
-		"uuid":    params.Uuid,
+		"uuid":    params.ToDomain().Uuid,
 	})
 }
 

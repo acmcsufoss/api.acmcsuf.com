@@ -7,7 +7,7 @@ import (
 )
 
 type Event struct {
-	Location string `json:"location"`
+	Location string `json:"location,omitempty"`
 	StartAt  int64  `json:"start_at"`
 	EndAt    int64  `json:"end_at"`
 	IsAllDay bool   `json:"is_all_day"`

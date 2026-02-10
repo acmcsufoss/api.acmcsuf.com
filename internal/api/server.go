@@ -16,6 +16,7 @@ import (
 	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
 
 // Run initializes the database, services, and router, then starts the server.
@@ -31,8 +32,10 @@ func Run(ctx context.Context) {
 
 	// Now we init services & gin router, and then start the server
 	queries := dbmodels.New(db)
-	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
+	announcementsRepo := repository.NewAnnouncementRepository(queries)
+	eventsRepo := repository.NewEventRepository(queries)
+	announcementService := services.NewAnnouncementService(announcementsRepo)
+	eventsService := services.NewEventsService(eventsRepo)
 	boardService := services.NewBoardService(queries, db)
 	router := gin.Default()
 	router.Use(mw.Cors(), mw.Ratelimiter())
@@ -79,5 +82,4 @@ func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
 	return db, func() {
 		db.Close()
 	}, nil
-
 }

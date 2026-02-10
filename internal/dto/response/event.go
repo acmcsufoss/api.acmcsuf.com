@@ -1,7 +1,7 @@
 package dto_response
 
 type Event struct {
-	Uuid     string `json:"uuid"`
+	Uuid     string `json:"uuid,omitempty"`
 	Location string `json:"location"`
 	StartAt  int64  `json:"start_at"`
 	EndAt    int64  `json:"end_at"`

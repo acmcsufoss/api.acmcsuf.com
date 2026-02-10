@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
+	"fmt"
 	"log"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
@@ -36,6 +36,7 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Anno
 func (s *AnnouncementService) Create(ctx context.Context,
 	params domain.Announcement,
 ) error {
+	fmt.Println("SERVICE PARAM:", params)
 	if err := s.announcementRepository.Create(ctx, params); err != nil {
 		return err
 	}
@@ -51,6 +52,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 ) ([]domain.Announcement, error) {
 	announcements, err := s.announcementRepository.GetAll(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 

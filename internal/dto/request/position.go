@@ -3,7 +3,7 @@ package dto_request
 import "github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 
 type Position struct {
-	Oid      string `json:"oid"`
+	Oid      string `json:"oid,omitempty"`
 	Semester string `json:"semester"`
 	Tier     int    `json:"tier"`
 }

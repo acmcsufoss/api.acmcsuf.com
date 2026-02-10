@@ -5,7 +5,6 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
 	"github.com/gin-gonic/gin"
@@ -48,7 +47,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		})
 	}
 
-	c.JSON(http.StatusOK, announcement)
+	c.JSON(http.StatusOK, announcement.ToDTO())
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
@@ -90,7 +89,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	}
 
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, params); err != nil {
+	if err := h.announcementService.Create(ctx, params.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})
@@ -119,7 +118,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Router		/v1/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateAnnouncementParams
+	var params dto_request.Announcement
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -128,7 +127,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	if err := h.announcementService.Update(ctx, id, params); err != nil {
+	if err := h.announcementService.Update(ctx, id, params.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})

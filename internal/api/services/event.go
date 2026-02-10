@@ -4,34 +4,35 @@ package services
 import (
 	"context"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
 
 type EventsServicer interface {
-	Service[dbmodels.Event, string, dbmodels.CreateEventParams, dbmodels.UpdateEventParams]
+	Service[domain.Event, string, domain.Event, domain.Event]
 }
 
 type EventsService struct {
-	q *dbmodels.Queries
+	eventRepo repository.EventRepository
 }
 
 // this checks that EventsService implements EventsServicers at compile time
 var _ EventsServicer = (*EventsService)(nil)
 
-func NewEventsService(q *dbmodels.Queries) *EventsService {
-	return &EventsService{q: q}
+func NewEventsService(eventRepo repository.EventRepository) *EventsService {
+	return &EventsService{eventRepo: eventRepo}
 }
 
-func (s *EventsService) Get(ctx context.Context, uuid string) (dbmodels.Event, error) {
-	event, err := s.q.GetEvent(ctx, uuid)
+func (s *EventsService) Get(ctx context.Context, uuid string) (domain.Event, error) {
+	event, err := s.eventRepo.GetByID(ctx, uuid)
 	if err != nil {
-		return dbmodels.Event{}, err
+		return domain.Event{}, err
 	}
 	return event, nil
 }
 
-func (s *EventsService) Create(ctx context.Context, params dbmodels.CreateEventParams) error {
-	if err := s.q.CreateEvent(ctx, params); err != nil {
+func (s *EventsService) Create(ctx context.Context, params domain.Event) error {
+	if err := s.eventRepo.Create(ctx, params); err != nil {
 		return err
 	}
 	return nil
@@ -39,7 +40,7 @@ func (s *EventsService) Create(ctx context.Context, params dbmodels.CreateEventP
 
 // TODO: Move filters to their own file or module or something
 type EventFilter interface {
-	Apply(events []dbmodels.Event) []dbmodels.Event
+	Apply(events []domain.Event) []domain.Event
 }
 
 type HostFilter struct {
@@ -49,12 +50,12 @@ type HostFilter struct {
 // Ensure HostFilter implements EventFilter
 var _ EventFilter = (*HostFilter)(nil)
 
-func (f *HostFilter) Apply(events []dbmodels.Event) []dbmodels.Event {
+func (f *HostFilter) Apply(events []domain.Event) []domain.Event {
 	if f.Host == "" {
 		return events
 	}
 
-	filtered := make([]dbmodels.Event, 0)
+	filtered := make([]domain.Event, 0)
 	for _, event := range events {
 		if event.Host == f.Host {
 			filtered = append(filtered, event)
@@ -63,8 +64,8 @@ func (f *HostFilter) Apply(events []dbmodels.Event) []dbmodels.Event {
 	return filtered
 }
 
-func (s *EventsService) List(ctx context.Context, filters ...any) ([]dbmodels.Event, error) {
-	events, err := s.q.GetEvents(ctx)
+func (s *EventsService) List(ctx context.Context, filters ...any) ([]domain.Event, error) {
+	events, err := s.eventRepo.GetAll(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -79,16 +80,16 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]dbmodels.Ev
 	return result, nil
 }
 
-func (s *EventsService) Update(ctx context.Context, uuid string, params dbmodels.UpdateEventParams) error {
+func (s *EventsService) Update(ctx context.Context, uuid string, params domain.Event) error {
 	params.Uuid = uuid
-	if err := s.q.UpdateEvent(ctx, params); err != nil {
+	if err := s.eventRepo.Update(ctx, params); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (s *EventsService) Delete(ctx context.Context, uuid string) error {
-	if err := s.q.DeleteEvent(ctx, uuid); err != nil {
+	if err := s.eventRepo.Delete(ctx, uuid); err != nil {
 		return err
 	}
 	return nil
