@@ -72,7 +72,7 @@ func (s *PositionService) Update(ctx context.Context, uuid string, params domain
 }
 
 func (s *PositionService) DeletePosition(ctx context.Context, arg domain.Position) error {
-	err := s.positionRepo.Delete(ctx, arg)
+	err := s.positionRepo.DeletePosition(ctx, arg)
 	if err != nil {
 		return err
 	}

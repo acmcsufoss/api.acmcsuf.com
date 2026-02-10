@@ -8,13 +8,7 @@ import (
 )
 
 type AnnouncementRepository interface {
-	GetAll(ctx context.Context) ([]domain.Announcement, error)
-
-	GetByID(ctx context.Context, id string) (domain.Announcement, error)
-	Delete(ctx context.Context, id string) error
-
-	Create(ctx context.Context, args domain.Announcement) error
-	Update(ctx context.Context, args domain.Announcement) error
+	Repository[domain.Announcement, string]
 }
 
 type announcementRepository struct {

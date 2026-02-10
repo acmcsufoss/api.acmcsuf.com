@@ -8,13 +8,7 @@ import (
 )
 
 type EventRepository interface {
-	GetAll(ctx context.Context) ([]domain.Event, error)
-
-	GetByID(ctx context.Context, id string) (domain.Event, error)
-	Delete(ctx context.Context, id string) error
-
-	Create(ctx context.Context, args domain.Event) error
-	Update(ctx context.Context, args domain.Event) error
+	Repository[domain.Event, string]
 }
 
 type eventRepository struct {

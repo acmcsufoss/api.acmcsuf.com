@@ -8,11 +8,7 @@ import (
 )
 
 type TierRepository interface {
-	GetAll(ctx context.Context) ([]domain.Tier, error)
-	GetByID(ctx context.Context, id int64) (domain.Tier, error)
-	Create(ctx context.Context, args domain.Tier) error
-	Update(ctx context.Context, args domain.Tier) error
-	Delete(ctx context.Context, id int64) error
+	Repository[domain.Tier, int64]
 }
 
 type tierRepository struct {

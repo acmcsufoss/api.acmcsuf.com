@@ -8,11 +8,7 @@ import (
 )
 
 type OfficerRepository interface {
-	GetAll(ctx context.Context) ([]domain.Officer, error)
-	GetByID(ctx context.Context, id string) (domain.Officer, error)
-	Create(ctx context.Context, args domain.Officer) error
-	Update(ctx context.Context, args domain.Officer) error
-	Delete(ctx context.Context, id string) error
+	Repository[domain.Officer, string]
 }
 
 type officerRepository struct {

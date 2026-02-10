@@ -2,17 +2,15 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
 type PositionRepository interface {
-	GetAll(ctx context.Context) ([]domain.Position, error)
-	GetByID(ctx context.Context, id string) (domain.Position, error)
-	Create(ctx context.Context, args domain.Position) error
-	Update(ctx context.Context, args domain.Position) error
-	Delete(ctx context.Context, args domain.Position) error
+	Repository[domain.Position, string]
+	DeletePosition(ctx context.Context, args domain.Position) error
 }
 
 type positionRepository struct {
@@ -45,14 +43,6 @@ func (r *positionRepository) GetByID(ctx context.Context, id string) (domain.Pos
 	return convertDBPositionToDomain(dbPosition), nil
 }
 
-func (r *positionRepository) Delete(ctx context.Context, args domain.Position) error {
-	err := r.db.DeletePosition(ctx, convertDomainToDeleteDBPosition(args))
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (r *positionRepository) Create(ctx context.Context, args domain.Position) error {
 	_, err := r.db.CreatePosition(ctx, convertDomainToCreateDBPosition(args))
 	if err != nil {
@@ -63,6 +53,19 @@ func (r *positionRepository) Create(ctx context.Context, args domain.Position) e
 
 func (r *positionRepository) Update(ctx context.Context, args domain.Position) error {
 	err := r.db.UpdatePosition(ctx, convertDomainToUpdateDBPosition(args))
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *positionRepository) Delete(ctx context.Context, args string) error {
+	// Here to satisfy the Repository interface only, use DeletePosition
+	return fmt.Errorf("error: developer is using the wrong delete function")
+}
+
+func (r *positionRepository) DeletePosition(ctx context.Context, args domain.Position) error {
+	err := r.db.DeletePosition(ctx, convertDomainToDeleteDBPosition(args))
 	if err != nil {
 		return err
 	}
