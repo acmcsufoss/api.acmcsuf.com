@@ -92,6 +92,7 @@ func form() (*dbmodels.CreateAnnouncementParams, error) {
 					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&announceAtStr).
 				Validate(forms.ValidateNonEmpty()),
+			// TODO: write validator for time inputs
 			huh.NewInput().
 				Title("Channel ID").
 				Value(&channelIDStr),
@@ -104,7 +105,7 @@ func form() (*dbmodels.CreateAnnouncementParams, error) {
 		return nil, err
 	}
 
-	// NOTE: These conversions won't be necessary once we start using DTO models here
+	// HACK: These conversions won't be necessary once we start using DTO models here
 	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
 	if err != nil {
 		return nil, err
