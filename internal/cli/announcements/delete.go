@@ -36,7 +36,6 @@ var DeleteAnnouncements = &cobra.Command{
 
 func init() {
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
-	DeleteAnnouncements.MarkFlagRequired("id")
 }
 
 func deleteAnnouncement(id string, cfg *config.Config) {
@@ -62,7 +61,7 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 	defer response.Body.Close()
 
 	if response.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP ", response.Status)
+		fmt.Println("Error: HTTP", response.Status)
 		return
 	}
 	body, err := io.ReadAll(response.Body)
@@ -77,11 +76,11 @@ func getIdInteractive() string {
 	var id string
 	huh.NewForm(
 		huh.NewGroup(
-			huh.NewText().
+			huh.NewInput().
 				Title("Announcement ID to delete").
 				CharLimit(400).
 				Value(&id),
 		),
 	).Run()
-	return ""
+	return id
 }
