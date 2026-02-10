@@ -2,7 +2,6 @@ package announcements
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -13,6 +12,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -81,20 +81,17 @@ func form() (*dbmodels.CreateAnnouncementParams, error) {
 			huh.NewInput().
 				Title("Announcement ID").
 				Value(&payload.Uuid).
-				Validate(func(id string) error {
-					if id == "" {
-						return errors.New("ID must not be empty")
-					}
-					return nil
-				}),
+				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Announcement Visibility").
-				Value(&payload.Visibility),
+				Value(&payload.Visibility).
+				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Announcement Time\n"+
 					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
 					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
-				Value(&announceAtStr),
+				Value(&announceAtStr).
+				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Channel ID").
 				Value(&channelIDStr),
