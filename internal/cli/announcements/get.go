@@ -1,14 +1,13 @@
 package announcements
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
@@ -38,17 +37,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
 	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// ----- Constructing the url -----
-	path := "v1/announcements"
-	if uuid != "" {
-		path = fmt.Sprint(path, "/", uuid)
-	}
-
+	path := fmt.Sprintf("v1/announcements/%s", uuid)
 	getUrl := baseURL.JoinPath(path)
 
 	// ----- Requesting Get -----
@@ -67,30 +56,14 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", res.Status)
+		fmt.Println("Error: HTTP", res.Status)
 		return
 	}
 
-	if uuid == "" {
-		var getPayload []dbmodels.CreateAnnouncementParams
-		err = json.NewDecoder(res.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body without id:", err)
-			return
-		}
-
-		for i := range getPayload {
-			fmt.Println(utils.PrintStruct(getPayload[i]))
-		}
-	} else {
-		var getPayload dbmodels.CreateAnnouncementParams
-		err = json.NewDecoder(res.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body with id:", err)
-			return
-		}
-
-		fmt.Println(utils.PrintStruct(getPayload))
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("Error: failed to read response body:", err)
+		return
 	}
-
+	utils.PrettyPrintJSON(body)
 }
