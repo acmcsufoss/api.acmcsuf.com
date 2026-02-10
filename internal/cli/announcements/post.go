@@ -29,7 +29,7 @@ var PostAnnouncement = &cobra.Command{
 func postAnnouncement(cfg *config.Config) {
 	payload, err := form()
 	if err != nil {
-		fmt.Println("Error: could not read form data")
+		fmt.Println("Error:", err)
 		return
 	}
 
@@ -70,6 +70,7 @@ func postAnnouncement(cfg *config.Config) {
 // TODO: Use DTO models instaad of dbmodels
 func form() (*dbmodels.CreateAnnouncementParams, error) {
 	var payload dbmodels.CreateAnnouncementParams
+	var err error
 	var (
 		announceAtStr string
 		channelIDStr  string
@@ -102,8 +103,17 @@ func form() (*dbmodels.CreateAnnouncementParams, error) {
 				Value(&messageIDStr),
 		),
 	)
+	if err = form.Run(); err != nil {
+		return nil, err
+	}
 
-	err := form.Run()
+	// NOTE: These conversions won't be necessary once we start using DTO models here
+	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
+	if err != nil {
+		return nil, err
+	}
+	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
 
 	return &payload, err
 }
