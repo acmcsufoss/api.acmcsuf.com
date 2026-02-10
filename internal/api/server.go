@@ -32,17 +32,33 @@ func Run(ctx context.Context) {
 
 	// Now we init services & gin router, and then start the server
 	queries := dbmodels.New(db)
+	// ---- Repositories ----
 	announcementsRepo := repository.NewAnnouncementRepository(queries)
 	eventsRepo := repository.NewEventRepository(queries)
+	officerRepo := repository.NewOfficerRepository(queries)
+	positionRepo := repository.NewPositionRepository(queries)
+	tierRepo := repository.NewTierRepository(queries)
+
+	// ---- Services ----
 	announcementService := services.NewAnnouncementService(announcementsRepo)
 	eventsService := services.NewEventsService(eventsRepo)
-	boardService := services.NewBoardService(queries, db)
+	officerService := services.NewOfficerService(officerRepo)
+	positionService := services.NewPositionService(positionRepo)
+	tierService := services.NewTierService(tierRepo)
+
 	router := gin.Default()
 	router.Use(mw.Cors(), mw.Ratelimiter())
 
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
-	routes.SetupV1(router, eventsService, announcementService, boardService)
+	routes.SetupV1(
+		router,
+		eventsService,
+		announcementService,
+		officerService,
+		positionService,
+		tierService,
+	)
 
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", cfg.Port)

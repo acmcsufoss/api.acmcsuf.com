@@ -15,8 +15,8 @@ import (
 )
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
-
+	announcementService services.AnnouncementServicer, officerService services.OfficerServicer, positionService services.PositionServicer, tierService services.TierServicer,
+) {
 	cfg := config.Load()
 	if cfg.DiscordBotToken == "" && cfg.Env != "development" {
 		log.Fatal("Error: DISCORD_BOT_TOKEN is not set")
@@ -38,7 +38,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 	eh := handlers.NewEventHandler(eventService)
 	ah := handlers.NewAnnouncementHandler(announcementService)
-	bh := handlers.NewBoardHandler(boardService)
+	oh := handlers.NewBoardHandler(boardService)
 
 	v1 := router.Group("/v1")
 	// Public (read-only) routes

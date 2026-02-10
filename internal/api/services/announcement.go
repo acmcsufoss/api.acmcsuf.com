@@ -10,8 +10,7 @@ import (
 )
 
 type AnnouncementServicer interface {
-	Service[domain.Announcement, string, domain.Announcement,
-		domain.Announcement]
+	Service[domain.Announcement, string]
 }
 
 type AnnouncementService struct {

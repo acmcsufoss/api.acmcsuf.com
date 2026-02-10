@@ -10,7 +10,7 @@ import (
 )
 
 type EventsServicer interface {
-	Service[domain.Event, string, domain.Event, domain.Event]
+	Service[domain.Event, string]
 }
 
 type EventsService struct {
