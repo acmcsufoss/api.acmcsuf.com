@@ -87,10 +87,12 @@ func form() (*dbmodels.CreateAnnouncementParams, error) {
 					return nil
 				}),
 			huh.NewInput().
-				Title("Announcement visibility").
+				Title("Announcement Visibility").
 				Value(&payload.Visibility),
 			huh.NewInput().
-				Title("Announcement time").
+				Title("Announcement Time\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&announceAtStr),
 			huh.NewInput().
 				Title("Channel ID").
