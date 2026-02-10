@@ -3,6 +3,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
@@ -32,6 +33,9 @@ func (s *EventsService) Get(ctx context.Context, uuid string) (domain.Event, err
 }
 
 func (s *EventsService) Create(ctx context.Context, params domain.Event) error {
+	if params.Uuid == "" {
+		return fmt.Errorf("no unique identifier for event")
+	}
 	if err := s.eventRepo.Create(ctx, params); err != nil {
 		return err
 	}
