@@ -8,8 +8,12 @@ Remove image:
 docker rmi acmcsuf-api
 ```
 
-Set secrets (required for production mode):
+Create volume for database:
+```sh
+docker volume create acmcsuf-data
+```
+
 Run:
 ```sh
-docker run acmcsuf-api:latest
+docker run -p 8080:80 -v acmcsuf-data:/app/data acmcsuf-api:latest
 ```
