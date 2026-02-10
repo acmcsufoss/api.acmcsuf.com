@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -24,7 +24,7 @@ var DeleteAnnouncements = &cobra.Command{
 		if cmd.Flags().Changed("id") {
 			uuid, _ = cmd.Flags().GetString("id")
 		} else {
-			uuid = getIdInteractive()
+			uuid, _ = forms.GetIdInteractive()
 		}
 		if uuid == "" {
 			fmt.Println("Error: no ID specified")
@@ -70,17 +70,4 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 		return
 	}
 	utils.PrettyPrintJSON(body)
-}
-
-func getIdInteractive() string {
-	var id string
-	huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().
-				Title("Announcement ID to delete").
-				CharLimit(400).
-				Value(&id),
-		),
-	).Run()
-	return id
 }
