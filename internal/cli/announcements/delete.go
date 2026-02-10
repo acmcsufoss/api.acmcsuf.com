@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/spf13/cobra"
 
@@ -39,11 +38,7 @@ func init() {
 }
 
 func deleteAnnouncement(id string, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	deleteUrl := baseURL.JoinPath("v1/announcements/", id)
+	deleteUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
 	// ----- Delete -----
 	request, err := oauth.NewRequestWithAuth(http.MethodDelete, deleteUrl.String(), nil)

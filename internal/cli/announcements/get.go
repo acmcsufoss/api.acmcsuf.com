@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/spf13/cobra"
 
@@ -33,12 +32,7 @@ func init() {
 }
 
 func getAnnouncement(uuid string, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	path := fmt.Sprintf("v1/announcements/%s", uuid)
-	getUrl := baseURL.JoinPath(path)
+	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", uuid)
 
 	// ----- Requesting Get -----
 	client := http.Client{}
