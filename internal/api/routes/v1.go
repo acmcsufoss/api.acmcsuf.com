@@ -38,7 +38,9 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 	eh := handlers.NewEventHandler(eventService)
 	ah := handlers.NewAnnouncementHandler(announcementService)
-	oh := handlers.NewBoardHandler(boardService)
+	oh := handlers.NewOfficerHandler(officerService)
+	ph := handlers.NewPositionHandler(positionService)
+	th := handlers.NewTierHandler(tierService)
 
 	v1 := router.Group("/v1")
 	// Public (read-only) routes
@@ -51,14 +53,14 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 		board := v1.Group("/board")
 		{
-			board.GET("/officers", bh.GetOfficers)
-			board.GET("/officers/:id", bh.GetOfficer)
+			board.GET("/officers", oh.GetOfficers)
+			board.GET("/officers/:id", oh.GetOfficer)
 
-			board.GET("/tiers", bh.GetTiers)
-			board.GET("/tiers/:id", bh.GetTier)
+			board.GET("/tiers", th.GetTiers)
+			board.GET("/tiers/:id", th.GetTier)
 
-			board.GET("/positions", bh.GetPositions)
-			board.GET("/positions/:id", bh.GetPosition)
+			board.GET("/positions", ph.GetPositions)
+			board.GET("/positions/:id", ph.GetPosition)
 		}
 	}
 
@@ -77,19 +79,19 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 		board := protected.Group("/board")
 		{
 			// Officers
-			board.POST("/officers", bh.CreateOfficer)
-			board.PUT("/officers/:id", bh.UpdateOfficer)
-			board.DELETE("/officers/:id", bh.DeleteOfficer)
+			board.POST("/officers", oh.CreateOfficer)
+			board.PUT("/officers/:id", oh.UpdateOfficer)
+			board.DELETE("/officers/:id", oh.DeleteOfficer)
 
 			// Tiers
-			board.POST("/tiers", bh.CreateTier)
-			board.PUT("/tiers/:id", bh.UpdateTier)
-			board.DELETE("/tiers/:id", bh.DeleteTier)
+			board.POST("/tiers", th.CreateTier)
+			board.PUT("/tiers/:id", th.UpdateTier)
+			board.DELETE("/tiers/:id", th.DeleteTier)
 
 			// Positions
-			board.POST("/positions", bh.CreatePosition)
-			board.PUT("/positions", bh.UpdatePosition)
-			board.DELETE("/positions", bh.DeletePosition)
+			board.POST("/positions", ph.CreatePosition)
+			board.PUT("/positions", ph.UpdatePosition)
+			board.DELETE("/positions", ph.DeletePosition)
 		}
 	}
 }

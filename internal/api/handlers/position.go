@@ -166,7 +166,7 @@ func (h *PositionHandler) UpdatePosition(c *gin.Context) {
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [delete]
-func (h *PositionHandler) Delete(c *gin.Context) {
+func (h *PositionHandler) DeletePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto_request.Position
 
