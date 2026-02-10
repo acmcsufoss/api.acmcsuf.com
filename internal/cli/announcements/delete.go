@@ -5,7 +5,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -75,5 +74,14 @@ func deleteAnnouncement(id string, cfg *config.Config) {
 }
 
 func getIdInteractive() string {
+	var id string
+	huh.NewForm(
+		huh.NewGroup(
+			huh.NewText().
+				Title("Announcement ID to delete").
+				CharLimit(400).
+				Value(&id),
+		),
+	).Run()
 	return ""
 }
