@@ -9,14 +9,13 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -25,7 +24,7 @@ var PostAnnouncement = &cobra.Command{
 	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := domain.Announcement{}
+		payload := dbmodels.CreateAnnouncementParams{}
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -41,12 +40,11 @@ var PostAnnouncement = &cobra.Command{
 		channelIdString, _ := cmd.Flags().GetString("channelid")
 		messageIdString, _ := cmd.Flags().GetString("messageid")
 
-		payload.DiscordChannelID = channelIdString
-		payload.DiscordMessageID = messageIdString
+		payload.DiscordChannelID = utils.StringtoNullString(channelIdString)
+		payload.DiscordMessageID = utils.StringtoNullString(messageIdString)
 
 		if announceString != "" {
-			announceAtUnix, err := utils.ByteSlicetoUnix([]byte(announceString))
-			payload.AnnounceAt = time.Unix(announceAtUnix, 0)
+			payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceString))
 			if err != nil {
 				fmt.Println(err)
 				return
@@ -75,7 +73,7 @@ func init() {
 	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
 }
 
-func postAnnouncement(payload *domain.Announcement, changedFlags announcementFlags, cfg *config.Config) {
+func postAnnouncement(payload *dbmodels.CreateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -177,8 +175,7 @@ func postAnnouncement(payload *domain.Announcement, changedFlags announcementFla
 
 		announceatBuffer := scanner.Bytes()
 
-		announceAtUnix, err := utils.ByteSlicetoUnix(announceatBuffer)
-		payload.AnnounceAt = time.Unix(announceAtUnix, 0)
+		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
 		if err != nil {
 			fmt.Println("error converting byte slice to unix time (of type int64):", err)
 			continue
@@ -214,7 +211,7 @@ func postAnnouncement(payload *domain.Announcement, changedFlags announcementFla
 		}
 
 		channelIdBuffer := scanner.Bytes()
-		payload.DiscordChannelID = string(channelIdBuffer)
+		payload.DiscordChannelID = utils.StringtoNullString(string(channelIdBuffer))
 
 		break
 	}
@@ -245,7 +242,7 @@ func postAnnouncement(payload *domain.Announcement, changedFlags announcementFla
 			continue
 		}
 		messageIdBuffer := scanner.Bytes()
-		payload.DiscordMessageID = string(messageIdBuffer)
+		payload.DiscordMessageID = utils.StringtoNullString(string(messageIdBuffer))
 
 		break
 	}
