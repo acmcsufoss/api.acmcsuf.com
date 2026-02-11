@@ -9,14 +9,13 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -25,7 +24,7 @@ var PostEvent = &cobra.Command{
 	Short: "Post a new event.",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := domain.Event{}
+		payload := dbmodels.CreateEventParams{}
 		err := huh.NewForm().Run()
 		if err != nil {
 			if err == huh.ErrUserAborted {
@@ -49,15 +48,15 @@ var PostEvent = &cobra.Command{
 				fmt.Println(err)
 				return
 			}
-			payload.StartAt = time.Unix(startAtUnix, 0)
+			payload.StartAt = startAtUnix
 			if duration != "" {
 				var err error
-				endAtUnix, err := utils.TimeAfterDuration(payload.StartAt.Unix(), duration)
+				endAtUnix, err := utils.TimeAfterDuration(payload.StartAt, duration)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
-				payload.EndAt = time.Unix(endAtUnix, 0)
+				payload.EndAt = endAtUnix
 			}
 		}
 
@@ -87,7 +86,7 @@ func init() {
 	PostEvent.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
 }
 
-func postEvent(payload *domain.Event, changedFlag eventFlags, cfg *config.Config) {
+func postEvent(payload *dbmodels.CreateEventParams, changedFlag eventFlags, cfg *config.Config) {
 	baseURL := &url.URL{
 		Scheme: "http",
 		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
@@ -195,7 +194,7 @@ func postEvent(payload *domain.Event, changedFlag eventFlags, cfg *config.Config
 			continue
 		}
 
-		payload.StartAt = time.Unix(startTime, 0)
+		payload.StartAt = startTime
 		break
 	}
 
@@ -228,13 +227,13 @@ func postEvent(payload *domain.Event, changedFlag eventFlags, cfg *config.Config
 		}
 
 		endTimeBuffer := scanner.Bytes()
-		endTime, err := utils.TimeAfterDuration(payload.StartAt.Unix(), string(endTimeBuffer))
+		endTime, err := utils.TimeAfterDuration(payload.StartAt, string(endTimeBuffer))
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 
-		payload.EndAt = time.Unix(endTime, 0)
+		payload.EndAt = endTime
 		break
 	}
 
