@@ -26,7 +26,7 @@ func NewTierHandler(tierService services.TierServicer) *TierHandler {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Tier "List of tiers"
+//	@Success		200 {array} dto_request.Tier "List of tiers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [get]
 func (h *TierHandler) GetTiers(c *gin.Context) {
