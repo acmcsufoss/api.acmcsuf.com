@@ -45,6 +45,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to retrieve announcement",
 		})
+		return
 	}
 
 	c.JSON(http.StatusOK, announcement.ToDTO())
