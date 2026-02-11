@@ -133,14 +133,21 @@ func putForm(uuid string) (*dbmodels.UpdateAnnouncementParams, error) {
 
 	payload.Uuid = uuid
 	// HACK: These conversions won't be necessary once we start using DTO models here
-	payload.Visibility = utils.StringtoNullString(visibilityStr)
-	timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
-	if err != nil {
-		return nil, err
+	if visibilityStr != "" {
+		payload.Visibility = utils.StringtoNullString(visibilityStr)
 	}
-	payload.AnnounceAt = utils.Int64toNullInt64(timestamp)
-	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
-	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
-
+	if announceAtStr != "" {
+		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
+		if err != nil {
+			return nil, err
+		}
+		payload.AnnounceAt = utils.Int64toNullInt64(timestamp)
+	}
+	if channelIDStr != "" {
+		payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+	}
+	if messageIDStr != "" {
+		payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+	}
 	return &payload, nil
 }
