@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	// "github.com/charmbracelet/huh"
+
+	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
@@ -27,20 +28,19 @@ var PutAnnouncements = &cobra.Command{
 
 func init() {
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
+	PutAnnouncements.MarkFlagRequired("id")
 }
 
 func putAnnouncements(id string, cfg *config.Config) {
-	var payload dbmodels.UpdateAnnouncementParams
-	oldResourceURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
+	resourceURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
 	// ----- Get the Announcement We Want to Update -----
 	client := http.Client{}
-	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, oldResourceURL.String(), nil)
+	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, resourceURL.String(), nil)
 	if err != nil {
 		fmt.Printf("Error: couldn't retrieve resource %s: %s", id, err)
 		return
 	}
-
 	getRes, err := client.Do(getReq)
 	if err != nil {
 		fmt.Println("Error: failed to send request:", err)
@@ -53,32 +53,32 @@ func putAnnouncements(id string, cfg *config.Config) {
 	}
 	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		fmt.Println("Error: failed to read response body:", err)
 		return
 	}
 
+	// ----- Update found announceement -----
 	var oldPayload dbmodels.CreateAnnouncementParams
 	err = json.Unmarshal(body, &oldPayload)
 	if err != nil {
-		fmt.Println("Error: coudln't unmarshal response body:", err)
+		fmt.Println("Error: failed to unmarshal response body:", err)
 		return
 	}
-
-	// TODO: implement form
-
-	// ----- Marshal Payload to Json -----
-	jsonPayload, err := json.Marshal(payload)
+	newPayload, err := putForm(id)
 	if err != nil {
-		fmt.Println("Error marshaling data:", err)
+		fmt.Println("Error:", err)
 		return
 	}
-
-	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, oldResourceURL.String(), bytes.NewBuffer(jsonPayload))
+	jsonPayload, err := json.Marshal(newPayload)
 	if err != nil {
-		fmt.Println("Problem with PUT:", err)
+		fmt.Println("Error: failed to marshal data:", err)
 		return
 	}
-
+	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, resourceURL.String(), bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		fmt.Println("Error: failed to contruct request:", err)
+		return
+	}
 	putResponse, err := client.Do(putRequest)
 	if err != nil {
 		fmt.Println("Error: failed to send request: ", err)
@@ -96,4 +96,51 @@ func putAnnouncements(id string, cfg *config.Config) {
 		return
 	}
 	utils.PrettyPrintJSON(body)
+}
+
+// TODO: Use DTO models instaad of dbmodels
+func putForm(uuid string) (*dbmodels.UpdateAnnouncementParams, error) {
+	var payload dbmodels.UpdateAnnouncementParams
+	var err error
+	var (
+		visibilityStr string
+		announceAtStr string
+		channelIDStr  string
+		messageIDStr  string
+	)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Announcement Visibility").
+				Value(&visibilityStr),
+			huh.NewInput().
+				Title("Announcement Time\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+				Value(&announceAtStr),
+			// TODO: write validator for time inputs
+			huh.NewInput().
+				Title("Channel ID").
+				Value(&channelIDStr),
+			huh.NewInput().
+				Title("Message ID").
+				Value(&messageIDStr),
+		),
+	)
+	if err = form.Run(); err != nil {
+		return nil, err
+	}
+
+	payload.Uuid = uuid
+	// HACK: These conversions won't be necessary once we start using DTO models here
+	payload.Visibility = utils.StringtoNullString(visibilityStr)
+	timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
+	if err != nil {
+		return nil, err
+	}
+	payload.AnnounceAt = utils.Int64toNullInt64(timestamp)
+	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+
+	return &payload, nil
 }
