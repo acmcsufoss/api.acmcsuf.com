@@ -27,7 +27,7 @@ var PostAnnouncement = &cobra.Command{
 }
 
 func postAnnouncement(cfg *config.Config) {
-	payload, err := form()
+	payload, err := postForm()
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
@@ -68,7 +68,7 @@ func postAnnouncement(cfg *config.Config) {
 }
 
 // TODO: Use DTO models instaad of dbmodels
-func form() (*dbmodels.CreateAnnouncementParams, error) {
+func postForm() (*dbmodels.CreateAnnouncementParams, error) {
 	var payload dbmodels.CreateAnnouncementParams
 	var err error
 	var (
