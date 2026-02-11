@@ -8,7 +8,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -18,11 +17,7 @@ var GetAnnouncement = &cobra.Command{
 
 	Run: func(cmd *cobra.Command, args []string) {
 		var uuid string
-		if cmd.Flags().Changed("id") {
-			uuid, _ = cmd.Flags().GetString("id")
-		} else {
-			uuid, _ = forms.GetIdInteractive()
-		}
+		uuid, _ = cmd.Flags().GetString("id")
 		getAnnouncement(uuid, config.Cfg)
 	},
 }

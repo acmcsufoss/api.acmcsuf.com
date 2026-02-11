@@ -35,6 +35,7 @@ var DeleteAnnouncements = &cobra.Command{
 
 func init() {
 	DeleteAnnouncements.Flags().String("id", "", "delete an announcement by its id")
+	DeleteAnnouncements.MarkFlagRequired("id")
 }
 
 func deleteAnnouncement(id string, cfg *config.Config) {
