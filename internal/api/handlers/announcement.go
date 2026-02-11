@@ -126,6 +126,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
+		return
 	}
 
 	if err := h.announcementService.Update(ctx, id, params.ToDomain()); err != nil {
