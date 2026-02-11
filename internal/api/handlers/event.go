@@ -47,7 +47,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 		}
 
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": fmt.Sprintln("Failed to retrieve event:" + err.Error()),
+			"error": "Failed to retrieve event: " + err.Error(),
 		})
 		return
 	}
