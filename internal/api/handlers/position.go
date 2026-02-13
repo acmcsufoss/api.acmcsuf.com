@@ -7,6 +7,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -98,7 +99,7 @@ func (h *PositionHandler) CreatePosition(c *gin.Context) {
 		return
 	}
 
-	if err := h.positionService.Create(ctx, params.ToDomain()); err != nil {
+	if err := h.positionService.Create(ctx, mapper.ToPositionDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create position. " + err.Error(),
 		})
@@ -138,7 +139,7 @@ func (h *PositionHandler) UpdatePosition(c *gin.Context) {
 		return
 	}
 
-	if err := h.positionService.Update(ctx, id, params.ToDomain()); err != nil {
+	if err := h.positionService.Update(ctx, id, mapper.ToPositionDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update position. " + err.Error(),
 		})
@@ -177,7 +178,7 @@ func (h *PositionHandler) DeletePosition(c *gin.Context) {
 		return
 	}
 
-	if err := h.positionService.DeletePosition(ctx, params.ToDomain()); err != nil {
+	if err := h.positionService.DeletePosition(ctx, mapper.ToPositionDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to delete position",
 		})

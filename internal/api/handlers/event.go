@@ -8,6 +8,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -85,7 +86,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	err := h.eventsService.Create(ctx, params.ToDomain())
+	err := h.eventsService.Create(ctx, mapper.ToEventDomain(&params))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
@@ -94,7 +95,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event created successfully",
-		"uuid":    params.ToDomain().Uuid,
+		"uuid":    mapper.ToEventDomain(&params).Uuid,
 	})
 }
 
@@ -155,7 +156,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	if err := h.eventsService.Update(ctx, id, params.ToDomain()); err != nil {
+	if err := h.eventsService.Update(ctx, id, mapper.ToEventDomain(&params)); err != nil {
 		error := fmt.Sprint("Failed to update event: ", err, " | ", ctx, " | ", id, " | ", params)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": error,
@@ -165,7 +166,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event updated successfully",
-		"uuid":    params.ToDomain().Uuid,
+		"uuid":    mapper.ToEventDomain(&params).Uuid,
 	})
 }
 

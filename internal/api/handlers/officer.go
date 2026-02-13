@@ -7,6 +7,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -105,7 +106,7 @@ func (h *OfficerHandler) CreateOfficer(c *gin.Context) {
 		return
 	}
 
-	if err := h.officerService.Create(ctx, params.ToDomain()); err != nil {
+	if err := h.officerService.Create(ctx, mapper.ToOfficerDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create officer. " + err.Error(),
 		})
@@ -114,7 +115,7 @@ func (h *OfficerHandler) CreateOfficer(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Officer created successfully",
-		"uuid":    params.ToDomain().Uuid,
+		"uuid":    mapper.ToOfficerDomain(&params).Uuid,
 	})
 }
 
@@ -144,7 +145,7 @@ func (h *OfficerHandler) UpdateOfficer(c *gin.Context) {
 		return
 	}
 
-	if err := h.officerService.Update(ctx, id, params.ToDomain()); err != nil {
+	if err := h.officerService.Update(ctx, id, mapper.ToOfficerDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update officer. " + err.Error(),
 		})

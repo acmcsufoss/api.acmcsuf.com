@@ -8,6 +8,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -106,7 +107,7 @@ func (h *TierHandler) CreateTier(c *gin.Context) {
 		return
 	}
 
-	if err := h.tierService.Create(ctx, params.ToDomain()); err != nil {
+	if err := h.tierService.Create(ctx, mapper.ToTierDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create tier. " + err.Error(),
 		})
@@ -153,7 +154,7 @@ func (h *TierHandler) UpdateTier(c *gin.Context) {
 
 	params.Tier = id
 
-	if err := h.tierService.Update(ctx, int64(id), params.ToDomain()); err != nil {
+	if err := h.tierService.Update(ctx, int64(id), mapper.ToTierDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update tier. " + err.Error(),
 		})

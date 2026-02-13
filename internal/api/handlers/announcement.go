@@ -7,6 +7,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -48,7 +49,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, announcement.ToDTO())
+	c.JSON(http.StatusOK, mapper.ToAnnouncementDTO(&announcement))
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
@@ -73,7 +74,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.CreateAnnouncementParams true "Announcement data"
+//	@Param			body body domain.Announcement true "Announcement data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -90,7 +91,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	}
 
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, params.ToDomain()); err != nil {
+	if err := h.announcementService.Create(ctx, mapper.ToAnnouncementDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})
@@ -129,7 +130,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	if err := h.announcementService.Update(ctx, id, params.ToDomain()); err != nil {
+	if err := h.announcementService.Update(ctx, id, mapper.ToAnnouncementDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})
