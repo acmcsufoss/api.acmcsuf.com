@@ -25,11 +25,11 @@ func (r *tierRepository) GetAll(ctx context.Context) ([]domain.Tier, error) {
 		return nil, err
 	}
 
-	var Tiers []domain.Tier
+	var tiers []domain.Tier
 	for _, dbTier := range dbTiers {
-		Tiers = append(Tiers, convertDBTierToDomain(dbTier))
+		tiers = append(tiers, convertDBTierToDomain(dbTier))
 	}
-	return Tiers, nil
+	return tiers, nil
 }
 
 func (r *tierRepository) GetByID(ctx context.Context, id int64) (domain.Tier, error) {
