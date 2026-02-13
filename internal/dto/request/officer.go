@@ -3,6 +3,7 @@ package dto_request
 import "github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 
 type Officer struct {
+	Uuid     string `json:"uuid"`
 	FullName string `json:"full_name"`
 	Picture  string `json:"picture"`
 	Github   string `json:"github"`
