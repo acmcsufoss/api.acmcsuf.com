@@ -56,6 +56,7 @@ func (s *TierService) Create(ctx context.Context, params domain.Tier) error {
 }
 
 func (s *TierService) Update(ctx context.Context, uuid int64, params domain.Tier) error {
+	params.Tier = int(uuid)
 	err := s.tierRepo.Update(ctx, params)
 	if err != nil {
 		return err
