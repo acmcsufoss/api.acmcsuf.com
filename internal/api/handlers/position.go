@@ -25,7 +25,7 @@ func NewPositionHandler(positionService services.PositionServicer) *PositionHand
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Position "List of positions"
+//	@Success		200 {array} dto_request.Position "List of positions"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [get]
 func (h *PositionHandler) GetPositions(c *gin.Context) {
@@ -50,7 +50,7 @@ func (h *PositionHandler) GetPositions(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer full name"
-//	@Success		200 {object} dbmodels.Position "Position details"
+//	@Success		200 {object} domain.Position "Position details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions/{id} [get]
@@ -82,7 +82,7 @@ func (h *PositionHandler) GetPosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreatePositionParams true "Position data"
+//	@Param			body body domain.CreatePositionParams true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -120,7 +120,7 @@ func (h *PositionHandler) CreatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
+//	@Param			body body domain.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -160,7 +160,7 @@ func (h *PositionHandler) UpdatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.DeletePositionParams true "Position identifier"
+//	@Param			body body domain.Position true "Position identifier"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string

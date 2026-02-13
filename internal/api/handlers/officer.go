@@ -26,7 +26,7 @@ func NewOfficerHandler(officerService services.OfficerServicer) *OfficerHandler 
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Success		200 {object} dbmodels.Officer "Officer details"
+//	@Success		200 {object} dto_request.Officer "Officer details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers/{id} [get]
@@ -58,7 +58,7 @@ func (h *OfficerHandler) GetOfficer(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Officer "List of officers"
+//	@Success		200 {array} domain.Officer "List of officers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers [get]
 func (h *OfficerHandler) GetOfficers(c *gin.Context) {
@@ -82,7 +82,7 @@ func (h *OfficerHandler) GetOfficers(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateOfficerParams true "Officer data"
+//	@Param			body body domain.CreateOfficerParams true "Officer data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -126,7 +126,7 @@ func (h *OfficerHandler) CreateOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Param			body body dbmodels.UpdateOfficerParams true "Updated officer data"
+//	@Param			body body domain.Officer true "Updated officer data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string

@@ -90,7 +90,7 @@ func (h *TierHandler) GetTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateTierParams true "Tier data"
+//	@Param			body body domain.Tier true "Tier data"
 //	@Success		200 {object} map[string]interface{} "Success message with tier number"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -127,7 +127,7 @@ func (h *TierHandler) CreateTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Param			body body dbmodels.UpdateTierParams true "Updated tier data"
+//	@Param			body body domain.UpdateTierParams true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string

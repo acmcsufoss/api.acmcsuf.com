@@ -26,7 +26,7 @@ func NewAnnouncementHandler(announcementService services.AnnouncementServicer) *
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
-//	@Success		200 {object} dbmodels.Announcement "Announcement details"
+//	@Success		200 {object} dto_request.Announcement "Announcement details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/announcements/{id} [get]
@@ -73,7 +73,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateAnnouncementParams true "Announcement data"
+//	@Param			body body domain.CreateAnnouncementParams true "Announcement data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -111,7 +111,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "Announcement ID"
-// @Param		body body dbmodels.UpdateAnnouncementParams true "Updated announcement data"
+// @Param		body body domain.Announcement true "Updated announcement data"
 // @Success		200 {object} map[string]string "Success message"
 // @Failure		400 {object} map[string]string
 // @Failure		404 {object} map[string]string
