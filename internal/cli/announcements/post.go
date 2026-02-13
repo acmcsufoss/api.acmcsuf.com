@@ -289,7 +289,6 @@ func postAnnouncement(payload *dbmodels.CreateAnnouncementParams, changedFlags a
 
 	// ----- Marshalling to Json -----
 	jsonPayload, err := json.Marshal(*payload)
-	fmt.Println("JSON MARSHALLED:", payload)
 	if err != nil {
 		fmt.Println("error formating payload to json:", err)
 		return
