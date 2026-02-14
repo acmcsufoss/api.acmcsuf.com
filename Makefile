@@ -35,7 +35,7 @@ $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-generate: $(DOCS_TARGET) $(SQLC_TARGET) ## Generate all necessary files with go generate
+generate: $(DOCS_TARGET) $(SQLC_TARGET) ## Generate all necessary files with
 
 $(DOCS_TARGET): $(DOCS_DEPS)
 	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/dbmodels -o internal/api/docs --parseDependency
@@ -67,7 +67,6 @@ release: ## Create a new release tag
 
 clean: ## Clean up binaries and build artifacts
 	go clean
-	rm -f $(GENERATE_MARKER)
 	rm -rf $(BIN_DIR) result
 
 migrate-up: ## Perform database migration up
@@ -79,4 +78,4 @@ migrate-down: ## Perform database migration down
 help: ## Display this help screen
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: help fmt run build all api cli vet check test check-sql fix-sql clean release generate migrate-up migrate-down
+.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate migrate-up migrate-down
