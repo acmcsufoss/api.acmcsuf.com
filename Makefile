@@ -4,11 +4,15 @@ BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
+GO_SOURCES := $(shell find . -type f -name '*.go' -not -path '*/vendor/*')
+GO_DEPS := $(GO_SOURCES) go.mod go.sum
+
 MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
-GENERATE_DEPS := $(wildcard internal/api/handlers/*.go)
-GENERATE_MARKER := .generate.marker
+GENERATE_DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
+SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
+SQLC_TARGET := internal/api/dbmodels
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
@@ -18,19 +22,21 @@ run: ## Build and run the api
 all: build
 build: generate fmt api cli ## Build the api and cli binaries
 
-api: ## Build the api binary
+api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
+
+$(BIN_DIR)/$(API_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 
-cli: ## Build the cli binary
+cli: $(BIN_DIR)/$(CLI_NAME) ## Build the cli binary
+
+$(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-$(GENERATE_MARKER): $(GENERATE_DEPS)
-	go generate ./...
-	@touch $@
-
-generate: $(GENERATE_MARKER) ## Generate all necessary files with go generate
+# generate: generate-docs generate-sqlc ## Generate all necessary files with go generate
+$(SQLC_TARGET): $(SQLC_DEPS)
+	sqlc generate
 
 fmt: ## Format all go files
 	@go fmt ./...
