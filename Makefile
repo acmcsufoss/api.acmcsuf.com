@@ -13,14 +13,14 @@ DB_URL := sqlite3://dev.db
 DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
 DOCS_TARGET := internal/api/docs/docs.go
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
-SQLC_TARGET := internal/api/dbmodels
+SQLC_TARGET := internal/api/dbmodels/models.go
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
 run: ## Build and run the api
 	air
 
-all: build
+all: generate fmt build
 build: api cli ## Build the api and cli binaries
 
 api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
