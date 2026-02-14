@@ -10,7 +10,8 @@ GO_DEPS := $(GO_SOURCES) go.mod go.sum
 MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
-GENERATE_DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
+DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
+DOCS_TARGET := internal/api/docs
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
 SQLC_TARGET := internal/api/dbmodels
 
@@ -34,7 +35,11 @@ $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-# generate: generate-docs generate-sqlc ## Generate all necessary files with go generate
+generate: $(DOCS_TARGET) $(SQLC_TARGET) ## Generate all necessary files with go generate
+
+$(DOCS_TARGET): $(DOCS_DEPS)
+	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/dbmodels -o internal/api/docs --parseDependency
+
 $(SQLC_TARGET): $(SQLC_DEPS)
 	sqlc generate
 
