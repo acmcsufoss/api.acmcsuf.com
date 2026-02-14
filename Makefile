@@ -25,7 +25,7 @@ build: generate fmt api cli ## Build the api and cli binaries
 
 api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
-$(BIN_DIR)/$(API_NAME): $(GO_DEPS)
+$(BIN_DIR)/$(API_NAME): $(GO_DEPS) $(SQLC_TARGET)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 
