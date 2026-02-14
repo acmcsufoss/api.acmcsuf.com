@@ -11,7 +11,7 @@ MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
 DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
-DOCS_TARGET := internal/api/docs
+DOCS_TARGET := internal/api/docs/docs.go
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
 SQLC_TARGET := internal/api/dbmodels
 
@@ -21,7 +21,7 @@ run: ## Build and run the api
 	air
 
 all: build
-build: generate fmt api cli ## Build the api and cli binaries
+build: api cli ## Build the api and cli binaries
 
 api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
