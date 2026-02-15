@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateAnnouncementParams"
+                            "$ref": "#/definitions/domain.Announcement"
                         }
                     }
                 ],
@@ -94,7 +94,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Announcement details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Announcement"
+                            "$ref": "#/definitions/dto_request.Announcement"
                         }
                     },
                     "404": {
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateAnnouncementParams"
+                            "$ref": "#/definitions/domain.Announcement"
                         }
                     }
                 ],
@@ -257,7 +257,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Officer"
+                                "$ref": "#/definitions/domain.Officer"
                             }
                         }
                     },
@@ -291,7 +291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateOfficerParams"
+                            "$ref": "#/definitions/domain.Officer"
                         }
                     }
                 ],
@@ -350,7 +350,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Officer details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Officer"
+                            "$ref": "#/definitions/dto_request.Officer"
                         }
                     },
                     "404": {
@@ -399,7 +399,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateOfficerParams"
+                            "$ref": "#/definitions/domain.Officer"
                         }
                     }
                 ],
@@ -513,7 +513,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Position"
+                                "$ref": "#/definitions/dto_request.Position"
                             }
                         }
                     },
@@ -547,7 +547,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdatePositionParams"
+                            "$ref": "#/definitions/domain.Position"
                         }
                     }
                 ],
@@ -609,7 +609,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreatePositionParams"
+                            "$ref": "#/definitions/domain.Position"
                         }
                     }
                 ],
@@ -660,7 +660,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.DeletePositionParams"
+                            "$ref": "#/definitions/domain.Position"
                         }
                     }
                 ],
@@ -730,7 +730,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Position details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Position"
+                            "$ref": "#/definitions/domain.Position"
                         }
                     },
                     "404": {
@@ -773,7 +773,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Tier"
+                                "$ref": "#/definitions/dto_request.Tier"
                             }
                         }
                     },
@@ -807,7 +807,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateTierParams"
+                            "$ref": "#/definitions/domain.Tier"
                         }
                     }
                 ],
@@ -924,7 +924,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateTierParams"
+                            "$ref": "#/definitions/domain.Tier"
                         }
                     }
                 ],
@@ -1055,7 +1055,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Event"
+                                "$ref": "#/definitions/domain.Event"
                             }
                         }
                     },
@@ -1089,7 +1089,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateEventParams"
+                            "$ref": "#/definitions/domain.Event"
                         }
                     }
                 ],
@@ -1148,7 +1148,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Event details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Event"
+                            "$ref": "#/definitions/dto_request.Event"
                         }
                     },
                     "404": {
@@ -1197,7 +1197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateEventParams"
+                            "$ref": "#/definitions/domain.Event"
                         }
                     }
                 ],
@@ -1294,200 +1294,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dbmodels.Announcement": {
-            "type": "object",
-            "properties": {
-                "announce_at": {
-                    "type": "integer"
-                },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "visibility": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.CreateAnnouncementParams": {
-            "type": "object",
-            "properties": {
-                "announce_at": {
-                    "type": "integer"
-                },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "visibility": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.CreateEventParams": {
-            "type": "object",
-            "properties": {
-                "end_at": {
-                    "type": "integer"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "is_all_day": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "start_at": {
-                    "type": "integer"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.CreateOfficerParams": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.CreatePositionParams": {
-            "type": "object",
-            "properties": {
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "tier": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dbmodels.CreateTierParams": {
-            "type": "object",
-            "properties": {
-                "t_index": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.DeletePositionParams": {
-            "type": "object",
-            "properties": {
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "tier": {
-                    "type": "integer"
-                }
-            }
-        },
-        "dbmodels.Event": {
-            "type": "object",
-            "properties": {
-                "end_at": {
-                    "type": "integer"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "is_all_day": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "start_at": {
-                    "type": "integer"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.Officer": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "full_name": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.Position": {
-            "type": "object",
-            "properties": {
-                "full_name": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
         "dbmodels.Tier": {
             "type": "object",
             "properties": {
@@ -1505,118 +1311,191 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.UpdateAnnouncementParams": {
+        "domain.Announcement": {
             "type": "object",
             "properties": {
-                "announce_at": {
-                    "$ref": "#/definitions/sql.NullInt64"
+                "announceAt": {
+                    "type": "string"
                 },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
+                "discordChannelID": {
+                    "type": "string"
                 },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
+                "discordMessageID": {
+                    "type": "string"
                 },
                 "uuid": {
                     "type": "string"
                 },
                 "visibility": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 }
             }
         },
-        "dbmodels.UpdateEventParams": {
+        "domain.Event": {
             "type": "object",
             "properties": {
-                "end_at": {
-                    "$ref": "#/definitions/sql.NullInt64"
+                "endAt": {
+                    "type": "string"
                 },
                 "host": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
-                "is_all_day": {
-                    "$ref": "#/definitions/sql.NullBool"
+                "isAllDay": {
+                    "type": "boolean"
                 },
                 "location": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
-                "start_at": {
-                    "$ref": "#/definitions/sql.NullInt64"
+                "startAt": {
+                    "type": "string"
                 },
                 "uuid": {
                     "type": "string"
                 }
             }
         },
-        "dbmodels.UpdateOfficerParams": {
+        "domain.Officer": {
             "type": "object",
             "properties": {
                 "discord": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "github": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "picture": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "uuid": {
                     "type": "string"
                 }
             }
         },
-        "dbmodels.UpdatePositionParams": {
+        "domain.Position": {
             "type": "object",
             "properties": {
-                "full_name": {
-                    "type": "string"
-                },
                 "oid": {
                     "type": "string"
                 },
                 "semester": {
                     "type": "string"
                 },
+                "tier": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Tier": {
+            "type": "object",
+            "properties": {
                 "team": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "tier": {
                     "type": "integer"
                 },
+                "tindex": {
+                    "type": "integer"
+                },
                 "title": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 }
             }
         },
-        "dbmodels.UpdateTierParams": {
+        "dto_request.Announcement": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "type": "integer"
+                },
+                "discord_channel_id": {
+                    "type": "string"
+                },
+                "discord_message_id": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_request.Event": {
+            "type": "object",
+            "properties": {
+                "end_at": {
+                    "type": "integer"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "integer"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_request.Officer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto_request.Position": {
+            "type": "object",
+            "properties": {
+                "oid": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                }
+            }
+        },
+        "dto_request.Tier": {
             "type": "object",
             "properties": {
                 "t_index": {
-                    "$ref": "#/definitions/sql.NullInt64"
+                    "type": "integer"
                 },
                 "team": {
-                    "$ref": "#/definitions/sql.NullString"
+                    "type": "string"
                 },
                 "tier": {
                     "type": "integer"
                 },
                 "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "sql.NullBool": {
-            "type": "object",
-            "properties": {
-                "bool": {
-                    "type": "boolean"
-                },
-                "valid": {
-                    "description": "Valid is true if Bool is not NULL",
-                    "type": "boolean"
+                    "type": "string"
                 }
             }
         },

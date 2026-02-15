@@ -41,6 +41,9 @@ func ToPositionDomain(p *dto_request.Position) domain.Position {
 		Oid:      p.Oid,
 		Semester: p.Semester,
 		Tier:     p.Tier,
+		FullName: p.FullName,
+		Title:    p.Title,
+		Team:     p.Team,
 	}
 }
 
