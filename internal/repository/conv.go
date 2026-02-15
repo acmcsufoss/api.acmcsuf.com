@@ -143,26 +143,26 @@ func convertDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
 	}
 }
 
-func convertDomainToCreateDBPosition(dPositon domain.Position) dbmodels.CreatePositionParams {
+func convertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreatePositionParams {
 	return dbmodels.CreatePositionParams{
-		Oid:      dPositon.Oid,
-		Semester: dPositon.Semester,
-		Tier:     int64(dPositon.Tier),
+		Oid:      dPosition.Oid,
+		Semester: dPosition.Semester,
+		Tier:     int64(dPosition.Tier),
 	}
 }
 
-func convertDomainToUpdateDBPosition(dPositon domain.Position) dbmodels.UpdatePositionParams {
+func convertDomainToUpdateDBPosition(dPosition domain.Position) dbmodels.UpdatePositionParams {
 	return dbmodels.UpdatePositionParams{
-		Oid:      dPositon.Oid,
-		Semester: dPositon.Semester,
-		Tier:     int64(dPositon.Tier),
+		Oid:      dPosition.Oid,
+		Semester: dPosition.Semester,
+		Tier:     int64(dPosition.Tier),
 	}
 }
 
-func convertDomainToDeleteDBPosition(dPositon domain.Position) dbmodels.DeletePositionParams {
+func convertDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeletePositionParams {
 	return dbmodels.DeletePositionParams{
-		Oid:      dPositon.Oid,
-		Semester: dPositon.Semester,
-		Tier:     int64(dPositon.Tier),
+		Oid:      dPosition.Oid,
+		Semester: dPosition.Semester,
+		Tier:     int64(dPosition.Tier),
 	}
 }
