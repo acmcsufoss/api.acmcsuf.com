@@ -5,22 +5,18 @@ ACM at CSUF club API for managing events, announcements, forms, and other servic
 ---
 
 ## Setting Up
-This project requires that you have Go, sqlc, GNU Make, and optionally Air installed. We highly
-recommend using the provided Nix development environment instead of installing everything manually.
+This project requires that you have Go, sqlc, GNU Make, and optionally Air installed. We highly recommend using the provided Nix development environment instead of installing everything manually.
 
 1. [Install nix](https://determinate.systems/nix-installer/) and [direnv](https://direnv.net/docs/installation.html) if you don't already have them
 
 2. Run `direnv allow` at the project root
-> If you don't have direnv, you can also use `nix develop` to enter the dev
-> shell, but your environment variables won't get sourced automatically.
+> If you don't have direnv, you can also use `nix develop` to enter the dev shell, but your environment variables won't get sourced automatically.
 
 ## Developing
 
 ### Compiling
 Using `make` will compile both the API and CLI binaries, located at
-`bin/acmcsuf-api` and `bin/acmcsuf-cli` respectively. If you installed `direnv`,
-both of these binaries will be automatically added to your path. You can run
-them directly like:
+`bin/acmcsuf-api` and `bin/acmcsuf-cli` respectively. If you installed `direnv`, both of these binaries will be automatically added to your path. You can run them directly like:
 ```sh
 acmcsuf-api # Run API server
 acmcsuf-cli # Start CLI client (start API server before using)
@@ -28,22 +24,24 @@ acmcsuf-cli # Start CLI client (start API server before using)
 
 
 ### Start API server
-Air will recompile the project on the fly so you don't have to restart the server when you make changes.
+We use a program called air, which recompiles the api server on the fly so you don't have to rebuild the server when you make changes.
 ```sh
 air
+# OR
+make run
 ```
-OR
+
+### Running database migrations
+After starting the server, you need to apply the database migrations in order to create the database schema.
 ```sh
-make run # Compiles and runs directly (no hot-reloading)
+make migrate-up
 ```
 
 #### Configuring the API
-The API server is configurable via environment variables. See [`.env.example`](./.env.example) for
-values you can override and configure in your `.env` file.
+The API server is configurable via environment variables. See [`.env.example`](./.env.example) for values you can override and configure in your `.env` file.
 
 ### Using the CLI
-The CLI is a simple command-line client for the API server. Make sure the API
-server is running before using.  
+The CLI is a simple command-line client for the API server. Make sure the API server is running before using.  
   
 Output of `acmcsuf-cli --help`:
 ```
@@ -66,14 +64,18 @@ Flags:
 Use "acmcsuf-cli [command] --help" for more information about a command.
 ```
 
+#### Configuring the CLI
+The CLI's auth-related configuration is currently handled via environemnt variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
+
 ### Other useful commands from the Makefile
 
 ```sh
-make check   # Run checks
-make test    # Run tests (None yet)
-make fix-sql # Format and fix SQL files
-make clean   # Removes all build artifacts
-make help    # Display all targets
+make all      # Format and generate code + build both binaries
+make generate # Regenerate Swagger docs and sqlc models
+make check    # Run checks
+make fix-sql  # Format and fix SQL files
+make clean    # Removes all build artifacts
+make help     # Display all targets
 ```
 
 ---
