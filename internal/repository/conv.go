@@ -49,9 +49,9 @@ func convertDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 	return domain.Officer{
 		Uuid:     dbOfficer.Uuid,
 		FullName: dbOfficer.FullName,
-		Picture:  dbOfficer.Picture.String,
-		Github:   dbOfficer.Github.String,
-		Discord:  dbOfficer.Discord.String,
+		Picture:  &dbOfficer.Picture.String,
+		Github:   &dbOfficer.Github.String,
+		Discord:  &dbOfficer.Discord.String,
 	}
 }
 
@@ -59,9 +59,9 @@ func convertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOffi
 	return dbmodels.CreateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: dOfficer.FullName,
-		Picture:  sql.NullString{String: dOfficer.Picture, Valid: true},
-		Github:   sql.NullString{String: dOfficer.Github, Valid: true},
-		Discord:  sql.NullString{String: dOfficer.Discord, Valid: true},
+		Picture:  sql.NullString{String: *dOfficer.Picture, Valid: true},
+		Github:   sql.NullString{String: *dOfficer.Github, Valid: true},
+		Discord:  sql.NullString{String: *dOfficer.Discord, Valid: true},
 	}
 }
 
@@ -69,9 +69,9 @@ func convertDomainToUpdateDBOfficer(dOfficer domain.Officer) dbmodels.UpdateOffi
 	return dbmodels.UpdateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: dOfficer.FullName,
-		Picture:  sql.NullString{String: dOfficer.Picture, Valid: true},
-		Github:   sql.NullString{String: dOfficer.Github, Valid: true},
-		Discord:  sql.NullString{String: dOfficer.Discord, Valid: true},
+		Picture:  sql.NullString{String: *dOfficer.Picture, Valid: true},
+		Github:   sql.NullString{String: *dOfficer.Github, Valid: true},
+		Discord:  sql.NullString{String: *dOfficer.Discord, Valid: true},
 	}
 }
 
@@ -81,8 +81,8 @@ func convertDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.
 		Uuid:             dbAnnouncement.Uuid,
 		Visibility:       dbAnnouncement.Visibility,
 		AnnounceAt:       time.Unix(dbAnnouncement.AnnounceAt, 0),
-		DiscordChannelID: dbAnnouncement.DiscordChannelID.String,
-		DiscordMessageID: dbAnnouncement.DiscordMessageID.String,
+		DiscordChannelID: &dbAnnouncement.DiscordChannelID.String,
+		DiscordMessageID: &dbAnnouncement.DiscordMessageID.String,
 	}
 }
 
@@ -91,8 +91,8 @@ func convertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       dAnnouncement.Visibility,
 		AnnounceAt:       dAnnouncement.AnnounceAt.Unix(),
-		DiscordChannelID: sql.NullString{String: dAnnouncement.DiscordChannelID, Valid: true},
-		DiscordMessageID: sql.NullString{String: dAnnouncement.DiscordMessageID, Valid: true},
+		DiscordChannelID: sql.NullString{String: *dAnnouncement.DiscordChannelID, Valid: true},
+		DiscordMessageID: sql.NullString{String: *dAnnouncement.DiscordMessageID, Valid: true},
 	}
 }
 
@@ -101,36 +101,38 @@ func convertDomainToUpdateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       sql.NullString{String: dAnnouncement.Visibility, Valid: true},
 		AnnounceAt:       sql.NullInt64{Int64: dAnnouncement.AnnounceAt.Unix(), Valid: true},
-		DiscordChannelID: sql.NullString{String: dAnnouncement.DiscordChannelID, Valid: true},
-		DiscordMessageID: sql.NullString{String: dAnnouncement.DiscordMessageID, Valid: true},
+		DiscordChannelID: sql.NullString{String: *dAnnouncement.DiscordChannelID, Valid: true},
+		DiscordMessageID: sql.NullString{String: *dAnnouncement.DiscordMessageID, Valid: true},
 	}
 }
 
 // ---- Tier Converter ----
 func convertDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
+	// note: &int(exp) / &(int)(exp) is illegal, so it is split into v and then &v
+	v := int(dbTier.TIndex.Int64)
 	return domain.Tier{
 		Tier:   int(dbTier.Tier),
-		Title:  dbTier.Title.String,
-		Tindex: int(dbTier.TIndex.Int64),
-		Team:   dbTier.Team.String,
+		Title:  &dbTier.Title.String,
+		Tindex: &v,
+		Team:   &dbTier.Team.String,
 	}
 }
 
 func convertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
 	return dbmodels.CreateTierParams{
 		Tier:   int64(dTier.Tier),
-		Title:  sql.NullString{String: dTier.Title, Valid: true},
-		TIndex: sql.NullInt64{Int64: int64(dTier.Tindex), Valid: true},
-		Team:   sql.NullString{String: dTier.Team, Valid: true},
+		Title:  sql.NullString{String: *dTier.Title, Valid: true},
+		TIndex: sql.NullInt64{Int64: int64(*dTier.Tindex), Valid: true},
+		Team:   sql.NullString{String: *dTier.Team, Valid: true},
 	}
 }
 
 func convertDomainToUpdateDBTier(dTier domain.Tier) dbmodels.UpdateTierParams {
 	return dbmodels.UpdateTierParams{
 		Tier:   int64(dTier.Tier),
-		Title:  sql.NullString{String: dTier.Title, Valid: true},
-		TIndex: sql.NullInt64{Int64: int64(dTier.Tindex), Valid: true},
-		Team:   sql.NullString{String: dTier.Team, Valid: true},
+		Title:  sql.NullString{String: *dTier.Title, Valid: true},
+		TIndex: sql.NullInt64{Int64: int64(*dTier.Tindex), Valid: true},
+		Team:   sql.NullString{String: *dTier.Team, Valid: true},
 	}
 }
 

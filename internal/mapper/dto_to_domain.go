@@ -12,8 +12,8 @@ func ToAnnouncementDomain(a *dto_request.Announcement) domain.Announcement {
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
 		AnnounceAt:       time.Unix(a.AnnounceAt, 0),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
+		DiscordChannelID: &a.DiscordChannelID,
+		DiscordMessageID: &a.DiscordMessageID,
 	}
 }
 
@@ -30,9 +30,9 @@ func ToEventDomain(e *dto_request.Event) domain.Event {
 func ToOfficerDomain(o *dto_request.Officer) domain.Officer {
 	return domain.Officer{
 		FullName: o.FullName,
-		Picture:  o.Picture,
-		Github:   o.Github,
-		Discord:  o.Discord,
+		Picture:  &o.Picture,
+		Github:   &o.Github,
+		Discord:  &o.Discord,
 	}
 }
 
@@ -47,8 +47,8 @@ func ToPositionDomain(p *dto_request.Position) domain.Position {
 func ToTierDomain(t *dto_request.Tier) domain.Tier {
 	return domain.Tier{
 		Tier:   t.Tier,
-		Title:  t.Title,
-		Tindex: t.Tindex,
-		Team:   t.Team,
+		Title:  &t.Title,
+		Tindex: &t.Tindex,
+		Team:   &t.Team,
 	}
 }

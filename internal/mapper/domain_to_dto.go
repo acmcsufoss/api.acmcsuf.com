@@ -13,8 +13,8 @@ func ToAnnouncementDTO(a *domain.Announcement) dto_response.Announcement {
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
 		AnnounceAt:       a.AnnounceAt.Unix(),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
+		DiscordChannelID: *a.DiscordChannelID,
+		DiscordMessageID: *a.DiscordMessageID,
 	}
 }
 
@@ -33,9 +33,9 @@ func ToOfficerDTO(o domain.Officer) dto_response.Officer {
 	return dto_response.Officer{
 		Uuid:     o.Uuid,
 		FullName: o.FullName,
-		Picture:  o.Picture,
-		Github:   o.Github,
-		Discord:  o.Discord,
+		Picture:  *o.Picture,
+		Github:   *o.Github,
+		Discord:  *o.Discord,
 	}
 }
 
@@ -50,8 +50,8 @@ func ToPositionDTO(p *domain.Position) dto_response.Position {
 func ToTierDTO(t *domain.Tier) dto_response.Tier {
 	return dto_response.Tier{
 		Tier:   t.Tier,
-		Title:  t.Title,
-		Tindex: t.Tindex,
-		Team:   t.Team,
+		Title:  *t.Title,
+		Tindex: *t.Tindex,
+		Team:   *t.Team,
 	}
 }
