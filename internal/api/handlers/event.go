@@ -63,7 +63,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.CreateEventParams true "Event data"
+//	@Param			body body domain.Event true "Event data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string

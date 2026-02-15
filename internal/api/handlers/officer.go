@@ -83,7 +83,7 @@ func (h *OfficerHandler) GetOfficers(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.CreateOfficerParams true "Officer data"
+//	@Param			body body domain.Officer true "Officer data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string

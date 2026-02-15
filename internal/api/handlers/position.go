@@ -83,7 +83,7 @@ func (h *PositionHandler) GetPosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.CreatePositionParams true "Position data"
+//	@Param			body body domain.Postion true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -121,7 +121,7 @@ func (h *PositionHandler) CreatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
+//	@Param			body body domain.Position true "Updated position data (must include oid, semester, tier)"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string

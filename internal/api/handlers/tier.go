@@ -128,7 +128,7 @@ func (h *TierHandler) CreateTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Param			body body domain.UpdateTierParams true "Updated tier data"
+//	@Param			body body domain.Tier true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
