@@ -5,6 +5,6 @@ CREATE TABLE IF NOT EXISTS workshop (
     title VARCHAR(100),
     team VARCHAR(20),
     semester CHAR(3),
-    date DATE,
-    url TEXT
+    start_at DATE,
+    link TEXT
 );
