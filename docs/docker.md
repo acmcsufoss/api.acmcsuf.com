@@ -1,6 +1,6 @@
 Build image:
 ```sh
-docker build -t acmcsuf-api:latest
+docker build -t acmcsuf-api:latest .
 ```
 
 Remove image:
