@@ -1,15 +1,11 @@
 package announcements
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"os"
-	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -25,315 +21,133 @@ var PutAnnouncements = &cobra.Command{
 	Short: "update an existing announcement by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := dbmodels.UpdateAnnouncementParams{}
-		var uuidVal string
-		cmd.Flags().Set("id", uuidVal)
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		err = huh.NewInput().
-			Title("ACMCSUF-CLI Announcement Put:").
-			Description("Please enter the announcement's ID:").
-			Prompt("> ").
-			Value(&uuidVal).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		cmd.Flags().Set("id", uuidVal)
-
 		id, _ := cmd.Flags().GetString("id")
-
-		payload.Uuid, _ = cmd.Flags().GetString("uuid")
-		visibilityString, _ := cmd.Flags().GetString("visibility")
-		announceAtString, _ := cmd.Flags().GetString("announceat")
-
-		channelIdString, _ := cmd.Flags().GetString("channelid")
-		messageIdString, _ := cmd.Flags().GetString("messageid")
-
-		payload.Visibility = utils.StringtoNullString(visibilityString)
-		payload.DiscordChannelID = utils.StringtoNullString(channelIdString)
-		payload.DiscordMessageID = utils.StringtoNullString(messageIdString)
-
-		if announceAtString != "" {
-			announceAtUnix, err := utils.ByteSlicetoUnix([]byte(announceAtString))
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			payload.AnnounceAt = utils.Int64toNullInt64(announceAtUnix)
-		}
-
-		changedFlags := announcementFlags{
-			id:         cmd.Flags().Lookup("uuid").Changed,
-			visibility: cmd.Flags().Lookup("visibility").Changed,
-			announceat: cmd.Flags().Lookup("announceat").Changed,
-			channelid:  cmd.Flags().Lookup("channelid").Changed,
-			messageid:  cmd.Flags().Lookup("messageid").Changed,
-		}
-
-		putAnnouncements(id, &payload, changedFlags, config.Cfg)
+		putAnnouncements(id, config.Cfg)
 	},
 }
 
 func init() {
 	PutAnnouncements.Flags().String("id", "", "Get an announcement by its id")
-
-	// Payload flags
-	PutAnnouncements.Flags().String("uuid", "", "Change this announcement's uuid")
-	PutAnnouncements.Flags().StringP("announceat", "a", "", "Change this announcement's announce at")
-
-	PutAnnouncements.Flags().StringP("visibility", "v", "", "Change this announcement's visibility")
-	PutAnnouncements.Flags().StringP("channelid", "c", "", "Change this announcement's discord channel id")
-	PutAnnouncements.Flags().StringP("messageid", "m", "", "Change this announcement's discord message id")
+	PutAnnouncements.MarkFlagRequired("id")
 }
 
-func putAnnouncements(id string, payload *dbmodels.UpdateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// ----- Check if Id was Given -----
-	if id == "" {
-		fmt.Println("Announcement id required to use put!")
-		return
-	}
-
-	// ----- Retrieving old Announcement -----
-	// ----- Constructing Url -----
-	oldPayloadUrl := baseURL.JoinPath("v1/announcements/", id)
+func putAnnouncements(id string, cfg *config.Config) {
+	resourceURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
 	// ----- Get the Announcement We Want to Update -----
 	client := http.Client{}
-
-	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, oldPayloadUrl.String(), nil)
+	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, resourceURL.String(), nil)
 	if err != nil {
-		fmt.Printf("Error retrieveing %s: %s", payload.Uuid, err)
+		fmt.Printf("Error: couldn't retrieve resource %s: %s", id, err)
 		return
 	}
-
 	getRes, err := client.Do(getReq)
 	if err != nil {
-		fmt.Println("error getting old payload", err)
+		fmt.Println("Error: failed to send request:", err)
 		return
 	}
 	defer getRes.Body.Close()
-
 	if getRes.StatusCode != http.StatusOK {
-		fmt.Println("get response status:", getRes.Status)
+		fmt.Println("Error: HTTP", getRes.Status)
 		return
 	}
-
 	body, err := io.ReadAll(getRes.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		fmt.Println("Error: failed to read response body:", err)
 		return
 	}
 
+	// ----- Update found announceement -----
 	var oldPayload dbmodels.CreateAnnouncementParams
 	err = json.Unmarshal(body, &oldPayload)
 	if err != nil {
-		fmt.Println("error unmarshaling previous announcement data:", err)
+		fmt.Println("Error: failed to unmarshal response body:", err)
 		return
 	}
-
-	// ----- Prompt User for New Values -----
-	scanner := bufio.NewScanner(os.Stdin)
-
-	// ----- Uuid -----
-	// Will probably remove uuid from all put cli soon
-	for {
-		if payload.Uuid == "" {
-			changeUuid, err := utils.ChangePrompt("uuid", oldPayload.Uuid, scanner, "announcment")
-			if err != nil {
-				fmt.Println("error with changing uuid:", err)
-				continue
-			}
-			if changeUuid != nil {
-				payload.Uuid = string(changeUuid)
-			} else {
-				payload.Uuid = oldPayload.Uuid
-			}
-		}
-
-		break
-	}
-
-	// ----- Visibility -----
-	for {
-		if changedFlags.visibility {
-			break
-		}
-		changeVisibility, err := utils.ChangePrompt("visibility", oldPayload.Visibility, scanner, "announcment")
-		if err != nil {
-			fmt.Println("error with changing visibility:", err)
-			continue
-		}
-		if changeVisibility != nil {
-			payload.Visibility = utils.StringtoNullString(string(changeVisibility))
-		} else {
-			payload.Visibility = utils.StringtoNullString(oldPayload.Visibility)
-		}
-
-		break
-	}
-
-	// ----- Announce At ------
-	for {
-		if changedFlags.announceat {
-			break
-		}
-		oldAnnounceAt := utils.FormatUnix(oldPayload.AnnounceAt)
-
-		// Yah this might be a little sloppy in the terminal. forgive me.
-		changeAnnounceAt, err := utils.ChangePrompt("announce at (Note: format for new announcment is \"01/02/06 03:04PM\")", oldAnnounceAt, scanner, "announcment")
-		if err != nil {
-			fmt.Println("error with changing announce at:", err)
-			continue
-		}
-		if changeAnnounceAt != nil {
-			announceAtInt64, err := utils.ByteSlicetoUnix(changeAnnounceAt)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			payload.AnnounceAt = utils.Int64toNullInt64(announceAtInt64)
-		} else {
-			payload.AnnounceAt = utils.Int64toNullInt64(oldPayload.AnnounceAt)
-		}
-
-		break
-	}
-
-	// ----- Discord Channel ID -----
-	for {
-		if changedFlags.channelid {
-			break
-		}
-
-		changeDiscordChannelID, err := utils.ChangePrompt("discord channel id", oldPayload.DiscordChannelID.String, scanner, "announcment")
-		if err != nil {
-			fmt.Println("error with changing :", err)
-			continue
-		}
-		if changeDiscordChannelID != nil {
-			payload.DiscordChannelID = utils.StringtoNullString(string(changeDiscordChannelID))
-		} else {
-			payload.DiscordChannelID = oldPayload.DiscordChannelID
-		}
-
-		break
-	}
-
-	// ----- Discord Message ID -----
-	for {
-		if changedFlags.messageid {
-			break
-		}
-		changeDiscordMessageID, err := utils.ChangePrompt("discord message id", oldPayload.DiscordMessageID.String, scanner, "announcment")
-		if err != nil {
-			fmt.Println("error with changing :", err)
-			continue
-		}
-		if changeDiscordMessageID != nil {
-			payload.DiscordMessageID = utils.StringtoNullString(string(changeDiscordMessageID))
-		} else {
-			payload.DiscordMessageID = oldPayload.DiscordMessageID
-		}
-
-		break
-	}
-
-	// ----- Confirmation -----
-	for {
-		var option string
-		description := "Is your announcement data correct?\n" + utils.PrintStruct(payload)
-		err := huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Announcements Put:").
-			Description(description).
-			Options(
-				huh.NewOption("Yes", "yes"),
-				huh.NewOption("No", "n"),
-			).
-			Value(&option).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(option))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
-		if err != nil {
-			fmt.Println("error with reading confirmation:", err)
-		}
-		if !confirmationBool {
-			// Sorry :(
-			return
-		} else {
-			break
-		}
-
-	}
-
-	// ----- Marshal Payload to Json -----
-	jsonPayload, err := json.Marshal(*payload)
+	newPayload, err := putForm(id)
 	if err != nil {
-		fmt.Println("Error marshaling data:", err)
+		fmt.Println("Error:", err)
 		return
 	}
-
-	// ----- Put Payload -----
-
-	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, oldPayloadUrl.String(), bytes.NewBuffer(jsonPayload))
+	jsonPayload, err := json.Marshal(newPayload)
 	if err != nil {
-		fmt.Println("Problem with PUT:", err)
+		fmt.Println("Error: failed to marshal data:", err)
 		return
 	}
-
+	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, resourceURL.String(), bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		fmt.Println("Error: failed to contruct request:", err)
+		return
+	}
 	putResponse, err := client.Do(putRequest)
 	if err != nil {
-		fmt.Println("Error with response:", err)
+		fmt.Println("Error: failed to send request: ", err)
 		return
 	}
 	defer putResponse.Body.Close()
 
 	if putResponse.StatusCode != http.StatusOK {
-		fmt.Println("put response status:", putResponse.Status)
+		fmt.Println("Error: HTTP", putResponse.Status)
 		return
 	}
-
-	// ----- Reading Response Status -----
-	fmt.Println("PUT status:", putResponse.Status)
-
 	body, err = io.ReadAll(putResponse.Body)
 	if err != nil {
-		fmt.Println("Error with body:", err)
+		fmt.Println("Error: failed to read response body", err)
 		return
 	}
+	utils.PrettyPrintJSON(body)
+}
 
-	fmt.Println(string(body))
+// TODO: Use DTO models instaad of dbmodels
+func putForm(uuid string) (*dbmodels.UpdateAnnouncementParams, error) {
+	var payload dbmodels.UpdateAnnouncementParams
+	var err error
+	var (
+		visibilityStr string
+		announceAtStr string
+		channelIDStr  string
+		messageIDStr  string
+	)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Announcement Visibility").
+				Value(&visibilityStr),
+			huh.NewInput().
+				Title("Announcement Time\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+				Value(&announceAtStr),
+			// TODO: write validator for time inputs
+			huh.NewInput().
+				Title("Channel ID").
+				Value(&channelIDStr),
+			huh.NewInput().
+				Title("Message ID").
+				Value(&messageIDStr),
+		),
+	)
+	if err = form.Run(); err != nil {
+		return nil, err
+	}
+
+	payload.Uuid = uuid
+	// HACK: These conversions won't be necessary once we start using DTO models here
+	if visibilityStr != "" {
+		payload.Visibility = utils.StringtoNullString(visibilityStr)
+	}
+	if announceAtStr != "" {
+		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
+		if err != nil {
+			return nil, err
+		}
+		payload.AnnounceAt = utils.Int64toNullInt64(timestamp)
+	}
+	if channelIDStr != "" {
+		payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+	}
+	if messageIDStr != "" {
+		payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+	}
+	return &payload, nil
 }

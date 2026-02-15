@@ -1,45 +1,50 @@
 .DEFAULT_GOAL := build
 
-include .env
-
-.PHONY: help
-help: ## Display this help screen
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-
 BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
 
+GO_SOURCES := $(shell find . -type f -name '*.go' -not -path '*/vendor/*')
+GO_DEPS := $(GO_SOURCES) go.mod go.sum
+
 MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
-GENERATE_DEPS := $(wildcard internal/api/handlers/*.go)
-GENERATE_MARKER := .generate.marker
-
-.PHONY:fmt run build vet check test check-sql fix-sql clean release generate migrate-up migrate-down
-
-fmt: ## Format all go files
-	@go fmt ./...
+DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
+DOCS_TARGET := internal/api/docs/docs.go
+SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
+SQLC_TARGET := internal/api/dbmodels/models.go
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
+run: ## Build and run the api
+	air
 
-$(GENERATE_MARKER): $(GENERATE_DEPS)
-	go generate ./...
-	@touch $@
+all: generate fmt build
+build: api cli ## Build the api and cli binaries
 
-generate: fmt $(GENERATE_MARKER) ## Generate all necessary files
+api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
-run: build ## Build and run the api
-	./$(BIN_DIR)/$(API_NAME)
-
-build: generate ## Build the api and cli binaries
+$(BIN_DIR)/$(API_NAME): $(GO_DEPS) $(SQLC_TARGET)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
+
+cli: $(BIN_DIR)/$(CLI_NAME) ## Build the cli binary
+
+$(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
+	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-vet: ## Vet all go files
-	go vet ./...
+generate: $(DOCS_TARGET) $(SQLC_TARGET) ## Generate all necessary files with
+
+$(DOCS_TARGET): $(DOCS_DEPS)
+	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/dbmodels -o internal/api/docs --parseDependency
+
+$(SQLC_TARGET): $(SQLC_DEPS)
+	sqlc generate
+
+fmt: ## Format all go files
+	@go fmt ./...
 
 check: ## Run static analysis on all go files
 	staticcheck ./...
@@ -60,13 +65,17 @@ release: ## Create a new release tag
 	git push origin $$version; \
 	echo "Tagged $$version."
 
-clean: ## Clean up all generated files and binaries
+clean: ## Clean up binaries and build artifacts
 	go clean
-	rm -f $(GENERATE_MARKER)
 	rm -rf $(BIN_DIR) result
 
-migrate-up:
+migrate-up: ## Perform database migration up
 	migrate -database $(DB_URL) -path $(MIGRATE_DIR) up
 
-migrate-down:
+migrate-down: ## Perform database migration down
 	migrate -database $(DB_URL) -path $(MIGRATE_DIR) down 1
+
+help: ## Display this help screen
+	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate migrate-up migrate-down

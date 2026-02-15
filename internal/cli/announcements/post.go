@@ -1,13 +1,10 @@
 package announcements
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
-	"os"
 	"strings"
 
 	"github.com/charmbracelet/huh"
@@ -15,6 +12,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -24,306 +22,98 @@ var PostAnnouncement = &cobra.Command{
 	Short: "post a new announcement",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		payload := dbmodels.CreateAnnouncementParams{}
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		payload.Uuid, _ = cmd.Flags().GetString("uuid")
-		payload.Visibility, _ = cmd.Flags().GetString("visibility")
-		announceString, _ := cmd.Flags().GetString("announceat")
 
-		channelIdString, _ := cmd.Flags().GetString("channelid")
-		messageIdString, _ := cmd.Flags().GetString("messageid")
-
-		payload.DiscordChannelID = utils.StringtoNullString(channelIdString)
-		payload.DiscordMessageID = utils.StringtoNullString(messageIdString)
-
-		if announceString != "" {
-			payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceString))
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-		}
-
-		changedFlags := announcementFlags{
-			id:         cmd.Flags().Lookup("uuid").Changed,
-			visibility: cmd.Flags().Lookup("visibility").Changed,
-			announceat: cmd.Flags().Lookup("announceat").Changed,
-			channelid:  cmd.Flags().Lookup("channelid").Changed,
-			messageid:  cmd.Flags().Lookup("messageid").Changed,
-		}
-
-		postAnnouncement(&payload, changedFlags, config.Cfg)
+		postAnnouncement(config.Cfg)
 	},
 }
 
-func init() {
-	// Payload flags
-	PostAnnouncement.Flags().String("uuid", "", "Set this announcement's id")
-	PostAnnouncement.Flags().StringP("visibility", "v", "", "Set this announcement's visibility")
-	PostAnnouncement.Flags().StringP("announceat", "a", "", "Set this announcement's announce at")
-
-	PostAnnouncement.Flags().StringP("channelid", "c", "", "Set this announcement's channel id")
-	PostAnnouncement.Flags().StringP("messageid", "m", "", "Set this announcement's message id")
-}
-
-func postAnnouncement(payload *dbmodels.CreateAnnouncementParams, changedFlags announcementFlags, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	// ----- Uuid -----
-	for {
-		if changedFlags.id {
-			break
-		}
-		var uuid string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description("Please enter the announcement's uuid:").
-			Prompt("> ").
-			Value(&uuid).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(uuid))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error with reading uuid:", err)
-			continue
-		}
-
-		uuidBuffer := scanner.Bytes()
-
-		payload.Uuid = string(uuidBuffer)
-		break
-	}
-
-	// ----- Visibility -----
-	for {
-		if changedFlags.visibility {
-			break
-		}
-		var visibility string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description("Please enter the announcement's visibility:").
-			Prompt("> ").
-			Value(&visibility).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(visibility))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error with reading visibility:", err)
-			continue
-		}
-
-		visibilityBuffer := scanner.Bytes()
-		payload.Visibility = string(visibilityBuffer)
-
-		break
-	}
-
-	// ----- Announce at -----
-	for {
-		if changedFlags.announceat {
-			break
-		}
-		var announceAt string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description("Please enter the \"announce at\" of the announcement in the following format:\n[Month]/[Day]/[Year] [Hour]:[Minutes][PM | AM]\nFor example: \x1b[93m01/02/06 03:04PM\x1b[0m").
-			Prompt("> ").
-			Value(&announceAt).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(announceAt))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading anounce at:", err)
-			continue
-		}
-
-		announceatBuffer := scanner.Bytes()
-
-		payload.AnnounceAt, err = utils.ByteSlicetoUnix(announceatBuffer)
-		if err != nil {
-			fmt.Println("error converting byte slice to unix time (of type int64):", err)
-			continue
-		}
-
-		break
-	}
-
-	// ----- Discord Channel Id -----
-	for {
-		if changedFlags.channelid {
-			break
-		}
-		var discordid string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description("Please enter the announcement's discord channel id:").
-			Prompt("> ").
-			Value(&discordid).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(discordid))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading  discord channel id:", err)
-			continue
-		}
-
-		channelIdBuffer := scanner.Bytes()
-		payload.DiscordChannelID = utils.StringtoNullString(string(channelIdBuffer))
-
-		break
-	}
-
-	// ----- Discord Message Id -----
-	for {
-		if changedFlags.messageid {
-			break
-		}
-		var messageid string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description("Please enter the announcement's message id:").
-			Prompt("> ").
-			Value(&messageid).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(messageid))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error reading message id:", err)
-			continue
-		}
-		messageIdBuffer := scanner.Bytes()
-		payload.DiscordMessageID = utils.StringtoNullString(string(messageIdBuffer))
-
-		break
-	}
-
-	// ----- Confirmation -----
-	for {
-		var option string
-		description := "Is your announcement data correct?\n" + utils.PrintStruct(payload)
-		err := huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Announcements Post:").
-			Description(description).
-			Options(
-				huh.NewOption("Yes", "yes"),
-				huh.NewOption("No", "n"),
-			).
-			Value(&option).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(option))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
-		if err != nil {
-			fmt.Println("error with reading confirmation:", err)
-		}
-		if !confirmationBool {
-			// Sorry :(
-			return
-		} else {
-			break
-		}
-	}
-
-	// ----- Marshalling to Json -----
-	jsonPayload, err := json.Marshal(*payload)
+func postAnnouncement(cfg *config.Config) {
+	payload, err := postForm()
 	if err != nil {
-		fmt.Println("error formating payload to json:", err)
+		fmt.Println("Error:", err)
 		return
 	}
 
-	// ----- Constructing the Url -----
-	postURL := baseURL.JoinPath("v1/announcements")
+	jsonPayload, err := json.Marshal(payload)
+	if err != nil {
+		fmt.Println("Error: could not marshal JSON:", err)
+		return
+	}
 
-	fmt.Println(postURL.String())
-	// ----- Post -----
+	postURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
 	client := http.Client{}
 	req, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
 	if err != nil {
-		fmt.Println("error with post:", err)
+		fmt.Println("Error: could not create request:", err)
 		return
 	}
 
 	fmt.Println("HELLO?")
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println("error with requesting post", err)
+		fmt.Println("Error: could not send request:", err)
 		return
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", res.Status)
+		fmt.Println("Error: HTTP", res.Status)
 		return
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println("error reading body:", err)
+		fmt.Println("Error: could not read response body:", err)
 		return
 	}
+	utils.PrettyPrintJSON(body)
+}
 
-	fmt.Println(string(body))
+// TODO: Use DTO models instaad of dbmodels
+func postForm() (*dbmodels.CreateAnnouncementParams, error) {
+	var payload dbmodels.CreateAnnouncementParams
+	var err error
+	var (
+		announceAtStr string
+		channelIDStr  string
+		messageIDStr  string
+	)
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Announcement ID").
+				Value(&payload.Uuid).
+				Validate(forms.ValidateNonEmpty()),
+			huh.NewInput().
+				Title("Announcement Visibility").
+				Value(&payload.Visibility).
+				Validate(forms.ValidateNonEmpty()),
+			huh.NewInput().
+				Title("Announcement Time\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+				Value(&announceAtStr).
+				Validate(forms.ValidateNonEmpty()),
+			// TODO: write validator for time inputs
+			huh.NewInput().
+				Title("Channel ID").
+				Value(&channelIDStr),
+			huh.NewInput().
+				Title("Message ID").
+				Value(&messageIDStr),
+		),
+	)
+	if err = form.Run(); err != nil {
+		return nil, err
+	}
+
+	// HACK: These conversions won't be necessary once we start using DTO models here
+	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
+	if err != nil {
+		return nil, err
+	}
+	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+
+	return &payload, err
 }

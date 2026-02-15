@@ -1,7 +1,5 @@
 package main
 
-//go:generate swag init -d .,../../internal/api/handlers,../../internal/api/dbmodels -o ../../internal/api/docs --parseDependency
-
 import (
 	"context"
 	"flag"
