@@ -11,3 +11,11 @@ type Announcement struct {
 	DiscordChannelID *string
 	DiscordMessageID *string
 }
+
+type UpdateAnnouncement struct {
+	Uuid             string
+	Visibility       *string
+	AnnounceAt       *time.Time
+	DiscordChannelID *string
+	DiscordMessageID *string
+}
