@@ -28,7 +28,10 @@ INSERT INTO
 position (
     oid,
     semester,
-    tier
+    tier,
+    full_name,
+    title,
+    team
 )
 VALUES
 (?, ?, ?)
