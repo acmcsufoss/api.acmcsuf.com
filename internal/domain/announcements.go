@@ -8,6 +8,6 @@ type Announcement struct {
 	Uuid             string
 	Visibility       string
 	AnnounceAt       time.Time
-	DiscordChannelID string
-	DiscordMessageID string
+	DiscordChannelID *string
+	DiscordMessageID *string
 }

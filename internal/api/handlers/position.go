@@ -83,7 +83,7 @@ func (h *PositionHandler) GetPosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body domain.Postion true "Position data"
+//	@Param			body body domain.Position true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
