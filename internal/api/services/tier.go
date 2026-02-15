@@ -8,7 +8,7 @@ import (
 )
 
 type TierServicer interface {
-	Service[domain.Tier, int64]
+	Service[domain.Tier, int64, domain.UpdateTier]
 }
 
 type TierService struct {
@@ -55,7 +55,7 @@ func (s *TierService) Create(ctx context.Context, params domain.Tier) error {
 	return nil
 }
 
-func (s *TierService) Update(ctx context.Context, tierName int64, params domain.Tier) error {
+func (s *TierService) Update(ctx context.Context, tierName int64, params domain.UpdateTier) error {
 	params.Tier = int(tierName)
 	err := s.tierRepo.Update(ctx, params)
 	if err != nil {

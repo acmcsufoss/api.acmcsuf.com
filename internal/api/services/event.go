@@ -10,7 +10,7 @@ import (
 )
 
 type EventsServicer interface {
-	Service[domain.Event, string]
+	Service[domain.Event, string, domain.UpdateEvent]
 }
 
 type EventsService struct {
@@ -84,7 +84,7 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]domain.Even
 	return result, nil
 }
 
-func (s *EventsService) Update(ctx context.Context, uuid string, params domain.Event) error {
+func (s *EventsService) Update(ctx context.Context, uuid string, params domain.UpdateEvent) error {
 	params.Uuid = uuid
 	if err := s.eventRepo.Update(ctx, params); err != nil {
 		return err

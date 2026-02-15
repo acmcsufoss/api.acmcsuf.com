@@ -8,7 +8,7 @@ import (
 )
 
 type TierRepository interface {
-	Repository[domain.Tier, int64]
+	Repository[domain.Tier, int64, domain.UpdateTier]
 }
 
 type tierRepository struct {
@@ -57,7 +57,7 @@ func (r *tierRepository) Create(ctx context.Context, args domain.Tier) error {
 	return nil
 }
 
-func (r *tierRepository) Update(ctx context.Context, args domain.Tier) error {
+func (r *tierRepository) Update(ctx context.Context, args domain.UpdateTier) error {
 	err := r.db.UpdateTier(ctx, convertDomainToUpdateDBTier(args))
 	if err != nil {
 		return err

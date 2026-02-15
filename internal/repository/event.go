@@ -8,7 +8,7 @@ import (
 )
 
 type EventRepository interface {
-	Repository[domain.Event, string]
+	Repository[domain.Event, string, domain.UpdateEvent]
 }
 
 type eventRepository struct {
@@ -57,7 +57,7 @@ func (r *eventRepository) Create(ctx context.Context, args domain.Event) error {
 	return nil
 }
 
-func (r *eventRepository) Update(ctx context.Context, args domain.Event) error {
+func (r *eventRepository) Update(ctx context.Context, args domain.UpdateEvent) error {
 	err := r.db.UpdateEvent(ctx, convertDomainToUpdateDBEvent(args))
 	if err != nil {
 		return err

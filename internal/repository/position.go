@@ -9,7 +9,7 @@ import (
 )
 
 type PositionRepository interface {
-	Repository[domain.Position, string]
+	Repository[domain.Position, string, domain.UpdatePosition]
 	DeletePosition(ctx context.Context, args domain.Position) error
 }
 
@@ -51,7 +51,7 @@ func (r *positionRepository) Create(ctx context.Context, args domain.Position) e
 	return nil
 }
 
-func (r *positionRepository) Update(ctx context.Context, args domain.Position) error {
+func (r *positionRepository) Update(ctx context.Context, args domain.UpdatePosition) error {
 	err := r.db.UpdatePosition(ctx, convertDomainToUpdateDBPosition(args))
 	if err != nil {
 		return err

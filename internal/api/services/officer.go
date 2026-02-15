@@ -8,7 +8,7 @@ import (
 )
 
 type OfficerServicer interface {
-	Service[domain.Officer, string]
+	Service[domain.Officer, string, domain.UpdateOfficer]
 }
 
 type OfficerService struct {
@@ -66,7 +66,7 @@ func (s *OfficerService) Create(ctx context.Context, params domain.Officer) erro
 	return nil
 }
 
-func (s *OfficerService) Update(ctx context.Context, uuid string, params domain.Officer) error {
+func (s *OfficerService) Update(ctx context.Context, uuid string, params domain.UpdateOfficer) error {
 	params.Uuid = uuid
 	err := s.officerRepo.Update(ctx, params)
 	if err != nil {

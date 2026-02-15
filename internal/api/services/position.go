@@ -9,7 +9,7 @@ import (
 )
 
 type PositionServicer interface {
-	Service[domain.Position, string]
+	Service[domain.Position, string, domain.UpdatePosition]
 
 	DeletePosition(ctx context.Context, arg domain.Position) error
 }
@@ -62,7 +62,7 @@ func (s *PositionService) Create(ctx context.Context, params domain.Position) er
 	return nil
 }
 
-func (s *PositionService) Update(ctx context.Context, uuid string, params domain.Position) error {
+func (s *PositionService) Update(ctx context.Context, uuid string, params domain.UpdatePosition) error {
 	err := s.positionRepo.Update(ctx, params)
 	if err != nil {
 		return err

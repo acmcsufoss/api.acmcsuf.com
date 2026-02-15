@@ -8,7 +8,7 @@ import (
 )
 
 type AnnouncementRepository interface {
-	Repository[domain.Announcement, string]
+	Repository[domain.Announcement, string, domain.UpdateAnnouncement]
 }
 
 type announcementRepository struct {
@@ -57,7 +57,7 @@ func (r *announcementRepository) Create(ctx context.Context, args domain.Announc
 	return nil
 }
 
-func (r *announcementRepository) Update(ctx context.Context, args domain.Announcement) error {
+func (r *announcementRepository) Update(ctx context.Context, args domain.UpdateAnnouncement) error {
 	err := r.db.UpdateAnnouncement(ctx, convertDomainToUpdateDBAnnouncement(args))
 	if err != nil {
 		return err

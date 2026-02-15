@@ -8,7 +8,7 @@ import (
 )
 
 type OfficerRepository interface {
-	Repository[domain.Officer, string]
+	Repository[domain.Officer, string, domain.UpdateOfficer]
 }
 
 type officerRepository struct {
@@ -65,7 +65,7 @@ func (r *officerRepository) Create(ctx context.Context, args domain.Officer) err
 	return nil
 }
 
-func (r *officerRepository) Update(ctx context.Context, args domain.Officer) error {
+func (r *officerRepository) Update(ctx context.Context, args domain.UpdateOfficer) error {
 	err := r.db.UpdateOfficer(ctx, convertDomainToUpdateDBOfficer(args))
 	if err != nil {
 		return err

@@ -10,7 +10,7 @@ import (
 )
 
 type AnnouncementServicer interface {
-	Service[domain.Announcement, string]
+	Service[domain.Announcement, string, domain.UpdateAnnouncement]
 }
 
 type AnnouncementService struct {
@@ -67,7 +67,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 }
 
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
-	params domain.Announcement,
+	params domain.UpdateAnnouncement,
 ) error {
 	err := s.announcementRepository.Update(ctx, params)
 	if err != nil {
