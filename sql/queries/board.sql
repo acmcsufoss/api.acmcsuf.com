@@ -34,7 +34,7 @@ position (
     team
 )
 VALUES
-(?, ?, ?)
+(?, ?, ?, ?, ?, ?)
 RETURNING *;
 
 -- name: GetOfficer :one
