@@ -1377,14 +1377,23 @@ const docTemplate = `{
         "domain.Position": {
             "type": "object",
             "properties": {
+                "fullName": {
+                    "type": "string"
+                },
                 "oid": {
                     "type": "string"
                 },
                 "semester": {
                     "type": "string"
                 },
+                "team": {
+                    "type": "string"
+                },
                 "tier": {
                     "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },
@@ -1477,8 +1486,14 @@ const docTemplate = `{
                 "semester": {
                     "type": "string"
                 },
+                "team": {
+                    "type": "string"
+                },
                 "tier": {
-                    "type": "integer"
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },

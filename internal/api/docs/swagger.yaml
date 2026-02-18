@@ -53,12 +53,18 @@ definitions:
     type: object
   domain.Position:
     properties:
+      fullName:
+        type: string
       oid:
         type: string
       semester:
         type: string
+      team:
+        type: string
       tier:
         type: integer
+      title:
+        type: string
     type: object
   domain.Tier:
     properties:
@@ -118,8 +124,12 @@ definitions:
         type: string
       semester:
         type: string
+      team:
+        type: string
       tier:
-        type: integer
+        type: string
+      title:
+        type: string
     type: object
   dto_request.Tier:
     properties:
