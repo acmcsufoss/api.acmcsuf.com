@@ -136,7 +136,7 @@ func (h *TierHandler) CreateTier(c *gin.Context) {
 //	@Router			/v1/board/tiers/{id} [put]
 func (h *TierHandler) UpdateTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto_request.Tier
+	var params dto_request.UpdateTier
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -154,7 +154,7 @@ func (h *TierHandler) UpdateTier(c *gin.Context) {
 
 	params.Tier = id
 
-	if err := h.tierService.Update(ctx, int64(id), mapper.ToTierDomain(&params)); err != nil {
+	if err := h.tierService.Update(ctx, int64(id), mapper.ToUpdateTierDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update tier. " + err.Error(),
 		})

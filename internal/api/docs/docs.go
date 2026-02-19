@@ -1437,19 +1437,19 @@ const docTemplate = `{
         "dto_request.Event": {
             "type": "object",
             "properties": {
-                "end_at": {
+                "endAt": {
                     "type": "integer"
                 },
                 "host": {
                     "type": "string"
                 },
-                "is_all_day": {
+                "isAllDay": {
                     "type": "boolean"
                 },
                 "location": {
                     "type": "string"
                 },
-                "start_at": {
+                "startAt": {
                     "type": "integer"
                 },
                 "uuid": {

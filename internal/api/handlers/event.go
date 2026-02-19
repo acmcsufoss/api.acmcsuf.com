@@ -145,7 +145,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Router			/v1/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto_request.Event
+	var params dto_request.UpdateEvent
 	id := c.Param("id")
 
 	fmt.Println("UPDATE:", id)
@@ -156,7 +156,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 		return
 	}
 
-	if err := h.eventsService.Update(ctx, id, mapper.ToEventDomain(&params)); err != nil {
+	if err := h.eventsService.Update(ctx, id, mapper.ToUpdateEventDomain(&params)); err != nil {
 		error := fmt.Sprint("Failed to update event: ", err, " | ", ctx, " | ", id, " | ", params)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": error,
@@ -166,7 +166,7 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event updated successfully",
-		"uuid":    mapper.ToEventDomain(&params).Uuid,
+		"uuid":    mapper.ToUpdateEventDomain(&params).Uuid,
 	})
 }
 

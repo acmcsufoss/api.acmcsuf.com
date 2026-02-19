@@ -48,7 +48,7 @@ fmt: ## Format all go files
 
 check: ## Run static analysis on all go files
 	@printf "\033[1;34m==> Building project... \033[0m\n"
-	@go build ./... 2>&1 || (printf "\033[1;31;1mError building: \033[0m: ";  exit 1)  
+	@go build ./... 2>&1 || (printf "\033[1;31;1mError building\033[0m: ";  exit 1)  
 	@printf "\033[1;34m==> Running staticcheck... \033[0m\n"
 	staticcheck -f stylish ./...
 

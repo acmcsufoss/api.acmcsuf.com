@@ -92,15 +92,15 @@ definitions:
     type: object
   dto_request.Event:
     properties:
-      end_at:
+      endAt:
         type: integer
       host:
         type: string
-      is_all_day:
+      isAllDay:
         type: boolean
       location:
         type: string
-      start_at:
+      startAt:
         type: integer
       uuid:
         type: string

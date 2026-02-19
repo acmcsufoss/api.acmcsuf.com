@@ -12,8 +12,19 @@ func ToAnnouncementDomain(a *dto_request.Announcement) domain.Announcement {
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
 		AnnounceAt:       time.Unix(a.AnnounceAt, 0),
-		DiscordChannelID: &a.DiscordChannelID,
-		DiscordMessageID: &a.DiscordMessageID,
+		DiscordChannelID: a.DiscordChannelID,
+		DiscordMessageID: a.DiscordMessageID,
+	}
+}
+
+func ToUpdateAnnouncementDomain(a *dto_request.UpdateAnnouncement) domain.UpdateAnnouncement {
+	announce_at := time.Unix(*a.AnnounceAt, 0)
+	return domain.UpdateAnnouncement{
+		Uuid:             a.Uuid,
+		Visibility:       a.Visibility,
+		AnnounceAt:       &announce_at,
+		DiscordChannelID: a.DiscordChannelID,
+		DiscordMessageID: a.DiscordMessageID,
 	}
 }
 
@@ -27,12 +38,33 @@ func ToEventDomain(e *dto_request.Event) domain.Event {
 	}
 }
 
+func ToUpdateEventDomain(e *dto_request.UpdateEvent) domain.UpdateEvent {
+	start_at := time.Unix(*e.StartAt, 0)
+	end_at := time.Unix(*e.EndAt, 0)
+	return domain.UpdateEvent{
+		Location: e.Location,
+		StartAt:  &start_at,
+		EndAt:    &end_at,
+		IsAllDay: e.IsAllDay,
+		Host:     e.Host,
+	}
+}
+
 func ToOfficerDomain(o *dto_request.Officer) domain.Officer {
 	return domain.Officer{
 		FullName: o.FullName,
-		Picture:  &o.Picture,
-		Github:   &o.Github,
-		Discord:  &o.Discord,
+		Picture:  o.Picture,
+		Github:   o.Github,
+		Discord:  o.Discord,
+	}
+}
+
+func ToUpdateOfficerDomain(o *dto_request.UpdateOfficer) domain.UpdateOfficer {
+	return domain.UpdateOfficer{
+		FullName: o.FullName,
+		Picture:  o.Picture,
+		Github:   o.Github,
+		Discord:  o.Discord,
 	}
 }
 
@@ -47,11 +79,31 @@ func ToPositionDomain(p *dto_request.Position) domain.Position {
 	}
 }
 
+func ToUpdatePositionDomain(p *dto_request.UpdatePosition) domain.UpdatePosition {
+	return domain.UpdatePosition{
+		Oid:      p.Oid,
+		Semester: p.Semester,
+		Tier:     p.Tier,
+		FullName: p.FullName,
+		Title:    p.Title,
+		Team:     p.Team,
+	}
+}
+
 func ToTierDomain(t *dto_request.Tier) domain.Tier {
 	return domain.Tier{
 		Tier:   t.Tier,
-		Title:  &t.Title,
-		Tindex: &t.Tindex,
-		Team:   &t.Team,
+		Title:  t.Title,
+		Tindex: t.Tindex,
+		Team:   t.Team,
+	}
+}
+
+func ToUpdateTierDomain(t *dto_request.UpdateTier) domain.UpdateTier {
+	return domain.UpdateTier{
+		Tier:   t.Tier,
+		Title:  t.Title,
+		Tindex: t.Tindex,
+		Team:   t.Team,
 	}
 }

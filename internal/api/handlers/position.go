@@ -129,7 +129,7 @@ func (h *PositionHandler) CreatePosition(c *gin.Context) {
 //	@Router			/v1/board/positions [put]
 func (h *PositionHandler) UpdatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto_request.Position
+	var params dto_request.UpdatePosition
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -139,7 +139,7 @@ func (h *PositionHandler) UpdatePosition(c *gin.Context) {
 		return
 	}
 
-	if err := h.positionService.Update(ctx, id, mapper.ToPositionDomain(&params)); err != nil {
+	if err := h.positionService.Update(ctx, id, mapper.ToUpdatePositionDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update position. " + err.Error(),
 		})

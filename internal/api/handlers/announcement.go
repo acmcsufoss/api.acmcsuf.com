@@ -120,7 +120,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Router		/v1/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto_request.Announcement
+	var params dto_request.UpdateAnnouncement
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -130,7 +130,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	if err := h.announcementService.Update(ctx, id, mapper.ToAnnouncementDomain(&params)); err != nil {
+	if err := h.announcementService.Update(ctx, id, mapper.ToUpdateAnnouncementDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})

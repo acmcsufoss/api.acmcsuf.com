@@ -135,7 +135,7 @@ func (h *OfficerHandler) CreateOfficer(c *gin.Context) {
 //	@Router			/v1/board/officers/{id} [put]
 func (h *OfficerHandler) UpdateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dto_request.Officer
+	var params dto_request.UpdateOfficer
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -145,7 +145,7 @@ func (h *OfficerHandler) UpdateOfficer(c *gin.Context) {
 		return
 	}
 
-	if err := h.officerService.Update(ctx, id, mapper.ToOfficerDomain(&params)); err != nil {
+	if err := h.officerService.Update(ctx, id, mapper.ToUpdateOfficerDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update officer. " + err.Error(),
 		})
