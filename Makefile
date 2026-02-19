@@ -47,12 +47,13 @@ fmt: ## Format all go files
 	@go fmt ./...
 
 check: ## Run static analysis on all go files
-	@printf "\033[1;34m==> Building project... \033[0m\n"
+	@printf "[\t\033[1;34mBuilding project\033[0m\t]\n"
 	@go build ./... 2>&1 || (printf "\033[1;31;1mError building\033[0m: ";  exit 1)  
-	@printf "\033[1;34m==> Running staticcheck... \033[0m\n"
+	@printf "[\t\033[1;34mRunning staticcheck\033[0m\t]\n"
 	staticcheck -f stylish ./...
 
 test: check ## Run all tests
+	@printf "[\t\033[1;34mRunning go tests\033[0m\t]\n"
 	go test ./...
 
 check-sql: ## Lint all sql files
