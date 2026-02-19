@@ -42,7 +42,7 @@ func convertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEven
 
 	return dbmodels.UpdateEventParams{
 		Uuid:     dEvent.Uuid,
-		Location: sql.NullString{String: *dEvent.Location, Valid: validString(*&dEvent.Location)},
+		Location: sql.NullString{String: *dEvent.Location, Valid: validString(dEvent.Location)},
 		StartAt:  sql.NullInt64{Int64: start, Valid: validInt64(&start)},
 		EndAt:    sql.NullInt64{Int64: end, Valid: validInt64(&end)},
 		IsAllDay: sql.NullBool{Bool: *allday, Valid: validBool(allday)},
@@ -224,29 +224,13 @@ func convertDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeleteP
 
 // ---- Functions to check validity ----
 func validInt64(i *int64) bool {
-	if i == nil {
-		return false
-	}
-	return true
+	return i != nil
 }
 
 func validString(s *string) bool {
-	if s == nil {
-		return false
-	}
-	return true
+	return s != nil
 }
 
 func validBool(b *bool) bool {
-	if b == nil {
-		return false
-	}
-	return true
-}
-
-func validTime(t *time.Time) bool {
-	if t == nil {
-		return false
-	}
-	return true
+	return b != nil
 }
