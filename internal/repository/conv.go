@@ -35,18 +35,38 @@ func convertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParam
 
 func convertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
 	// -- sql null values --
-	start := dEvent.StartAt.Unix()
-	end := dEvent.EndAt.Unix()
-	allday := dEvent.IsAllDay
-	host := dEvent.Host
+	var loc string
+	if dEvent.Location != nil {
+		loc = *dEvent.Location
+	}
+
+	var start int64
+	if dEvent.StartAt != nil {
+		start = dEvent.StartAt.Unix()
+	}
+
+	var end int64
+	if dEvent.EndAt != nil {
+		end = dEvent.StartAt.Unix()
+	}
+
+	var allDay bool
+	if dEvent.IsAllDay != nil {
+		allDay = *dEvent.IsAllDay
+	}
+
+	var host string
+	if dEvent.Host != nil {
+		host = *dEvent.Host
+	}
 
 	return dbmodels.UpdateEventParams{
 		Uuid:     dEvent.Uuid,
-		Location: sql.NullString{String: *dEvent.Location, Valid: validString(dEvent.Location)},
-		StartAt:  sql.NullInt64{Int64: start, Valid: validInt64(&start)},
-		EndAt:    sql.NullInt64{Int64: end, Valid: validInt64(&end)},
-		IsAllDay: sql.NullBool{Bool: *allday, Valid: validBool(allday)},
-		Host:     sql.NullString{String: *host, Valid: validString(host)},
+		Location: sql.NullString{String: loc, Valid: validString(dEvent.Location)},
+		StartAt:  sql.NullInt64{Int64: start, Valid: validTime(dEvent.StartAt)},
+		EndAt:    sql.NullInt64{Int64: end, Valid: validTime(dEvent.EndAt)},
+		IsAllDay: sql.NullBool{Bool: allDay, Valid: validBool(dEvent.IsAllDay)},
+		Host:     sql.NullString{String: host, Valid: validString(dEvent.Host)},
 	}
 }
 
