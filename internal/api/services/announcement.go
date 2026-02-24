@@ -36,9 +36,11 @@ func (s *AnnouncementService) Create(ctx context.Context,
 	params domain.Announcement,
 ) error {
 	if params.Uuid == "" {
+		fmt.Println("No id")
 		return fmt.Errorf("no unique identifier for announcement")
 	}
 	if err := s.announcementRepository.Create(ctx, params); err != nil {
+		fmt.Println("Error with creation:", params, ":", err)
 		return err
 	}
 	return nil

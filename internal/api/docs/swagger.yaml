@@ -92,15 +92,15 @@ definitions:
     type: object
   dto_request.Event:
     properties:
-      endAt:
+      end_at:
         type: integer
       host:
         type: string
-      isAllDay:
+      is_all_day:
         type: boolean
       location:
         type: string
-      startAt:
+      start_at:
         type: integer
       uuid:
         type: string
@@ -120,6 +120,8 @@ definitions:
     type: object
   dto_request.Position:
     properties:
+      full_name:
+        type: string
       oid:
         type: string
       semester:
@@ -127,7 +129,7 @@ definitions:
       team:
         type: string
       tier:
-        type: string
+        type: integer
       title:
         type: string
     type: object

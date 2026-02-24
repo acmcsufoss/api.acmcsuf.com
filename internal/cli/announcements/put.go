@@ -10,9 +10,9 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -58,7 +58,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 	}
 
 	// ----- Update found announceement -----
-	var oldPayload dbmodels.CreateAnnouncementParams
+	var oldPayload dto_request.UpdateAnnouncement
 	err = json.Unmarshal(body, &oldPayload)
 	if err != nil {
 		fmt.Println("Error: failed to unmarshal response body:", err)
@@ -99,8 +99,8 @@ func putAnnouncements(id string, cfg *config.Config) {
 }
 
 // TODO: Use DTO models instaad of dbmodels
-func putForm(uuid string) (*dbmodels.UpdateAnnouncementParams, error) {
-	var payload dbmodels.UpdateAnnouncementParams
+func putForm(uuid string) (*dto_request.UpdateAnnouncement, error) {
+	var payload dto_request.UpdateAnnouncement
 	var err error
 	var (
 		visibilityStr string
@@ -134,20 +134,20 @@ func putForm(uuid string) (*dbmodels.UpdateAnnouncementParams, error) {
 	payload.Uuid = uuid
 	// HACK: These conversions won't be necessary once we start using DTO models here
 	if visibilityStr != "" {
-		payload.Visibility = utils.StringtoNullString(visibilityStr)
+		payload.Visibility = &visibilityStr
 	}
 	if announceAtStr != "" {
 		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
 		if err != nil {
 			return nil, err
 		}
-		payload.AnnounceAt = utils.Int64toNullInt64(timestamp)
+		payload.AnnounceAt = &timestamp
 	}
 	if channelIDStr != "" {
-		payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
+		payload.DiscordChannelID = &channelIDStr
 	}
 	if messageIDStr != "" {
-		payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+		payload.DiscordMessageID = &messageIDStr
 	}
 	return &payload, nil
 }

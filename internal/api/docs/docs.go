@@ -1437,19 +1437,19 @@ const docTemplate = `{
         "dto_request.Event": {
             "type": "object",
             "properties": {
-                "endAt": {
+                "end_at": {
                     "type": "integer"
                 },
                 "host": {
                     "type": "string"
                 },
-                "isAllDay": {
+                "is_all_day": {
                     "type": "boolean"
                 },
                 "location": {
                     "type": "string"
                 },
-                "startAt": {
+                "start_at": {
                     "type": "integer"
                 },
                 "uuid": {
@@ -1480,6 +1480,9 @@ const docTemplate = `{
         "dto_request.Position": {
             "type": "object",
             "properties": {
+                "full_name": {
+                    "type": "string"
+                },
                 "oid": {
                     "type": "string"
                 },
@@ -1490,7 +1493,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tier": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "title": {
                     "type": "string"

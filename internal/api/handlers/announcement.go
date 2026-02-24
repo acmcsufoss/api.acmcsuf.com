@@ -3,6 +3,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
@@ -83,6 +84,8 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
 	var params dto_request.Announcement
 
+	// fmt.Println(params)
+	fmt.Println(c.Request.Body)
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
