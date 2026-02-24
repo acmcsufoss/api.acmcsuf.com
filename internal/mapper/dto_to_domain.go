@@ -18,11 +18,14 @@ func ToAnnouncementDomain(a *dto_request.Announcement) domain.Announcement {
 }
 
 func ToUpdateAnnouncementDomain(a *dto_request.UpdateAnnouncement) domain.UpdateAnnouncement {
-	announce_at := time.Unix(*a.AnnounceAt, 0)
+	var announceAt time.Time
+	if a.AnnounceAt != nil {
+		announceAt = time.Unix(*a.AnnounceAt, 0)
+	}
 	return domain.UpdateAnnouncement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
-		AnnounceAt:       &announce_at,
+		AnnounceAt:       &announceAt,
 		DiscordChannelID: a.DiscordChannelID,
 		DiscordMessageID: a.DiscordMessageID,
 	}
@@ -39,12 +42,12 @@ func ToEventDomain(e *dto_request.Event) domain.Event {
 }
 
 func ToUpdateEventDomain(e *dto_request.UpdateEvent) domain.UpdateEvent {
-	start_at := time.Unix(*e.StartAt, 0)
-	end_at := time.Unix(*e.EndAt, 0)
+	startAt := time.Unix(*e.StartAt, 0)
+	endAt := time.Unix(*e.EndAt, 0)
 	return domain.UpdateEvent{
 		Location: e.Location,
-		StartAt:  &start_at,
-		EndAt:    &end_at,
+		StartAt:  &startAt,
+		EndAt:    &endAt,
 		IsAllDay: e.IsAllDay,
 		Host:     e.Host,
 	}

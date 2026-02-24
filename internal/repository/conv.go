@@ -118,17 +118,32 @@ func convertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 
 func convertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
 	// -- sql null values --
-	vis := dAnnouncement.Visibility
-	announceAt := dAnnouncement.AnnounceAt.Unix()
-	chanID := dAnnouncement.DiscordChannelID
-	msgID := dAnnouncement.DiscordMessageID
+
+	var vis string
+	if dAnnouncement.Visibility != nil {
+		vis = *dAnnouncement.Visibility
+	}
+	var announceAt int64
+	announceAtPtr := dAnnouncement.AnnounceAt
+	if announceAtPtr != nil {
+		announceAt = announceAtPtr.Unix()
+	}
+	var chanID string
+	if dAnnouncement.DiscordChannelID != nil {
+		chanID = *dAnnouncement.DiscordChannelID
+	}
+
+	var msgID string
+	if dAnnouncement.DiscordMessageID != nil {
+		msgID = *dAnnouncement.DiscordMessageID
+	}
 
 	return dbmodels.UpdateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
-		Visibility:       sql.NullString{String: *vis, Valid: validString(vis)},
-		AnnounceAt:       sql.NullInt64{Int64: announceAt, Valid: validInt64(&announceAt)},
-		DiscordChannelID: sql.NullString{String: *chanID, Valid: validString(chanID)},
-		DiscordMessageID: sql.NullString{String: *msgID, Valid: validString(msgID)},
+		Visibility:       sql.NullString{String: vis, Valid: validString(dAnnouncement.Visibility)},
+		AnnounceAt:       sql.NullInt64{Int64: announceAt, Valid: validTime(announceAtPtr)},
+		DiscordChannelID: sql.NullString{String: chanID, Valid: validString(dAnnouncement.DiscordChannelID)},
+		DiscordMessageID: sql.NullString{String: msgID, Valid: validString(dAnnouncement.DiscordMessageID)},
 	}
 }
 
@@ -233,4 +248,8 @@ func validString(s *string) bool {
 
 func validBool(b *bool) bool {
 	return b != nil
+}
+
+func validTime(t *time.Time) bool {
+	return t != nil
 }
