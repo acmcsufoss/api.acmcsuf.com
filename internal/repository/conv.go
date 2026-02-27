@@ -241,16 +241,6 @@ func convertDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeleteP
 }
 
 // ---- Functions to check validity ----
-func int64ToNullInt64(i *int64) sql.NullInt64 {
-	var val int64
-	var valid bool
-	if i != nil {
-		val = *i
-	}
-
-	return sql.NullInt64{Int64: val, Valid: valid}
-}
-
 func intToNullInt64(i *int) sql.NullInt64 {
 	var val int64
 	var valid bool
