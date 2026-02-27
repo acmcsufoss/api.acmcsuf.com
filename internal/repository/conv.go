@@ -35,38 +35,23 @@ func convertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParam
 
 func convertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
 	// -- sql null values --
-	var loc string
-	if dEvent.Location != nil {
-		loc = *dEvent.Location
-	}
+	loc := stringToNullString(dEvent.Location)
 
-	var start int64
-	if dEvent.StartAt != nil {
-		start = dEvent.StartAt.Unix()
-	}
+	start := timeToNullInt64(dEvent.StartAt)
 
-	var end int64
-	if dEvent.EndAt != nil {
-		end = dEvent.StartAt.Unix()
-	}
+	end := timeToNullInt64(dEvent.EndAt)
 
-	var allDay bool
-	if dEvent.IsAllDay != nil {
-		allDay = *dEvent.IsAllDay
-	}
+	allDay := boolToNullBool(dEvent.IsAllDay)
 
-	var host string
-	if dEvent.Host != nil {
-		host = *dEvent.Host
-	}
+	host := stringToNullString(dEvent.Host)
 
 	return dbmodels.UpdateEventParams{
 		Uuid:     dEvent.Uuid,
-		Location: sql.NullString{String: loc, Valid: validString(dEvent.Location)},
-		StartAt:  sql.NullInt64{Int64: start, Valid: validTime(dEvent.StartAt)},
-		EndAt:    sql.NullInt64{Int64: end, Valid: validTime(dEvent.EndAt)},
-		IsAllDay: sql.NullBool{Bool: allDay, Valid: validBool(dEvent.IsAllDay)},
-		Host:     sql.NullString{String: host, Valid: validString(dEvent.Host)},
+		Location: loc,
+		StartAt:  start,
+		EndAt:    end,
+		IsAllDay: allDay,
+		Host:     host,
 	}
 }
 
@@ -83,31 +68,35 @@ func convertDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 
 func convertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOfficerParams {
 	// -- sql null values --
-	pic := dOfficer.Picture
-	github := dOfficer.Github
-	discord := dOfficer.Discord
+	pic := stringToNullString(dOfficer.Picture)
+
+	github := stringToNullString(dOfficer.Github)
+
+	discord := stringToNullString(dOfficer.Discord)
 
 	return dbmodels.CreateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: dOfficer.FullName,
-		Picture:  sql.NullString{String: *pic, Valid: validString(pic)},
-		Github:   sql.NullString{String: *github, Valid: validString(pic)},
-		Discord:  sql.NullString{String: *discord, Valid: validString(pic)},
+		Picture:  pic,
+		Github:   github,
+		Discord:  discord,
 	}
 }
 
 func convertDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
 	// -- sql null values --
-	pic := dOfficer.Picture
-	github := dOfficer.Github
-	discord := dOfficer.Discord
+	pic := stringToNullString(dOfficer.Picture)
+
+	github := stringToNullString(dOfficer.Github)
+
+	discord := stringToNullString(dOfficer.Discord)
 
 	return dbmodels.UpdateOfficerParams{
 		Uuid:     dOfficer.Uuid,
 		FullName: *dOfficer.FullName,
-		Picture:  sql.NullString{String: *pic, Valid: validString(pic)},
-		Github:   sql.NullString{String: *github, Valid: validString(github)},
-		Discord:  sql.NullString{String: *discord, Valid: validString(discord)},
+		Picture:  pic,
+		Github:   github,
+		Discord:  discord,
 	}
 }
 
@@ -124,46 +113,34 @@ func convertDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.
 
 func convertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmodels.CreateAnnouncementParams {
 	// -- sql null values --
-	chanID := dAnnouncement.DiscordChannelID
-	msgID := dAnnouncement.DiscordMessageID
+	chanID := stringToNullString(dAnnouncement.DiscordChannelID)
 
+	msgID := stringToNullString(dAnnouncement.DiscordMessageID)
 	return dbmodels.CreateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       dAnnouncement.Visibility,
 		AnnounceAt:       dAnnouncement.AnnounceAt.Unix(),
-		DiscordChannelID: sql.NullString{String: *chanID, Valid: validString(chanID)},
-		DiscordMessageID: sql.NullString{String: *msgID, Valid: validString(msgID)},
+		DiscordChannelID: chanID,
+		DiscordMessageID: msgID,
 	}
 }
 
 func convertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
 	// -- sql null values --
+	vis := stringToNullString(dAnnouncement.Visibility)
 
-	var vis string
-	if dAnnouncement.Visibility != nil {
-		vis = *dAnnouncement.Visibility
-	}
-	var announceAt int64
-	announceAtPtr := dAnnouncement.AnnounceAt
-	if announceAtPtr != nil {
-		announceAt = announceAtPtr.Unix()
-	}
-	var chanID string
-	if dAnnouncement.DiscordChannelID != nil {
-		chanID = *dAnnouncement.DiscordChannelID
-	}
+	announceAt := timeToNullInt64(dAnnouncement.AnnounceAt)
 
-	var msgID string
-	if dAnnouncement.DiscordMessageID != nil {
-		msgID = *dAnnouncement.DiscordMessageID
-	}
+	chanID := stringToNullString(dAnnouncement.DiscordChannelID)
+
+	msgID := stringToNullString(dAnnouncement.DiscordMessageID)
 
 	return dbmodels.UpdateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
-		Visibility:       sql.NullString{String: vis, Valid: validString(dAnnouncement.Visibility)},
-		AnnounceAt:       sql.NullInt64{Int64: announceAt, Valid: validTime(announceAtPtr)},
-		DiscordChannelID: sql.NullString{String: chanID, Valid: validString(dAnnouncement.DiscordChannelID)},
-		DiscordMessageID: sql.NullString{String: msgID, Valid: validString(dAnnouncement.DiscordMessageID)},
+		Visibility:       vis,
+		AnnounceAt:       announceAt,
+		DiscordChannelID: chanID,
+		DiscordMessageID: msgID,
 	}
 }
 
@@ -181,29 +158,33 @@ func convertDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
 
 func convertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
 	// -- sql null values --
-	title := dTier.Title
-	tIdx := int64(*dTier.Tindex)
-	team := dTier.Team
+	title := stringToNullString(dTier.Title)
+
+	tIdx := intToNullInt64(dTier.Tindex)
+
+	team := stringToNullString(dTier.Team)
 
 	return dbmodels.CreateTierParams{
 		Tier:   int64(dTier.Tier),
-		Title:  sql.NullString{String: *title, Valid: validString(title)},
-		TIndex: sql.NullInt64{Int64: tIdx, Valid: validInt64(&tIdx)},
-		Team:   sql.NullString{String: *team, Valid: validString(team)},
+		Title:  title,
+		TIndex: tIdx,
+		Team:   team,
 	}
 }
 
 func convertDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierParams {
 	// -- sql null values --
-	title := dTier.Title
-	tIdx := int64(*dTier.Tindex)
-	team := dTier.Team
+	title := stringToNullString(dTier.Title)
+
+	tIdx := intToNullInt64(dTier.Tindex)
+
+	team := stringToNullString(dTier.Team)
 
 	return dbmodels.UpdateTierParams{
 		Tier:   int64(dTier.Tier),
-		Title:  sql.NullString{String: *title, Valid: validString(title)},
-		TIndex: sql.NullInt64{Int64: tIdx, Valid: validInt64(&tIdx)},
-		Team:   sql.NullString{String: *team, Valid: validString(team)},
+		Title:  title,
+		TIndex: tIdx,
+		Team:   team,
 	}
 }
 
@@ -221,31 +202,33 @@ func convertDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
 
 func convertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreatePositionParams {
 	// -- sql null types --
-	title := dPosition.Title
-	team := dPosition.Team
+	title := stringToNullString(dPosition.Title)
+
+	team := stringToNullString(dPosition.Team)
 
 	return dbmodels.CreatePositionParams{
 		Oid:      dPosition.Oid,
 		Semester: dPosition.Semester,
 		Tier:     int64(dPosition.Tier),
 		FullName: dPosition.FullName,
-		Title:    sql.NullString{String: *title, Valid: validString(title)},
-		Team:     sql.NullString{String: *team, Valid: validString(team)},
+		Title:    title,
+		Team:     team,
 	}
 }
 
 func convertDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.UpdatePositionParams {
 	// -- sql null types --
-	title := dPosition.Title
-	team := dPosition.Team
+	title := stringToNullString(dPosition.Title)
+
+	team := stringToNullString(dPosition.Team)
 
 	return dbmodels.UpdatePositionParams{
 		Oid:      dPosition.Oid,
 		Semester: dPosition.Semester,
 		Tier:     int64(dPosition.Tier),
 		FullName: dPosition.FullName,
-		Title:    sql.NullString{String: *title, Valid: validString(title)},
-		Team:     sql.NullString{String: *team, Valid: validString(team)},
+		Title:    title,
+		Team:     team,
 	}
 }
 
@@ -268,7 +251,18 @@ func int64ToNullInt64(i *int64) sql.NullInt64 {
 	return sql.NullInt64{Int64: val, Valid: valid}
 }
 
-func validString(s *string) sql.NullString {
+func intToNullInt64(i *int) sql.NullInt64 {
+	var val int64
+	var valid bool
+	if i != nil {
+		deref := *i
+		val = int64(deref)
+	}
+
+	return sql.NullInt64{Int64: val, Valid: valid}
+}
+
+func stringToNullString(s *string) sql.NullString {
 	var val string
 	var valid bool
 	if s != nil {
@@ -278,7 +272,7 @@ func validString(s *string) sql.NullString {
 	return sql.NullString{String: val, Valid: valid}
 }
 
-func validBool(b *bool) sql.NullBool {
+func boolToNullBool(b *bool) sql.NullBool {
 	var val bool
 	var valid bool
 	if b != nil {
@@ -288,7 +282,7 @@ func validBool(b *bool) sql.NullBool {
 	return sql.NullBool{Bool: val, Valid: valid}
 }
 
-func validTime(t *time.Time) sql.NullInt64 {
+func timeToNullInt64(t *time.Time) sql.NullInt64 {
 	var val int64
 	var valid bool
 	if t != nil {
