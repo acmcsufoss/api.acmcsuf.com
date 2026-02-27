@@ -33,6 +33,7 @@ func ToUpdateAnnouncementDomain(a *dto_request.UpdateAnnouncement) domain.Update
 
 func ToEventDomain(e *dto_request.Event) domain.Event {
 	return domain.Event{
+		Uuid:     e.Uuid,
 		Location: e.Location,
 		StartAt:  time.Unix(e.StartAt, 0),
 		EndAt:    time.Unix(e.EndAt, 0),
@@ -45,6 +46,7 @@ func ToUpdateEventDomain(e *dto_request.UpdateEvent) domain.UpdateEvent {
 	startAt := time.Unix(*e.StartAt, 0)
 	endAt := time.Unix(*e.EndAt, 0)
 	return domain.UpdateEvent{
+		Uuid:     e.Uuid,
 		Location: e.Location,
 		StartAt:  &startAt,
 		EndAt:    &endAt,
