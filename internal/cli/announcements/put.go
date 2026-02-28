@@ -79,7 +79,7 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 	var err error
 	var (
 		visibilityStr string = oldPayload.Visibility
-		announceAtStr string = fmt.Sprint(oldPayload.AnnounceAt)
+		announceAtStr string
 		channelIDStr  string = oldPayload.DiscordChannelID.String
 		messageIDStr  string = oldPayload.DiscordMessageID.String
 	)
