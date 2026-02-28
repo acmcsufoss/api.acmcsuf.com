@@ -78,7 +78,7 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 	var payload dto.UpdateAnnouncement
 	var err error
 	var (
-		visibilityStr string
+		visibilityStr string = "poop"
 		announceAtStr string
 		channelIDStr  string
 		messageIDStr  string
@@ -106,7 +106,6 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 		return nil, err
 	}
 
-	payload.Uuid = uuid
 	// HACK: These conversions won't be necessary once we start using DTO models here
 	payload.Visibility = &visibilityStr
 	if announceAtStr != "" {

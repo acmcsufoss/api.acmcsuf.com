@@ -30,7 +30,7 @@ func init() {
 func getAnnouncement(uuid string, cfg *config.Config) {
 	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", uuid)
 
-	if body, err := client.SendRequestAndReadResponse(getUrl, http.MethodGet, nil); err != nil {
+	if body, err := client.SendRequestAndReadResponse(getUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
 		utils.PrettyPrintJSON(body)
