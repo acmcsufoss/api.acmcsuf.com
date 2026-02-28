@@ -36,7 +36,7 @@ func putOfficer(id string, cfg *config.Config) {
 
 	// ----- Get officer we want to update
 	var oldPayload dbmodels.UpdateOfficerParams
-	if body, err := client.SendRequestAndReadResponse(url, http.MethodGet, nil); err != nil {
+	if body, err := client.SendRequestAndReadResponse(url, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
 		if err := json.Unmarshal(body, &oldPayload); err != nil {
@@ -59,7 +59,7 @@ func putOfficer(id string, cfg *config.Config) {
 	}
 
 	// Update remote resource with new data
-	if body, err := client.SendRequestAndReadResponse(url, http.MethodDelete,
+	if body, err := client.SendRequestAndReadResponse(url, true, http.MethodPut,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {

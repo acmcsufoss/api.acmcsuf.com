@@ -36,7 +36,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 
 	// ----- Get announcement we want to update -----
 	var oldPayload dbmodels.CreateAnnouncementParams
-	if body, err := client.SendRequestAndReadResponse(resourceUrl, http.MethodDelete, nil); err != nil {
+	if body, err := client.SendRequestAndReadResponse(resourceUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
 		err = json.Unmarshal(body, &oldPayload)
@@ -65,7 +65,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 	}
 
 	// Update remote resource with new data
-	if body, err := client.SendRequestAndReadResponse(resourceUrl, http.MethodDelete,
+	if body, err := client.SendRequestAndReadResponse(resourceUrl, true, http.MethodPut,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {

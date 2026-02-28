@@ -47,7 +47,7 @@ func postOfficer(cfg *config.Config) {
 		fmt.Fprintln(os.Stderr, "Error: failed to marshal JSON:", err)
 	}
 
-	if body, err := client.SendRequestAndReadResponse(postUrl, http.MethodPost,
+	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
