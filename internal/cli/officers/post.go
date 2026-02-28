@@ -13,6 +13,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -57,11 +58,41 @@ func postOfficer(cfg *config.Config) {
 func postForm() (*dbmodels.CreateOfficerParams, error) {
 	var payload dbmodels.CreateOfficerParams
 	var err error
+	var (
+		picture string
+		github  string
+		discord string
+	)
 
-	form := huh.NewForm()
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Officer ID").
+				Value(&payload.Uuid).
+				Validate(forms.ValidateNonEmpty()),
+			huh.NewInput().
+				Title("Full Name").
+				Value(&payload.FullName).
+				Validate(forms.ValidateNonEmpty()),
+			huh.NewInput().
+				Title("Picture URL").
+				Value(&picture),
+			huh.NewInput().
+				Title("GitHub Username").
+				Value(&github),
+			huh.NewInput().
+				Title("Discord Username").
+				Value(&discord),
+		),
+	)
 	if err = form.Run(); err != nil {
 		return nil, err
 	}
+
+	// HACK: conversions required here due to lack of DTO models
+	payload.Picture = utils.StringtoNullString(picture)
+	payload.Github = utils.StringtoNullString(github)
+	payload.Discord = utils.StringtoNullString(discord)
 
 	return &payload, nil
 }
