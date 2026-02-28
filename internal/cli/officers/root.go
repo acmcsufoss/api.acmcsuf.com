@@ -5,7 +5,7 @@ import (
 )
 
 var CLIOfficers = &cobra.Command{
-	Use:   "officers HEADER",
+	Use:   "officers",
 	Short: "A command to manage officers.",
 }
 
