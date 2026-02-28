@@ -3,8 +3,8 @@ package announcements
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/charmbracelet/huh"
@@ -39,32 +39,14 @@ func postAnnouncement(cfg *config.Config) {
 		return
 	}
 
-	postURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
-	client := http.Client{}
-	req, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
-	if err != nil {
-		fmt.Println("Error: could not create request:", err)
-		return
-	}
+	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
 
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error: could not send request:", err)
-		return
+	if body, err := client.SendRequestAndReadResponse(postUrl, http.MethodDelete,
+		strings.NewReader(string(jsonPayload))); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", res.Status)
-		return
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("Error: could not read response body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }
 
 func postForm() (*dto.Announcement, error) {
