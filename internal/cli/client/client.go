@@ -7,9 +7,9 @@ import (
 	"net/url"
 )
 
-func SendRequestAndReadResponse(url *url.URL, method string) ([]byte, error) {
+func SendRequestAndReadResponse(url *url.URL, method string, body io.Reader) ([]byte, error) {
 	client := http.Client{}
-	req, err := http.NewRequest(method, url.String(), nil)
+	req, err := http.NewRequest(method, url.String(), body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to construct request: %w", err)
 	}
@@ -24,9 +24,9 @@ func SendRequestAndReadResponse(url *url.URL, method string) ([]byte, error) {
 		return nil, fmt.Errorf("HTTP %s", res.Status)
 	}
 
-	body, err := io.ReadAll(res.Body)
+	data, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
-	return body, nil
+	return data, nil
 }
