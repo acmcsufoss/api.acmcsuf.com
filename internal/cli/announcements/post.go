@@ -40,7 +40,7 @@ func postAnnouncement(cfg *config.Config) {
 		return
 	}
 
-	if body, err := client.SendRequestAndReadResponse(postUrl, http.MethodDelete,
+	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {

@@ -31,7 +31,7 @@ func init() {
 func deleteAnnouncement(id string, cfg *config.Config) {
 	deleteUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
-	if body, err := client.SendRequestAndReadResponse(deleteUrl, http.MethodDelete, nil); err != nil {
+	if body, err := client.SendRequestAndReadResponse(deleteUrl, true, http.MethodDelete, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
 		utils.PrettyPrintJSON(body)
