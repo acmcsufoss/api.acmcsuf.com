@@ -35,7 +35,7 @@ func putOfficer(id string, cfg *config.Config) {
 	url := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers", id)
 
 	// ----- Get officer we want to update
-	var oldPayload dbmodels.UpdateOfficerParams
+	var oldPayload dbmodels.CreateOfficerParams
 	if body, err := client.SendRequestAndReadResponse(url, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
@@ -47,7 +47,7 @@ func putOfficer(id string, cfg *config.Config) {
 
 	// ----- Update found officer -----
 	// Read new data
-	newPayload, err := putForm(id)
+	newPayload, err := putForm(&oldPayload)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		return
@@ -67,20 +67,21 @@ func putOfficer(id string, cfg *config.Config) {
 	}
 }
 
-func putForm(uuid string) (*dbmodels.UpdateOfficerParams, error) {
+func putForm(oldPayload *dbmodels.CreateOfficerParams) (*dbmodels.UpdateOfficerParams, error) {
 	var payload dbmodels.UpdateOfficerParams
 	var err error
 	var (
-		picture string
-		github  string
-		discord string
+		name    string = oldPayload.FullName
+		picture string = oldPayload.Picture.String
+		github  string = oldPayload.Github.String
+		discord string = oldPayload.Discord.String
 	)
 
 	form := huh.NewForm(
 		huh.NewGroup(
 			huh.NewInput().
 				Title("Full Name").
-				Value(&payload.FullName),
+				Value(&name),
 			huh.NewInput().
 				Title("Picture URL").
 				Value(&picture),
@@ -96,7 +97,8 @@ func putForm(uuid string) (*dbmodels.UpdateOfficerParams, error) {
 		return nil, err
 	}
 
-	payload.Uuid = uuid
+	payload.Uuid = oldPayload.Uuid
+	payload.FullName = name
 	payload.Picture = utils.StringtoNullString(picture)
 	payload.Github = utils.StringtoNullString(github)
 	payload.Discord = utils.StringtoNullString(discord)
