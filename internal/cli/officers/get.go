@@ -26,7 +26,7 @@ func init() {
 }
 
 func getOfficers(uuid string, cfg *config.Config) {
-	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", uuid)
+	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers", uuid)
 
 	if body, err := client.SendRequestAndReadResponse(getUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
