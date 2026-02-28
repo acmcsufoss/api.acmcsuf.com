@@ -2,11 +2,12 @@ package announcements
 
 import (
 	"fmt"
-	"io"
 	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -29,30 +30,9 @@ func init() {
 func getAnnouncement(uuid string, cfg *config.Config) {
 	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", uuid)
 
-	// ----- Requesting Get -----
-	client := http.Client{}
-	req, err := http.NewRequest(http.MethodGet, getUrl.String(), nil)
-	if err != nil {
-		fmt.Println("error with request:", err)
-		return
+	if body, err := client.SendRequestAndReadResponse(getUrl, http.MethodGet, nil); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println("error getting announcements:", err)
-		return
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", res.Status)
-		return
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("Error: failed to read response body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }

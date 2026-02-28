@@ -2,13 +2,13 @@ package officers
 
 import (
 	"fmt"
-	"io"
 	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -31,29 +31,9 @@ func init() {
 func deleteOfficer(id string, cfg *config.Config) {
 	deleteUrl := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers", id)
 
-	request, err := oauth.NewRequestWithAuth(http.MethodDelete, deleteUrl.String(), nil)
-	if err != nil {
-		fmt.Println("Error: failed to construct delete request:", err)
-		return
+	if body, err := client.SendRequestAndReadResponse(deleteUrl, http.MethodDelete); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		fmt.Println("Error: failed to send delete request:", err)
-		return
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", response.Status)
-		return
-	}
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error: failed to read response body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }
