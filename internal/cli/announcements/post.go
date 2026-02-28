@@ -1,11 +1,11 @@
 package announcements
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -27,22 +27,21 @@ var PostAnnouncement = &cobra.Command{
 }
 
 func postAnnouncement(cfg *config.Config) {
+	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
+
 	payload, err := postForm()
 	if err != nil {
 		fmt.Println("Error:", err)
 		return
 	}
-
-	jsonPayload, err := json.Marshal(payload)
+	b, err := json.Marshal(payload)
 	if err != nil {
 		fmt.Println("Error: could not marshal JSON:", err)
 		return
 	}
 
-	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
-
 	if body, err := client.SendRequestAndReadResponse(postUrl, http.MethodDelete,
-		strings.NewReader(string(jsonPayload))); err != nil {
+		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 	} else {
 		utils.PrettyPrintJSON(body)
