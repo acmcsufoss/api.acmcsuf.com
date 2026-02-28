@@ -78,10 +78,10 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 	var payload dto.UpdateAnnouncement
 	var err error
 	var (
-		visibilityStr string = "poop"
-		announceAtStr string
-		channelIDStr  string
-		messageIDStr  string
+		visibilityStr string = oldPayload.Visibility
+		announceAtStr string = fmt.Sprint(oldPayload.AnnounceAt)
+		channelIDStr  string = oldPayload.DiscordChannelID.String
+		messageIDStr  string = oldPayload.DiscordMessageID.String
 	)
 	form := huh.NewForm(
 		huh.NewGroup(
