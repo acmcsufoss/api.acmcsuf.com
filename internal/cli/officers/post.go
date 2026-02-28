@@ -1,21 +1,18 @@
 package officers
 
 import (
-	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -24,34 +21,7 @@ var PostOfficer = &cobra.Command{
 	Short: "Post a new officer",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var payload dbmodels.CreateOfficerParams
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-
-		payload.Uuid, _ = cmd.Flags().GetString("uuid")
-		payload.FullName, _ = cmd.Flags().GetString("name")
-		pic, _ := cmd.Flags().GetString("picture")
-		payload.Picture = utils.StringtoNullString(pic)
-		git, _ := cmd.Flags().GetString("github")
-		payload.Github = utils.StringtoNullString(git)
-		disc, _ := cmd.Flags().GetString("discord")
-		payload.Discord = utils.StringtoNullString(disc)
-
-		changedFlags := officerFlags{
-			uuid:     cmd.Flags().Lookup("uuid").Changed,
-			fullname: cmd.Flags().Lookup("name").Changed,
-			picture:  cmd.Flags().Lookup("picture").Changed,
-			github:   cmd.Flags().Lookup("github").Changed,
-			discord:  cmd.Flags().Lookup("discord").Changed,
-		}
-
-		postOfficer(&payload, &changedFlags, config.Cfg)
+		postOfficer(config.Cfg)
 	},
 }
 
@@ -64,247 +34,34 @@ func init() {
 	PostOfficer.Flags().StringP("discord", "d", "", "Set the discord of this officer")
 }
 
-func postOfficer(payload *dbmodels.CreateOfficerParams, cf *officerFlags, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
+func postOfficer(cfg *config.Config) {
+	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers")
 
-	// uuid
-	for {
-		if cf.uuid {
-			break
-		}
-
-		var uuid string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description("Please enter officer's uuid:").
-			Prompt("> ").
-			Value(&uuid).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(uuid))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		payload.Uuid = string(scanner.Bytes())
-		break
-	}
-
-	// full name
-	for {
-		if cf.fullname {
-			break
-		}
-
-		var fullName string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description("Please enter officer's full name:").
-			Prompt("> ").
-			Value(&fullName).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(fullName))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		payload.FullName = string(scanner.Bytes())
-		break
-	}
-
-	// picture
-	for {
-		if cf.picture {
-			break
-		}
-
-		var picLink string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description("Please enter the picture link for officer:").
-			Prompt("> ").
-			Value(&picLink).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(picLink))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		payload.Picture = utils.StringtoNullString(string(scanner.Bytes()))
-		break
-	}
-
-	// github
-	for {
-		if cf.github {
-			break
-		}
-
-		var githubLink string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description("Please enter the github link for officer:").
-			Prompt("> ").
-			Value(&githubLink).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(githubLink))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		payload.Github = utils.StringtoNullString(string(scanner.Bytes()))
-		break
-	}
-
-	// discord
-	for {
-		if cf.discord {
-			break
-		}
-
-		var discordLink string
-		err := huh.NewInput().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description("Please enter the discord link for officer").
-			Prompt("> ").
-			Value(&discordLink).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(discordLink))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		payload.Discord = utils.StringtoNullString(string(scanner.Bytes()))
-		break
-
-	}
-
-	// confirmation
-	for {
-		var option string
-		description := "Is your board data correct?\n" + utils.PrintStruct(payload)
-		err := huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Officer Post:").
-			Description(description).
-			Options(
-				huh.NewOption("Yes", "yes"),
-				huh.NewOption("No", "n"),
-			).
-			Value(&option).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(option))
-		utils.PrintStruct(payload)
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		confirmationBuffer := scanner.Bytes()
-		confirmationBool, err := utils.YesOrNo(confirmationBuffer, scanner)
-		if err != nil {
-			fmt.Println("error with reading confirmation:", err)
-		}
-		if !confirmationBool {
-			// Sorry :(
-			return
-		} else {
-			break
-		}
-	}
-
-	// marshal to json, and prepare url
-	jsonPayload, err := json.Marshal(*payload)
+	payload, err := postForm()
 	if err != nil {
-		fmt.Println("error formating payload to json: ", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error:", err)
 	}
-
-	postURL := baseURL.JoinPath("v1/board/officers/")
-
-	// post payload
-	client := http.Client{}
-	req, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
+	b, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Println("error with post: ", err)
-		return
+		fmt.Fprintln(os.Stderr, "Error: failed to marshal JSON:", err)
 	}
 
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println("error getting response", res)
-		return
+	if body, err := client.SendRequestAndReadResponse(postUrl, http.MethodPost,
+		bytes.NewBuffer(b)); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-	defer res.Body.Close()
+}
 
-	if res.StatusCode != http.StatusOK {
-		fmt.Println("response status:", res.Status)
-		return
+func postForm() (*dbmodels.CreateOfficerParams, error) {
+	var payload dbmodels.CreateOfficerParams
+	var err error
+
+	form := huh.NewForm()
+	if err = form.Run(); err != nil {
+		return nil, err
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("error reading body: ", err)
-		return
-	}
-
-	fmt.Println(string(body))
+	return &payload, nil
 }
