@@ -1,13 +1,12 @@
 package officers
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 	"github.com/charmbracelet/huh"
@@ -71,60 +70,32 @@ func init() {
 	GetOfficers.Flags().String("id", "", "Get a specific officer")
 }
 
-func getOfficers(id string, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
+func getOfficers(uuid string, cfg *config.Config) {
+	getUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", uuid)
 
-	// prepare url
-	path := fmt.Sprint("v1/board/officers/", id)
-
-	getURL := baseURL.JoinPath(path)
-
-	// getting officer(s)
 	client := http.Client{}
-	req, err := http.NewRequest(http.MethodGet, getURL.String(), nil)
+	req, err := http.NewRequest(http.MethodGet, getUrl.String(), nil)
 	if err != nil {
-		fmt.Println("error getting the request: ", err)
+		fmt.Println("Error: failed to construct request:", err)
 		return
 	}
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println("error with getting response", err)
+		fmt.Println("Error: failed to send request:", err)
 		return
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		fmt.Println("response status:", res.Status)
+		fmt.Println("Error: HTTP", res.Status)
 		return
 	}
 
-	if id == "" {
-		var getPayload []dbmodels.GetOfficerRow
-		err = json.NewDecoder(res.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body without id:", err)
-			return
-		}
-
-		for i := range getPayload {
-			fmt.Println(utils.PrintStruct(getPayload[i]))
-		}
-	} else {
-		var getPayload dbmodels.GetOfficerRow
-		err = json.NewDecoder(res.Body).Decode(&getPayload)
-		if err != nil {
-			fmt.Println("Failed to read response body with id:", err)
-			return
-		}
-
-		fmt.Println(utils.PrintStruct(getPayload))
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println("Error: failed to read response body:", err)
+		return
 	}
+	utils.PrettyPrintJSON(body)
 }
