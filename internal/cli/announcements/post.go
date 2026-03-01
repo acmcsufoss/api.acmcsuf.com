@@ -43,6 +43,10 @@ func postAnnouncement(cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			// NOTE: This isn't going to stderr. Should probably fix that at some point
+			utils.PrettyPrintJSON(body)
+		}
 	} else {
 		utils.PrettyPrintJSON(body)
 	}
@@ -92,5 +96,5 @@ func postForm() (*dto.Announcement, error) {
 	payload.DiscordChannelID = &channelIDStr
 	payload.DiscordMessageID = &messageIDStr
 
-	return &payload, err
+	return &payload, nil
 }

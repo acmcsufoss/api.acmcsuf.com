@@ -38,6 +38,10 @@ func putOfficer(id string, cfg *config.Config) {
 	var oldPayload dbmodels.CreateOfficerParams
 	if body, err := client.SendRequestAndReadResponse(url, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSON(body)
+		}
+		return
 	} else {
 		if err := json.Unmarshal(body, &oldPayload); err != nil {
 			fmt.Fprintln(os.Stderr, "Error: failed to unmarshal response body:", err)
@@ -62,6 +66,9 @@ func putOfficer(id string, cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(url, true, http.MethodPut,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSON(body)
+		}
 	} else {
 		utils.PrettyPrintJSON(body)
 	}
