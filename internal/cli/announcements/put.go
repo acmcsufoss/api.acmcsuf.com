@@ -38,6 +38,10 @@ func putAnnouncements(id string, cfg *config.Config) {
 	var oldPayload dbmodels.CreateAnnouncementParams
 	if body, err := client.SendRequestAndReadResponse(resourceUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSON(body)
+		}
+		return
 	} else {
 		err = json.Unmarshal(body, &oldPayload)
 		if err != nil {

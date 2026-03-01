@@ -50,6 +50,9 @@ func postOfficer(cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSON(body)
+		}
 	} else {
 		utils.PrettyPrintJSON(body)
 	}
