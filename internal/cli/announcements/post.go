@@ -31,12 +31,12 @@ func postAnnouncement(cfg *config.Config) {
 
 	payload, err := postForm()
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
 		return
 	}
 	b, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Println("Error: could not marshal JSON:", err)
+		fmt.Fprintln(os.Stderr, "Error: could not marshal JSON:", err)
 		return
 	}
 
