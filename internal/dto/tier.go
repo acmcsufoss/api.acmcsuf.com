@@ -1,6 +1,6 @@
 package dto_request
 
-type Tier struct {
+type TierDto struct {
 	Tier   int     `json:"tier"`
 	Title  *string `json:"title"`
 	Tindex *int    `json:"t_index"`
