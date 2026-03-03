@@ -1,6 +1,6 @@
-package dto_request
+package dto
 
-type AnnouncementDto struct {
+type Announcement struct {
 	Uuid             string  `json:"uuid"`
 	Visibility       string  `json:"visibility"`
 	AnnounceAt       int64   `json:"announce_at"`

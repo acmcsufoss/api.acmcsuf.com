@@ -1,6 +1,6 @@
-package dto_request
+package dto
 
-type OfficerDto struct {
+type Officer struct {
 	Uuid     string  `json:"uuid"`
 	FullName string  `json:"full_name"`
 	Picture  *string `json:"picture"`

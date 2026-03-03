@@ -1,6 +1,6 @@
-package dto_request
+package dto
 
-type PositionDto struct {
+type Position struct {
 	Oid      string  `json:"oid"`
 	Semester string  `json:"semester"`
 	Tier     int     `json:"tier"`
