@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
@@ -78,7 +80,7 @@ func Execute() exitCode {
 	// Logging the error, prefix is date, time, and what file the log is from
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := fang.Execute(context.Background(), rootCmd); err != nil {
 		log.Println("Error:", err)
 		return exitError
 	}
