@@ -54,9 +54,8 @@ func init() {
 	rootCmd.AddCommand(officers.CLIOfficers)
 	rootCmd.AddCommand(config.ConfigCmd)
 
-	rootCmd.PersistentFlags().String("host", "", "Override configured/default host")
-	rootCmd.PersistentFlags().String("port", "", "Override configured/default port")
-	rootCmd.PersistentFlags().String("origin", "", "Override configured/default origin")
+	rootCmd.PersistentFlags().String("host", "", "API server hostname (overrides config)")
+	rootCmd.PersistentFlags().String("port", "", "API server port (overrides config)")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		overrides = &config.ConfigOverrides{
