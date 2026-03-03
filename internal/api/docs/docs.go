@@ -1360,14 +1360,23 @@ const docTemplate = `{
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
+                "full_name": {
+                    "type": "string"
+                },
                 "oid": {
                     "type": "string"
                 },
                 "semester": {
                     "type": "string"
                 },
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
                 "tier": {
                     "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },

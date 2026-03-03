@@ -42,12 +42,18 @@ definitions:
     type: object
   dbmodels.CreatePositionParams:
     properties:
+      full_name:
+        type: string
       oid:
         type: string
       semester:
         type: string
+      team:
+        $ref: '#/definitions/sql.NullString'
       tier:
         type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.CreateTierParams:
     properties:

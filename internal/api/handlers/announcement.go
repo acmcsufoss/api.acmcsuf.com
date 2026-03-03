@@ -7,6 +7,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"fmt"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
@@ -103,7 +104,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Router			/v1/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateAnnouncementParams
+	var params dto.Announcement
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -112,8 +113,27 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
+	var chanID sql.NullString 
+	if params.DiscordChannelID != nil {
+		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
+	}
+	
+
+	var msgID sql.NullString 
+	if params.DiscordMessageID != nil {
+		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
+	}
+	dbParams := dbmodels.CreateAnnouncementParams{
+		Uuid:             params.Uuid,
+		Visibility:       params.Visibility,
+		AnnounceAt:       params.AnnounceAt,
+		DiscordChannelID: chanID,
+		DiscordMessageID: msgID,
+	}
+	
+	fmt.Println("DTO ->", params, "\nDBMODEL->", dbParams)
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, params); err != nil {
+	if err := h.announcementService.Create(ctx, dbParams); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})

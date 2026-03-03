@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"strings"
 
+
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
@@ -68,8 +69,8 @@ func postAnnouncement(cfg *config.Config) {
 }
 
 // TODO: Use DTO models instaad of dbmodels
-func postForm() (*dbmodels.CreateAnnouncementParams, error) {
-	var payload dbmodels.CreateAnnouncementParams
+func postForm() (*dto.Announcement, error) {
+	var payload dto.Announcement
 	var err error
 	var (
 		announceAtStr string
@@ -106,12 +107,13 @@ func postForm() (*dbmodels.CreateAnnouncementParams, error) {
 	}
 
 	// HACK: These conversions won't be necessary once we start using DTO models here
+	
 	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
 	if err != nil {
 		return nil, err
 	}
-	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
-	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+	payload.DiscordChannelID = &channelIDStr
+	payload.DiscordMessageID = &messageIDStr
 
 	return &payload, err
 }
