@@ -34,8 +34,8 @@ var rootCmd = &cobra.Command{
 	Use:     os.Args[0],
 	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
 	Version: Version,
-	Run: func(cmd *cobra.Command, args []string) {
-		// do nothing
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return cmd.Help()
 	},
 }
 
