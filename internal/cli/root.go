@@ -31,12 +31,8 @@ var Version = "dev"
 var overrides *config.ConfigOverrides
 
 var rootCmd = &cobra.Command{
-	Use:     os.Args[0],
-	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
-	Version: Version,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return cmd.Help()
-	},
+	Use:   os.Args[0],
+	Short: "A CLI tool to help manage the API of the CSUF ACM website",
 }
 
 // init() is a special function that always gets run before main
@@ -80,7 +76,7 @@ func Execute() exitCode {
 	// Logging the error, prefix is date, time, and what file the log is from
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	if err := fang.Execute(context.Background(), rootCmd); err != nil {
+	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(Version)); err != nil {
 		log.Println("Error:", err)
 		return exitError
 	}
