@@ -3,10 +3,14 @@
 package handlers
 
 import (
+	"database/sql"
+	"errors"
+	"log"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,7 +30,7 @@ func NewAnnouncementHandler(announcementService services.AnnouncementServicer) *
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
-//	@Success		200 {object} dbmodels.Announcement "Announcement details"
+//	@Success		200 {object} dto.Announcement "Announcement details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/announcements/{id} [get]
@@ -37,7 +41,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	announcement, err := h.announcementService.Get(ctx, id)
 
 	if err != nil {
-		if err.Error() == "sql: no rows in result set" {
+		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{
 				"error": "Announcement not found",
 			})
@@ -46,9 +50,28 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to retrieve announcement",
 		})
+		log.Println("Failed to retrieve announcement:", err)
+		return
 	}
 
-	c.JSON(http.StatusOK, announcement)
+	// NOTE: We won't have to do this once implement domain models
+	var discordChannelID *string
+	if announcement.DiscordChannelID.Valid {
+		discordChannelID = &announcement.DiscordChannelID.String
+	}
+	var discordMessageID *string
+	if announcement.DiscordMessageID.Valid {
+		discordMessageID = &announcement.DiscordMessageID.String
+	}
+	dto := dto.Announcement{
+		Uuid:             announcement.Uuid,
+		Visibility:       announcement.Visibility,
+		AnnounceAt:       announcement.AnnounceAt,
+		DiscordChannelID: discordChannelID,
+		DiscordMessageID: discordMessageID,
+	}
+
+	c.JSON(http.StatusOK, dto)
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
