@@ -40,7 +40,6 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	id := c.Param("id")
 
 	announcement, err := h.announcementService.Get(ctx, id)
-
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -161,7 +160,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Router		/v1/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateAnnouncementParams
+	var params dto.UpdateAnnouncement
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
@@ -170,7 +169,34 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	if err := h.announcementService.Update(ctx, id, params); err != nil {
+	var chanID sql.NullString
+	if params.DiscordChannelID != nil {
+		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
+	}
+
+	var msgID sql.NullString
+	if params.DiscordMessageID != nil {
+		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
+	}
+
+	var vis sql.NullString
+	if params.Visibility != nil {
+		vis = sql.NullString{String: *params.Visibility, Valid: true}
+	}
+
+	var announceAt sql.NullInt64
+	if params.AnnounceAt != nil {
+		announceAt = sql.NullInt64{Int64: *params.AnnounceAt, Valid: true}
+	}
+	dbParams := dbmodels.UpdateAnnouncementParams{
+		Uuid:             params.Uuid,
+		Visibility:       vis,
+		AnnounceAt:       announceAt,
+		DiscordChannelID: chanID,
+		DiscordMessageID: msgID,
+	}
+
+	if err := h.announcementService.Update(ctx, id, dbParams); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})
