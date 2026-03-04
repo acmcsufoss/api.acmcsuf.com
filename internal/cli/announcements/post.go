@@ -7,14 +7,13 @@ import (
 	"net/http"
 	"strings"
 
-
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -107,7 +106,7 @@ func postForm() (*dto.Announcement, error) {
 	}
 
 	// HACK: These conversions won't be necessary once we start using DTO models here
-	
+
 	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
 	if err != nil {
 		return nil, err

@@ -5,9 +5,9 @@ package handlers
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
-	"fmt"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
@@ -113,13 +113,12 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	var chanID sql.NullString 
+	var chanID sql.NullString
 	if params.DiscordChannelID != nil {
 		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
 	}
-	
 
-	var msgID sql.NullString 
+	var msgID sql.NullString
 	if params.DiscordMessageID != nil {
 		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
 	}
@@ -130,7 +129,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		DiscordChannelID: chanID,
 		DiscordMessageID: msgID,
 	}
-	
+
 	fmt.Println("DTO ->", params, "\nDBMODEL->", dbParams)
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, dbParams); err != nil {
