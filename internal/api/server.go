@@ -9,7 +9,10 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	_ "modernc.org/sqlite"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/sqlite3"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
@@ -28,6 +31,23 @@ func Run(ctx context.Context) {
 		log.Fatal(err)
 	}
 	defer closer()
+
+	// Apply db migrations
+	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
+	if err != nil {
+		log.Fatalf("could not create sqlite3 driver: %v\n", err)
+	}
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://sql/migrations",
+		"sqlite3",
+		driver,
+	)
+	if err != nil {
+		log.Fatalf("could not create migration instance: %v\n", err)
+	}
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatalf("could not run db migrations: %v\n", err)
+	}
 
 	// Now we init services & gin router, and then start the server
 	queries := dbmodels.New(db)
@@ -57,7 +77,7 @@ func Run(ctx context.Context) {
 }
 
 func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
-	db, err := sql.Open("sqlite", url)
+	db, err := sql.Open("sqlite3", url)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error opening SQLite database: %v", err)
 	}
@@ -66,18 +86,7 @@ func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
 		return nil, nil, fmt.Errorf("error connecting to database: %v", err)
 	}
 
-	// schemaBytes, err := os.ReadFile("internal/db/sql/schemas/schema.sql")
-	// if err != nil {
-	// 	return nil, nil, fmt.Errorf("error reading schema file: %v", err)
-	// }
-	//
-	// if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
-	// 	return nil, nil, fmt.Errorf("error initializing db schema: %v", err)
-	//
-	// }
-
 	return db, func() {
 		db.Close()
 	}, nil
-
 }

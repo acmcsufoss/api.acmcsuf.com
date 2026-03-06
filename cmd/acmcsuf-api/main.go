@@ -10,7 +10,6 @@ import (
 	"syscall"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api"
-	_ "modernc.org/sqlite"
 )
 
 var Version = "dev"
