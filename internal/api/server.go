@@ -16,6 +16,7 @@ import (
 	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
 
 // Run initializes the database, services, and router, then starts the server.
@@ -31,15 +32,33 @@ func Run(ctx context.Context) {
 
 	// Now we init services & gin router, and then start the server
 	queries := dbmodels.New(db)
-	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
-	boardService := services.NewBoardService(queries, db)
+	// ---- Repositories ----
+	announcementsRepo := repository.NewAnnouncementRepository(queries)
+	eventsRepo := repository.NewEventRepository(queries)
+	officerRepo := repository.NewOfficerRepository(queries)
+	positionRepo := repository.NewPositionRepository(queries)
+	tierRepo := repository.NewTierRepository(queries)
+
+	// ---- Services ----
+	announcementService := services.NewAnnouncementService(announcementsRepo)
+	eventsService := services.NewEventsService(eventsRepo)
+	officerService := services.NewOfficerService(officerRepo)
+	positionService := services.NewPositionService(positionRepo)
+	tierService := services.NewTierService(tierRepo)
+
 	router := gin.Default()
 	router.Use(mw.Cors(), mw.Ratelimiter())
 
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
-	routes.SetupV1(router, eventsService, announcementService, boardService)
+	routes.SetupV1(
+		router,
+		eventsService,
+		announcementService,
+		officerService,
+		positionService,
+		tierService,
+	)
 
 	go func() {
 		serverAddr := fmt.Sprintf("localhost:%s", cfg.Port)
@@ -79,5 +98,4 @@ func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
 	return db, func() {
 		db.Close()
 	}, nil
-
 }

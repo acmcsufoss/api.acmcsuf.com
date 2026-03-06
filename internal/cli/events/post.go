@@ -13,7 +13,6 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	// TODO: db params shouldn't be exposed here
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
@@ -44,18 +43,20 @@ var PostEvent = &cobra.Command{
 
 		if startAtString != "" {
 			var err error
-			payload.StartAt, err = utils.ByteSlicetoUnix([]byte(startAtString))
+			startAtUnix, err := utils.ByteSlicetoUnix([]byte(startAtString))
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
+			payload.StartAt = startAtUnix
 			if duration != "" {
 				var err error
-				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt, duration)
+				endAtUnix, err := utils.TimeAfterDuration(payload.StartAt, duration)
 				if err != nil {
 					fmt.Println(err)
 					return
 				}
+				payload.EndAt = endAtUnix
 			}
 		}
 

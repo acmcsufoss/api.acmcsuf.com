@@ -56,21 +56,34 @@ INSERT INTO
 position (
     oid,
     semester,
-    tier
+    tier,
+    full_name,
+    title,
+    team
 )
 VALUES
-(?, ?, ?)
+(?, ?, ?, ?, ?, ?)
 RETURNING oid, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
-	Oid      string `json:"oid"`
-	Semester string `json:"semester"`
-	Tier     int64  `json:"tier"`
+	Oid      string         `json:"oid"`
+	Semester string         `json:"semester"`
+	Tier     int64          `json:"tier"`
+	FullName string         `json:"full_name"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
 }
 
 func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
-	row := q.db.QueryRowContext(ctx, createPosition, arg.Oid, arg.Semester, arg.Tier)
+	row := q.db.QueryRowContext(ctx, createPosition,
+		arg.Oid,
+		arg.Semester,
+		arg.Tier,
+		arg.FullName,
+		arg.Title,
+		arg.Team,
+	)
 	var i Position
 	err := row.Scan(
 		&i.Oid,

@@ -3,10 +3,12 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,7 +28,7 @@ func NewAnnouncementHandler(announcementService services.AnnouncementServicer) *
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Announcement ID"
-//	@Success		200 {object} dbmodels.Announcement "Announcement details"
+//	@Success		200 {object} dto_request.Announcement "Announcement details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/announcements/{id} [get]
@@ -35,7 +37,6 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	id := c.Param("id")
 
 	announcement, err := h.announcementService.Get(ctx, id)
-
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -46,9 +47,10 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to retrieve announcement",
 		})
+		return
 	}
 
-	c.JSON(http.StatusOK, announcement)
+	c.JSON(http.StatusOK, mapper.ToAnnouncementDTO(&announcement))
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
@@ -73,15 +75,17 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateAnnouncementParams true "Announcement data"
+//	@Param			body body domain.Announcement true "Announcement data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/announcements [post]
 func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateAnnouncementParams
+	var params dto_request.Announcement
 
+	// fmt.Println(params)
+	fmt.Println(c.Request.Body)
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
@@ -90,7 +94,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	}
 
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, params); err != nil {
+	if err := h.announcementService.Create(ctx, mapper.ToAnnouncementDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})
@@ -111,7 +115,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "Announcement ID"
-// @Param		body body dbmodels.UpdateAnnouncementParams true "Updated announcement data"
+// @Param		body body domain.Announcement true "Updated announcement data"
 // @Success		200 {object} map[string]string "Success message"
 // @Failure		400 {object} map[string]string
 // @Failure		404 {object} map[string]string
@@ -119,16 +123,17 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Router		/v1/announcements/{id} [put]
 func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateAnnouncementParams
+	var params dto_request.UpdateAnnouncement
 	id := c.Param("id")
 
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
+		return
 	}
 
-	if err := h.announcementService.Update(ctx, id, params); err != nil {
+	if err := h.announcementService.Update(ctx, id, mapper.ToUpdateAnnouncementDomain(&params)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})

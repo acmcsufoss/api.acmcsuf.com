@@ -10,10 +10,10 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -68,8 +68,8 @@ func postAnnouncement(cfg *config.Config) {
 }
 
 // TODO: Use DTO models instaad of dbmodels
-func postForm() (*dbmodels.CreateAnnouncementParams, error) {
-	var payload dbmodels.CreateAnnouncementParams
+func postForm() (*dto_request.Announcement, error) {
+	var payload dto_request.Announcement
 	var err error
 	var (
 		announceAtStr string
@@ -110,8 +110,8 @@ func postForm() (*dbmodels.CreateAnnouncementParams, error) {
 	if err != nil {
 		return nil, err
 	}
-	payload.DiscordChannelID = utils.StringtoNullString(channelIDStr)
-	payload.DiscordMessageID = utils.StringtoNullString(messageIDStr)
+	payload.DiscordChannelID = &channelIDStr
+	payload.DiscordMessageID = &messageIDStr
 
 	return &payload, err
 }

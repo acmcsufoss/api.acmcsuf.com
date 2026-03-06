@@ -2,53 +2,60 @@ package services
 
 import (
 	"context"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"fmt"
 	"log"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/repository"
 )
 
 type AnnouncementServicer interface {
-	Service[dbmodels.Announcement, string, dbmodels.CreateAnnouncementParams,
-		dbmodels.UpdateAnnouncementParams]
+	Service[domain.Announcement, string, domain.UpdateAnnouncement]
 }
 
 type AnnouncementService struct {
-	q *dbmodels.Queries
+	announcementRepository repository.AnnouncementRepository
 }
 
 // compile time check
 var _ AnnouncementServicer = (*AnnouncementService)(nil)
 
-func NewAnnouncementService(q *dbmodels.Queries) *AnnouncementService {
-	return &AnnouncementService{q: q}
+func NewAnnouncementService(announcementRepository repository.AnnouncementRepository) *AnnouncementService {
+	return &AnnouncementService{announcementRepository: announcementRepository}
 }
 
-func (s *AnnouncementService) Get(ctx context.Context, uuid string) (dbmodels.Announcement, error) {
-	announcement, err := s.q.GetAnnouncement(ctx, uuid)
+func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Announcement, error) {
+	announcement, err := s.announcementRepository.GetByID(ctx, uuid)
 	if err != nil {
-		return dbmodels.Announcement{}, err
+		return domain.Announcement{}, err
 	}
 	return announcement, nil
 }
 
 func (s *AnnouncementService) Create(ctx context.Context,
-	params dbmodels.CreateAnnouncementParams) error {
-
-	if err := s.q.CreateAnnouncement(ctx, params); err != nil {
+	params domain.Announcement,
+) error {
+	if params.Uuid == "" {
+		fmt.Println("No id")
+		return fmt.Errorf("no unique identifier for announcement")
+	}
+	if err := s.announcementRepository.Create(ctx, params); err != nil {
+		fmt.Println("Error with creation:", params, ":", err)
 		return err
 	}
 	return nil
 }
 
 type AnnouncementFilter interface {
-	Apply(events []dbmodels.Announcement) []dbmodels.Announcement
+	Apply(events []domain.Announcement) []domain.Announcement
 }
 
 func (s *AnnouncementService) List(ctx context.Context,
-	filters ...any) ([]dbmodels.Announcement, error) {
-
-	announcements, err := s.q.GetAnnouncements(ctx)
+	filters ...any,
+) ([]domain.Announcement, error) {
+	announcements, err := s.announcementRepository.GetAll(ctx)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -62,9 +69,9 @@ func (s *AnnouncementService) List(ctx context.Context,
 }
 
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
-	params dbmodels.UpdateAnnouncementParams) error {
-
-	err := s.q.UpdateAnnouncement(ctx, params)
+	params domain.UpdateAnnouncement,
+) error {
+	err := s.announcementRepository.Update(ctx, params)
 	if err != nil {
 		log.Printf("Error updating announcement with UUID %s: %v", uuid, err)
 		return err
@@ -73,7 +80,7 @@ func (s *AnnouncementService) Update(ctx context.Context, uuid string,
 }
 
 func (s *AnnouncementService) Delete(ctx context.Context, uuid string) error {
-	err := s.q.DeleteAnnouncement(ctx, uuid)
+	err := s.announcementRepository.Delete(ctx, uuid)
 	if err != nil {
 		log.Printf("Error deleting announcement with UUID %s: %v", uuid, err)
 		return err
