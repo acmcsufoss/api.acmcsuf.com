@@ -7,6 +7,7 @@ require (
 	github.com/charmbracelet/fang v0.4.4
 	github.com/cli/browser v1.3.0
 	github.com/gin-gonic/gin v1.12.0
+	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/mattn/go-sqlite3 v1.14.34
 	github.com/spf13/cobra v1.10.2
 	github.com/swaggo/files v1.0.1
