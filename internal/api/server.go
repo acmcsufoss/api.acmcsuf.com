@@ -65,7 +65,7 @@ func Run(ctx context.Context) {
 		serverAddr := fmt.Sprintf(":%s", cfg.Port)
 		if cfg.Env == "development" {
 			// this binds the server to the loopback interface in dev mode for security reasons
-			serverAddr = fmt.Sprintf("localhost:%s", cfg.Port)
+			serverAddr = "localhost:" + cfg.Port
 		}
 
 		if err := router.Run(serverAddr); err != nil {
