@@ -57,7 +57,7 @@ func Run(ctx context.Context) {
 }
 
 func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
-	db, err := sql.Open("sqlite", url)
+	db, err := sql.Open("sqlite3", url)
 	if err != nil {
 		return nil, nil, fmt.Errorf("error opening SQLite database: %v", err)
 	}
@@ -66,18 +66,7 @@ func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
 		return nil, nil, fmt.Errorf("error connecting to database: %v", err)
 	}
 
-	// schemaBytes, err := os.ReadFile("internal/db/sql/schemas/schema.sql")
-	// if err != nil {
-	// 	return nil, nil, fmt.Errorf("error reading schema file: %v", err)
-	// }
-	//
-	// if _, err := db.ExecContext(ctx, string(schemaBytes)); err != nil {
-	// 	return nil, nil, fmt.Errorf("error initializing db schema: %v", err)
-	//
-	// }
-
 	return db, func() {
 		db.Close()
 	}, nil
-
 }
