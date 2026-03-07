@@ -94,7 +94,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Announcement details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Announcement"
+                            "$ref": "#/definitions/dto.Announcement"
                         }
                     },
                     "404": {
@@ -1294,26 +1294,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dbmodels.Announcement": {
-            "type": "object",
-            "properties": {
-                "announce_at": {
-                    "type": "integer"
-                },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "visibility": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.CreateAnnouncementParams": {
             "type": "object",
             "properties": {
@@ -1380,14 +1360,23 @@ const docTemplate = `{
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
+                "full_name": {
+                    "type": "string"
+                },
                 "oid": {
                     "type": "string"
                 },
                 "semester": {
                     "type": "string"
                 },
+                "team": {
+                    "$ref": "#/definitions/sql.NullString"
+                },
                 "tier": {
                     "type": "integer"
+                },
+                "title": {
+                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },
@@ -1605,6 +1594,26 @@ const docTemplate = `{
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
+                }
+            }
+        },
+        "dto.Announcement": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "type": "integer"
+                },
+                "discord_channel_id": {
+                    "type": "string"
+                },
+                "discord_message_id": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
                 }
             }
         },
