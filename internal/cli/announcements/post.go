@@ -67,7 +67,6 @@ func postAnnouncement(cfg *config.Config) {
 	utils.PrettyPrintJSON(body)
 }
 
-// TODO: Use DTO models instaad of dbmodels
 func postForm() (*dto.Announcement, error) {
 	var payload dto.Announcement
 	var err error
@@ -104,8 +103,6 @@ func postForm() (*dto.Announcement, error) {
 	if err = form.Run(); err != nil {
 		return nil, err
 	}
-
-	// HACK: These conversions won't be necessary once we start using DTO models here
 
 	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
 	if err != nil {
