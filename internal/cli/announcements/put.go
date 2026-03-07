@@ -10,8 +10,8 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -35,7 +35,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 	resourceUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
 	// ----- Get announcement we want to update -----
-	var oldPayload dbmodels.CreateAnnouncementParams
+	var oldPayload dto.Announcement
 	if body, err := client.SendRequestAndReadResponse(resourceUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
@@ -51,13 +51,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 	}
 
 	// ----- Update found announceement -----
-	var oldPayload dto.UpdateAnnouncement
-	err = json.Unmarshal(body, &oldPayload)
-	if err != nil {
-		fmt.Println("Error: failed to unmarshal response body:", err)
-		return
-	}
-	newPayload, err := putForm(id)
+	newPayload, err := putForm(&oldPayload)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		return
@@ -77,15 +71,14 @@ func putAnnouncements(id string, cfg *config.Config) {
 	}
 }
 
-// TODO: Use DTO models instaad of dbmodels
-func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
+func putForm(oldPayload *dto.Announcement) (*dto.UpdateAnnouncement, error) {
 	var payload dto.UpdateAnnouncement
 	var err error
 	var (
 		visibilityStr string = oldPayload.Visibility
-		announceAtStr string
-		channelIDStr  string = oldPayload.DiscordChannelID.String
-		messageIDStr  string = oldPayload.DiscordMessageID.String
+		announceAtStr string // no default for now bc its stored as a raw timestamp
+		channelIDStr  string = *oldPayload.DiscordChannelID
+		messageIDStr  string = *oldPayload.DiscordMessageID
 	)
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -111,7 +104,6 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 	}
 
 	payload.Uuid = oldPayload.Uuid
-	// HACK: These conversions won't be necessary once we start using DTO models here
 	payload.Visibility = &visibilityStr
 	if announceAtStr != "" {
 		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
@@ -120,7 +112,6 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 		}
 		payload.AnnounceAt = &timestamp
 	}
-
 	payload.DiscordChannelID = &channelIDStr
 	payload.DiscordMessageID = &messageIDStr
 
