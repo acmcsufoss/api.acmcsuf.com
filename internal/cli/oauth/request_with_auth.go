@@ -36,6 +36,7 @@ type StoredToken struct {
 // enough to not run into port conflicts.
 const redirectAddr = ":61234"
 
+// Wraps `http.NewRequest` by performing the OAuth2 flow and setting the Authorization header
 func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request, error) {
 	cfg := config.Load()
 	req, err := http.NewRequest(method, targetURL, body)

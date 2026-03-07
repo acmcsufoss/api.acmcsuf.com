@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+	"os"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -32,81 +32,53 @@ func init() {
 }
 
 func putAnnouncements(id string, cfg *config.Config) {
-	resourceURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
+	resourceUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements", id)
 
-	// ----- Get the Announcement We Want to Update -----
-	client := http.Client{}
-	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, resourceURL.String(), nil)
-	if err != nil {
-		fmt.Printf("Error: couldn't retrieve resource %s: %s", id, err)
+	// ----- Get announcement we want to update -----
+	var oldPayload dto.Announcement
+	if body, err := client.SendRequestAndReadResponse(resourceUrl, false, http.MethodGet, nil); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSON(body)
+		}
 		return
-	}
-	getRes, err := client.Do(getReq)
-	if err != nil {
-		fmt.Println("Error: failed to send request:", err)
-		return
-	}
-	defer getRes.Body.Close()
-	if getRes.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", getRes.Status)
-		return
-	}
-	body, err := io.ReadAll(getRes.Body)
-	if err != nil {
-		fmt.Println("Error: failed to read response body:", err)
-		return
+	} else {
+		err = json.Unmarshal(body, &oldPayload)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Error: failed to unmarshal response body:", err)
+			return
+		}
 	}
 
 	// ----- Update found announceement -----
-	var oldPayload dto.UpdateAnnouncement
-	err = json.Unmarshal(body, &oldPayload)
+	newPayload, err := putForm(&oldPayload)
 	if err != nil {
-		fmt.Println("Error: failed to unmarshal response body:", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
 		return
 	}
-	newPayload, err := putForm(id)
+	b, err := json.Marshal(newPayload)
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Fprintln(os.Stderr, "Error: failed to marshal data:", err)
 		return
 	}
-	jsonPayload, err := json.Marshal(newPayload)
-	if err != nil {
-		fmt.Println("Error: failed to marshal data:", err)
-		return
-	}
-	putRequest, err := oauth.NewRequestWithAuth(http.MethodPut, resourceURL.String(), bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		fmt.Println("Error: failed to contruct request:", err)
-		return
-	}
-	putResponse, err := client.Do(putRequest)
-	if err != nil {
-		fmt.Println("Error: failed to send request: ", err)
-		return
-	}
-	defer putResponse.Body.Close()
 
-	if putResponse.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", putResponse.Status)
-		return
+	// Update remote resource with new data
+	if body, err := client.SendRequestAndReadResponse(resourceUrl, true, http.MethodPut,
+		bytes.NewBuffer(b)); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-	body, err = io.ReadAll(putResponse.Body)
-	if err != nil {
-		fmt.Println("Error: failed to read response body", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }
 
-// TODO: Use DTO models instaad of dbmodels
-func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
+func putForm(oldPayload *dto.Announcement) (*dto.UpdateAnnouncement, error) {
 	var payload dto.UpdateAnnouncement
 	var err error
 	var (
-		visibilityStr string
-		announceAtStr string
-		channelIDStr  string
-		messageIDStr  string
+		visibilityStr string = oldPayload.Visibility
+		announceAtStr string // no default for now bc its stored as a raw timestamp
+		channelIDStr  string = *oldPayload.DiscordChannelID
+		messageIDStr  string = *oldPayload.DiscordMessageID
 	)
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -131,8 +103,7 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 		return nil, err
 	}
 
-	payload.Uuid = uuid
-	// HACK: These conversions won't be necessary once we start using DTO models here
+	payload.Uuid = oldPayload.Uuid
 	payload.Visibility = &visibilityStr
 	if announceAtStr != "" {
 		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
@@ -141,7 +112,6 @@ func putForm(uuid string) (*dto.UpdateAnnouncement, error) {
 		}
 		payload.AnnounceAt = &timestamp
 	}
-
 	payload.DiscordChannelID = &channelIDStr
 	payload.DiscordMessageID = &messageIDStr
 
