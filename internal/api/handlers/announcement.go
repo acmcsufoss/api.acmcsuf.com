@@ -5,7 +5,6 @@ package handlers
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
-	"log"
 )
 
 type AnnouncementHandler struct {
@@ -130,9 +128,8 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		DiscordMessageID: msgID,
 	}
 
-	fmt.Println("DTO ->", params, "\nDBMODEL->", dbParams)
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, params); err != nil {
+	if err := h.announcementService.Create(ctx, dbParams); err != nil {
 		log.Printf("Failed to create announcement: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
