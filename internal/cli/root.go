@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
@@ -29,12 +31,8 @@ var Version = "dev"
 var overrides *config.ConfigOverrides
 
 var rootCmd = &cobra.Command{
-	Use:     os.Args[0],
-	Short:   "A CLI tool to help manage the API of the CSUF ACM website",
-	Version: Version,
-	Run: func(cmd *cobra.Command, args []string) {
-		// do nothing
-	},
+	Use:   os.Args[0],
+	Short: "A CLI tool to help manage the API of the CSUF ACM website",
 }
 
 // init() is a special function that always gets run before main
@@ -56,9 +54,8 @@ func init() {
 	rootCmd.AddCommand(officers.CLIOfficers)
 	rootCmd.AddCommand(config.ConfigCmd)
 
-	rootCmd.PersistentFlags().String("host", "", "Override configured/default host")
-	rootCmd.PersistentFlags().String("port", "", "Override configured/default port")
-	rootCmd.PersistentFlags().String("origin", "", "Override configured/default origin")
+	rootCmd.PersistentFlags().String("host", "", "API server hostname (overrides config)")
+	rootCmd.PersistentFlags().String("port", "", "API server port (overrides config)")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		overrides = &config.ConfigOverrides{
@@ -78,7 +75,7 @@ func Execute() exitCode {
 	// Logging the error, prefix is date, time, and what file the log is from
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
-	if err := rootCmd.Execute(); err != nil {
+	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(Version)); err != nil {
 		log.Println("Error:", err)
 		return exitError
 	}

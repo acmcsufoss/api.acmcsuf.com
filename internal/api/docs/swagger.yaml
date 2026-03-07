@@ -1,17 +1,4 @@
 definitions:
-  dbmodels.Announcement:
-    properties:
-      announce_at:
-        type: integer
-      discord_channel_id:
-        $ref: '#/definitions/sql.NullString'
-      discord_message_id:
-        $ref: '#/definitions/sql.NullString'
-      uuid:
-        type: string
-      visibility:
-        type: string
-    type: object
   dbmodels.CreateAnnouncementParams:
     properties:
       announce_at:
@@ -55,12 +42,18 @@ definitions:
     type: object
   dbmodels.CreatePositionParams:
     properties:
+      full_name:
+        type: string
       oid:
         type: string
       semester:
         type: string
+      team:
+        $ref: '#/definitions/sql.NullString'
       tier:
         type: integer
+      title:
+        $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.CreateTierParams:
     properties:
@@ -203,6 +196,19 @@ definitions:
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
+  dto.Announcement:
+    properties:
+      announce_at:
+        type: integer
+      discord_channel_id:
+        type: string
+      discord_message_id:
+        type: string
+      uuid:
+        type: string
+      visibility:
+        type: string
+    type: object
   sql.NullBool:
     properties:
       bool:
@@ -317,7 +323,7 @@ paths:
         "200":
           description: Announcement details
           schema:
-            $ref: '#/definitions/dbmodels.Announcement'
+            $ref: '#/definitions/dto.Announcement'
         "404":
           description: Not Found
           schema:
