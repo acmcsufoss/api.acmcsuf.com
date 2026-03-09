@@ -14,13 +14,14 @@ http://localhost:8080/docs
 This is often the easiest way to explore the API and understand what endpoints are available without needing to dive into the source code. You can also use it to make test requests without needing to construct `curl` or `xh` commands manually.
 
 ## Using `xh` and `curl`
+These examples use `xh`, but you can get the equivalent `curl` command by appending the `--curl` flag to any example command.
 
 ### Sending a POST request
 This creates a resource in the database that we can later query for with a GET request.  
 The OAuth2 middleware expects a `dev-token` passed with the Authorization middleware while in dev mode. See `oauth-authenticaion.md` for details.
 ```sh
 xh post :8080/v1/board/officers -A bearer -a dev-token \
-full_nae="Bob" \
+full_name="Bob" \
 picture="example.com/picture.webp" \
 discord="discord.com/users/bob" \
 github="github.com/bob" \
