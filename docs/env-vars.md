@@ -8,7 +8,7 @@ many HTTP middleware logs appear. Separate from manual logging.
     - Default: `debug` (change in production)
 - `ENV`: One of `production` or `development`. While in development mode,
 authentication with Discord OAuth2 is bypassed. You may need to change this value to
-`production` if testing Auth.
+`production` if testing Auth. Dev mode also forces the server to only bind to the machine's loopback interface (localhost).
     - Default: `development` (change in production)
 - `PORT`: Port to run on.
     - Default: `8080`
