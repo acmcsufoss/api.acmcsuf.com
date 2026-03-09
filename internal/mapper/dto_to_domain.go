@@ -4,10 +4,14 @@ import (
 	"time"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
-	dto_request "github.com/acmcsufoss/api.acmcsuf.com/internal/dto/request"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
-func ToAnnouncementDomain(a *dto_request.Announcement) domain.Announcement {
+func ToAnnouncementDomain(a *dto.Announcement) domain.Announcement {
+	if a == nil {
+		return domain.Announcement{}
+	}
+
 	return domain.Announcement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
@@ -17,11 +21,16 @@ func ToAnnouncementDomain(a *dto_request.Announcement) domain.Announcement {
 	}
 }
 
-func ToUpdateAnnouncementDomain(a *dto_request.UpdateAnnouncement) domain.UpdateAnnouncement {
+func ToUpdateAnnouncementDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnouncement {
+	if a == nil {
+		return domain.UpdateAnnouncement{}
+	}
+
 	var announceAt time.Time
 	if a.AnnounceAt != nil {
 		announceAt = time.Unix(*a.AnnounceAt, 0)
 	}
+
 	return domain.UpdateAnnouncement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
@@ -31,7 +40,11 @@ func ToUpdateAnnouncementDomain(a *dto_request.UpdateAnnouncement) domain.Update
 	}
 }
 
-func ToEventDomain(e *dto_request.Event) domain.Event {
+func ToEventDomain(e *dto.Event) domain.Event {
+	if e == nil {
+		return domain.Event{}
+	}
+
 	return domain.Event{
 		Uuid:     e.Uuid,
 		Location: e.Location,
@@ -42,7 +55,11 @@ func ToEventDomain(e *dto_request.Event) domain.Event {
 	}
 }
 
-func ToUpdateEventDomain(e *dto_request.UpdateEvent) domain.UpdateEvent {
+func ToUpdateEventDomain(e *dto.UpdateEvent) domain.UpdateEvent {
+	if e == nil {
+		return domain.UpdateEvent{}
+	}
+
 	startAt := time.Unix(*e.StartAt, 0)
 	endAt := time.Unix(*e.EndAt, 0)
 	return domain.UpdateEvent{
@@ -55,7 +72,11 @@ func ToUpdateEventDomain(e *dto_request.UpdateEvent) domain.UpdateEvent {
 	}
 }
 
-func ToOfficerDomain(o *dto_request.Officer) domain.Officer {
+func ToOfficerDomain(o *dto.Officer) domain.Officer {
+	if o == nil {
+		return domain.Officer{}
+	}
+
 	return domain.Officer{
 		FullName: o.FullName,
 		Picture:  o.Picture,
@@ -64,7 +85,11 @@ func ToOfficerDomain(o *dto_request.Officer) domain.Officer {
 	}
 }
 
-func ToUpdateOfficerDomain(o *dto_request.UpdateOfficer) domain.UpdateOfficer {
+func ToUpdateOfficerDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
+	if o == nil {
+		return domain.UpdateOfficer{}
+	}
+
 	return domain.UpdateOfficer{
 		FullName: o.FullName,
 		Picture:  o.Picture,
@@ -73,7 +98,11 @@ func ToUpdateOfficerDomain(o *dto_request.UpdateOfficer) domain.UpdateOfficer {
 	}
 }
 
-func ToPositionDomain(p *dto_request.Position) domain.Position {
+func ToPositionDomain(p *dto.Position) domain.Position {
+	if p == nil {
+		return domain.Position{}
+	}
+
 	return domain.Position{
 		Oid:      p.Oid,
 		Semester: p.Semester,
@@ -84,7 +113,11 @@ func ToPositionDomain(p *dto_request.Position) domain.Position {
 	}
 }
 
-func ToUpdatePositionDomain(p *dto_request.UpdatePosition) domain.UpdatePosition {
+func ToUpdatePositionDomain(p *dto.UpdatePosition) domain.UpdatePosition {
+	if p == nil {
+		return domain.UpdatePosition{}
+	}
+
 	return domain.UpdatePosition{
 		Oid:      p.Oid,
 		Semester: p.Semester,
@@ -95,7 +128,11 @@ func ToUpdatePositionDomain(p *dto_request.UpdatePosition) domain.UpdatePosition
 	}
 }
 
-func ToTierDomain(t *dto_request.Tier) domain.Tier {
+func ToTierDomain(t *dto.Tier) domain.Tier {
+	if t == nil {
+		return domain.Tier{}
+	}
+
 	return domain.Tier{
 		Tier:   t.Tier,
 		Title:  t.Title,
@@ -104,7 +141,11 @@ func ToTierDomain(t *dto_request.Tier) domain.Tier {
 	}
 }
 
-func ToUpdateTierDomain(t *dto_request.UpdateTier) domain.UpdateTier {
+func ToUpdateTierDomain(t *dto.UpdateTier) domain.UpdateTier {
+	if t == nil {
+		return domain.UpdateTier{}
+	}
+
 	return domain.UpdateTier{
 		Tier:   t.Tier,
 		Title:  t.Title,
