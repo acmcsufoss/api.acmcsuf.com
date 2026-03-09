@@ -23,22 +23,26 @@
         package = pkgs.callPackage ./nix/package.nix {
           version = version;
         };
-
         acmcsuf-api = {
           type = "app";
           program = "${package}/bin/acmcsuf-api";
         };
+        acmcsuf-cli = {
+          type = "app";
+          program = "${package}/bin/acmcsuf-cli";
+        };
       in {
-        packages.default = package;
-        devShells.default = pkgs.callPackage ./nix/shell.nix {};
+        devShells = {
+          default = pkgs.callPackage ./nix/shell.nix {};
+          full = pkgs.callPackage ./nix/shell.nix {full = true;};
+          ci = pkgs.callPackage ./nix/shell.nix {isCI = true;};
+        };
 
+        packages.default = package;
         apps = {
           default = acmcsuf-api;
           acmcsuf-api = acmcsuf-api;
-          acmcsuf-cli = {
-            type = "app";
-            program = "${package}/bin/acmcsuf-cli";
-          };
+          acmcsuf-cli = acmcsuf-cli;
         };
       }
     );
