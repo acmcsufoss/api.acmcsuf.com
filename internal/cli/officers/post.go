@@ -39,13 +39,9 @@ func postOfficer(cfg *config.Config) {
 	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers")
 
 	payload, err := postForm()
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-	}
+	cobra.CheckErr(err)
 	b, err := json.Marshal(payload)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error: failed to marshal JSON:", err)
-	}
+	cobra.CheckErr(fmt.Sprintf("failed to marshal JSON: %v", err))
 
 	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
