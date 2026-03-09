@@ -39,7 +39,7 @@ func putOfficer(id string, cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(url, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
-			utils.PrettyPrintJSON(body)
+			utils.PrettyPrintJSONErr(body)
 		}
 		return
 	} else {

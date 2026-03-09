@@ -47,7 +47,7 @@ func postOfficer(cfg *config.Config) {
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
-			utils.PrettyPrintJSON(body)
+			utils.PrettyPrintJSONErr(body)
 		}
 	} else {
 		utils.PrettyPrintJSON(body)

@@ -34,7 +34,7 @@ func deleteOfficer(id string, cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(deleteUrl, true, http.MethodDelete, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
-			utils.PrettyPrintJSON(body)
+			utils.PrettyPrintJSONErr(body)
 		}
 	} else {
 		utils.PrettyPrintJSON(body)

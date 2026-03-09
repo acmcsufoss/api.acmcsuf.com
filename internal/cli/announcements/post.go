@@ -44,8 +44,7 @@ func postAnnouncement(cfg *config.Config) {
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
-			// NOTE: This isn't going to stderr. Should probably fix that at some point
-			utils.PrettyPrintJSON(body)
+			utils.PrettyPrintJSONErr(body)
 		}
 	} else {
 		utils.PrettyPrintJSON(body)

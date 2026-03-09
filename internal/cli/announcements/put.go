@@ -66,6 +66,9 @@ func putAnnouncements(id string, cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(resourceUrl, true, http.MethodPut,
 		bytes.NewBuffer(b)); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSONErr(body)
+		}
 	} else {
 		utils.PrettyPrintJSON(body)
 	}

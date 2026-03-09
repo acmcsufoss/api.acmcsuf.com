@@ -33,7 +33,7 @@ func getAnnouncement(uuid string, cfg *config.Config) {
 	if body, err := client.SendRequestAndReadResponse(getUrl, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
-			utils.PrettyPrintJSON(body)
+			utils.PrettyPrintJSONErr(body)
 		}
 	} else {
 		utils.PrettyPrintJSON(body)
