@@ -8,7 +8,7 @@ If you prefer to use a GUI, Postman is a popular option.
 The API includes comprehensive OpenAPI2 (Swagger) documentation that provides an interactive interface for exploring and testing endpoints. When the server is running, you can access the Swagger UI at:
 
 ```
-http://localhost:8080/swagger
+http://localhost:8080/docs
 ```
 
 This is often the easiest way to explore the API and understand what endpoints are available without needing to dive into the source code. You can also use it to make test requests without needing to construct `curl` or `xh` commands manually.
