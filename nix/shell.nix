@@ -15,6 +15,7 @@
   go-migrate,
   sqlite,
   sqlite-web,
+  isCI ? false,
   full ? false,
 }: let
   go-migrate-sqlite = go-migrate.overrideAttrs (oldAttrs: {
@@ -27,23 +28,26 @@ in
         go
         gopls # Go language server
         go-tools
-        delve # Go debugger
         sqlc # compiles SQL queries to Go code
-        air # run dev server with hot reload
         sqlfluff # SQL linter
         gnumake
-        xh
         go-swag
-        cobra-cli
+      ]
+      # Dev tools not required in CI go here
+      ++ lib.optionals (!isCI) [
+        air # run dev server with hot reload
+        xh
         go-migrate-sqlite
         sqlite
+        cobra-cli
+        delve # Go debugger
       ]
+      # Heavyweight or rarely used tools go here
       ++ lib.optionals full [
-        # Heavyweight/optional dependencies
         sqlite-web
       ];
 
-    shellHook = ''
+    shellHook = lib.optionalString (!isCI) ''
       if [ ! -f .env ]; then
         echo ".env file not found! Creating one from .env.example for you..."
         cp .env.example .env

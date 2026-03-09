@@ -35,6 +35,7 @@
         devShells = {
           default = pkgs.callPackage ./nix/shell.nix {};
           full = pkgs.callPackage ./nix/shell.nix {full = true;};
+          ci = pkgs.callPackage ./nix/shell.nix {isCI = true;};
         };
 
         packages.default = package;
