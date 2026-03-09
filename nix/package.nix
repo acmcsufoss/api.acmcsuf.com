@@ -4,7 +4,7 @@
   buildGoModule,
 }:
 buildGoModule {
-  name = "acmcsuf-api";
+  pname = "acmcsuf-api";
   src = ../.;
   version = version;
   vendorHash = "sha256-XCzKPPjCbO2Kp9XGZ94PpPedyJhFAs+ys+gna66jDSE=";
