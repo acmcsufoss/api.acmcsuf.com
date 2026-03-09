@@ -23,6 +23,7 @@ jobs:
               - "**/*.sql"
               - "go.mod"
               - "go.sum"
+              - "Makefile"
 
       - name: Install Nix
         if: steps.filter.outputs.source_code == 'true'
@@ -43,6 +44,10 @@ jobs:
       - name: Build
         if: steps.filter.outputs.source_code == 'true'
         run: nix develop -c make build
+
+      - name: Generated Files check
+        if: steps.filter.outputs.source_code == 'true'
+        run: nix develop -c bash -c "make generate && git diff --exit-code"
 
       - name: Test
         if: steps.filter.outputs.source_code == 'true'
