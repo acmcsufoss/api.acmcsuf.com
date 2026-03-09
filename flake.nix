@@ -30,7 +30,10 @@
         };
       in {
         packages.default = package;
-        devShells.default = pkgs.callPackage ./nix/shell.nix {};
+        devShells = {
+          default = pkgs.callPackage ./nix/shell.nix {};
+          full = pkgs.callPackage ./nix/shell.nix {full = true;};
+        };
 
         apps = {
           default = acmcsuf-api;
