@@ -47,6 +47,10 @@ in
         sqlite-web
       ];
 
+    env = {
+      GOROOT = "${go}/share/go";
+    };
+
     shellHook = lib.optionalString (!isCI) ''
       if [ ! -f .env ]; then
         echo ".env file not found! Creating one from .env.example for you..."
