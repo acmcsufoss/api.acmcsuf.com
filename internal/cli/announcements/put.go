@@ -50,7 +50,7 @@ func putAnnouncements(id string, cfg *config.Config) {
 		}
 	}
 
-	// ----- Update found announceement -----
+	// ----- Update found announcement -----
 	newPayload, err := putForm(&oldPayload)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
