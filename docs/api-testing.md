@@ -1,6 +1,6 @@
 # Testing the API
 
-Once the api is running (via `air` or running it manually), you can use `xh` or `curl` to test the api from the command line. We recommend using `xh` over `curl`, and it's provided in the dev shell.
+Once the api is running (via `air` or running it manually), you can use `xh` or `curl` to test the api from the command line. We recommend using `xh` over `curl`, and it's provided in the dev shell.  
 If you prefer to use a GUI, Postman is a popular option.
 
 ## Using OpenAPI/Swagger Documentation
