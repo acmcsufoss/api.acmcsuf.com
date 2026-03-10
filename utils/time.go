@@ -2,7 +2,6 @@ package utils
 
 import (
 	"fmt"
-	"net/http"
 	"regexp"
 	"strconv"
 	"time"
@@ -14,15 +13,6 @@ func FormatUnix(unixTime int64) string {
 	return t.Format("01/02/06 03:04PM")
 }
 
-func CheckConnection(url string) error {
-	_, err := http.Get(url)
-	if err != nil {
-		return fmt.Errorf("\x1b[1;37;41mUNABLE TO CONNECT\x1b[0m | %s\n\t↳ %v",
-			"Did you forget to start the server?",
-			err)
-	}
-	return nil
-}
 
 func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 	startUnix := time.Unix(startTime, 0)
