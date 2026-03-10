@@ -79,7 +79,6 @@ func Execute() exitCode {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(Version)); err != nil {
-		log.Println("Error:", err)
 		return exitError
 	}
 

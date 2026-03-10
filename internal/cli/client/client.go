@@ -41,6 +41,7 @@ func SendRequestAndReadResponse(url *url.URL, enableAuth bool, method string, bo
 func CheckConnection(url string) error {
 	_, err := http.Get(url)
 	if err != nil {
+		// fang/lipgloss lowk nukes this custom formatting
 		return fmt.Errorf("\x1b[1;37;41mUNABLE TO CONNECT\x1b[0m | %s\n\t↳ %v",
 			"Did you forget to start the server?",
 			err)
