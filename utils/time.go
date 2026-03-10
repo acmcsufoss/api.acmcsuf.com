@@ -13,7 +13,6 @@ func FormatUnix(unixTime int64) string {
 	return t.Format("01/02/06 03:04PM")
 }
 
-
 func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 	startUnix := time.Unix(startTime, 0)
 
