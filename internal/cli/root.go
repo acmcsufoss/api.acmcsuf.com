@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/officers"
@@ -66,7 +67,9 @@ func init() {
 		if err != nil {
 			return fmt.Errorf("failed to load config: %w", err)
 		}
-		return nil
+
+		url := config.GetBaseURL(config.Cfg).JoinPath("health")
+		return client.CheckConnection(url.String())
 	}
 }
 
@@ -76,7 +79,6 @@ func Execute() exitCode {
 	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	if err := fang.Execute(context.Background(), rootCmd, fang.WithVersion(Version)); err != nil {
-		log.Println("Error:", err)
 		return exitError
 	}
 
