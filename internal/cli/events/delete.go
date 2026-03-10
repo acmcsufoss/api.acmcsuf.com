@@ -2,16 +2,13 @@ package events
 
 import (
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"os"
 
-	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -20,32 +17,8 @@ var DeleteEvent = &cobra.Command{
 	Short: "Delete an event with its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var uuidVal string
-		cmd.Flags().Set("id", uuidVal)
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		err = huh.NewInput().
-			Title("ACMCSUF-CLI Event Delete:").
-			Description("Please enter the event's uuid:").
-			Prompt("> ").
-			Value(&uuidVal).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		cmd.Flags().Set("id", uuidVal)
-		id, _ := cmd.Flags().GetString("id")
-		deleteEvent(id, config.Cfg)
+		uuid, _ := cmd.Flags().GetString("id")
+		deleteEvent(uuid, config.Cfg)
 	},
 }
 
@@ -55,42 +28,14 @@ func init() {
 }
 
 func deleteEvent(id string, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
+	deleteURL := config.GetBaseURL(cfg).JoinPath("v1", "events", id)
 
-	deleteURL := baseURL.JoinPath(fmt.Sprint("/v1/events/", id))
-
-	// ----- Delete Request -----
-	request, err := oauth.NewRequestWithAuth(http.MethodDelete, deleteURL.String(), nil)
-	if err != nil {
-		fmt.Println("Error making delete request:", err)
-		return
+	if body, err := client.SendRequestAndReadResponse(deleteURL, true, http.MethodDelete, nil); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSONErr(body)
+		}
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-
-	client := &http.Client{}
-	response, err := client.Do(request)
-	if err != nil {
-		fmt.Println("Error with delete response:", err)
-		return
-	}
-	defer response.Body.Close()
-
-	// ----- Read Response Info -----
-	if response.StatusCode != http.StatusOK {
-		fmt.Println("Response status:", response.Status)
-		return
-	}
-
-	body, err := io.ReadAll(response.Body)
-	if err != nil {
-		fmt.Println("Error reading delete response body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }
