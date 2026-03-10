@@ -1,7 +1,5 @@
 # OAuth Authentication
 
-The ACM CSUF API uses Discord OAuth2 for authentication and authorization. This ensures that only authorized Discord server members with appropriate roles can access protected API endpoints.
-
 ## Overview
 
 The API implements a role-based access control (RBAC) system that:
@@ -14,7 +12,7 @@ The API implements a role-based access control (RBAC) system that:
 
 ### Server-Side: API Middleware
 
-The API uses Discord OAuth2 middleware defined in [`internal/api/middleware/oauth.go`](../internal/api/middleware/oauth.go) to protect all `/v1` routes.
+The API uses Discord OAuth2 middleware defined in [`internal/api/middleware/oauth.go`](../internal/api/middleware/oauth.go) to protect state-changing `/v1` routes.
 
 **How it works:**
 
@@ -60,13 +58,13 @@ The CLI client (defined in [`utils/requests/request_with_auth.go`](../utils/requ
    └────┬────┘                                  └──────┬──────┘
         │                                              │
         │ 1. Start local callback server               │
-        │    on random port (e.g., :61234)             │
+        │    on hardcoded port (:61234)                │
         │                                              │
         │ 2. Open browser with OAuth URL               │
         ├──────────────────────────────────────────>   │
         │   https://discord.com/oauth2/authorize       │
         │   ?client_id=...                             │
-        │   &redirect_uri=http://localhost:54321       │
+        │   &redirect_uri=http://localhost:61234       │
         │   &scope=identify                            │
         │   &response_type=code                        │
         │                                              │
@@ -74,7 +72,7 @@ The CLI client (defined in [`utils/requests/request_with_auth.go`](../utils/requ
         │                                              │
         │ 3. Discord redirects to callback             │
         │ <──────────────────────────────────────────  │
-        │    http://localhost:54321/?code=...          │
+        │    http://localhost:61234/?code=...          │
         │                                              │
         │ 4. Exchange code for token                   │
         ├──────────────────────────────────────────>   │
@@ -108,23 +106,7 @@ See [`developer-docs/env-vars.md`](./env-vars.md) for the complete list, but OAu
 
 ## Development Mode
 
-During development (`ENV=development`), authentication is bypassed:
-
-**API Server:**
-```go
-// Any request with this header will bypass OAuth
-Authorization: Bearer dev-token
-```
-
-**CLI Client:**
-```go
-// Automatically uses dev-token when ENV=development
-// No OAuth flow occurs, no tokens are exchanged
-```
-
-To test the actual OAuth flow during development, temporarily set `ENV=production` in your `.env` file.
-
-## Testing with OAuth
+During development (`ENV=development`), authentication is bypassed by supplying `dev-token` to the `Authorization header`. The CLI will do this automatically.
 
 ### Using the CLI
 
@@ -141,20 +123,17 @@ The CLI handles OAuth automatically:
 
 ### Using curl/xh with OAuth
 
-If testing manually with `curl` or `xh`, you need a valid Discord access token:
-
+You need to manually pass the token when using a standard http client:
 ```bash
 # Development mode (no real auth needed)
-xh :8080/v1/events Authorization:"Bearer dev-token"
-
-# Production mode (need real Discord token)
-xh :8080/v1/events Authorization:"Bearer <discord_access_token>"
+xh post :8080/v1/events --auth-type bearer --auth dev-token
+# Or with short flags:
+xh post :8080/v1/events -A bearer -a dev-token
+# Or defining the header manually:
+xh :8080/v1/events Authorization:'Bearer dev-token'
 ```
 
-To get a real Discord access token for testing:
-1. Run the CLI once to complete the OAuth flow
-2. Extract the token from `~/.config/acmcsuf-cli/token.json`
-3. Use that token in your curl/xh commands
+To get a real Discord access token for testing, run the OAuth flow with the CLI and extract the token from `~/.config/acmcsuf-cli/token.json`
 
 ### Token Expiry
 
@@ -162,14 +141,6 @@ Discord access tokens expire after a period (typically 1 week). When a token exp
 
 **CLI**: The OAuth flow automatically re-runs on the next command
 **Manual testing**: You'll receive a `401 Unauthorized` response and need a new token
-
-## Security Considerations
-
-1. **Never commit tokens**: Token files (`~/.config/acmcsuf-cli/token.json`) contain sensitive credentials
-2. **HTTPS in production**: The API should only run behind HTTPS in production to protect tokens in transit
-3. **Client secrets**: Keep `DISCORD_CLIENT_SECRET` secure and never commit to git
-4. **Rate limiting**: The middleware caches role information for 5 minutes to respect Discord's rate limits
-5. **Token storage**: CLI tokens are stored with `0600` permissions (read/write for owner only)
 
 ## Role Configuration
 

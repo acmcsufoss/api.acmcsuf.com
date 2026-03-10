@@ -1,5 +1,6 @@
 {
   mkShell,
+  lib,
   go,
   gopls,
   delve,
@@ -7,48 +8,54 @@
   air,
   sqlfluff,
   gnumake,
-  curl,
   xh,
-  jq,
   go-swag,
   cobra-cli,
   go-tools,
   go-migrate,
   sqlite,
   sqlite-web,
-}:
-
-let
-	go-migrate-sqlite = go-migrate.overrideAttrs (oldAttrs: {
-		tags = [ "sqlite3" ];
-	});
+  isCI ? false,
+  full ? false,
+}: let
+  go-migrate-sqlite = go-migrate.overrideAttrs (oldAttrs: {
+    tags = ["sqlite3"];
+  });
 in
-mkShell {
-  packages = [
-    go
-    gopls # Go language server
-    go-tools
-    delve # Go debugger
-    sqlc # compiles SQL queries to Go code
-    air # run dev server with hot reload
-    sqlfluff # SQL linter
-    gnumake
-    curl
-    xh
-    jq
-    go-swag
-    cobra-cli
-    go-migrate-sqlite
-    sqlite
-    sqlite-web
-  ];
+  mkShell {
+    packages =
+      [
+        go
+        gopls # Go language server
+        go-tools
+        sqlc # compiles SQL queries to Go code
+        sqlfluff # SQL linter
+        gnumake
+        go-swag
+      ]
+      # Dev tools not required in CI go here
+      ++ lib.optionals (!isCI) [
+        air # run dev server with hot reload
+        xh
+        go-migrate-sqlite
+        sqlite
+        cobra-cli
+        delve # Go debugger
+      ]
+      # Heavyweight or rarely used tools go here
+      ++ lib.optionals full [
+        sqlite-web
+      ];
 
-  shellHook = ''
-    if [ ! -f .env ]; then
-      echo ".env file not found! Creating one from .env.example for you..."
-      cp .env.example .env
-    fi
-    echo -e "\e[32mLoaded nix dev shell\e[0m"
-    export GOROOT="${go}/share/go"
-  '';
-}
+    env = {
+      GOROOT = "${go}/share/go";
+    };
+
+    shellHook = lib.optionalString (!isCI) ''
+      if [ ! -f .env ]; then
+        echo ".env file not found! Creating one from .env.example for you..."
+        cp .env.example .env
+      fi
+      echo -e "\e[32mLoaded nix dev shell\e[0m"
+    '';
+  }

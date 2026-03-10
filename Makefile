@@ -10,8 +10,6 @@ GO_DEPS := $(GO_SOURCES) go.mod go.sum
 MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
-DOCS_DEPS := $(wildcard internal/api/handlers/*.go)
-DOCS_TARGET := internal/api/docs/docs.go
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
 SQLC_TARGET := internal/api/dbmodels/models.go
 
@@ -25,7 +23,7 @@ build: api cli ## Build the api and cli binaries
 
 api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
-$(BIN_DIR)/$(API_NAME): $(GO_DEPS) $(SQLC_TARGET)
+$(BIN_DIR)/$(API_NAME): $(GO_DEPS) sqlc
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 
@@ -35,10 +33,12 @@ $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
-generate: $(DOCS_TARGET) $(SQLC_TARGET) ## Generate all necessary files with
+generate: swag sqlc ## Generate all necessary files
 
-$(DOCS_TARGET): $(DOCS_DEPS)
+swag: ## Generate OpenAPI docs
 	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/dbmodels -o internal/api/docs --parseDependency
+
+sqlc: $(SQLC_TARGET) ## Generate dbmodels package with sqlc
 
 $(SQLC_TARGET): $(SQLC_DEPS)
 	sqlc generate
@@ -47,7 +47,7 @@ fmt: ## Format all go files
 	@go fmt ./...
 
 check: ## Run static analysis on all go files
-	staticcheck -f stylish ./...	
+	staticcheck -f stylish ./...
 
 test: check ## Run all tests
 	go test ./...
