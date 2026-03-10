@@ -1,18 +1,18 @@
 package announcements
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"strings"
+	"os"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
@@ -27,44 +27,28 @@ var PostAnnouncement = &cobra.Command{
 }
 
 func postAnnouncement(cfg *config.Config) {
+	postUrl := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
+
 	payload, err := postForm()
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
 		return
 	}
-
-	jsonPayload, err := json.Marshal(payload)
+	b, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Println("Error: could not marshal JSON:", err)
+		fmt.Fprintln(os.Stderr, "Error: could not marshal JSON:", err)
 		return
 	}
 
-	postURL := config.GetBaseURL(cfg).JoinPath("v1", "announcements")
-	client := http.Client{}
-	req, err := oauth.NewRequestWithAuth(http.MethodPost, postURL.String(), strings.NewReader(string(jsonPayload)))
-	if err != nil {
-		fmt.Println("Error: could not create request:", err)
-		return
+	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
+		bytes.NewBuffer(b)); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSONErr(body)
+		}
+	} else {
+		utils.PrettyPrintJSON(body)
 	}
-
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println("Error: could not send request:", err)
-		return
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		fmt.Println("Error: HTTP", res.Status)
-		return
-	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println("Error: could not read response body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
 }
 
 func postForm() (*dto.Announcement, error) {
@@ -111,5 +95,5 @@ func postForm() (*dto.Announcement, error) {
 	payload.DiscordChannelID = &channelIDStr
 	payload.DiscordMessageID = &messageIDStr
 
-	return &payload, err
+	return &payload, nil
 }

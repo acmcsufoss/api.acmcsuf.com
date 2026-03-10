@@ -5,7 +5,6 @@ package handlers
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -129,9 +128,9 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		DiscordMessageID: msgID,
 	}
 
-	fmt.Println("DTO ->", params, "\nDBMODEL->", dbParams)
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, dbParams); err != nil {
+		log.Printf("Failed to create announcement: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
 		})
