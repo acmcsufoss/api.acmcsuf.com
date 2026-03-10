@@ -1,381 +1,126 @@
 package events
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
-	"net/url"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/oauth"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
 var PutEvents = &cobra.Command{
-	Use:   "put",
-	Short: "Used to update an event",
+	Use:   "put --id <uuid>",
+	Short: "Update an existing event by its id",
 
 	Run: func(cmd *cobra.Command, args []string) {
-		var uuidVal string
-		cmd.Flags().Set("id", uuidVal)
-		err := huh.NewForm().Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		err = huh.NewInput().
-			Title("ACMCSUF-CLI Event Put:").
-			Description("Please enter the event's ID:").
-			Prompt("> ").
-			Value(&uuidVal).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		cmd.Flags().Set("id", uuidVal)
-
-		// CLI for url
 		id, _ := cmd.Flags().GetString("id")
-
-		payload := dbmodels.CreateEventParams{}
-		payload.Uuid, _ = cmd.Flags().GetString("uuid")
-		payload.Location, _ = cmd.Flags().GetString("location")
-		startAtString, _ := cmd.Flags().GetString("startat")
-		durationString, _ := cmd.Flags().GetString("duration")
-		payload.IsAllDay, _ = cmd.Flags().GetBool("allday")
-		payload.Host, _ = cmd.Flags().GetString("host")
-
-		if startAtString != "" {
-			var err error
-			payload.StartAt, err = utils.ByteSlicetoUnix([]byte(startAtString))
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-			if durationString != "" {
-				var err error
-				payload.EndAt, err = utils.TimeAfterDuration(payload.StartAt, durationString)
-				if err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
-		}
-
-		changedFlags := eventFlags{
-			uuid:     cmd.Flags().Lookup("uuid").Changed,
-			location: cmd.Flags().Lookup("location").Changed,
-			startat:  cmd.Flags().Lookup("startat").Changed,
-			duration: cmd.Flags().Lookup("duration").Changed,
-			isallday: cmd.Flags().Lookup("isallday").Changed,
-			host:     cmd.Flags().Lookup("host").Changed,
-		}
-
-		updateEvent(id, &payload, changedFlags, config.Cfg)
+		putEvents(id, config.Cfg)
 	},
 }
 
 func init() {
-	// URL Flags
-	PutEvents.Flags().String("id", "", "Event to update")
-	PutEvents.Flags().String("urlhost", "127.0.0.1", "Custom host")
-	PutEvents.Flags().String("port", "8080", "Custom port")
-
-	// Payload flags
-	PutEvents.Flags().StringP("uuid", "u", "", "Set uuid of new event")
-	PutEvents.Flags().StringP("location", "l", "", "Set location of new event")
-	PutEvents.Flags().StringP("startat", "s", "", "Set the start time of new event (Format: 03:04:05PM 01/02/06)")
-	PutEvents.Flags().StringP("duration", "d", "", "Set the end time of new event (Format: 03:04:05)")
-	PutEvents.Flags().StringP("host", "H", "", "Set host of new event")
-	PutEvents.Flags().BoolP("isallday", "a", false, "Set if new event is all day")
-
-	// This flag is neccessary
+	PutEvents.Flags().String("id", "", "Get an event by its id")
 	PutEvents.MarkFlagRequired("id")
 }
 
-func updateEvent(id string, payload *dbmodels.CreateEventParams, changedFlags eventFlags, cfg *config.Config) {
-	baseURL := &url.URL{
-		Scheme: "http",
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
-	}
+func putEvents(id string, cfg *config.Config) {
+	resourceURL := config.GetBaseURL(cfg).JoinPath("v1", "events", id)
 
-	if err := utils.CheckConnection(baseURL.JoinPath("/health").String()); err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	if id == "" {
-		fmt.Println("Event id required for put!")
-		return
-	}
-
-	// ----- Retrieve payload -----
-	client := &http.Client{}
-
-	retrievalURL := baseURL.JoinPath(fmt.Sprint("v1/events/", id))
-	getReq, err := oauth.NewRequestWithAuth(http.MethodGet, retrievalURL.String(), nil)
-	if err != nil {
-		fmt.Printf("Error retrieving %s: %s", id, err)
-		return
-	}
-
-	getRes, err := client.Do(getReq)
-	if err != nil {
-		fmt.Println("Error getting request:", err)
-		return
-	}
-	defer getRes.Body.Close()
-
-	if getRes.StatusCode != http.StatusOK {
-		fmt.Println("get response status:", getRes.Status)
-		return
-	}
-
-	body, err := io.ReadAll(getRes.Body)
-	if err != nil {
-		fmt.Println("Error reading response body:", err)
-		return
-	}
-
-	var oldpayload dbmodels.CreateEventParams
-	err = json.Unmarshal(body, &oldpayload)
-	if err != nil {
-		fmt.Println("error unmarshalling previous event data:", err)
-		return
-	}
-
-	scanner := bufio.NewScanner(os.Stdin)
-
-	// ----- Change the event -----
-	// Note: We want to PUT the payload, not old payload
-	// payload values are empty if user did not input a value in the command line
-
-	// ----- uuid -----
-	for {
-		if payload.Uuid == "" {
-			changeTheEventUuid, err := utils.ChangePrompt("uuid", oldpayload.Uuid, scanner, "event")
-			if err != nil {
-				fmt.Println(err) // Custom errors in changePrompt()
-				continue
-			}
-
-			if changeTheEventUuid != nil {
-				payload.Uuid = string(changeTheEventUuid)
-			} else {
-				payload.Uuid = oldpayload.Uuid
-			}
+	var oldPayload dbmodels.CreateEventParams
+	if body, err := client.SendRequestAndReadResponse(resourceURL, false, http.MethodGet, nil); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSONErr(body)
 		}
-		break
+		return
+	} else {
+		err = json.Unmarshal(body, &oldPayload)
+		cobra.CheckErr(err)
 	}
 
-	// ----- Location -----
-	for {
-		if changedFlags.location {
-			break
+	newPayload, err := putForm(&oldPayload)
+	cobra.CheckErr(err)
+	b, err := json.Marshal(newPayload)
+	cobra.CheckErr(err)
+
+	if body, err := client.SendRequestAndReadResponse(resourceURL, true, http.MethodPut,
+		bytes.NewBuffer(b)); err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		if body != nil {
+			utils.PrettyPrintJSONErr(body)
 		}
-		changeTheEventLocation, err := utils.ChangePrompt("location", oldpayload.Location, scanner, "event")
+	} else {
+		utils.PrettyPrintJSON(body)
+	}
+}
+
+func putForm(oldPayload *dbmodels.CreateEventParams) (*dbmodels.UpdateEventParams, error) {
+	var payload dbmodels.UpdateEventParams
+	var err error
+	var (
+		locationStr string = oldPayload.Location
+		startAtStr  string
+		endAtStr    string
+		isAllDay    bool   = oldPayload.IsAllDay
+		hostStr     string = oldPayload.Host
+	)
+
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Title("Location").
+				Value(&locationStr).
+				Validate(forms.ValidateNonEmpty()),
+			huh.NewInput().
+				Title("Starts At\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Leave empty to keep existing value").
+				Value(&startAtStr),
+			huh.NewInput().
+				Title("Ends At\n"+
+					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
+					"Leave empty to keep existing value").
+				Value(&endAtStr),
+			huh.NewConfirm().
+				Title("All day event?").
+				Value(&isAllDay),
+			huh.NewInput().
+				Title("Host").
+				Value(&hostStr).
+				Validate(forms.ValidateNonEmpty()),
+		),
+	)
+	if err = form.Run(); err != nil {
+		return nil, err
+	}
+
+	payload.Uuid = oldPayload.Uuid
+	payload.Location = utils.StringtoNullString(locationStr)
+	payload.IsAllDay = utils.BooltoNullBool(isAllDay)
+	payload.Host = utils.StringtoNullString(hostStr)
+	if startAtStr != "" {
+		timestamp, err := utils.ByteSlicetoUnix([]byte(startAtStr))
 		if err != nil {
-			fmt.Println(err)
-			continue
+			return nil, err
 		}
-
-		if changeTheEventLocation != nil {
-			payload.Location = string(changeTheEventLocation)
-		} else {
-			payload.Location = oldpayload.Location
-		}
-		break
+		payload.StartAt = utils.Int64toNullInt64(timestamp)
 	}
-
-	// ----- Start time -----
-	for {
-		if changedFlags.startat {
-			break
-		}
-		changeTheEventStartAt, err := utils.ChangePrompt("start time (format: 01/02/06 03:04PM)", utils.FormatUnix(oldpayload.StartAt), scanner, "event")
+	if endAtStr != "" {
+		timestamp, err := utils.ByteSlicetoUnix([]byte(endAtStr))
 		if err != nil {
-			fmt.Println(err)
-			continue
+			return nil, err
 		}
-
-		if changeTheEventStartAt != nil {
-			payload.StartAt, err = utils.ByteSlicetoUnix(changeTheEventStartAt)
-			if err != nil {
-				fmt.Println("Error with reading start integer:", err)
-				continue
-			}
-		} else {
-			payload.StartAt = oldpayload.StartAt
-		}
-		break
+		payload.EndAt = utils.Int64toNullInt64(timestamp)
 	}
 
-	// ----- End time (Duration) -----
-	for {
-		if changedFlags.duration {
-			break
-		}
-		changeTheEventEndAt, err := utils.ChangePrompt("end time (format: 01/02/06 03:04 )", utils.FormatUnix(oldpayload.EndAt), scanner, "event")
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if changeTheEventEndAt != nil {
-			payload.EndAt, err = utils.ByteSlicetoUnix(changeTheEventEndAt)
-			if err != nil {
-				fmt.Println("Error with reading end integer:", err)
-				continue
-			}
-		} else {
-			payload.EndAt = oldpayload.EndAt
-		}
-		break
-	}
-
-	// ----- All day -----
-	// This is kind of awkward but I don't know have a workaround at the moment
-	for {
-		if changedFlags.isallday {
-			break
-		}
-
-		changeTheEventAllDay, err := utils.ChangePrompt("all day status", strconv.FormatBool(oldpayload.IsAllDay), scanner, "event")
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if changeTheEventAllDay != nil {
-			newAllDayBuffer := scanner.Bytes()
-			payload.IsAllDay, err = utils.YesOrNo(newAllDayBuffer, scanner)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-		} else {
-			payload.IsAllDay = oldpayload.IsAllDay
-		}
-		break
-	}
-
-	// ----- Host -----
-	for {
-		if changedFlags.host {
-			break
-		}
-		changeTheEventHost, err := utils.ChangePrompt("host", oldpayload.Host, scanner, "event")
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if changeTheEventHost != nil {
-			payload.Host = string(changeTheEventHost)
-		} else {
-			payload.Host = oldpayload.Host
-		}
-		break
-	}
-
-	// ----- PUT the payload -----
-
-	updatePayload := dbmodels.UpdateEventParams{
-		Uuid:     payload.Uuid,
-		Location: utils.StringtoNullString(payload.Location),
-		StartAt:  utils.Int64toNullInt64(payload.StartAt),
-		EndAt:    utils.Int64toNullInt64(payload.EndAt),
-		IsAllDay: utils.BooltoNullBool(payload.IsAllDay),
-		Host:     utils.StringtoNullString(payload.Host),
-	}
-
-	// Confirmation
-	for {
-		var option string
-		description := "Is your event data correct?\n" + utils.PrintStruct(payload)
-		err := huh.NewSelect[string]().
-			Title("ACMCSUF-CLI Event Put:").
-			Description(description).
-			Options(
-				huh.NewOption("Yes", "yes"),
-				huh.NewOption("No", "n"),
-			).
-			Value(&option).
-			Run()
-		if err != nil {
-			if err == huh.ErrUserAborted {
-				fmt.Println("User canceled the form — exiting.")
-			}
-			fmt.Println("Uh oh:", err)
-			os.Exit(1)
-		}
-		scanner := bufio.NewScanner(strings.NewReader(option))
-		scanner.Scan()
-		if err := scanner.Err(); err != nil {
-			fmt.Println("error scanning confirmation:", err)
-			continue
-		}
-
-		confirmationBuffer := scanner.Bytes()
-		confirmation, err := utils.YesOrNo(confirmationBuffer, scanner)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if !confirmation {
-			return
-		}
-
-		break
-	}
-
-	// ----- Put the Payload -----
-	newPayload, err := json.Marshal(updatePayload)
-	if err != nil {
-		fmt.Println("Error marshaling data:", err)
-		return
-	}
-
-	request, err := oauth.NewRequestWithAuth(http.MethodPut, retrievalURL.String(), bytes.NewBuffer(newPayload))
-	if err != nil {
-		fmt.Println("Problem with PUT:", err)
-		return
-	}
-
-	putResponse, err := client.Do(request)
-	if err != nil {
-		fmt.Println("Error with response:", err)
-		return
-	}
-	defer putResponse.Body.Close()
-
-	if putResponse.StatusCode != http.StatusOK {
-		fmt.Println("put response status:", putResponse.Status)
-		return
-	}
-
-	body, err = io.ReadAll(putResponse.Body)
-	if err != nil {
-		fmt.Println("Error with body:", err)
-		return
-	}
-	utils.PrettyPrintJSON(body)
+	return &payload, nil
 }
