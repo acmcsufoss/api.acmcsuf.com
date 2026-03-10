@@ -41,7 +41,7 @@ func postOfficer(cfg *config.Config) {
 	payload, err := postForm()
 	cobra.CheckErr(err)
 	b, err := json.Marshal(payload)
-	cobra.CheckErr(fmt.Sprintf("failed to marshal JSON: %v", err))
+	cobra.CheckErr(err)
 
 	if body, err := client.SendRequestAndReadResponse(postUrl, true, http.MethodPost,
 		bytes.NewBuffer(b)); err != nil {
