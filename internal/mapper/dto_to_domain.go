@@ -12,12 +12,22 @@ func ToAnnouncementDomain(a *dto.Announcement) domain.Announcement {
 		return domain.Announcement{}
 	}
 
+	var chanID *string
+	if a.DiscordChannelID != nil {
+		chanID = a.DiscordChannelID
+	}
+
+	var msgID *string
+	if a.DiscordChannelID != nil {
+		msgID = a.DiscordChannelID
+	}
+
 	return domain.Announcement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
 		AnnounceAt:       time.Unix(a.AnnounceAt, 0),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
+		DiscordChannelID: chanID,
+		DiscordMessageID: msgID,
 	}
 }
 
@@ -26,15 +36,16 @@ func ToUpdateAnnouncementDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnounce
 		return domain.UpdateAnnouncement{}
 	}
 
-	var announceAt time.Time
+	var announceAt *time.Time
 	if a.AnnounceAt != nil {
-		announceAt = time.Unix(*a.AnnounceAt, 0)
+		aA := time.Unix(*a.AnnounceAt, 0)
+		announceAt = &aA
 	}
 
 	return domain.UpdateAnnouncement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
-		AnnounceAt:       &announceAt,
+		AnnounceAt:       announceAt,
 		DiscordChannelID: a.DiscordChannelID,
 		DiscordMessageID: a.DiscordMessageID,
 	}
