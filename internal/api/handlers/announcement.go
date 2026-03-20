@@ -11,6 +11,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -70,6 +71,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		DiscordMessageID: discordMessageID,
 	}
 
+	// response dto btw, no domain here
 	c.JSON(http.StatusOK, dto)
 }
 
@@ -111,22 +113,33 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
+	// DA -> Domain Announcement
+	fmt.Println("PARAM -> DOMAIN")
+	DA := mapper.ToAnnouncementDomain(&params)
+	fmt.Println("-> ", DA)
 	var chanID sql.NullString
-	if params.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
+	if DA.DiscordChannelID != nil {
+		chanID = sql.NullString{String: *DA.DiscordChannelID, Valid: true}
 	}
 
 	var msgID sql.NullString
-	if params.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
+	if DA.DiscordMessageID != nil {
+		msgID = sql.NullString{String: *DA.DiscordMessageID, Valid: true}
 	}
+
+	fmt.Println("UUID:", DA.Uuid)
+	fmt.Println("VIS:", DA.Visibility)
+	fmt.Println("ANCAT:", DA.AnnounceAt.Unix())
+	fmt.Println("CHAN:", chanID)
+	fmt.Println("MSG:", msgID)
 	dbParams := dbmodels.CreateAnnouncementParams{
-		Uuid:             params.Uuid,
-		Visibility:       params.Visibility,
-		AnnounceAt:       params.AnnounceAt,
+		Uuid:             DA.Uuid,
+		Visibility:       DA.Visibility,
+		AnnounceAt:       DA.AnnounceAt.Unix(),
 		DiscordChannelID: chanID,
 		DiscordMessageID: msgID,
 	}
+	fmt.Println("DB -> ", dbParams)
 
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, dbParams); err != nil {
@@ -168,27 +181,29 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
+	DA := mapper.ToUpdateAnnouncementDomain(&params)
+
 	var chanID sql.NullString
-	if params.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
+	if DA.DiscordChannelID != nil {
+		chanID = sql.NullString{String: *DA.DiscordChannelID, Valid: true}
 	}
 
 	var msgID sql.NullString
-	if params.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
+	if DA.DiscordMessageID != nil {
+		msgID = sql.NullString{String: *DA.DiscordMessageID, Valid: true}
 	}
 
 	var vis sql.NullString
-	if params.Visibility != nil {
-		vis = sql.NullString{String: *params.Visibility, Valid: true}
+	if DA.Visibility != nil {
+		vis = sql.NullString{String: *DA.Visibility, Valid: true}
 	}
 
 	var announceAt sql.NullInt64
-	if params.AnnounceAt != nil {
-		announceAt = sql.NullInt64{Int64: *params.AnnounceAt, Valid: true}
+	if DA.AnnounceAt != nil {
+		announceAt = sql.NullInt64{Int64: DA.AnnounceAt.Unix(), Valid: true}
 	}
 	dbParams := dbmodels.UpdateAnnouncementParams{
-		Uuid:             params.Uuid,
+		Uuid:             DA.Uuid,
 		Visibility:       vis,
 		AnnounceAt:       announceAt,
 		DiscordChannelID: chanID,
