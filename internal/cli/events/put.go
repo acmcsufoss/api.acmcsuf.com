@@ -28,7 +28,7 @@ var PutEvents = &cobra.Command{
 }
 
 func init() {
-	PutEvents.Flags().String("id", "", "Get an event by its id")
+	PutEvents.Flags().String("id", "", "ID of the event to update")
 	PutEvents.MarkFlagRequired("id")
 }
 
