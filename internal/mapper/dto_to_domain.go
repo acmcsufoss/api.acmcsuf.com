@@ -7,27 +7,18 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
+// --- announcement ---
 func ToAnnouncementDomain(a *dto.Announcement) domain.Announcement {
 	if a == nil {
 		return domain.Announcement{}
 	}
 
-	var chanID *string
-	if a.DiscordChannelID != nil {
-		chanID = a.DiscordChannelID
-	}
-
-	var msgID *string
-	if a.DiscordChannelID != nil {
-		msgID = a.DiscordChannelID
-	}
-
 	return domain.Announcement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
-		AnnounceAt:       time.Unix(a.AnnounceAt, 0),
-		DiscordChannelID: chanID,
-		DiscordMessageID: msgID,
+		AnnounceAt:       unixToTime(a.AnnounceAt),
+		DiscordChannelID: a.DiscordChannelID,
+		DiscordMessageID: a.DiscordMessageID,
 	}
 }
 
@@ -36,21 +27,16 @@ func ToUpdateAnnouncementDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnounce
 		return domain.UpdateAnnouncement{}
 	}
 
-	var announceAt *time.Time
-	if a.AnnounceAt != nil {
-		aA := time.Unix(*a.AnnounceAt, 0)
-		announceAt = &aA
-	}
-
 	return domain.UpdateAnnouncement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
-		AnnounceAt:       announceAt,
+		AnnounceAt:       unixToTimePtr(a.AnnounceAt),
 		DiscordChannelID: a.DiscordChannelID,
 		DiscordMessageID: a.DiscordMessageID,
 	}
 }
 
+// --- event ---
 func ToEventDomain(e *dto.Event) domain.Event {
 	if e == nil {
 		return domain.Event{}
@@ -59,8 +45,8 @@ func ToEventDomain(e *dto.Event) domain.Event {
 	return domain.Event{
 		Uuid:     e.Uuid,
 		Location: e.Location,
-		StartAt:  time.Unix(e.StartAt, 0),
-		EndAt:    time.Unix(e.EndAt, 0),
+		StartAt:  unixToTime(e.StartAt),
+		EndAt:    unixToTime(e.EndAt),
 		IsAllDay: e.IsAllDay,
 		Host:     e.Host,
 	}
@@ -71,24 +57,24 @@ func ToUpdateEventDomain(e *dto.UpdateEvent) domain.UpdateEvent {
 		return domain.UpdateEvent{}
 	}
 
-	startAt := time.Unix(*e.StartAt, 0)
-	endAt := time.Unix(*e.EndAt, 0)
 	return domain.UpdateEvent{
 		Uuid:     e.Uuid,
 		Location: e.Location,
-		StartAt:  &startAt,
-		EndAt:    &endAt,
+		StartAt:  unixToTimePtr(e.StartAt),
+		EndAt:    unixToTimePtr(e.EndAt),
 		IsAllDay: e.IsAllDay,
 		Host:     e.Host,
 	}
 }
 
+// --- officer ---
 func ToOfficerDomain(o *dto.Officer) domain.Officer {
 	if o == nil {
 		return domain.Officer{}
 	}
 
 	return domain.Officer{
+		Uuid:     o.Uuid,
 		FullName: o.FullName,
 		Picture:  o.Picture,
 		Github:   o.Github,
@@ -102,6 +88,7 @@ func ToUpdateOfficerDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
 	}
 
 	return domain.UpdateOfficer{
+		Uuid:     o.Uuid,
 		FullName: o.FullName,
 		Picture:  o.Picture,
 		Github:   o.Github,
@@ -109,6 +96,7 @@ func ToUpdateOfficerDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
 	}
 }
 
+// --- position ---
 func ToPositionDomain(p *dto.Position) domain.Position {
 	if p == nil {
 		return domain.Position{}
@@ -139,6 +127,7 @@ func ToUpdatePositionDomain(p *dto.UpdatePosition) domain.UpdatePosition {
 	}
 }
 
+// --- tier ---
 func ToTierDomain(t *dto.Tier) domain.Tier {
 	if t == nil {
 		return domain.Tier{}
@@ -163,4 +152,17 @@ func ToUpdateTierDomain(t *dto.UpdateTier) domain.UpdateTier {
 		Tindex: t.Tindex,
 		Team:   t.Team,
 	}
+}
+
+// --- helpers ---
+func unixToTime(v int64) time.Time {
+	return time.Unix(v, 0)
+}
+
+func unixToTimePtr(v *int64) *time.Time {
+	if v == nil {
+		return nil
+	}
+	t := time.Unix(*v, 0)
+	return &t
 }

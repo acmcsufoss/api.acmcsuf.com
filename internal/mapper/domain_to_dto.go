@@ -8,6 +8,7 @@ import (
 
 // File deticated to mapping domain models to dto response models
 
+// --- announcements ---
 func ToAnnouncementDTO(a *domain.Announcement) dto.Announcement {
 	return dto.Announcement{
 		Uuid:             a.Uuid,
@@ -18,6 +19,7 @@ func ToAnnouncementDTO(a *domain.Announcement) dto.Announcement {
 	}
 }
 
+// --- event ---
 func ToEventEventDTO(e *domain.Event) dto.Event {
 	return dto.Event{
 		Uuid:     e.Uuid,
@@ -29,6 +31,7 @@ func ToEventEventDTO(e *domain.Event) dto.Event {
 	}
 }
 
+// --- offcer ---
 func ToOfficerDTO(o domain.Officer) dto.Officer {
 	return dto.Officer{
 		Uuid:     o.Uuid,
@@ -39,6 +42,7 @@ func ToOfficerDTO(o domain.Officer) dto.Officer {
 	}
 }
 
+// --- postition ---
 func ToPositionDTO(p *domain.Position) dto.Position {
 	return dto.Position{
 		Oid:      p.Oid,
@@ -50,6 +54,7 @@ func ToPositionDTO(p *domain.Position) dto.Position {
 	}
 }
 
+// --- tier ---
 func ToTierDTO(t *domain.Tier) dto.Tier {
 	return dto.Tier{
 		Tier:   t.Tier,
