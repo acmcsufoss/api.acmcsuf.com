@@ -114,9 +114,9 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 	}
 
 	// DA -> Domain Announcement
-	fmt.Println("PARAM -> DOMAIN")
+
 	DA := mapper.ToAnnouncementDomain(&params)
-	fmt.Println("-> ", DA)
+
 	var chanID sql.NullString
 	if DA.DiscordChannelID != nil {
 		chanID = sql.NullString{String: *DA.DiscordChannelID, Valid: true}
@@ -127,11 +127,6 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		msgID = sql.NullString{String: *DA.DiscordMessageID, Valid: true}
 	}
 
-	fmt.Println("UUID:", DA.Uuid)
-	fmt.Println("VIS:", DA.Visibility)
-	fmt.Println("ANCAT:", DA.AnnounceAt.Unix())
-	fmt.Println("CHAN:", chanID)
-	fmt.Println("MSG:", msgID)
 	dbParams := dbmodels.CreateAnnouncementParams{
 		Uuid:             DA.Uuid,
 		Visibility:       DA.Visibility,
@@ -139,7 +134,6 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		DiscordChannelID: chanID,
 		DiscordMessageID: msgID,
 	}
-	fmt.Println("DB -> ", dbParams)
 
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, dbParams); err != nil {
