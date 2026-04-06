@@ -1,18 +1,15 @@
 package mapper
 
 import (
-	"database/sql"
-	"time"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
-// File for converting  Doamin models into Database models
+// File for converting Doamin models into Database models
 
 // ---- Event Converter ----
 
-func convertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParams {
+func ToDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParams {
 	return dbmodels.CreateEventParams{
 		Uuid:     dEvent.Uuid,
 		Location: dEvent.Location,
@@ -23,7 +20,7 @@ func convertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParam
 	}
 }
 
-func convertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
+func ToDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
 	// -- sql null values --
 	loc := stringToNullString(dEvent.Location)
 
@@ -46,7 +43,7 @@ func convertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEven
 }
 
 // ---- Officer Converter ----
-func convertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOfficerParams {
+func ToDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOfficerParams {
 	// -- sql null values --
 	pic := stringToNullString(dOfficer.Picture)
 
@@ -63,7 +60,7 @@ func convertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOffi
 	}
 }
 
-func convertDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
+func ToDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
 	// -- sql null values --
 	pic := stringToNullString(dOfficer.Picture)
 
@@ -81,7 +78,7 @@ func convertDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.Upda
 }
 
 // ---- Announcement Converter ----
-func convertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmodels.CreateAnnouncementParams {
+func ToDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmodels.CreateAnnouncementParams {
 	// -- sql null values --
 	chanID := stringToNullString(dAnnouncement.DiscordChannelID)
 
@@ -95,7 +92,7 @@ func convertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 	}
 }
 
-func convertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
+func ToDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
 	// -- sql null values --
 	vis := stringToNullString(dAnnouncement.Visibility)
 
@@ -115,7 +112,7 @@ func convertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement
 }
 
 // ---- Tier Converter ----
-func convertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
+func ToDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
 	// -- sql null values --
 	title := stringToNullString(dTier.Title)
 
@@ -131,7 +128,7 @@ func convertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
 	}
 }
 
-func convertDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierParams {
+func ToDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierParams {
 	// -- sql null values --
 	title := stringToNullString(dTier.Title)
 
@@ -148,7 +145,7 @@ func convertDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierPar
 }
 
 // ---- Position Converter ----
-func convertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreatePositionParams {
+func ToDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreatePositionParams {
 	// -- sql null types --
 	title := stringToNullString(dPosition.Title)
 
@@ -164,7 +161,7 @@ func convertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreateP
 	}
 }
 
-func convertDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.UpdatePositionParams {
+func ToDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.UpdatePositionParams {
 	// -- sql null types --
 	title := stringToNullString(dPosition.Title)
 
@@ -180,53 +177,10 @@ func convertDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.U
 	}
 }
 
-func convertDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeletePositionParams {
+func ToDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeletePositionParams {
 	return dbmodels.DeletePositionParams{
 		Oid:      dPosition.Oid,
 		Semester: dPosition.Semester,
 		Tier:     int64(dPosition.Tier),
 	}
-}
-
-// ---- Functions to check validity ----
-func intToNullInt64(i *int) sql.NullInt64 {
-	var val int64
-	var valid bool
-	if i != nil {
-		deref := *i
-		val = int64(deref)
-	}
-
-	return sql.NullInt64{Int64: val, Valid: valid}
-}
-
-func stringToNullString(s *string) sql.NullString {
-	var val string
-	var valid bool
-	if s != nil {
-		val = *s
-	}
-
-	return sql.NullString{String: val, Valid: valid}
-}
-
-func boolToNullBool(b *bool) sql.NullBool {
-	var val bool
-	var valid bool
-	if b != nil {
-		val = *b
-	}
-
-	return sql.NullBool{Bool: val, Valid: valid}
-}
-
-func timeToNullInt64(t *time.Time) sql.NullInt64 {
-	var val int64
-	var valid bool
-	if t != nil {
-		deref := *t
-		val = deref.Unix()
-	}
-
-	return sql.NullInt64{Int64: val, Valid: valid}
 }

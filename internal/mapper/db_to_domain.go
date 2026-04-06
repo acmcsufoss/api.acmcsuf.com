@@ -1,7 +1,6 @@
 package mapper
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
@@ -11,7 +10,7 @@ import (
 // File for converting Database models into Doamin models
 
 // ---- Event Converter ----
-func convertDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
+func ToDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
 	return domain.Event{
 		Uuid:     dbEvent.Uuid,
 		Location: dbEvent.Location,
@@ -23,7 +22,7 @@ func convertDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
 }
 
 // ---- Officer Converter ----
-func convertDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
+func ToDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 	return domain.Officer{
 		Uuid:     dbOfficer.Uuid,
 		FullName: dbOfficer.FullName,
@@ -34,7 +33,7 @@ func convertDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 }
 
 // ---- Announcement Converter ----
-func convertDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.Announcement {
+func ToDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.Announcement {
 	return domain.Announcement{
 		Uuid:             dbAnnouncement.Uuid,
 		Visibility:       dbAnnouncement.Visibility,
@@ -45,7 +44,7 @@ func convertDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.
 }
 
 // ---- Tier Converter ----
-func convertDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
+func ToDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
 	// note: &int(exp) / &(int)(exp) is illegal, so it is split into v and then &v
 	v := int(dbTier.TIndex.Int64)
 	return domain.Tier{
@@ -57,7 +56,7 @@ func convertDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
 }
 
 // ---- Position Converter ----
-func convertDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
+func ToDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
 	return domain.Position{
 		Oid:      dbPosition.Oid,
 		Semester: dbPosition.Semester,
@@ -66,47 +65,4 @@ func convertDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
 		Title:    &dbPosition.Team.String,
 		Team:     &dbPosition.Team.String,
 	}
-}
-
-// ---- Functions to check validity ----
-func intToNullInt64(i *int) sql.NullInt64 {
-	var val int64
-	var valid bool
-	if i != nil {
-		deref := *i
-		val = int64(deref)
-	}
-
-	return sql.NullInt64{Int64: val, Valid: valid}
-}
-
-func stringToNullString(s *string) sql.NullString {
-	var val string
-	var valid bool
-	if s != nil {
-		val = *s
-	}
-
-	return sql.NullString{String: val, Valid: valid}
-}
-
-func boolToNullBool(b *bool) sql.NullBool {
-	var val bool
-	var valid bool
-	if b != nil {
-		val = *b
-	}
-
-	return sql.NullBool{Bool: val, Valid: valid}
-}
-
-func timeToNullInt64(t *time.Time) sql.NullInt64 {
-	var val int64
-	var valid bool
-	if t != nil {
-		deref := *t
-		val = deref.Unix()
-	}
-
-	return sql.NullInt64{Int64: val, Valid: valid}
 }
