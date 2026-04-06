@@ -31,7 +31,7 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Anno
 		return domain.Announcement{}, err
 	}
 
-	domainA := mapper.ToDBAnnouncementToDomain(announcement)
+	domainA := mapper.ConvertDBAnnouncementToDomain(announcement)
 
 	return domainA, nil
 }
@@ -39,7 +39,7 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Anno
 func (s *AnnouncementService) Create(ctx context.Context,
 	params domain.Announcement,
 ) error {
-	dbA := mapper.ToDomainToCreateDBAnnouncement(params)
+	dbA := mapper.ConvertDomainToCreateDBAnnouncement(params)
 	if err := s.q.CreateAnnouncement(ctx, dbA); err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 
 	domainAs := make([]domain.Announcement, len(result))
 	for i, elm := range result {
-		domainAs[i] = mapper.ToDBAnnouncementToDomain(elm)
+		domainAs[i] = mapper.ConvertDBAnnouncementToDomain(elm)
 	}
 	return domainAs, nil
 }
@@ -75,7 +75,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
 	params domain.UpdateAnnouncement,
 ) error {
-	dbA := mapper.ToDomainToUpdateDBAnnouncement(params)
+	dbA := mapper.ConvertDomainToUpdateDBAnnouncement(params)
 
 	err := s.q.UpdateAnnouncement(ctx, dbA)
 	if err != nil {

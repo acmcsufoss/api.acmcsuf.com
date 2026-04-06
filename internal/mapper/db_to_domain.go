@@ -10,7 +10,7 @@ import (
 // File for converting Database models into Doamin models
 
 // ---- Event Converter ----
-func ToDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
+func ConvertDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
 	return domain.Event{
 		Uuid:     dbEvent.Uuid,
 		Location: dbEvent.Location,
@@ -22,7 +22,7 @@ func ToDBEventToDomain(dbEvent dbmodels.Event) domain.Event {
 }
 
 // ---- Officer Converter ----
-func ToDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
+func ConvertDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 	return domain.Officer{
 		Uuid:     dbOfficer.Uuid,
 		FullName: dbOfficer.FullName,
@@ -33,7 +33,7 @@ func ToDBOfficerToDomain(dbOfficer dbmodels.Officer) domain.Officer {
 }
 
 // ---- Announcement Converter ----
-func ToDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.Announcement {
+func ConvertDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.Announcement {
 	return domain.Announcement{
 		Uuid:             dbAnnouncement.Uuid,
 		Visibility:       dbAnnouncement.Visibility,
@@ -44,7 +44,7 @@ func ToDBAnnouncementToDomain(dbAnnouncement dbmodels.Announcement) domain.Annou
 }
 
 // ---- Tier Converter ----
-func ToDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
+func ConvertDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
 	// note: &int(exp) / &(int)(exp) is illegal, so it is split into v and then &v
 	v := int(dbTier.TIndex.Int64)
 	return domain.Tier{
@@ -56,7 +56,7 @@ func ToDBTierToDomain(dbTier dbmodels.Tier) domain.Tier {
 }
 
 // ---- Position Converter ----
-func ToDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
+func ConvertDBPositionToDomain(dbPosition dbmodels.Position) domain.Position {
 	return domain.Position{
 		Oid:      dbPosition.Oid,
 		Semester: dbPosition.Semester,
