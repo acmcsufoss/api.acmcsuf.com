@@ -1,4 +1,4 @@
-package repository
+package mapper
 
 import (
 	"database/sql"

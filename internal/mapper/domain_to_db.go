@@ -1,4 +1,4 @@
-package repository
+package mapper
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
-// File for converting  Doamin models into Database models 
+// File for converting  Doamin models into Database models
 
 // ---- Event Converter ----
 
