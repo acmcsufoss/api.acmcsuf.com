@@ -22,15 +22,15 @@ func ConvertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParam
 
 func ConvertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
 	// -- sql null values --
-	loc := stringConvertNullString(dEvent.Location)
+	loc := stringToNullString(dEvent.Location)
 
-	start := timeConvertNullInt64(dEvent.StartAt)
+	start := timeToNullInt64(dEvent.StartAt)
 
-	end := timeConvertNullInt64(dEvent.EndAt)
+	end := timeToNullInt64(dEvent.EndAt)
 
-	allDay := boolConvertNullBool(dEvent.IsAllDay)
+	allDay := boolToNullBool(dEvent.IsAllDay)
 
-	host := stringConvertNullString(dEvent.Host)
+	host := stringToNullString(dEvent.Host)
 
 	return dbmodels.UpdateEventParams{
 		Uuid:     dEvent.Uuid,
@@ -82,7 +82,7 @@ func ConvertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 	// -- sql null values --
 	chanID := stringToNullString(dAnnouncement.DiscordChannelID)
 
-	msgID := stringConvertNullString(dAnnouncement.DiscordMessageID)
+	msgID := stringToNullString(dAnnouncement.DiscordMessageID)
 	return dbmodels.CreateAnnouncementParams{
 		Uuid:             dAnnouncement.Uuid,
 		Visibility:       dAnnouncement.Visibility,

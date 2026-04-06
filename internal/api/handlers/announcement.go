@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
@@ -55,24 +54,10 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	}
 
 	// NOTE: We won't have to do this once implement domain models
-	var discordChannelID *string
-	if announcement.DiscordChannelID.Valid {
-		discordChannelID = &announcement.DiscordChannelID.String
-	}
-	var discordMessageID *string
-	if announcement.DiscordMessageID.Valid {
-		discordMessageID = &announcement.DiscordMessageID.String
-	}
-	dto := dto.Announcement{
-		Uuid:             announcement.Uuid,
-		Visibility:       announcement.Visibility,
-		AnnounceAt:       announcement.AnnounceAt,
-		DiscordChannelID: discordChannelID,
-		DiscordMessageID: discordMessageID,
-	}
+	dtoA := mapper.ToAnnouncementDTO(&announcement)
 
 	// response dto btw, no domain here
-	c.JSON(http.StatusOK, dto)
+	c.JSON(http.StatusOK, dtoA)
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
@@ -113,30 +98,10 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	// DA -> Domain Announcement
-
-	DA := mapper.ToAnnouncementDomain(&params)
-
-	var chanID sql.NullString
-	if DA.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *DA.DiscordChannelID, Valid: true}
-	}
-
-	var msgID sql.NullString
-	if DA.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *DA.DiscordMessageID, Valid: true}
-	}
-
-	dbParams := dbmodels.CreateAnnouncementParams{
-		Uuid:             DA.Uuid,
-		Visibility:       DA.Visibility,
-		AnnounceAt:       DA.AnnounceAt.Unix(),
-		DiscordChannelID: chanID,
-		DiscordMessageID: msgID,
-	}
+	domainA := mapper.ToAnnouncementDomain(&params)
 
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, dbParams); err != nil {
+	if err := h.announcementService.Create(ctx, domainA); err != nil {
 		log.Printf("Failed to create announcement: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
@@ -175,36 +140,9 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	DA := mapper.ToUpdateAnnouncementDomain(&params)
+	domainA := mapper.ToUpdateAnnouncementDomain(&params)
 
-	var chanID sql.NullString
-	if DA.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *DA.DiscordChannelID, Valid: true}
-	}
-
-	var msgID sql.NullString
-	if DA.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *DA.DiscordMessageID, Valid: true}
-	}
-
-	var vis sql.NullString
-	if DA.Visibility != nil {
-		vis = sql.NullString{String: *DA.Visibility, Valid: true}
-	}
-
-	var announceAt sql.NullInt64
-	if DA.AnnounceAt != nil {
-		announceAt = sql.NullInt64{Int64: DA.AnnounceAt.Unix(), Valid: true}
-	}
-	dbParams := dbmodels.UpdateAnnouncementParams{
-		Uuid:             DA.Uuid,
-		Visibility:       vis,
-		AnnounceAt:       announceAt,
-		DiscordChannelID: chanID,
-		DiscordMessageID: msgID,
-	}
-
-	if err := h.announcementService.Update(ctx, id, dbParams); err != nil {
+	if err := h.announcementService.Update(ctx, id, domainA); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})
