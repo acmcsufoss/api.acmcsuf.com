@@ -47,3 +47,16 @@ func timeToNullInt64(t *time.Time) sql.NullInt64 {
 
 	return sql.NullInt64{Int64: val, Valid: valid}
 }
+
+// --- helpers ---
+func unixToTime(v int64) time.Time {
+	return time.Unix(v, 0)
+}
+
+func unixToTimePtr(v *int64) *time.Time {
+	if v == nil {
+		return nil
+	}
+	t := time.Unix(*v, 0)
+	return &t
+}

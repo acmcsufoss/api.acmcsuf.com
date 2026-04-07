@@ -1,14 +1,12 @@
 package mapper
 
 import (
-	"time"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
 // --- announcement ---
-func ToAnnouncementDomain(a *dto.Announcement) domain.Announcement {
+func AnnouncementDtoToDomain(a *dto.Announcement) domain.Announcement {
 	if a == nil {
 		return domain.Announcement{}
 	}
@@ -22,7 +20,7 @@ func ToAnnouncementDomain(a *dto.Announcement) domain.Announcement {
 	}
 }
 
-func ToUpdateAnnouncementDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnouncement {
+func UpdateAnnouncementDtoToDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnouncement {
 	if a == nil {
 		return domain.UpdateAnnouncement{}
 	}
@@ -37,7 +35,7 @@ func ToUpdateAnnouncementDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnounce
 }
 
 // --- event ---
-func ToEventDomain(e *dto.Event) domain.Event {
+func EventDtoToDomain(e *dto.Event) domain.Event {
 	if e == nil {
 		return domain.Event{}
 	}
@@ -52,7 +50,7 @@ func ToEventDomain(e *dto.Event) domain.Event {
 	}
 }
 
-func ToUpdateEventDomain(e *dto.UpdateEvent) domain.UpdateEvent {
+func UpdateEventDtoToDomain(e *dto.UpdateEvent) domain.UpdateEvent {
 	if e == nil {
 		return domain.UpdateEvent{}
 	}
@@ -68,7 +66,7 @@ func ToUpdateEventDomain(e *dto.UpdateEvent) domain.UpdateEvent {
 }
 
 // --- officer ---
-func ToOfficerDomain(o *dto.Officer) domain.Officer {
+func OfficerDtoToDomain(o *dto.Officer) domain.Officer {
 	if o == nil {
 		return domain.Officer{}
 	}
@@ -82,7 +80,7 @@ func ToOfficerDomain(o *dto.Officer) domain.Officer {
 	}
 }
 
-func ToUpdateOfficerDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
+func UpdateOfficerDtoToDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
 	if o == nil {
 		return domain.UpdateOfficer{}
 	}
@@ -97,7 +95,7 @@ func ToUpdateOfficerDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
 }
 
 // --- position ---
-func ToPositionDomain(p *dto.Position) domain.Position {
+func PositionDtoToDomain(p *dto.Position) domain.Position {
 	if p == nil {
 		return domain.Position{}
 	}
@@ -112,7 +110,7 @@ func ToPositionDomain(p *dto.Position) domain.Position {
 	}
 }
 
-func ToUpdatePositionDomain(p *dto.UpdatePosition) domain.UpdatePosition {
+func UpdatePositionDtoToDomain(p *dto.UpdatePosition) domain.UpdatePosition {
 	if p == nil {
 		return domain.UpdatePosition{}
 	}
@@ -128,7 +126,7 @@ func ToUpdatePositionDomain(p *dto.UpdatePosition) domain.UpdatePosition {
 }
 
 // --- tier ---
-func ToTierDomain(t *dto.Tier) domain.Tier {
+func TierDtoToDomain(t *dto.Tier) domain.Tier {
 	if t == nil {
 		return domain.Tier{}
 	}
@@ -141,7 +139,7 @@ func ToTierDomain(t *dto.Tier) domain.Tier {
 	}
 }
 
-func ToUpdateTierDomain(t *dto.UpdateTier) domain.UpdateTier {
+func UpdateTierDtoToDomain(t *dto.UpdateTier) domain.UpdateTier {
 	if t == nil {
 		return domain.UpdateTier{}
 	}
@@ -152,17 +150,4 @@ func ToUpdateTierDomain(t *dto.UpdateTier) domain.UpdateTier {
 		Tindex: t.Tindex,
 		Team:   t.Team,
 	}
-}
-
-// --- helpers ---
-func unixToTime(v int64) time.Time {
-	return time.Unix(v, 0)
-}
-
-func unixToTimePtr(v *int64) *time.Time {
-	if v == nil {
-		return nil
-	}
-	t := time.Unix(*v, 0)
-	return &t
 }

@@ -9,7 +9,7 @@ import (
 // File deticated to mapping domain models to dto response models
 
 // --- announcements ---
-func ToAnnouncementDTO(a *domain.Announcement) dto.Announcement {
+func AnnouncementDomainToDto(a *domain.Announcement) dto.Announcement {
 	return dto.Announcement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,
@@ -20,7 +20,7 @@ func ToAnnouncementDTO(a *domain.Announcement) dto.Announcement {
 }
 
 // --- event ---
-func ToEventEventDTO(e *domain.Event) dto.Event {
+func EventDomainToDto(e *domain.Event) dto.Event {
 	return dto.Event{
 		Uuid:     e.Uuid,
 		Location: e.Location,
@@ -32,7 +32,7 @@ func ToEventEventDTO(e *domain.Event) dto.Event {
 }
 
 // --- offcer ---
-func ToOfficerDTO(o domain.Officer) dto.Officer {
+func OfficerDomainToDto(o domain.Officer) dto.Officer {
 	return dto.Officer{
 		Uuid:     o.Uuid,
 		FullName: o.FullName,
@@ -43,7 +43,7 @@ func ToOfficerDTO(o domain.Officer) dto.Officer {
 }
 
 // --- postition ---
-func ToPositionDTO(p *domain.Position) dto.Position {
+func PositionDomainToDto(p *domain.Position) dto.Position {
 	return dto.Position{
 		Oid:      p.Oid,
 		Semester: p.Semester,
@@ -55,7 +55,7 @@ func ToPositionDTO(p *domain.Position) dto.Position {
 }
 
 // --- tier ---
-func ToTierDTO(t *domain.Tier) dto.Tier {
+func TierDomainToDto(t *domain.Tier) dto.Tier {
 	return dto.Tier{
 		Tier:   t.Tier,
 		Title:  t.Title,

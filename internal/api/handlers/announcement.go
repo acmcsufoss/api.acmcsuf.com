@@ -54,7 +54,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	}
 
 	// NOTE: We won't have to do this once implement domain models
-	dtoA := mapper.ToAnnouncementDTO(&announcement)
+	dtoA := mapper.AnnouncementDomainToDto(&announcement)
 
 	// response dto btw, no domain here
 	c.JSON(http.StatusOK, dtoA)
@@ -98,7 +98,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	domainA := mapper.ToAnnouncementDomain(&params)
+	domainA := mapper.AnnouncementDtoToDomain(&params)
 
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, domainA); err != nil {
@@ -140,7 +140,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	domainA := mapper.ToUpdateAnnouncementDomain(&params)
+	domainA := mapper.UpdateAnnouncementDtoToDomain(&params)
 
 	if err := h.announcementService.Update(ctx, id, domainA); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

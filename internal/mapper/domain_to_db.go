@@ -9,7 +9,7 @@ import (
 
 // ---- Event Converter ----
 
-func ConvertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParams {
+func EventDomainToDb(dEvent domain.Event) dbmodels.CreateEventParams {
 	return dbmodels.CreateEventParams{
 		Uuid:     dEvent.Uuid,
 		Location: dEvent.Location,
@@ -20,7 +20,7 @@ func ConvertDomainToCreateDBEvent(dEvent domain.Event) dbmodels.CreateEventParam
 	}
 }
 
-func ConvertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
+func UpdateEventDomainToDb(dEvent domain.UpdateEvent) dbmodels.UpdateEventParams {
 	// -- sql null values --
 	loc := stringToNullString(dEvent.Location)
 
@@ -43,7 +43,7 @@ func ConvertDomainToUpdateDBEvent(dEvent domain.UpdateEvent) dbmodels.UpdateEven
 }
 
 // ---- Officer Converter ----
-func ConvertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOfficerParams {
+func OfficerDomainToDb(dOfficer domain.Officer) dbmodels.CreateOfficerParams {
 	// -- sql null values --
 	pic := stringToNullString(dOfficer.Picture)
 
@@ -60,7 +60,7 @@ func ConvertDomainToCreateDBOfficer(dOfficer domain.Officer) dbmodels.CreateOffi
 	}
 }
 
-func ConvertDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
+func UpdateOfficerDomainToDb(dOfficer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
 	// -- sql null values --
 	pic := stringToNullString(dOfficer.Picture)
 
@@ -78,7 +78,7 @@ func ConvertDomainToUpdateDBOfficer(dOfficer domain.UpdateOfficer) dbmodels.Upda
 }
 
 // ---- Announcement Converter ----
-func ConvertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmodels.CreateAnnouncementParams {
+func AnnouncementDomainToDb(dAnnouncement domain.Announcement) dbmodels.CreateAnnouncementParams {
 	// -- sql null values --
 	chanID := stringToNullString(dAnnouncement.DiscordChannelID)
 
@@ -92,7 +92,7 @@ func ConvertDomainToCreateDBAnnouncement(dAnnouncement domain.Announcement) dbmo
 	}
 }
 
-func ConvertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
+func UpdateAnnouncementDomainToDb(dAnnouncement domain.UpdateAnnouncement) dbmodels.UpdateAnnouncementParams {
 	// -- sql null values --
 	vis := stringToNullString(dAnnouncement.Visibility)
 
@@ -112,7 +112,7 @@ func ConvertDomainToUpdateDBAnnouncement(dAnnouncement domain.UpdateAnnouncement
 }
 
 // ---- Tier Converter ----
-func ConvertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
+func TierDomainToDb(dTier domain.Tier) dbmodels.CreateTierParams {
 	// -- sql null values --
 	title := stringToNullString(dTier.Title)
 
@@ -128,7 +128,7 @@ func ConvertDomainToCreateDBTier(dTier domain.Tier) dbmodels.CreateTierParams {
 	}
 }
 
-func ConvertDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierParams {
+func UpdateTierDomainToDb(dTier domain.UpdateTier) dbmodels.UpdateTierParams {
 	// -- sql null values --
 	title := stringToNullString(dTier.Title)
 
@@ -145,7 +145,7 @@ func ConvertDomainToUpdateDBTier(dTier domain.UpdateTier) dbmodels.UpdateTierPar
 }
 
 // ---- Position Converter ----
-func ConvertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreatePositionParams {
+func PositionDomainToDb(dPosition domain.Position) dbmodels.CreatePositionParams {
 	// -- sql null types --
 	title := stringToNullString(dPosition.Title)
 
@@ -161,7 +161,7 @@ func ConvertDomainToCreateDBPosition(dPosition domain.Position) dbmodels.CreateP
 	}
 }
 
-func ConvertDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.UpdatePositionParams {
+func UpdatePositionDomainToDb(dPosition domain.UpdatePosition) dbmodels.UpdatePositionParams {
 	// -- sql null types --
 	title := stringToNullString(dPosition.Title)
 
@@ -177,7 +177,7 @@ func ConvertDomainToUpdateDBPosition(dPosition domain.UpdatePosition) dbmodels.U
 	}
 }
 
-func ConvertDomainToDeleteDBPosition(dPosition domain.Position) dbmodels.DeletePositionParams {
+func DeletePositionDomainToDb(dPosition domain.Position) dbmodels.DeletePositionParams {
 	return dbmodels.DeletePositionParams{
 		Oid:      dPosition.Oid,
 		Semester: dPosition.Semester,
