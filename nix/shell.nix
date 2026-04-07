@@ -12,15 +12,11 @@
   go-swag,
   cobra-cli,
   go-tools,
-  go-migrate,
   sqlite,
   sqlite-web,
   isCI ? false,
   full ? false,
 }: let
-  go-migrate-sqlite = go-migrate.overrideAttrs (oldAttrs: {
-    tags = ["sqlite3"];
-  });
 in
   mkShell {
     packages =
@@ -37,7 +33,6 @@ in
       ++ lib.optionals (!isCI) [
         air # run dev server with hot reload
         xh
-        go-migrate-sqlite
         sqlite
         cobra-cli
         delve # Go debugger
