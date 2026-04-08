@@ -48,3 +48,12 @@ type Tier struct {
 	TIndex sql.NullInt64  `json:"t_index"`
 	Team   sql.NullString `json:"team"`
 }
+
+type Workshop struct {
+	Uuid     int64          `json:"uuid"`
+	Title    sql.NullString `json:"title"`
+	Team     sql.NullString `json:"team"`
+	Semester interface{}    `json:"semester"`
+	StartAt  sql.NullTime   `json:"start_at"`
+	Link     sql.NullString `json:"link"`
+}
