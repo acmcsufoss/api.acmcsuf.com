@@ -10,7 +10,6 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 	"github.com/gin-gonic/gin"
 )
 
@@ -54,7 +53,7 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	}
 
 	// NOTE: We won't have to do this once implement domain models
-	dtoA := mapper.AnnouncementDomainToDto(&announcement)
+	dtoA := dto.AnnouncementDomainToDto(&announcement)
 
 	// response dto btw, no domain here
 	c.JSON(http.StatusOK, dtoA)
@@ -82,7 +81,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateAnnouncementParams true "Announcement data"
+//	@Param			body body dto.Announcement true "Announcement data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -98,7 +97,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	domainA := mapper.AnnouncementDtoToDomain(&params)
+	domainA := params.ToDomain()
 
 	// TODO: error out if required fields aren't provided
 	if err := h.announcementService.Create(ctx, domainA); err != nil {
@@ -123,7 +122,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "Announcement ID"
-// @Param		body body dbmodels.UpdateAnnouncementParams true "Updated announcement data"
+// @Param		body body dto.UpdateAnnouncement true "Updated announcement data"
 // @Success		200 {object} map[string]string "Success message"
 // @Failure		400 {object} map[string]string
 // @Failure		404 {object} map[string]string
@@ -140,7 +139,7 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	domainA := mapper.UpdateAnnouncementDtoToDomain(&params)
+	domainA := params.ToDomain()
 
 	if err := h.announcementService.Update(ctx, id, domainA); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

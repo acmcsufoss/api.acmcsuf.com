@@ -4,9 +4,9 @@ import (
 	"context"
 	"log"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/mapper"
 )
 
 type AnnouncementServicer interface {
@@ -31,7 +31,7 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Anno
 		return domain.Announcement{}, err
 	}
 
-	domainA := mapper.AnnouncementDbToDomain(announcement)
+	domainA := store.AnnouncementDBToDomain(announcement)
 
 	return domainA, nil
 }
@@ -39,7 +39,7 @@ func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Anno
 func (s *AnnouncementService) Create(ctx context.Context,
 	params domain.Announcement,
 ) error {
-	dbA := mapper.AnnouncementDomainToDb(params)
+	dbA := store.AnnouncementDomainToDB(params)
 	if err := s.q.CreateAnnouncement(ctx, dbA); err != nil {
 		return err
 	}
@@ -67,7 +67,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 
 	domainAs := make([]domain.Announcement, len(result))
 	for i, elm := range result {
-		domainAs[i] = mapper.AnnouncementDbToDomain(elm)
+		domainAs[i] = store.AnnouncementDBToDomain(elm)
 	}
 	return domainAs, nil
 }
@@ -75,7 +75,7 @@ func (s *AnnouncementService) List(ctx context.Context,
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
 	params domain.UpdateAnnouncement,
 ) error {
-	dbA := mapper.UpdateAnnouncementDomainToDb(params)
+	dbA := store.UpdateAnnouncementDomainToDB(params)
 
 	err := s.q.UpdateAnnouncement(ctx, dbA)
 	if err != nil {
