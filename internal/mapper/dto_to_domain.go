@@ -5,21 +5,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
-// --- event ---
-func EventDtoToDomain(e *dto.Event) domain.Event {
-	if e == nil {
-		return domain.Event{}
-	}
-
-	return domain.Event{
-		Uuid:     e.Uuid,
-		Location: e.Location,
-		StartAt:  unixToTime(e.StartAt),
-		EndAt:    unixToTime(e.EndAt),
-		IsAllDay: e.IsAllDay,
-		Host:     e.Host,
-	}
-}
 
 // --- officer ---
 func OfficerDtoToDomain(o *dto.Officer) domain.Officer {

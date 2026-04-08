@@ -8,21 +8,6 @@ import (
 
 // File deticated to mapping domain models to dto response models
 
-// --- announcements ---
-
-// --- event ---
-func EventDomainToDto(e *domain.Event) dto.Event {
-	return dto.Event{
-		Uuid:     e.Uuid,
-		Location: e.Location,
-		StartAt:  e.StartAt.Unix(),
-		EndAt:    e.EndAt.Unix(),
-		IsAllDay: e.IsAllDay,
-		Host:     e.Host,
-	}
-}
-
-// --- offcer ---
 func OfficerDomainToDto(o domain.Officer) dto.Officer {
 	return dto.Officer{
 		Uuid:     o.Uuid,
