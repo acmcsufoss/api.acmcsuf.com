@@ -9,15 +9,6 @@ import (
 // File deticated to mapping domain models to dto response models
 
 // --- announcements ---
-func AnnouncementDomainToDto(a *domain.Announcement) dto.Announcement {
-	return dto.Announcement{
-		Uuid:             a.Uuid,
-		Visibility:       a.Visibility,
-		AnnounceAt:       a.AnnounceAt.Unix(),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
-	}
-}
 
 // --- event ---
 func EventDomainToDto(e *domain.Event) dto.Event {

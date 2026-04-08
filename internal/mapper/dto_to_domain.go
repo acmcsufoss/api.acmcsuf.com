@@ -5,21 +5,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
-// --- announcement ---
-func AnnouncementDtoToDomain(a *dto.Announcement) domain.Announcement {
-	if a == nil {
-		return domain.Announcement{}
-	}
-
-	return domain.Announcement{
-		Uuid:             a.Uuid,
-		Visibility:       a.Visibility,
-		AnnounceAt:       unixToTime(a.AnnounceAt),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
-	}
-}
-
 func UpdateAnnouncementDtoToDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnouncement {
 	if a == nil {
 		return domain.UpdateAnnouncement{}
