@@ -58,4 +58,3 @@ func (a *UpdateAnnouncement) ToDomain() domain.UpdateAnnouncement {
 		DiscordMessageID: a.DiscordMessageID,
 	}
 }
-

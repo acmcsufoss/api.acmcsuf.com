@@ -12,7 +12,7 @@ type Officer struct {
 	Discord  *string `json:"discord"`
 }
 
-func (o *Officer)ToDomain() domain.Officer {
+func (o *Officer) ToDomain() domain.Officer {
 	if o == nil {
 		return domain.Officer{}
 	}
@@ -44,7 +44,7 @@ type UpdateOfficer struct {
 	Discord  *string `json:"discord"`
 }
 
-func (o *UpdateOfficer)ToDomain() domain.UpdateOfficer {
+func (o *UpdateOfficer) ToDomain() domain.UpdateOfficer {
 	if o == nil {
 		return domain.UpdateOfficer{}
 	}

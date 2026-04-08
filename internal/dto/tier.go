@@ -11,7 +11,7 @@ type Tier struct {
 	Team   *string `json:"team"`
 }
 
-func (t *Tier)ToDomain() domain.Tier {
+func (t *Tier) ToDomain() domain.Tier {
 	if t == nil {
 		return domain.Tier{}
 	}
@@ -40,7 +40,7 @@ type UpdateTier struct {
 	Team   *string `json:"team"`
 }
 
-func (t *UpdateTier)ToDomain() domain.UpdateTier {
+func (t *UpdateTier) ToDomain() domain.UpdateTier {
 	if t == nil {
 		return domain.UpdateTier{}
 	}
