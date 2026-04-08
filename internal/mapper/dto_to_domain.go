@@ -5,20 +5,6 @@ import (
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 )
 
-func UpdateAnnouncementDtoToDomain(a *dto.UpdateAnnouncement) domain.UpdateAnnouncement {
-	if a == nil {
-		return domain.UpdateAnnouncement{}
-	}
-
-	return domain.UpdateAnnouncement{
-		Uuid:             a.Uuid,
-		Visibility:       a.Visibility,
-		AnnounceAt:       unixToTimePtr(a.AnnounceAt),
-		DiscordChannelID: a.DiscordChannelID,
-		DiscordMessageID: a.DiscordMessageID,
-	}
-}
-
 // --- event ---
 func EventDtoToDomain(e *dto.Event) domain.Event {
 	if e == nil {
@@ -30,21 +16,6 @@ func EventDtoToDomain(e *dto.Event) domain.Event {
 		Location: e.Location,
 		StartAt:  unixToTime(e.StartAt),
 		EndAt:    unixToTime(e.EndAt),
-		IsAllDay: e.IsAllDay,
-		Host:     e.Host,
-	}
-}
-
-func UpdateEventDtoToDomain(e *dto.UpdateEvent) domain.UpdateEvent {
-	if e == nil {
-		return domain.UpdateEvent{}
-	}
-
-	return domain.UpdateEvent{
-		Uuid:     e.Uuid,
-		Location: e.Location,
-		StartAt:  unixToTimePtr(e.StartAt),
-		EndAt:    unixToTimePtr(e.EndAt),
 		IsAllDay: e.IsAllDay,
 		Host:     e.Host,
 	}

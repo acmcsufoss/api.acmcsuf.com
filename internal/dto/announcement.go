@@ -44,3 +44,18 @@ type UpdateAnnouncement struct {
 	DiscordChannelID *string `json:"discord_channel_id"`
 	DiscordMessageID *string `json:"discord_message_id"`
 }
+
+func (a *UpdateAnnouncement) ToDomain() domain.UpdateAnnouncement {
+	if a == nil {
+		return domain.UpdateAnnouncement{}
+	}
+
+	return domain.UpdateAnnouncement{
+		Uuid:             a.Uuid,
+		Visibility:       a.Visibility,
+		AnnounceAt:       utils.UnixToTimePtr(a.AnnounceAt),
+		DiscordChannelID: a.DiscordChannelID,
+		DiscordMessageID: a.DiscordMessageID,
+	}
+}
+
