@@ -25,11 +25,11 @@ RETURNING uuid, full_name, picture, github, discord
 `
 
 type CreateOfficerParams struct {
-	Uuid     string         `json:"uuid"`
-	FullName string         `json:"full_name"`
-	Picture  sql.NullString `json:"picture"`
-	Github   sql.NullString `json:"github"`
-	Discord  sql.NullString `json:"discord"`
+	Uuid     string
+	FullName string
+	Picture  sql.NullString
+	Github   sql.NullString
+	Discord  sql.NullString
 }
 
 func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (Officer, error) {
@@ -67,12 +67,12 @@ RETURNING oid, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
-	Oid      string         `json:"oid"`
-	Semester string         `json:"semester"`
-	Tier     int64          `json:"tier"`
-	FullName string         `json:"full_name"`
-	Title    sql.NullString `json:"title"`
-	Team     sql.NullString `json:"team"`
+	Oid      string
+	Semester string
+	Tier     int64
+	FullName string
+	Title    sql.NullString
+	Team     sql.NullString
 }
 
 func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
@@ -110,10 +110,10 @@ RETURNING tier, title, t_index, team
 `
 
 type CreateTierParams struct {
-	Tier   int64          `json:"tier"`
-	Title  sql.NullString `json:"title"`
-	TIndex sql.NullInt64  `json:"t_index"`
-	Team   sql.NullString `json:"team"`
+	Tier   int64
+	Title  sql.NullString
+	TIndex sql.NullInt64
+	Team   sql.NullString
 }
 
 func (q *Queries) CreateTier(ctx context.Context, arg CreateTierParams) (Tier, error) {
@@ -152,9 +152,9 @@ WHERE
 `
 
 type DeletePositionParams struct {
-	Oid      string `json:"oid"`
-	Semester string `json:"semester"`
-	Tier     int64  `json:"tier"`
+	Oid      string
+	Semester string
+	Tier     int64
 }
 
 func (q *Queries) DeletePosition(ctx context.Context, arg DeletePositionParams) error {
@@ -185,10 +185,10 @@ WHERE
 `
 
 type GetOfficerRow struct {
-	FullName string         `json:"full_name"`
-	Picture  sql.NullString `json:"picture"`
-	Github   sql.NullString `json:"github"`
-	Discord  sql.NullString `json:"discord"`
+	FullName string
+	Picture  sql.NullString
+	Github   sql.NullString
+	Discord  sql.NullString
 }
 
 func (q *Queries) GetOfficer(ctx context.Context, uuid string) (GetOfficerRow, error) {
@@ -390,11 +390,11 @@ WHERE
 `
 
 type UpdateOfficerParams struct {
-	FullName string         `json:"full_name"`
-	Picture  sql.NullString `json:"picture"`
-	Github   sql.NullString `json:"github"`
-	Discord  sql.NullString `json:"discord"`
-	Uuid     string         `json:"uuid"`
+	FullName string
+	Picture  sql.NullString
+	Github   sql.NullString
+	Discord  sql.NullString
+	Uuid     string
 }
 
 // NOTE: Had to declare above table as :one, may need to change later to :many
@@ -422,12 +422,12 @@ WHERE
 `
 
 type UpdatePositionParams struct {
-	FullName string         `json:"full_name"`
-	Title    sql.NullString `json:"title"`
-	Team     sql.NullString `json:"team"`
-	Oid      string         `json:"oid"`
-	Semester string         `json:"semester"`
-	Tier     int64          `json:"tier"`
+	FullName string
+	Title    sql.NullString
+	Team     sql.NullString
+	Oid      string
+	Semester string
+	Tier     int64
 }
 
 func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) error {
@@ -453,10 +453,10 @@ WHERE
 `
 
 type UpdateTierParams struct {
-	Title  sql.NullString `json:"title"`
-	TIndex sql.NullInt64  `json:"t_index"`
-	Team   sql.NullString `json:"team"`
-	Tier   int64          `json:"tier"`
+	Title  sql.NullString
+	TIndex sql.NullInt64
+	Team   sql.NullString
+	Tier   int64
 }
 
 func (q *Queries) UpdateTier(ctx context.Context, arg UpdateTierParams) error {

@@ -25,11 +25,11 @@ RETURNING uuid, visibility, announce_at, discord_channel_id, discord_message_id
 `
 
 type CreateAnnouncementParams struct {
-	Uuid             string         `json:"uuid"`
-	Visibility       string         `json:"visibility"`
-	AnnounceAt       int64          `json:"announce_at"`
-	DiscordChannelID sql.NullString `json:"discord_channel_id"`
-	DiscordMessageID sql.NullString `json:"discord_message_id"`
+	Uuid             string
+	Visibility       string
+	AnnounceAt       int64
+	DiscordChannelID sql.NullString
+	DiscordMessageID sql.NullString
 }
 
 func (q *Queries) CreateAnnouncement(ctx context.Context, arg CreateAnnouncementParams) error {
@@ -132,11 +132,11 @@ WHERE
 `
 
 type UpdateAnnouncementParams struct {
-	Visibility       sql.NullString `json:"visibility"`
-	AnnounceAt       sql.NullInt64  `json:"announce_at"`
-	DiscordChannelID sql.NullString `json:"discord_channel_id"`
-	DiscordMessageID sql.NullString `json:"discord_message_id"`
-	Uuid             string         `json:"uuid"`
+	Visibility       sql.NullString
+	AnnounceAt       sql.NullInt64
+	DiscordChannelID sql.NullString
+	DiscordMessageID sql.NullString
+	Uuid             string
 }
 
 func (q *Queries) UpdateAnnouncement(ctx context.Context, arg UpdateAnnouncementParams) error {

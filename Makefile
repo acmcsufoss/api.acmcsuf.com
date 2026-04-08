@@ -11,7 +11,7 @@ MIGRATE_DIR := sql/migrations
 DB_URL := sqlite3://dev.db
 
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
-SQLC_TARGET := internal/api/dbmodels/models.go
+SQLC_TARGET := internal/api/dbmodels/store/models.go
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
