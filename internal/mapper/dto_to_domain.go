@@ -6,34 +6,7 @@ import (
 )
 
 
-// --- officer ---
-func OfficerDtoToDomain(o *dto.Officer) domain.Officer {
-	if o == nil {
-		return domain.Officer{}
-	}
 
-	return domain.Officer{
-		Uuid:     o.Uuid,
-		FullName: o.FullName,
-		Picture:  o.Picture,
-		Github:   o.Github,
-		Discord:  o.Discord,
-	}
-}
-
-func UpdateOfficerDtoToDomain(o *dto.UpdateOfficer) domain.UpdateOfficer {
-	if o == nil {
-		return domain.UpdateOfficer{}
-	}
-
-	return domain.UpdateOfficer{
-		Uuid:     o.Uuid,
-		FullName: o.FullName,
-		Picture:  o.Picture,
-		Github:   o.Github,
-		Discord:  o.Discord,
-	}
-}
 
 // --- position ---
 func PositionDtoToDomain(p *dto.Position) domain.Position {
