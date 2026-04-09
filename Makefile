@@ -25,13 +25,13 @@ api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
 $(BIN_DIR)/$(API_NAME): $(GO_DEPS) sqlc
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
+	go build -x -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 
 cli: $(BIN_DIR)/$(CLI_NAME) ## Build the cli binary
 
 $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
+	go build -x -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
 generate: swag sqlc ## Generate all necessary files
 
