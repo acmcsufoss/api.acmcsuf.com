@@ -65,7 +65,7 @@ Use "acmcsuf-cli [command] --help" for more information about a command.
 ```
 
 #### Configuring the CLI
-The CLI's auth-related configuration is currently handled via environemnt variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
+The CLI's auth-related configuration is currently handled via environment variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
 
 ### Other useful commands from the Makefile
 
