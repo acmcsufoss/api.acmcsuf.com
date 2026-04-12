@@ -1,5 +1,9 @@
 package dto
 
+import (
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
+)
+
 type Position struct {
 	Oid      string  `json:"oid"`
 	Semester string  `json:"semester"`
@@ -9,6 +13,32 @@ type Position struct {
 	Team     *string `json:"team"`
 }
 
+func PositionDomainToDto(p *domain.Position) Position {
+	return Position{
+		Oid:      p.Oid,
+		Semester: p.Semester,
+		Tier:     p.Tier,
+		FullName: p.FullName,
+		Title:    p.Title,
+		Team:     p.Team,
+	}
+}
+
+func (p *Position) ToDomain() domain.Position {
+	if p == nil {
+		return domain.Position{}
+	}
+
+	return domain.Position{
+		Oid:      p.Oid,
+		Semester: p.Semester,
+		Tier:     p.Tier,
+		FullName: p.FullName,
+		Title:    p.Title,
+		Team:     p.Team,
+	}
+}
+
 type UpdatePosition struct {
 	Oid      string  `json:"oid"`
 	Semester string  `json:"semester"`
@@ -16,4 +46,19 @@ type UpdatePosition struct {
 	FullName string  `json:"full_name"`
 	Title    *string `json:"title"`
 	Team     *string `json:"team"`
+}
+
+func (p *UpdatePosition) ToDomain() domain.UpdatePosition {
+	if p == nil {
+		return domain.UpdatePosition{}
+	}
+
+	return domain.UpdatePosition{
+		Oid:      p.Oid,
+		Semester: p.Semester,
+		Tier:     p.Tier,
+		FullName: p.FullName,
+		Title:    p.Title,
+		Team:     p.Team,
+	}
 }

@@ -4,7 +4,7 @@ package services
 import (
 	"context"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 )
 
 type EventsServicer interface {

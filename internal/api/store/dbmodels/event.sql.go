@@ -26,12 +26,12 @@ RETURNING uuid, location, start_at, end_at, is_all_day, host
 `
 
 type CreateEventParams struct {
-	Uuid     string `json:"uuid"`
-	Location string `json:"location"`
-	StartAt  int64  `json:"start_at"`
-	EndAt    int64  `json:"end_at"`
-	IsAllDay bool   `json:"is_all_day"`
-	Host     string `json:"host"`
+	Uuid     string
+	Location string
+	StartAt  int64
+	EndAt    int64
+	IsAllDay bool
+	Host     string
 }
 
 func (q *Queries) CreateEvent(ctx context.Context, arg CreateEventParams) error {
@@ -139,12 +139,12 @@ WHERE
 `
 
 type UpdateEventParams struct {
-	Location sql.NullString `json:"location"`
-	StartAt  sql.NullInt64  `json:"start_at"`
-	EndAt    sql.NullInt64  `json:"end_at"`
-	IsAllDay sql.NullBool   `json:"is_all_day"`
-	Host     sql.NullString `json:"host"`
-	Uuid     string         `json:"uuid"`
+	Location sql.NullString
+	StartAt  sql.NullInt64
+	EndAt    sql.NullInt64
+	IsAllDay sql.NullBool
+	Host     sql.NullString
+	Uuid     string
 }
 
 func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) error {

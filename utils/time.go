@@ -45,3 +45,15 @@ func TimeAfterDuration(startTime int64, duration string) (int64, error) {
 
 	return totalDuration.Unix(), nil
 }
+
+func UnixToTime(v int64) time.Time {
+	return time.Unix(v, 0)
+}
+
+func UnixToTimePtr(v *int64) *time.Time {
+	if v == nil {
+		return nil
+	}
+	t := time.Unix(*v, 0)
+	return &t
+}

@@ -2,14 +2,16 @@ package services
 
 import (
 	"context"
-
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"log"
+
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
 type AnnouncementServicer interface {
-	Service[dbmodels.Announcement, string, dbmodels.CreateAnnouncementParams,
-		dbmodels.UpdateAnnouncementParams]
+	Service[domain.Announcement, string, domain.Announcement,
+		domain.UpdateAnnouncement]
 }
 
 type AnnouncementService struct {
@@ -23,18 +25,22 @@ func NewAnnouncementService(q *dbmodels.Queries) *AnnouncementService {
 	return &AnnouncementService{q: q}
 }
 
-func (s *AnnouncementService) Get(ctx context.Context, uuid string) (dbmodels.Announcement, error) {
+func (s *AnnouncementService) Get(ctx context.Context, uuid string) (domain.Announcement, error) {
 	announcement, err := s.q.GetAnnouncement(ctx, uuid)
 	if err != nil {
-		return dbmodels.Announcement{}, err
+		return domain.Announcement{}, err
 	}
-	return announcement, nil
+
+	domainA := store.AnnouncementDBToDomain(announcement)
+
+	return domainA, nil
 }
 
 func (s *AnnouncementService) Create(ctx context.Context,
-	params dbmodels.CreateAnnouncementParams) error {
-
-	if err := s.q.CreateAnnouncement(ctx, params); err != nil {
+	params domain.Announcement,
+) error {
+	dbA := store.AnnouncementDomainToDB(params)
+	if err := s.q.CreateAnnouncement(ctx, dbA); err != nil {
 		return err
 	}
 	return nil
@@ -45,8 +51,8 @@ type AnnouncementFilter interface {
 }
 
 func (s *AnnouncementService) List(ctx context.Context,
-	filters ...any) ([]dbmodels.Announcement, error) {
-
+	filters ...any,
+) ([]domain.Announcement, error) {
 	announcements, err := s.q.GetAnnouncements(ctx)
 	if err != nil {
 		return nil, err
@@ -58,13 +64,20 @@ func (s *AnnouncementService) List(ctx context.Context,
 			result = announcementFilter.Apply(result)
 		}
 	}
-	return result, nil
+
+	domainAs := make([]domain.Announcement, len(result))
+	for i, elm := range result {
+		domainAs[i] = store.AnnouncementDBToDomain(elm)
+	}
+	return domainAs, nil
 }
 
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
-	params dbmodels.UpdateAnnouncementParams) error {
+	params domain.UpdateAnnouncement,
+) error {
+	dbA := store.UpdateAnnouncementDomainToDB(params)
 
-	err := s.q.UpdateAnnouncement(ctx, params)
+	err := s.q.UpdateAnnouncement(ctx, dbA)
 	if err != nil {
 		log.Printf("Error updating announcement with UUID %s: %v", uuid, err)
 		return err
