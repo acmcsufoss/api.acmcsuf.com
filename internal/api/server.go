@@ -6,7 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
+	"log/slog"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-migrate/migrate/v4"
@@ -16,6 +16,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/logging"
 	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
@@ -23,19 +24,19 @@ import (
 
 // Run initializes the database, services, and router, then starts the server.
 // It waits for the context to be canceled to initiate a graceful shutdown.
-func Run(ctx context.Context) {
+func Run(ctx context.Context, logger *slog.Logger) {
 	cfg := config.Load()
 
 	db, closer, err := NewDB(ctx, cfg.DatabaseURL)
 	if err != nil {
-		log.Fatal(err)
+		logging.Fatal(logger, "could not open database", "error", err)
 	}
 	defer closer()
 
 	// Apply db migrations
 	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
 	if err != nil {
-		log.Fatalf("could not create sqlite3 driver: %v\n", err)
+		logging.Fatal(logger, "could not create sqlite3 driver", "error", err)
 	}
 	m, err := migrate.NewWithDatabaseInstance(
 		"file://sql/migrations",
@@ -43,10 +44,10 @@ func Run(ctx context.Context) {
 		driver,
 	)
 	if err != nil {
-		log.Fatalf("could not create migration instance: %v\n", err)
+		logging.Fatal(logger, "could not create migration instance", "error", err)
 	}
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatalf("could not run db migrations: %v\n", err)
+		logging.Fatal(logger, "could not run db migrations", "error", err)
 	}
 
 	// Now we init services & gin router, and then start the server
@@ -54,8 +55,8 @@ func Run(ctx context.Context) {
 	eventsService := services.NewEventsService(queries)
 	announcementService := services.NewAnnouncementService(queries)
 	boardService := services.NewBoardService(queries, db)
-	router := gin.Default()
-	router.Use(mw.Cors(), mw.Ratelimiter())
+	router := gin.New()
+	router.Use(logging.RequestLogger(logger), gin.Recovery(), mw.Cors(), mw.Ratelimiter())
 
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
@@ -69,14 +70,14 @@ func Run(ctx context.Context) {
 		}
 
 		if err := router.Run(serverAddr); err != nil {
-			log.Fatalf("Failed to start server: %v", err)
+			logging.Fatal(logger, "failed to start server", "error", err)
 		}
 	}()
 
 	// This is a blocking call that prevents the function from finishing until the signal
 	// is received.
 	<-ctx.Done()
-	log.Println("\x1b[32mServer shut down.\x1b[0m")
+	logger.Info("server shut down")
 }
 
 func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {

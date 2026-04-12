@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
-	"log"
 )
 
 type AnnouncementServicer interface {
@@ -64,19 +63,9 @@ func (s *AnnouncementService) List(ctx context.Context,
 func (s *AnnouncementService) Update(ctx context.Context, uuid string,
 	params dbmodels.UpdateAnnouncementParams) error {
 
-	err := s.q.UpdateAnnouncement(ctx, params)
-	if err != nil {
-		log.Printf("Error updating announcement with UUID %s: %v", uuid, err)
-		return err
-	}
-	return nil
+	return s.q.UpdateAnnouncement(ctx, params)
 }
 
 func (s *AnnouncementService) Delete(ctx context.Context, uuid string) error {
-	err := s.q.DeleteAnnouncement(ctx, uuid)
-	if err != nil {
-		log.Printf("Error deleting announcement with UUID %s: %v", uuid, err)
-		return err
-	}
-	return nil
+	return s.q.DeleteAnnouncement(ctx, uuid)
 }
