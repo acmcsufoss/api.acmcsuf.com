@@ -148,7 +148,6 @@ func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	var params dbmodels.UpdateEventParams
 	id := c.Param("id")
 
-	fmt.Println("UPDATE:", id)
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
