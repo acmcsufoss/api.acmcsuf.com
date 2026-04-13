@@ -31,12 +31,6 @@ air
 make run
 ```
 
-### Running database migrations
-After starting the server, you need to apply the database migrations in order to create the database schema.
-```sh
-make migrate-up
-```
-
 #### Configuring the API
 The API server is configurable via environment variables. See [`.env.example`](./.env.example) for values you can override and configure in your `.env` file.
 
