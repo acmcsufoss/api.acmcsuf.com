@@ -1,28 +1,17 @@
 definitions:
-  dbmodels.CreateAnnouncementParams:
-    properties:
-      announce_at:
-        type: integer
-      discord_channel_id:
-        $ref: '#/definitions/sql.NullString'
-      discord_message_id:
-        $ref: '#/definitions/sql.NullString'
-      uuid:
-        type: string
-      visibility:
-        type: string
-    type: object
   dbmodels.CreateEventParams:
     properties:
-      end_at:
+      endAt:
+        format: int64
         type: integer
       host:
         type: string
-      is_all_day:
+      isAllDay:
         type: boolean
       location:
         type: string
-      start_at:
+      startAt:
+        format: int64
         type: integer
       uuid:
         type: string
@@ -31,7 +20,7 @@ definitions:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
-      full_name:
+      fullName:
         type: string
       github:
         $ref: '#/definitions/sql.NullString'
@@ -42,7 +31,7 @@ definitions:
     type: object
   dbmodels.CreatePositionParams:
     properties:
-      full_name:
+      fullName:
         type: string
       oid:
         type: string
@@ -51,18 +40,20 @@ definitions:
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.CreateTierParams:
     properties:
-      t_index:
-        $ref: '#/definitions/sql.NullInt64'
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
+      tindex:
+        $ref: '#/definitions/sql.NullInt64'
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
@@ -73,19 +64,22 @@ definitions:
       semester:
         type: string
       tier:
+        format: int64
         type: integer
     type: object
   dbmodels.Event:
     properties:
-      end_at:
+      endAt:
+        format: int64
         type: integer
       host:
         type: string
-      is_all_day:
+      isAllDay:
         type: boolean
       location:
         type: string
-      start_at:
+      startAt:
+        format: int64
         type: integer
       uuid:
         type: string
@@ -94,7 +88,7 @@ definitions:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
-      full_name:
+      fullName:
         type: string
       github:
         $ref: '#/definitions/sql.NullString'
@@ -105,7 +99,7 @@ definitions:
     type: object
   dbmodels.Position:
     properties:
-      full_name:
+      fullName:
         type: string
       oid:
         type: string
@@ -114,45 +108,34 @@ definitions:
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.Tier:
     properties:
-      t_index:
-        $ref: '#/definitions/sql.NullInt64'
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.UpdateAnnouncementParams:
-    properties:
-      announce_at:
+      tindex:
         $ref: '#/definitions/sql.NullInt64'
-      discord_channel_id:
-        $ref: '#/definitions/sql.NullString'
-      discord_message_id:
-        $ref: '#/definitions/sql.NullString'
-      uuid:
-        type: string
-      visibility:
+      title:
         $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.UpdateEventParams:
     properties:
-      end_at:
+      endAt:
         $ref: '#/definitions/sql.NullInt64'
       host:
         $ref: '#/definitions/sql.NullString'
-      is_all_day:
+      isAllDay:
         $ref: '#/definitions/sql.NullBool'
       location:
         $ref: '#/definitions/sql.NullString'
-      start_at:
+      startAt:
         $ref: '#/definitions/sql.NullInt64'
       uuid:
         type: string
@@ -161,7 +144,7 @@ definitions:
     properties:
       discord:
         $ref: '#/definitions/sql.NullString'
-      full_name:
+      fullName:
         type: string
       github:
         $ref: '#/definitions/sql.NullString'
@@ -172,7 +155,7 @@ definitions:
     type: object
   dbmodels.UpdatePositionParams:
     properties:
-      full_name:
+      fullName:
         type: string
       oid:
         type: string
@@ -181,22 +164,37 @@ definitions:
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
   dbmodels.UpdateTierParams:
     properties:
-      t_index:
-        $ref: '#/definitions/sql.NullInt64'
       team:
         $ref: '#/definitions/sql.NullString'
       tier:
+        format: int64
         type: integer
+      tindex:
+        $ref: '#/definitions/sql.NullInt64'
       title:
         $ref: '#/definitions/sql.NullString'
     type: object
   dto.Announcement:
+    properties:
+      announce_at:
+        type: integer
+      discord_channel_id:
+        type: string
+      discord_message_id:
+        type: string
+      uuid:
+        type: string
+      visibility:
+        type: string
+    type: object
+  dto.UpdateAnnouncement:
     properties:
       announce_at:
         type: integer
@@ -248,7 +246,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.CreateAnnouncementParams'
+          $ref: '#/definitions/dto.Announcement'
       produces:
       - application/json
       responses:
@@ -354,7 +352,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.UpdateAnnouncementParams'
+          $ref: '#/definitions/dto.UpdateAnnouncement'
       produces:
       - application/json
       responses:
