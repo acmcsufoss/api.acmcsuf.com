@@ -8,7 +8,7 @@ GO_SOURCES := $(shell find . -type f -name '*.go' -not -path '*/vendor/*')
 GO_DEPS := $(GO_SOURCES) go.mod go.sum
 
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
-SQLC_TARGET := internal/api/dbmodels/store/models.go
+SQLC_TARGET := internal/api/store/dbmodels/models.go
 
 VERSION := $(shell git describe --tags --always --dirty 2> /dev/null || echo "dev")
 
