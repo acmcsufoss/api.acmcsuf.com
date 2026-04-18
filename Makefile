@@ -34,7 +34,7 @@ generate: swag sqlc ## Generate all necessary files
 
 swag: ## Generate OpenAPI docs
 	swag init \
-		-d  cmd/acmcsuf-api,internal/api/handlers,internal/api/store/dbmodels \
+		-d  cmd/acmcsuf-api,internal/api/handlers,internal/api/store/dbmodels,internal/dto \
 		-o internal/api/docs \ 
 		--parseDependency
 
