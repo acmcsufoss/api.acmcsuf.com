@@ -31,12 +31,6 @@ air
 make run
 ```
 
-### Running database migrations
-After starting the server, you need to apply the database migrations in order to create the database schema.
-```sh
-make migrate-up
-```
-
 #### Configuring the API
 The API server is configurable via environment variables. See [`.env.example`](./.env.example) for values you can override and configure in your `.env` file.
 
@@ -65,7 +59,7 @@ Use "acmcsuf-cli [command] --help" for more information about a command.
 ```
 
 #### Configuring the CLI
-The CLI's auth-related configuration is currently handled via environemnt variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
+The CLI's auth-related configuration is currently handled via environment variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
 
 ### Other useful commands from the Makefile
 

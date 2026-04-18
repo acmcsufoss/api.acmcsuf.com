@@ -7,9 +7,6 @@ CLI_NAME := acmcsuf-cli
 GO_SOURCES := $(shell find . -type f -name '*.go' -not -path '*/vendor/*')
 GO_DEPS := $(GO_SOURCES) go.mod go.sum
 
-MIGRATE_DIR := sql/migrations
-DB_URL := sqlite3://dev.db
-
 SQLC_DEPS := $(wildcard sql/migrations/*.sql) $(wildcard sql/queries/*.sql)
 SQLC_TARGET := internal/api/dbmodels/store/models.go
 
@@ -25,13 +22,13 @@ api: $(BIN_DIR)/$(API_NAME) ## Build the api binary
 
 $(BIN_DIR)/$(API_NAME): $(GO_DEPS) sqlc
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
+	go build -x -ldflags "-X main.Version=$(VERSION)" -o $(BIN_DIR)/$(API_NAME) ./cmd/$(API_NAME)
 
 cli: $(BIN_DIR)/$(CLI_NAME) ## Build the cli binary
 
 $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 	@mkdir -p $(BIN_DIR)
-	go build -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
+	go build -x -ldflags "-X cli.Version=$(VERSION)" -o $(BIN_DIR)/$(CLI_NAME) ./cmd/$(CLI_NAME)
 
 generate: swag sqlc ## Generate all necessary files
 
@@ -69,13 +66,7 @@ clean: ## Clean up binaries and build artifacts
 	go clean
 	rm -rf $(BIN_DIR) result
 
-migrate-up: ## Perform database migration up
-	migrate -database $(DB_URL) -path $(MIGRATE_DIR) up
-
-migrate-down: ## Perform database migration down
-	migrate -database $(DB_URL) -path $(MIGRATE_DIR) down 1
-
 help: ## Display this help screen
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate migrate-up migrate-down
+.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate
