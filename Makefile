@@ -33,7 +33,7 @@ $(BIN_DIR)/$(CLI_NAME): $(GO_DEPS)
 generate: swag sqlc ## Generate all necessary files
 
 swag: ## Generate OpenAPI docs
-	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/dbmodels -o internal/api/docs --parseDependency
+	swag init -d  cmd/acmcsuf-api,internal/api/handlers,internal/api/store/dbmodels -o internal/api/docs --parseDependency
 
 sqlc: $(SQLC_TARGET) ## Generate dbmodels package with sqlc
 
