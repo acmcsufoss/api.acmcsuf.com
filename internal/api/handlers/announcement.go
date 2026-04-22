@@ -71,7 +71,12 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, announcements)
+
+	var dtoSlice []dto.Announcement
+	for _, elm := range announcements {
+		dtoSlice = append(dtoSlice, dto.AnnouncementDomainToDto(&elm))
+	}
+	c.JSON(http.StatusOK, dtoSlice)
 }
 
 // CreateAnnouncement godoc
