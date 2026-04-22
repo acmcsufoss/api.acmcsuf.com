@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/gin-gonic/gin"
 )
 

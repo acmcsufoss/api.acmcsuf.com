@@ -15,10 +15,10 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/routes"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 )
 
 // Run initializes the database, services, and router, then starts the server.

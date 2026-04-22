@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
@@ -54,23 +53,10 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 	}
 
 	// NOTE: We won't have to do this once implement domain models
-	var discordChannelID *string
-	if announcement.DiscordChannelID.Valid {
-		discordChannelID = &announcement.DiscordChannelID.String
-	}
-	var discordMessageID *string
-	if announcement.DiscordMessageID.Valid {
-		discordMessageID = &announcement.DiscordMessageID.String
-	}
-	dto := dto.Announcement{
-		Uuid:             announcement.Uuid,
-		Visibility:       announcement.Visibility,
-		AnnounceAt:       announcement.AnnounceAt,
-		DiscordChannelID: discordChannelID,
-		DiscordMessageID: discordMessageID,
-	}
+	dtoA := dto.AnnouncementDomainToDto(&announcement)
 
-	c.JSON(http.StatusOK, dto)
+	// response dto btw, no domain here
+	c.JSON(http.StatusOK, dtoA)
 }
 
 func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
@@ -85,7 +71,12 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, announcements)
+
+	var dtoSlice []dto.Announcement
+	for _, elm := range announcements {
+		dtoSlice = append(dtoSlice, dto.AnnouncementDomainToDto(&elm))
+	}
+	c.JSON(http.StatusOK, dtoSlice)
 }
 
 // CreateAnnouncement godoc
@@ -95,7 +86,7 @@ func (h *AnnouncementHandler) GetAnnouncements(c *gin.Context) {
 //	@Tags			Announcements
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateAnnouncementParams true "Announcement data"
+//	@Param			body body dto.Announcement true "Announcement data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -111,25 +102,10 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 		return
 	}
 
-	var chanID sql.NullString
-	if params.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
-	}
-
-	var msgID sql.NullString
-	if params.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
-	}
-	dbParams := dbmodels.CreateAnnouncementParams{
-		Uuid:             params.Uuid,
-		Visibility:       params.Visibility,
-		AnnounceAt:       params.AnnounceAt,
-		DiscordChannelID: chanID,
-		DiscordMessageID: msgID,
-	}
+	domainA := params.ToDomain()
 
 	// TODO: error out if required fields aren't provided
-	if err := h.announcementService.Create(ctx, dbParams); err != nil {
+	if err := h.announcementService.Create(ctx, domainA); err != nil {
 		log.Printf("Failed to create announcement: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create announcement",
@@ -151,7 +127,7 @@ func (h *AnnouncementHandler) CreateAnnouncement(c *gin.Context) {
 // @Accept		json
 // @Produce		json
 // @Param		id path string true "Announcement ID"
-// @Param		body body dbmodels.UpdateAnnouncementParams true "Updated announcement data"
+// @Param		body body dto.UpdateAnnouncement true "Updated announcement data"
 // @Success		200 {object} map[string]string "Success message"
 // @Failure		400 {object} map[string]string
 // @Failure		404 {object} map[string]string
@@ -168,34 +144,9 @@ func (h *AnnouncementHandler) UpdateAnnouncement(c *gin.Context) {
 		})
 	}
 
-	var chanID sql.NullString
-	if params.DiscordChannelID != nil {
-		chanID = sql.NullString{String: *params.DiscordChannelID, Valid: true}
-	}
+	domainA := params.ToDomain()
 
-	var msgID sql.NullString
-	if params.DiscordMessageID != nil {
-		msgID = sql.NullString{String: *params.DiscordMessageID, Valid: true}
-	}
-
-	var vis sql.NullString
-	if params.Visibility != nil {
-		vis = sql.NullString{String: *params.Visibility, Valid: true}
-	}
-
-	var announceAt sql.NullInt64
-	if params.AnnounceAt != nil {
-		announceAt = sql.NullInt64{Int64: *params.AnnounceAt, Valid: true}
-	}
-	dbParams := dbmodels.UpdateAnnouncementParams{
-		Uuid:             params.Uuid,
-		Visibility:       vis,
-		AnnounceAt:       announceAt,
-		DiscordChannelID: chanID,
-		DiscordMessageID: msgID,
-	}
-
-	if err := h.announcementService.Update(ctx, id, dbParams); err != nil {
+	if err := h.announcementService.Update(ctx, id, domainA); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update announcement",
 		})

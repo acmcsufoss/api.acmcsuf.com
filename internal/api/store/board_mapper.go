@@ -1,0 +1,108 @@
+package store
+
+import "github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+import "github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
+
+func OfficerDomainToDB(officer domain.Officer) dbmodels.CreateOfficerParams {
+	return dbmodels.CreateOfficerParams{
+		Uuid:     officer.Uuid,
+		FullName: officer.FullName,
+		Picture:  stringToNullString(officer.Picture),
+		Github:   stringToNullString(officer.Github),
+		Discord:  stringToNullString(officer.Discord),
+	}
+}
+
+func UpdateOfficerDomainToDB(officer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
+	return dbmodels.UpdateOfficerParams{
+		Uuid:     officer.Uuid,
+		FullName: stringValue(officer.FullName),
+		Picture:  stringToNullString(officer.Picture),
+		Github:   stringToNullString(officer.Github),
+		Discord:  stringToNullString(officer.Discord),
+	}
+}
+
+func OfficerDBToDomain(officer dbmodels.Officer) domain.Officer {
+	return domain.Officer{
+		Uuid:     officer.Uuid,
+		FullName: officer.FullName,
+		Picture:  nullStringPtr(officer.Picture),
+		Github:   nullStringPtr(officer.Github),
+		Discord:  nullStringPtr(officer.Discord),
+	}
+}
+
+func TierDomainToDB(tier domain.Tier) dbmodels.CreateTierParams {
+	return dbmodels.CreateTierParams{
+		Tier:   int64(tier.Tier),
+		Title:  stringToNullString(tier.Title),
+		TIndex: intToNullInt64(tier.Tindex),
+		Team:   stringToNullString(tier.Team),
+	}
+}
+
+func UpdateTierDomainToDB(tier domain.UpdateTier) dbmodels.UpdateTierParams {
+	return dbmodels.UpdateTierParams{
+		Tier:   int64(tier.Tier),
+		Title:  stringToNullString(tier.Title),
+		TIndex: intToNullInt64(tier.Tindex),
+		Team:   stringToNullString(tier.Team),
+	}
+}
+
+func TierDBToDomain(tier dbmodels.Tier) domain.Tier {
+	var tIndex *int
+	if tier.TIndex.Valid {
+		v := int(tier.TIndex.Int64)
+		tIndex = &v
+	}
+
+	return domain.Tier{
+		Tier:   int(tier.Tier),
+		Title:  nullStringPtr(tier.Title),
+		Tindex: tIndex,
+		Team:   nullStringPtr(tier.Team),
+	}
+}
+
+func PositionDomainToDB(position domain.Position) dbmodels.CreatePositionParams {
+	return dbmodels.CreatePositionParams{
+		Oid:      position.Oid,
+		Semester: position.Semester,
+		Tier:     int64(position.Tier),
+		FullName: position.FullName,
+		Title:    stringToNullString(position.Title),
+		Team:     stringToNullString(position.Team),
+	}
+}
+
+func UpdatePositionDomainToDB(position domain.UpdatePosition) dbmodels.UpdatePositionParams {
+	return dbmodels.UpdatePositionParams{
+		Oid:      position.Oid,
+		Semester: position.Semester,
+		Tier:     int64(position.Tier),
+		FullName: position.FullName,
+		Title:    stringToNullString(position.Title),
+		Team:     stringToNullString(position.Team),
+	}
+}
+
+func DeletePositionDomainToDB(position domain.Position) dbmodels.DeletePositionParams {
+	return dbmodels.DeletePositionParams{
+		Oid:      position.Oid,
+		Semester: position.Semester,
+		Tier:     int64(position.Tier),
+	}
+}
+
+func PositionDBToDomain(position dbmodels.Position) domain.Position {
+	return domain.Position{
+		Oid:      position.Oid,
+		Semester: position.Semester,
+		Tier:     int(position.Tier),
+		FullName: position.FullName,
+		Title:    nullStringPtr(position.Title),
+		Team:     nullStringPtr(position.Team),
+	}
+}

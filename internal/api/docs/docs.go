@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateAnnouncementParams"
+                            "$ref": "#/definitions/dto.Announcement"
                         }
                     }
                 ],
@@ -143,7 +143,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateAnnouncementParams"
+                            "$ref": "#/definitions/dto.UpdateAnnouncement"
                         }
                     }
                 ],
@@ -1294,43 +1294,25 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dbmodels.CreateAnnouncementParams": {
-            "type": "object",
-            "properties": {
-                "announce_at": {
-                    "type": "integer"
-                },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "visibility": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.CreateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {
-                    "type": "integer"
+                "endAt": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "host": {
                     "type": "string"
                 },
-                "is_all_day": {
+                "isAllDay": {
                     "type": "boolean"
                 },
                 "location": {
                     "type": "string"
                 },
-                "start_at": {
-                    "type": "integer"
+                "startAt": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "uuid": {
                     "type": "string"
@@ -1343,7 +1325,7 @@ const docTemplate = `{
                 "discord": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "github": {
@@ -1360,7 +1342,7 @@ const docTemplate = `{
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "oid": {
@@ -1373,7 +1355,8 @@ const docTemplate = `{
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
@@ -1383,14 +1366,15 @@ const docTemplate = `{
         "dbmodels.CreateTierParams": {
             "type": "object",
             "properties": {
-                "t_index": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "tindex": {
+                    "$ref": "#/definitions/sql.NullInt64"
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
@@ -1407,27 +1391,30 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
                 }
             }
         },
         "dbmodels.Event": {
             "type": "object",
             "properties": {
-                "end_at": {
-                    "type": "integer"
+                "endAt": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "host": {
                     "type": "string"
                 },
-                "is_all_day": {
+                "isAllDay": {
                     "type": "boolean"
                 },
                 "location": {
                     "type": "string"
                 },
-                "start_at": {
-                    "type": "integer"
+                "startAt": {
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "uuid": {
                     "type": "string"
@@ -1440,7 +1427,7 @@ const docTemplate = `{
                 "discord": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "github": {
@@ -1457,7 +1444,7 @@ const docTemplate = `{
         "dbmodels.Position": {
             "type": "object",
             "properties": {
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "oid": {
@@ -1470,7 +1457,8 @@ const docTemplate = `{
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
@@ -1480,36 +1468,17 @@ const docTemplate = `{
         "dbmodels.Tier": {
             "type": "object",
             "properties": {
-                "t_index": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
                 },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.UpdateAnnouncementParams": {
-            "type": "object",
-            "properties": {
-                "announce_at": {
+                "tindex": {
                     "$ref": "#/definitions/sql.NullInt64"
                 },
-                "discord_channel_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "discord_message_id": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                },
-                "visibility": {
+                "title": {
                     "$ref": "#/definitions/sql.NullString"
                 }
             }
@@ -1517,19 +1486,19 @@ const docTemplate = `{
         "dbmodels.UpdateEventParams": {
             "type": "object",
             "properties": {
-                "end_at": {
+                "endAt": {
                     "$ref": "#/definitions/sql.NullInt64"
                 },
                 "host": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "is_all_day": {
+                "isAllDay": {
                     "$ref": "#/definitions/sql.NullBool"
                 },
                 "location": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "start_at": {
+                "startAt": {
                     "$ref": "#/definitions/sql.NullInt64"
                 },
                 "uuid": {
@@ -1543,7 +1512,7 @@ const docTemplate = `{
                 "discord": {
                     "$ref": "#/definitions/sql.NullString"
                 },
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "github": {
@@ -1560,7 +1529,7 @@ const docTemplate = `{
         "dbmodels.UpdatePositionParams": {
             "type": "object",
             "properties": {
-                "full_name": {
+                "fullName": {
                     "type": "string"
                 },
                 "oid": {
@@ -1573,7 +1542,8 @@ const docTemplate = `{
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
@@ -1583,14 +1553,15 @@ const docTemplate = `{
         "dbmodels.UpdateTierParams": {
             "type": "object",
             "properties": {
-                "t_index": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
                 "team": {
                     "$ref": "#/definitions/sql.NullString"
                 },
                 "tier": {
-                    "type": "integer"
+                    "type": "integer",
+                    "format": "int64"
+                },
+                "tindex": {
+                    "$ref": "#/definitions/sql.NullInt64"
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
@@ -1598,6 +1569,26 @@ const docTemplate = `{
             }
         },
         "dto.Announcement": {
+            "type": "object",
+            "properties": {
+                "announce_at": {
+                    "type": "integer"
+                },
+                "discord_channel_id": {
+                    "type": "string"
+                },
+                "discord_message_id": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateAnnouncement": {
             "type": "object",
             "properties": {
                 "announce_at": {
