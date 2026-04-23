@@ -62,7 +62,9 @@ func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (domain.Offi
 		return domain.Officer{}, err
 	}
 
-	return store.GetOfficerDBToDomain(row), nil
+	domainModel := store.GetOfficerDBToDomain(row)
+	domainModel.Uuid = uuid
+	return domainModel, nil
 }
 
 func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]domain.Officer, error) {
