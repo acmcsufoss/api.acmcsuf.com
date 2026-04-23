@@ -1,16 +1,7 @@
 {
   "uuid": "bob-smith-uuid",
   "full_name": "Bob Smith",
-  "picture": {
-    "string": "",
-    "valid": false
-  },
-  "github": {
-    "string": "",
-    "valid": false
-  },
-  "discord": {
-    "string": "",
-    "valid": false
-  }
+  "picture": "",
+  "github": "",
+  "discord": ""
 }
