@@ -108,11 +108,12 @@ func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {
 
 // ==== Tier Methods ===========================================================
 
-func (s *BoardService) GetTier(ctx context.Context, tierName int64) (dbmodels.Tier, error) {
-	return s.q.GetTier(ctx, tierName)
+func (s *BoardService) GetTier(ctx context.Context, tierName int64) (domain.Tier, error) {
+	dbTier, err := s.q.GetTier(ctx, tierName)
+	return store.TierDBToDomain(dbTier), err
 }
 
-func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]dbmodels.Tier, error) {
+func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error) {
 	tiers, err := s.q.GetTiers(ctx)
 	if err != nil {
 		return nil, err
@@ -125,7 +126,11 @@ func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]dbmodel
 		}
 	}
 
-	return result, nil
+	domainTiers := make([]domain.Tier, len(tiers))
+	for i, tier := range result {
+		domainTiers[i] = store.TierDBToDomain(tier)
+	}
+	return domainTiers, nil
 }
 
 func (s *BoardService) CreateTier(ctx context.Context, params dbmodels.CreateTierParams) error {

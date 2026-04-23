@@ -194,7 +194,7 @@ func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Tier "List of tiers"
+//	@Success		200 {array} dto.Tier "List of tiers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [get]
 func (h *BoardHandler) GetTiers(c *gin.Context) {
@@ -208,7 +208,11 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tiers)
+	dtoTiers := make([]dto.Tier, len(tiers))
+	for i, tier := range tiers {
+		dtoTiers[i] = dto.TierDomainToDto(&tier)
+	}
+	c.JSON(http.StatusOK, dtoTiers)
 }
 
 // GetTier godoc
@@ -219,7 +223,7 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Success		200 {object} dbmodels.Tier "Tier details"
+//	@Success		200 {object} dto.Tier "Tier details"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -248,7 +252,7 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tier)
+	c.JSON(http.StatusOK, dto.TierDomainToDto(&tier))
 }
 
 // CreateTier godoc
