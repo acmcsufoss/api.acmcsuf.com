@@ -19,7 +19,7 @@ type BoardServicer interface {
 	// Tier methods
 	GetTier(ctx context.Context, tierName int64) (domain.Tier, error)
 	ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error)
-	CreateTier(ctx context.Context, params domain.Tier) error
+	CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error)
 	UpdateTier(ctx context.Context, params domain.UpdateTier) error
 	DeleteTier(ctx context.Context, tierName int64) error
 
@@ -110,7 +110,10 @@ func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {
 
 func (s *BoardService) GetTier(ctx context.Context, tierName int64) (domain.Tier, error) {
 	dbTier, err := s.q.GetTier(ctx, tierName)
-	return store.TierDBToDomain(dbTier), err
+	if err != nil {
+		return domain.Tier{}, err
+	}
+	return store.TierDBToDomain(dbTier), nil
 }
 
 func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error) {
@@ -133,13 +136,16 @@ func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.
 	return domainTiers, nil
 }
 
-func (s *BoardService) CreateTier(ctx context.Context, params dbmodels.CreateTierParams) error {
-	_, err := s.q.CreateTier(ctx, params)
-	return err
+func (s *BoardService) CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error) {
+	dbTier, err := s.q.CreateTier(ctx, store.TierDomainToDB(params))
+	if err != nil {
+		return domain.Tier{}, nil
+	}
+	return store.TierDBToDomain(dbTier), nil
 }
 
-func (s *BoardService) UpdateTier(ctx context.Context, params dbmodels.UpdateTierParams) error {
-	return s.q.UpdateTier(ctx, params)
+func (s *BoardService) UpdateTier(ctx context.Context, params domain.UpdateTier) error {
+	return s.q.UpdateTier(ctx, store.UpdateTierDomainToDB(params))
 }
 
 func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {

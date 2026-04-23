@@ -145,7 +145,6 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	}
 
 	domainModel := body.ToDomain()
-	domainModel.Uuid = id
 	if err := h.boardService.UpdateOfficer(ctx, id, domainModel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update officer. " + err.Error(),
@@ -262,23 +261,23 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateTierParams true "Tier data"
+//	@Param			body body dto.Tier true "Tier data"
 //	@Success		200 {object} map[string]interface{} "Success message with tier number"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [post]
 func (h *BoardHandler) CreateTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateTierParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.Tier
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.CreateTier(ctx, params); err != nil {
+	tier, err := h.boardService.CreateTier(ctx, body.ToDomain())
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create tier. " + err.Error(),
 		})
@@ -287,7 +286,7 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Tier created successfully",
-		"tier":    params.Tier,
+		"tier":    dto.TierDomainToDto(&tier),
 	})
 }
 
