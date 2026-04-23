@@ -9,7 +9,6 @@ type Officer struct {
 }
 
 type UpdateOfficer struct {
-	Uuid     string
 	FullName *string
 	Picture  *string
 	Github   *string

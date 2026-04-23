@@ -55,7 +55,8 @@ type PositionFilter interface {
 	Apply(positions []dbmodels.Position) []dbmodels.Position
 }
 
-// Officer Methods
+// ==== Officer Methods ========================================================
+
 func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (domain.Officer, error) {
 	row, err := s.q.GetOfficer(ctx, uuid)
 	if err != nil {
@@ -96,7 +97,6 @@ func (s *BoardService) CreateOfficer(ctx context.Context, officer domain.Officer
 
 func (s *BoardService) UpdateOfficer(ctx context.Context, uuid string,
 	updateOfficer domain.UpdateOfficer) error {
-	// NOTE: domain.UpdateOfficer has a uuid field, do we need the seperate function param here?
 	dbParams := store.UpdateOfficerDomainToDB(updateOfficer)
 	dbParams.Uuid = uuid
 	return s.q.UpdateOfficer(ctx, dbParams)
@@ -106,7 +106,8 @@ func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {
 	return s.q.DeleteOfficer(ctx, uuid)
 }
 
-// Tier Methods
+// ==== Tier Methods ===========================================================
+
 func (s *BoardService) GetTier(ctx context.Context, tierName int64) (dbmodels.Tier, error) {
 	return s.q.GetTier(ctx, tierName)
 }
@@ -140,7 +141,8 @@ func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 	return s.q.DeleteTier(ctx, tierName)
 }
 
-// Position Methods
+// ==== Position Methods =======================================================
+
 func (s *BoardService) GetPosition(ctx context.Context, oid string) (dbmodels.Position, error) {
 	return s.q.GetPosition(ctx, oid)
 }
