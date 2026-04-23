@@ -8,6 +8,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,7 +28,7 @@ func NewBoardHandler(boardService services.BoardServicer) *BoardHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Success		200 {object} dbmodels.Officer "Officer details"
+//	@Success		200 {object} dto.Officer "Officer details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers/{id} [get]
@@ -50,7 +51,8 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, officer)
+	dtoModel := dto.OfficerDomainToDto(officer)
+	c.JSON(http.StatusOK, dtoModel)
 }
 
 // GetOfficers godoc
@@ -60,7 +62,7 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Officer "List of officers"
+//	@Success		200 {array} dto.Officer "List of officers"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers [get]
 func (h *BoardHandler) GetOfficers(c *gin.Context) {
@@ -74,7 +76,11 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, officers)
+	dtoModels := make([]dto.Officer, len(officers))
+	for i, officer := range officers {
+		dtoModels[i] = dto.OfficerDomainToDto(officer)
+	}
+	c.JSON(http.StatusOK, dtoModels)
 }
 
 // CreateOfficer godoc
@@ -84,30 +90,23 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateOfficerParams true "Officer data"
+//	@Param			body body dto.Officer true "Officer data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers [post]
 func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateOfficerParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.Officer
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if params.FullName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "FullName is a required field",
-		})
-		return
-	}
-
-	if err := h.boardService.CreateOfficer(ctx, params); err != nil {
+	domainModel := body.ToDomain()
+	if err := h.boardService.CreateOfficer(ctx, domainModel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create officer. " + err.Error(),
 		})
@@ -116,7 +115,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Officer created successfully",
-		"uuid":    params.Uuid,
+		"uuid":    body.Uuid,
 	})
 }
 
@@ -128,7 +127,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Param			body body dbmodels.UpdateOfficerParams true "Updated officer data"
+//	@Param			body body dto.UpdateOfficer true "Updated officer data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -136,17 +135,18 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Router			/v1/board/officers/{id} [put]
 func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateOfficerParams
 	id := c.Param("id")
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.UpdateOfficer
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.UpdateOfficer(ctx, id, params); err != nil {
+	domainModel := body.ToDomain()
+	domainModel.Uuid = id
+	if err := h.boardService.UpdateOfficer(ctx, id, domainModel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update officer. " + err.Error(),
 		})

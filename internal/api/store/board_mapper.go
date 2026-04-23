@@ -33,6 +33,15 @@ func OfficerDBToDomain(officer dbmodels.Officer) domain.Officer {
 	}
 }
 
+func GetOfficerDBToDomain(row dbmodels.GetOfficerRow) domain.Officer {
+	return domain.Officer{
+		FullName: row.FullName,
+		Picture:  nullStringPtr(row.Picture),
+		Github:   nullStringPtr(row.Github),
+		Discord:  nullStringPtr(row.Discord),
+	}
+}
+
 func TierDomainToDB(tier domain.Tier) dbmodels.CreateTierParams {
 	return dbmodels.CreateTierParams{
 		Tier:   int64(tier.Tier),

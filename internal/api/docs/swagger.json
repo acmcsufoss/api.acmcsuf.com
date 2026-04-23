@@ -246,7 +246,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Officer"
+                                "$ref": "#/definitions/dto.Officer"
                             }
                         }
                     },
@@ -280,7 +280,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateOfficerParams"
+                            "$ref": "#/definitions/dto.Officer"
                         }
                     }
                 ],
@@ -339,7 +339,7 @@
                     "200": {
                         "description": "Officer details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Officer"
+                            "$ref": "#/definitions/dto.Officer"
                         }
                     },
                     "404": {
@@ -388,7 +388,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateOfficerParams"
+                            "$ref": "#/definitions/dto.UpdateOfficer"
                         }
                     }
                 ],
@@ -1308,26 +1308,6 @@
                 }
             }
         },
-        "dbmodels.CreateOfficerParams": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
@@ -1410,26 +1390,6 @@
                 }
             }
         },
-        "dbmodels.Officer": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.Position": {
             "type": "object",
             "properties": {
@@ -1489,26 +1449,6 @@
                 },
                 "startAt": {
                     "$ref": "#/definitions/sql.NullInt64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.UpdateOfficerParams": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
                 },
                 "uuid": {
                     "type": "string"
@@ -1577,6 +1517,26 @@
                 }
             }
         },
+        "dto.Officer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateAnnouncement": {
             "type": "object",
             "properties": {
@@ -1593,6 +1553,23 @@
                     "type": "string"
                 },
                 "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateOfficer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "picture": {
                     "type": "string"
                 }
             }

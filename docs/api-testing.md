@@ -41,6 +41,6 @@ In the `fixtures` directory of this project, there's some JSON payloads that we 
   
 Here's an example using one to send a POST request:
 ```sh
-xh post :8080/v1/events -A -a dev-token @fixtures/event_create.json
+xh post :8080/v1/events -A bearer -a dev-token @fixtures/event_create.json
 ```
 
