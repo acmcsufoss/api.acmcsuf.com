@@ -51,7 +51,8 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, officer)
+	dtoModel := dto.OfficerDomainToDto(officer)
+	c.JSON(http.StatusOK, dtoModel)
 }
 
 // GetOfficers godoc
@@ -75,6 +76,10 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 		return
 	}
 
+	dtoModels := make([]dto.Officer, len(officers))
+	for i, officer := range officers {
+		dtoModels[i] = dto.OfficerDomainToDto(officer)
+	}
 	c.JSON(http.StatusOK, officers)
 }
 
