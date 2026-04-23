@@ -6,3 +6,10 @@ func NonEmptyPtr(s string) *string {
 	}
 	return &s
 }
+
+func NonNilStr(ptr *string) string {
+	if ptr == nil {
+		return ""
+	}
+	return *ptr
+}

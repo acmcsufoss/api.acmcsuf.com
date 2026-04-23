@@ -10,9 +10,10 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -35,7 +36,7 @@ func putOfficer(id string, cfg *config.Config) {
 	url := config.GetBaseURL(cfg).JoinPath("v1", "board", "officers", id)
 
 	// ----- Get officer we want to update
-	var oldPayload dbmodels.CreateOfficerParams
+	var oldPayload dto.Officer
 	if body, err := client.SendRequestAndReadResponse(url, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
@@ -74,14 +75,14 @@ func putOfficer(id string, cfg *config.Config) {
 	}
 }
 
-func putForm(oldPayload *dbmodels.CreateOfficerParams) (*dbmodels.UpdateOfficerParams, error) {
-	var payload dbmodels.UpdateOfficerParams
+func putForm(oldPayload *dto.Officer) (*dto.UpdateOfficer, error) {
+	var payload dto.UpdateOfficer
 	var err error
 	var (
 		name    string = oldPayload.FullName
-		picture string = oldPayload.Picture.String
-		github  string = oldPayload.Github.String
-		discord string = oldPayload.Discord.String
+		picture string = forms.NonNilStr(oldPayload.Picture)
+		github  string = forms.NonNilStr(oldPayload.Github)
+		discord string = forms.NonNilStr(oldPayload.Discord)
 	)
 
 	form := huh.NewForm(
@@ -104,11 +105,10 @@ func putForm(oldPayload *dbmodels.CreateOfficerParams) (*dbmodels.UpdateOfficerP
 		return nil, err
 	}
 
-	payload.Uuid = oldPayload.Uuid
-	payload.FullName = name
-	payload.Picture = utils.StringtoNullString(picture)
-	payload.Github = utils.StringtoNullString(github)
-	payload.Discord = utils.StringtoNullString(discord)
+	payload.FullName = forms.NonEmptyPtr(name)
+	payload.Picture = forms.NonEmptyPtr(picture)
+	payload.Github = forms.NonEmptyPtr(github)
+	payload.Discord = forms.NonEmptyPtr(discord)
 
 	return &payload, nil
 }
