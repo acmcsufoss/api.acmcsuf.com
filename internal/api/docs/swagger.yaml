@@ -16,19 +16,6 @@ definitions:
       uuid:
         type: string
     type: object
-  dbmodels.CreateOfficerParams:
-    properties:
-      discord:
-        $ref: '#/definitions/sql.NullString'
-      fullName:
-        type: string
-      github:
-        $ref: '#/definitions/sql.NullString'
-      picture:
-        $ref: '#/definitions/sql.NullString'
-      uuid:
-        type: string
-    type: object
   dbmodels.CreatePositionParams:
     properties:
       fullName:
@@ -84,19 +71,6 @@ definitions:
       uuid:
         type: string
     type: object
-  dbmodels.Officer:
-    properties:
-      discord:
-        $ref: '#/definitions/sql.NullString'
-      fullName:
-        type: string
-      github:
-        $ref: '#/definitions/sql.NullString'
-      picture:
-        $ref: '#/definitions/sql.NullString'
-      uuid:
-        type: string
-    type: object
   dbmodels.Position:
     properties:
       fullName:
@@ -137,19 +111,6 @@ definitions:
         $ref: '#/definitions/sql.NullString'
       startAt:
         $ref: '#/definitions/sql.NullInt64'
-      uuid:
-        type: string
-    type: object
-  dbmodels.UpdateOfficerParams:
-    properties:
-      discord:
-        $ref: '#/definitions/sql.NullString'
-      fullName:
-        type: string
-      github:
-        $ref: '#/definitions/sql.NullString'
-      picture:
-        $ref: '#/definitions/sql.NullString'
       uuid:
         type: string
     type: object
@@ -194,6 +155,19 @@ definitions:
       visibility:
         type: string
     type: object
+  dto.Officer:
+    properties:
+      discord:
+        type: string
+      full_name:
+        type: string
+      github:
+        type: string
+      picture:
+        type: string
+      uuid:
+        type: string
+    type: object
   dto.UpdateAnnouncement:
     properties:
       announce_at:
@@ -205,6 +179,17 @@ definitions:
       uuid:
         type: string
       visibility:
+        type: string
+    type: object
+  dto.UpdateOfficer:
+    properties:
+      discord:
+        type: string
+      full_name:
+        type: string
+      github:
+        type: string
+      picture:
         type: string
     type: object
   sql.NullBool:
@@ -395,7 +380,7 @@ paths:
           description: List of officers
           schema:
             items:
-              $ref: '#/definitions/dbmodels.Officer'
+              $ref: '#/definitions/dto.Officer'
             type: array
         "500":
           description: Internal Server Error
@@ -416,7 +401,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.CreateOfficerParams'
+          $ref: '#/definitions/dto.Officer'
       produces:
       - application/json
       responses:
@@ -491,7 +476,7 @@ paths:
         "200":
           description: Officer details
           schema:
-            $ref: '#/definitions/dbmodels.Officer'
+            $ref: '#/definitions/dto.Officer'
         "404":
           description: Not Found
           schema:
@@ -522,7 +507,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.UpdateOfficerParams'
+          $ref: '#/definitions/dto.UpdateOfficer'
       produces:
       - application/json
       responses:

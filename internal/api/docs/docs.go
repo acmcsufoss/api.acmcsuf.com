@@ -257,7 +257,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Officer"
+                                "$ref": "#/definitions/dto.Officer"
                             }
                         }
                     },
@@ -291,7 +291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateOfficerParams"
+                            "$ref": "#/definitions/dto.Officer"
                         }
                     }
                 ],
@@ -350,7 +350,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Officer details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Officer"
+                            "$ref": "#/definitions/dto.Officer"
                         }
                     },
                     "404": {
@@ -399,7 +399,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateOfficerParams"
+                            "$ref": "#/definitions/dto.UpdateOfficer"
                         }
                     }
                 ],
@@ -1319,26 +1319,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.CreateOfficerParams": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
@@ -1421,26 +1401,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.Officer": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.Position": {
             "type": "object",
             "properties": {
@@ -1500,26 +1460,6 @@ const docTemplate = `{
                 },
                 "startAt": {
                     "$ref": "#/definitions/sql.NullInt64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.UpdateOfficerParams": {
-            "type": "object",
-            "properties": {
-                "discord": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "fullName": {
-                    "type": "string"
-                },
-                "github": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "picture": {
-                    "$ref": "#/definitions/sql.NullString"
                 },
                 "uuid": {
                     "type": "string"
@@ -1588,6 +1528,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Officer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateAnnouncement": {
             "type": "object",
             "properties": {
@@ -1604,6 +1564,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateOfficer": {
+            "type": "object",
+            "properties": {
+                "discord": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "github": {
+                    "type": "string"
+                },
+                "picture": {
                     "type": "string"
                 }
             }
