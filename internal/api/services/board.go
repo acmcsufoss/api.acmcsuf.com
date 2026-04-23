@@ -3,15 +3,17 @@ package services
 import (
 	"context"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
 type BoardServicer interface {
 	// Officer methods
-	GetOfficer(ctx context.Context, id string) (dbmodels.Officer, error)
-	ListOfficers(ctx context.Context, filters ...any) ([]dbmodels.Officer, error)
-	CreateOfficer(ctx context.Context, params dbmodels.CreateOfficerParams) error
-	UpdateOfficer(ctx context.Context, id string, params dbmodels.UpdateOfficerParams) error
+	GetOfficer(ctx context.Context, id string) (domain.Officer, error)
+	ListOfficers(ctx context.Context, filters ...any) ([]domain.Officer, error)
+	CreateOfficer(ctx context.Context, params domain.Officer) error
+	UpdateOfficer(ctx context.Context, id string, params domain.UpdateOfficer) error
 	DeleteOfficer(ctx context.Context, id string) error
 
 	// Tier methods
@@ -30,16 +32,14 @@ type BoardServicer interface {
 }
 
 type BoardService struct {
-	q  *dbmodels.Queries
-	db dbmodels.DBTX
+	q *dbmodels.Queries
 }
 
 var _ BoardServicer = (*BoardService)(nil)
 
 func NewBoardService(q *dbmodels.Queries, db dbmodels.DBTX) *BoardService {
 	return &BoardService{
-		q:  q,
-		db: db,
+		q: q,
 	}
 }
 
@@ -56,22 +56,16 @@ type PositionFilter interface {
 }
 
 // Officer Methods
-func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (dbmodels.Officer, error) {
+func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (domain.Officer, error) {
 	row, err := s.q.GetOfficer(ctx, uuid)
 	if err != nil {
-		return dbmodels.Officer{}, err
+		return domain.Officer{}, err
 	}
 
-	return dbmodels.Officer{
-		Uuid:     uuid,
-		FullName: row.FullName,
-		Picture:  row.Picture,
-		Github:   row.Github,
-		Discord:  row.Discord,
-	}, nil
+	return store.GetOfficerDBToDomain(row), nil
 }
 
-func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]dbmodels.Officer, error) {
+func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]domain.Officer, error) {
 	officers, err := s.q.GetOfficers(ctx)
 	if err != nil {
 		return nil, err
@@ -84,17 +78,26 @@ func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]dbmo
 		}
 	}
 
-	return result, nil
+	domainAs := make([]domain.Officer, len(result))
+	for i, elm := range result {
+		domainAs[i] = store.OfficerDBToDomain(elm)
+	}
+
+	return domainAs, nil
 }
 
-func (s *BoardService) CreateOfficer(ctx context.Context, params dbmodels.CreateOfficerParams) error {
-	_, err := s.q.CreateOfficer(ctx, params)
+func (s *BoardService) CreateOfficer(ctx context.Context, officer domain.Officer) error {
+	dbParams := store.OfficerDomainToDB(officer)
+	_, err := s.q.CreateOfficer(ctx, dbParams)
 	return err
 }
 
-func (s *BoardService) UpdateOfficer(ctx context.Context, uuid string, params dbmodels.UpdateOfficerParams) error {
-	params.Uuid = uuid
-	return s.q.UpdateOfficer(ctx, params)
+func (s *BoardService) UpdateOfficer(ctx context.Context, uuid string,
+	updateOfficer domain.UpdateOfficer) error {
+	// NOTE: domain.UpdateOfficer has a uuid field, do we need the seperate function param here?
+	dbParams := store.UpdateOfficerDomainToDB(updateOfficer)
+	dbParams.Uuid = uuid
+	return s.q.UpdateOfficer(ctx, dbParams)
 }
 
 func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {

@@ -8,6 +8,7 @@ import (
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -91,23 +92,16 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 //	@Router			/v1/board/officers [post]
 func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateOfficerParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.Officer
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if params.FullName == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "FullName is a required field",
-		})
-		return
-	}
-
-	if err := h.boardService.CreateOfficer(ctx, params); err != nil {
+	domainModel := body.ToDomain()
+	if err := h.boardService.CreateOfficer(ctx, domainModel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create officer. " + err.Error(),
 		})
@@ -116,7 +110,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Officer created successfully",
-		"uuid":    params.Uuid,
+		"uuid":    body.Uuid,
 	})
 }
 
@@ -136,17 +130,18 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Router			/v1/board/officers/{id} [put]
 func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateOfficerParams
 	id := c.Param("id")
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.UpdateOfficer
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.UpdateOfficer(ctx, id, params); err != nil {
+	domainModel := body.ToDomain()
+	domainModel.Uuid = id
+	if err := h.boardService.UpdateOfficer(ctx, id, domainModel); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update officer. " + err.Error(),
 		})

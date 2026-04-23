@@ -37,7 +37,6 @@ func OfficerDomainToDto(o domain.Officer) Officer {
 }
 
 type UpdateOfficer struct {
-	Uuid     string  `json:"uuid"`
 	FullName *string `json:"full_name"`
 	Picture  *string `json:"picture"`
 	Github   *string `json:"github"`
@@ -50,7 +49,6 @@ func (o *UpdateOfficer) ToDomain() domain.UpdateOfficer {
 	}
 
 	return domain.UpdateOfficer{
-		Uuid:     o.Uuid,
 		FullName: o.FullName,
 		Picture:  o.Picture,
 		Github:   o.Github,
