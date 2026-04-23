@@ -342,15 +342,15 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			id path int true "Tier number"
+//	@Param			tier path int true "Tier number"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
-//	@Router			/v1/board/tiers/{id} [delete]
+//	@Router			/v1/board/tiers/{tier} [delete]
 func (h *BoardHandler) DeleteTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := strconv.Atoi(c.Param("id"))
+	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid tier number",
@@ -358,7 +358,7 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 		return
 	}
 
-	if err := h.boardService.DeleteTier(ctx, int64(id)); err != nil {
+	if err := h.boardService.DeleteTier(ctx, tierName); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to delete tier",
 		})
