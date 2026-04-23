@@ -80,7 +80,7 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 	for i, officer := range officers {
 		dtoModels[i] = dto.OfficerDomainToDto(officer)
 	}
-	c.JSON(http.StatusOK, officers)
+	c.JSON(http.StatusOK, dtoModels)
 }
 
 // CreateOfficer godoc
