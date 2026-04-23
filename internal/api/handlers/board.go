@@ -221,15 +221,15 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			id path int true "Tier number"
+//	@Param			tier path int true "Tier number"
 //	@Success		200 {object} dto.Tier "Tier details"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
-//	@Router			/v1/board/tiers/{id} [get]
+//	@Router			/v1/board/tiers/{tier} [get]
 func (h *BoardHandler) GetTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	id, err := strconv.Atoi(c.Param("id"))
+	tierName, err := strconv.ParseInt(c.Param("tierName"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid tier number",
@@ -237,7 +237,7 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 		return
 	}
 
-	tier, err := h.boardService.GetTier(ctx, int64(id))
+	tier, err := h.boardService.GetTier(ctx, tierName)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
 			c.JSON(http.StatusNotFound, gin.H{
@@ -298,16 +298,16 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path int true "Tier number"
-//	@Param			body body dbmodels.UpdateTierParams true "Updated tier data"
+//	@Param			body body dto.UpdateTier true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
-//	@Router			/v1/board/tiers/{id} [put]
+//	@Router			/v1/board/tiers/{tier} [put]
 func (h *BoardHandler) UpdateTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateTierParams
-	id, err := strconv.Atoi(c.Param("id"))
+	var body dto.UpdateTier
+	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid tier number",
@@ -315,16 +315,14 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&params); err != nil {
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	params.Tier = int64(id)
-
-	if err := h.boardService.UpdateTier(ctx, params); err != nil {
+	if err := h.boardService.UpdateTier(ctx, tierName, body.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update tier. " + err.Error(),
 		})
@@ -333,7 +331,7 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Tier updated successfully",
-		"tier":    params.Tier,
+		"tier":    tierName,
 	})
 }
 

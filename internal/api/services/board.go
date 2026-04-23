@@ -20,7 +20,7 @@ type BoardServicer interface {
 	GetTier(ctx context.Context, tierName int64) (domain.Tier, error)
 	ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error)
 	CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error)
-	UpdateTier(ctx context.Context, params domain.UpdateTier) error
+	UpdateTier(ctx context.Context, tierName int64, params domain.UpdateTier) error
 	DeleteTier(ctx context.Context, tierName int64) error
 
 	// Position methods
@@ -144,7 +144,10 @@ func (s *BoardService) CreateTier(ctx context.Context, params domain.Tier) (doma
 	return store.TierDBToDomain(dbTier), nil
 }
 
-func (s *BoardService) UpdateTier(ctx context.Context, params domain.UpdateTier) error {
+func (s *BoardService) UpdateTier(ctx context.Context, tierName int64,
+	params domain.UpdateTier) error {
+	dbParams := store.UpdateTierDomainToDB(params)
+	dbParams.Tier = tierName
 	return s.q.UpdateTier(ctx, store.UpdateTierDomainToDB(params))
 }
 
