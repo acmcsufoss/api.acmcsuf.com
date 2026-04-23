@@ -17,18 +17,18 @@ type BoardServicer interface {
 	DeleteOfficer(ctx context.Context, id string) error
 
 	// Tier methods
-	GetTier(ctx context.Context, tierName int64) (dbmodels.Tier, error)
-	ListTiers(ctx context.Context, filters ...any) ([]dbmodels.Tier, error)
-	CreateTier(ctx context.Context, params dbmodels.CreateTierParams) error
-	UpdateTier(ctx context.Context, params dbmodels.UpdateTierParams) error
+	GetTier(ctx context.Context, tierName int64) (domain.Tier, error)
+	ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error)
+	CreateTier(ctx context.Context, params domain.Tier) error
+	UpdateTier(ctx context.Context, params domain.UpdateTier) error
 	DeleteTier(ctx context.Context, tierName int64) error
 
 	// Position methods
-	GetPosition(ctx context.Context, oid string) (dbmodels.Position, error)
-	ListPositions(ctx context.Context, filters ...any) ([]dbmodels.Position, error)
-	CreatePosition(ctx context.Context, params dbmodels.CreatePositionParams) error
-	UpdatePosition(ctx context.Context, params dbmodels.UpdatePositionParams) error
-	DeletePosition(ctx context.Context, arg dbmodels.DeletePositionParams) error
+	GetPosition(ctx context.Context, oid string) (domain.Position, error)
+	ListPositions(ctx context.Context, filters ...any) ([]domain.Position, error)
+	CreatePosition(ctx context.Context, params domain.Position) error
+	UpdatePosition(ctx context.Context, params domain.UpdatePosition) error
+	DeletePosition(ctx context.Context, arg domain.DeletePosition) error
 }
 
 type BoardService struct {
