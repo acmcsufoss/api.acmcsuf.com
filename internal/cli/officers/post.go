@@ -10,10 +10,10 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -54,8 +54,8 @@ func postOfficer(cfg *config.Config) {
 	}
 }
 
-func postForm() (*dbmodels.CreateOfficerParams, error) {
-	var payload dbmodels.CreateOfficerParams
+func postForm() (*dto.Officer, error) {
+	var payload dto.Officer
 	var err error
 	var (
 		picture string
@@ -88,10 +88,9 @@ func postForm() (*dbmodels.CreateOfficerParams, error) {
 		return nil, err
 	}
 
-	// HACK: conversions required here due to lack of DTO models
-	payload.Picture = utils.StringtoNullString(picture)
-	payload.Github = utils.StringtoNullString(github)
-	payload.Discord = utils.StringtoNullString(discord)
+	payload.Picture = forms.NonEmptyPtr(picture)
+	payload.Github = forms.NonEmptyPtr(github)
+	payload.Discord = forms.NonEmptyPtr(discord)
 
 	return &payload, nil
 }
