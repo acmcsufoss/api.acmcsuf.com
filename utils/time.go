@@ -7,10 +7,21 @@ import (
 	"time"
 )
 
+const timeFormat = "01/02/06 03:04PM"
+
 // For unix times of int64 to readable format of 03:04:05PM 01/02/06
 func FormatUnix(unixTime int64) string {
 	t := time.Unix(unixTime, 0)
-	return t.Format("01/02/06 03:04PM")
+	return t.Format(timeFormat)
+}
+
+// Parses readable time format to Unix time integer
+func ParseTime(timeStr string) (int64, error) {
+	t, err := time.Parse(timeFormat, timeStr)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse time: %v", err)
+	}
+	return t.Unix(), nil
 }
 
 func TimeAfterDuration(startTime int64, duration string) (int64, error) {
