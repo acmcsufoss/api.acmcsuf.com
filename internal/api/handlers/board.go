@@ -298,7 +298,7 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			id path int true "Tier number"
+//	@Param			tier path int true "Tier number"
 //	@Param			body body dto.UpdateTier true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string

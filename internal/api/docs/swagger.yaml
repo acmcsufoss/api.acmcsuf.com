@@ -819,7 +819,7 @@ paths:
       parameters:
       - description: Tier number
         in: path
-        name: id
+        name: tier
         required: true
         type: integer
       - description: Updated tier data

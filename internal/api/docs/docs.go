@@ -914,7 +914,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Tier number",
-                        "name": "id",
+                        "name": "tier",
                         "in": "path",
                         "required": true
                     },
