@@ -55,7 +55,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 			board.GET("/officers/:id", bh.GetOfficer)
 
 			board.GET("/tiers", bh.GetTiers)
-			board.GET("/tiers/:id", bh.GetTier)
+			board.GET("/tiers/:tier", bh.GetTier)
 
 			board.GET("/positions", bh.GetPositions)
 			board.GET("/positions/:id", bh.GetPosition)

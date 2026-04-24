@@ -5,6 +5,7 @@ package handlers
 import (
 	"net/http"
 	"strconv"
+	"log"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
@@ -228,11 +229,12 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 //	@Router			/v1/board/tiers/{tier} [get]
 func (h *BoardHandler) GetTier(c *gin.Context) {
 	ctx := c.Request.Context()
-	tierName, err := strconv.ParseInt(c.Param("tierName"), 10, 64)
+	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid tier number",
 		})
+		log.Println(err)
 		return
 	}
 
