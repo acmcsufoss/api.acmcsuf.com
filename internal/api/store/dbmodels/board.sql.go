@@ -255,10 +255,18 @@ FROM
     position
 WHERE
     officer_id = ?
+    AND semester = ?
+    AND tier = ?
 `
 
-func (q *Queries) GetPosition(ctx context.Context, officerID string) (Position, error) {
-	row := q.db.QueryRowContext(ctx, getPosition, officerID)
+type GetPositionParams struct {
+	OfficerID string
+	Semester  string
+	Tier      int64
+}
+
+func (q *Queries) GetPosition(ctx context.Context, arg GetPositionParams) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, arg.OfficerID, arg.Semester, arg.Tier)
 	var i Position
 	err := row.Scan(
 		&i.OfficerID,
@@ -378,7 +386,6 @@ func (q *Queries) GetTiers(ctx context.Context) ([]Tier, error) {
 }
 
 const updateOfficer = `-- name: UpdateOfficer :exec
-
 UPDATE officer
 SET
     full_name = COALESCE(?1, full_name),
@@ -397,7 +404,6 @@ type UpdateOfficerParams struct {
 	Uuid     string
 }
 
-// NOTE: Had to declare above table as :one, may need to change later to :many
 func (q *Queries) UpdateOfficer(ctx context.Context, arg UpdateOfficerParams) error {
 	_, err := q.db.ExecContext(ctx, updateOfficer,
 		arg.FullName,

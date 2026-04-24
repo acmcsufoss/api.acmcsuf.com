@@ -70,9 +70,9 @@ SELECT
 FROM
     position
 WHERE
-    officer_id = ?;
-
--- NOTE: Had to declare above table as :one, may need to change later to :many
+    officer_id = ?
+    AND semester = ?
+    AND tier = ?;
 
 -- name: UpdateOfficer :exec
 UPDATE officer
