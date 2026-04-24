@@ -502,7 +502,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Position"
+                                "$ref": "#/definitions/dto.Position"
                             }
                         }
                     },
@@ -536,7 +536,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdatePositionParams"
+                            "$ref": "#/definitions/dto.UpdatePosition"
                         }
                     }
                 ],
@@ -598,7 +598,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreatePositionParams"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     }
                 ],
@@ -649,7 +649,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.DeletePositionParams"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     }
                 ],
@@ -719,7 +719,7 @@
                     "200": {
                         "description": "Position details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Position"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     },
                     "404": {
@@ -762,7 +762,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Tier"
+                                "$ref": "#/definitions/dto.Tier"
                             }
                         }
                     },
@@ -796,7 +796,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateTierParams"
+                            "$ref": "#/definitions/dto.Tier"
                         }
                     }
                 ],
@@ -829,7 +829,7 @@
                 }
             }
         },
-        "/v1/board/tiers/{id}": {
+        "/v1/board/tiers/{tier}": {
             "get": {
                 "description": "Retrieves a single tier from the database.",
                 "consumes": [
@@ -846,7 +846,7 @@
                     {
                         "type": "integer",
                         "description": "Tier number",
-                        "name": "id",
+                        "name": "tier",
                         "in": "path",
                         "required": true
                     }
@@ -855,7 +855,7 @@
                     "200": {
                         "description": "Tier details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Tier"
+                            "$ref": "#/definitions/dto.Tier"
                         }
                     },
                     "400": {
@@ -913,7 +913,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateTierParams"
+                            "$ref": "#/definitions/dto.UpdateTier"
                         }
                     }
                 ],
@@ -972,7 +972,7 @@
                     {
                         "type": "integer",
                         "description": "Tier number",
-                        "name": "id",
+                        "name": "tier",
                         "in": "path",
                         "required": true
                     }
@@ -1308,63 +1308,6 @@
                 }
             }
         },
-        "dbmodels.CreatePositionParams": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.CreateTierParams": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.DeletePositionParams": {
-            "type": "object",
-            "properties": {
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                }
-            }
-        },
         "dbmodels.Event": {
             "type": "object",
             "properties": {
@@ -1390,48 +1333,6 @@
                 }
             }
         },
-        "dbmodels.Position": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.Tier": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
         "dbmodels.UpdateEventParams": {
             "type": "object",
             "properties": {
@@ -1452,48 +1353,6 @@
                 },
                 "uuid": {
                     "type": "string"
-                }
-            }
-        },
-        "dbmodels.UpdatePositionParams": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.UpdateTierParams": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },
@@ -1537,6 +1396,46 @@
                 }
             }
         },
+        "dto.Position": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "officer_id": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Tier": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "type": "integer"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateAnnouncement": {
             "type": "object",
             "properties": {
@@ -1570,6 +1469,43 @@
                     "type": "string"
                 },
                 "picture": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePosition": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "officer_id": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateTier": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "type": "integer"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }

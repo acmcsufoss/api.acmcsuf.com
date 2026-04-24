@@ -513,7 +513,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Position"
+                                "$ref": "#/definitions/dto.Position"
                             }
                         }
                     },
@@ -547,7 +547,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdatePositionParams"
+                            "$ref": "#/definitions/dto.UpdatePosition"
                         }
                     }
                 ],
@@ -609,7 +609,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreatePositionParams"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     }
                 ],
@@ -660,7 +660,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.DeletePositionParams"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     }
                 ],
@@ -730,7 +730,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Position details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Position"
+                            "$ref": "#/definitions/dto.Position"
                         }
                     },
                     "404": {
@@ -773,7 +773,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Tier"
+                                "$ref": "#/definitions/dto.Tier"
                             }
                         }
                     },
@@ -807,7 +807,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateTierParams"
+                            "$ref": "#/definitions/dto.Tier"
                         }
                     }
                 ],
@@ -840,7 +840,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/board/tiers/{id}": {
+        "/v1/board/tiers/{tier}": {
             "get": {
                 "description": "Retrieves a single tier from the database.",
                 "consumes": [
@@ -857,7 +857,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Tier number",
-                        "name": "id",
+                        "name": "tier",
                         "in": "path",
                         "required": true
                     }
@@ -866,7 +866,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Tier details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Tier"
+                            "$ref": "#/definitions/dto.Tier"
                         }
                     },
                     "400": {
@@ -924,7 +924,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateTierParams"
+                            "$ref": "#/definitions/dto.UpdateTier"
                         }
                     }
                 ],
@@ -983,7 +983,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Tier number",
-                        "name": "id",
+                        "name": "tier",
                         "in": "path",
                         "required": true
                     }
@@ -1319,63 +1319,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.CreatePositionParams": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.CreateTierParams": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.DeletePositionParams": {
-            "type": "object",
-            "properties": {
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                }
-            }
-        },
         "dbmodels.Event": {
             "type": "object",
             "properties": {
@@ -1401,48 +1344,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.Position": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.Tier": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
         "dbmodels.UpdateEventParams": {
             "type": "object",
             "properties": {
@@ -1463,48 +1364,6 @@ const docTemplate = `{
                 },
                 "uuid": {
                     "type": "string"
-                }
-            }
-        },
-        "dbmodels.UpdatePositionParams": {
-            "type": "object",
-            "properties": {
-                "fullName": {
-                    "type": "string"
-                },
-                "oid": {
-                    "type": "string"
-                },
-                "semester": {
-                    "type": "string"
-                },
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.UpdateTierParams": {
-            "type": "object",
-            "properties": {
-                "team": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "tier": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "tindex": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "title": {
-                    "$ref": "#/definitions/sql.NullString"
                 }
             }
         },
@@ -1548,6 +1407,46 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Position": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "officer_id": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Tier": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "type": "integer"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.UpdateAnnouncement": {
             "type": "object",
             "properties": {
@@ -1581,6 +1480,43 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "picture": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdatePosition": {
+            "type": "object",
+            "properties": {
+                "full_name": {
+                    "type": "string"
+                },
+                "officer_id": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.UpdateTier": {
+            "type": "object",
+            "properties": {
+                "t_index": {
+                    "type": "integer"
+                },
+                "team": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
