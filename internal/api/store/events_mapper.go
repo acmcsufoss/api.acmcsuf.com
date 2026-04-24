@@ -20,7 +20,6 @@ func EventDomainToDB(event domain.Event) dbmodels.CreateEventParams {
 
 func UpdateEventDomainToDB(event domain.UpdateEvent) dbmodels.UpdateEventParams {
 	return dbmodels.UpdateEventParams{
-		Uuid:     event.Uuid,
 		Location: stringToNullString(event.Location),
 		StartAt:  timeToNullInt64(event.StartAt),
 		EndAt:    timeToNullInt64(event.EndAt),
