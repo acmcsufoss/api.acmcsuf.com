@@ -660,7 +660,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.Position"
+                            "$ref": "#/definitions/dto.DeletePosition"
                         }
                     }
                 ],
@@ -1384,6 +1384,20 @@ const docTemplate = `{
                 },
                 "visibility": {
                     "type": "string"
+                }
+            }
+        },
+        "dto.DeletePosition": {
+            "type": "object",
+            "properties": {
+                "officer_id": {
+                    "type": "string"
+                },
+                "semester": {
+                    "type": "string"
+                },
+                "tier": {
+                    "type": "integer"
                 }
             }
         },

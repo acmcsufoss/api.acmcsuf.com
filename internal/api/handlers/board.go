@@ -511,7 +511,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dto.Position true "Position identifier"
+//	@Param			body body dto.DeletePosition true "Position identifier"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string

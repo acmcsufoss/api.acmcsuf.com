@@ -61,6 +61,15 @@ definitions:
       visibility:
         type: string
     type: object
+  dto.DeletePosition:
+    properties:
+      officer_id:
+        type: string
+      semester:
+        type: string
+      tier:
+        type: integer
+    type: object
   dto.Officer:
     properties:
       discord:
@@ -506,7 +515,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dto.Position'
+          $ref: '#/definitions/dto.DeletePosition'
       produces:
       - application/json
       responses:
