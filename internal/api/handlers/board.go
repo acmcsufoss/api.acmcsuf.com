@@ -475,7 +475,7 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.UpdatePositionParams true "Updated position data (must include oid, semester, tier)"
+//	@Param			body body dto.UpdatePosition true "Updated position data (must include oid, semester, tier)"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -483,16 +483,15 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 //	@Router			/v1/board/positions [put]
 func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdatePositionParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.UpdatePosition
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.UpdatePosition(ctx, params); err != nil {
+	if err := h.boardService.UpdatePosition(ctx, body.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to update position. " + err.Error(),
 		})
@@ -501,9 +500,6 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "Position updated successfully",
-		"oid":      params.Oid,
-		"semester": params.Semester,
-		"tier":     params.Tier,
 	})
 }
 
@@ -514,7 +510,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.DeletePositionParams true "Position identifier"
+//	@Param			body body dto.Position true "Position identifier"
 //	@Success		200 {object} map[string]string "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
@@ -522,16 +518,15 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Router			/v1/board/positions [delete]
 func (h *BoardHandler) DeletePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.DeletePositionParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.DeletePosition
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.DeletePosition(ctx, params); err != nil {
+	if err := h.boardService.DeletePosition(ctx, body.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to delete position",
 		})

@@ -3,7 +3,7 @@ package domain
 type Position struct {
 	OfficerID string
 	Semester  string
-	Tier      int
+	Tier      int64
 	FullName  string
 	Title     *string
 	Team      *string
@@ -12,7 +12,7 @@ type Position struct {
 type UpdatePosition struct {
 	OfficerID string
 	Semester  string
-	Tier      int
+	Tier      int64
 	FullName  string
 	Title     *string
 	Team      *string

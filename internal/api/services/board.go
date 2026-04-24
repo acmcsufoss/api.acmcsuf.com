@@ -194,10 +194,21 @@ func (s *BoardService) CreatePosition(ctx context.Context,
 	return store.PositionDBToDomain(dbPosition), nil
 }
 
-func (s *BoardService) UpdatePosition(ctx context.Context, params dbmodels.UpdatePositionParams) error {
-	return s.q.UpdatePosition(ctx, params)
+func (s *BoardService) UpdatePosition(ctx context.Context, params domain.UpdatePosition) error {
+	return s.q.UpdatePosition(ctx, store.UpdatePositionDomainToDB(params))
 }
 
-func (s *BoardService) DeletePosition(ctx context.Context, arg dbmodels.DeletePositionParams) error {
-	return s.q.DeletePosition(ctx, arg)
+/*
+	type DeletePositionParams struct {
+		OfficerID string
+		Semester  string
+		Tier      int64
+	}
+*/
+func (s *BoardService) DeletePosition(ctx context.Context, arg domain.Position) error {
+	return s.q.DeletePosition(ctx, dbmodels.DeletePositionParams{
+		OfficerID: arg.OfficerID,
+		Semester:  arg.Semester,
+		Tier:      arg.Tier,
+	})
 }
