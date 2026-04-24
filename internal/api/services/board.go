@@ -26,7 +26,7 @@ type BoardServicer interface {
 	// Position methods
 	GetPosition(ctx context.Context, oid string) (domain.Position, error)
 	ListPositions(ctx context.Context, filters ...any) ([]domain.Position, error)
-	CreatePosition(ctx context.Context, params domain.Position) error
+	CreatePosition(ctx context.Context, params domain.Position) (domain.Position, error)
 	UpdatePosition(ctx context.Context, params domain.UpdatePosition) error
 	DeletePosition(ctx context.Context, arg domain.DeletePosition) error
 }
@@ -185,9 +185,13 @@ func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dom
 	return domainPositions, nil
 }
 
-func (s *BoardService) CreatePosition(ctx context.Context, params dbmodels.CreatePositionParams) error {
-	_, err := s.q.CreatePosition(ctx, params)
-	return err
+func (s *BoardService) CreatePosition(ctx context.Context,
+	params domain.Position) (domain.Position, error) {
+	dbPosition, err := s.q.CreatePosition(ctx, store.PositionDomainToDB(params))
+	if err != nil {
+		return domain.Position{}, err
+	}
+	return store.PositionDBToDomain(dbPosition), nil
 }
 
 func (s *BoardService) UpdatePosition(ctx context.Context, params dbmodels.UpdatePositionParams) error {

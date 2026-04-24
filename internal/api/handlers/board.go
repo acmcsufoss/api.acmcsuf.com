@@ -439,23 +439,23 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreatePositionParams true "Position data"
+//	@Param			body body dto.Position true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [post]
 func (h *BoardHandler) CreatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreatePositionParams
-
-	if err := c.ShouldBindJSON(&params); err != nil {
+	var body dto.Position
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.boardService.CreatePosition(ctx, params); err != nil {
+	position, err := h.boardService.CreatePosition(ctx, body.ToDomain())
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create position. " + err.Error(),
 		})
@@ -464,9 +464,7 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":  "Position created successfully",
-		"oid":      params.Oid,
-		"semester": params.Semester,
-		"tier":     params.Tier,
+		"position": dto.PositionDomainToDto(&position),
 	})
 }
 
