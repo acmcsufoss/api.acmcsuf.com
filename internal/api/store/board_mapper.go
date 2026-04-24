@@ -104,6 +104,15 @@ func DeletePositionDomainToDB(position domain.DeletePosition) dbmodels.DeletePos
 	}
 }
 
+// NOTE: this is the exact  same as the above func which feels a little odd
+func DeletePositionDomainToDB(position domain.DeletePosition) dbmodels.DeletePositionParams {
+	return dbmodels.DeletePositionParams{
+		OfficerID: position.OfficerID,
+		Semester:  position.Semester,
+		Tier:      position.Tier,
+	}
+}
+
 func PositionDBToDomain(position dbmodels.Position) domain.Position {
 	return domain.Position{
 		OfficerID: position.OfficerID,
@@ -114,3 +123,4 @@ func PositionDBToDomain(position dbmodels.Position) domain.Position {
 		Team:      nullStringPtr(position.Team),
 	}
 }
+

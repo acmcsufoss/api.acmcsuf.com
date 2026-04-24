@@ -157,8 +157,9 @@ func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 
 // ==== Position Methods =======================================================
 
-func (s *BoardService) GetPosition(ctx context.Context, oid string) (domain.Position, error) {
-	dbPosition, err := s.q.GetPosition(ctx, oid)
+func (s *BoardService) GetPosition(ctx context.Context, key domain.GetPosition) (domain.Position, error) {
+	dbKey := store.GetPositionDomainToDB(key)
+	dbPosition, err := s.q.GetPosition(ctx, dbKey)
 	if err != nil {
 		return domain.Position{}, err
 	}

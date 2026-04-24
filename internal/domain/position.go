@@ -23,3 +23,5 @@ type DeletePosition struct {
 	Semester  string
 	Tier      int64
 }
+
+type GetPosition DeletePosition
