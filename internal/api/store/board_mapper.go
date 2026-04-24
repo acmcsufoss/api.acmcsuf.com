@@ -96,11 +96,11 @@ func UpdatePositionDomainToDB(position domain.UpdatePosition) dbmodels.UpdatePos
 	}
 }
 
-func DeletePositionDomainToDB(position domain.Position) dbmodels.DeletePositionParams {
+func DeletePositionDomainToDB(position domain.DeletePosition) dbmodels.DeletePositionParams {
 	return dbmodels.DeletePositionParams{
 		OfficerID: position.OfficerID,
 		Semester:  position.Semester,
-		Tier:      int64(position.Tier),
+		Tier:      position.Tier,
 	}
 }
 

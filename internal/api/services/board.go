@@ -160,7 +160,7 @@ func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 func (s *BoardService) GetPosition(ctx context.Context, oid string) (domain.Position, error) {
 	dbPosition, err := s.q.GetPosition(ctx, oid)
 	if err != nil {
-		return domain.Position{}, nil
+		return domain.Position{}, err
 	}
 	return store.PositionDBToDomain(dbPosition), nil
 }
@@ -179,7 +179,7 @@ func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dom
 	}
 
 	domainPositions := make([]domain.Position, len(result))
-	for i, pos := range positions {
+	for i, pos := range result {
 		domainPositions[i] = store.PositionDBToDomain(pos)
 	}
 	return domainPositions, nil
@@ -199,9 +199,5 @@ func (s *BoardService) UpdatePosition(ctx context.Context, params domain.UpdateP
 }
 
 func (s *BoardService) DeletePosition(ctx context.Context, arg domain.DeletePosition) error {
-	return s.q.DeletePosition(ctx, dbmodels.DeletePositionParams{
-		OfficerID: arg.OfficerID,
-		Semester:  arg.Semester,
-		Tier:      arg.Tier,
-	})
+	return s.q.DeletePosition(ctx, store.DeletePositionDomainToDB(arg))
 }
