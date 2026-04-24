@@ -396,7 +396,7 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 	for i, pos := range positions {
 		dtoPositions[i] = dto.PositionDomainToDto(&pos)
 	}
-	c.JSON(http.StatusOK, positions)
+	c.JSON(http.StatusOK, dtoPositions)
 }
 
 // GetPosition godoc
