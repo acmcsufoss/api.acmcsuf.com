@@ -109,7 +109,7 @@ func putForm(oldPayload *dto.Announcement) (*dto.UpdateAnnouncement, error) {
 	payload.Uuid = oldPayload.Uuid
 	payload.Visibility = &visibilityStr
 	if announceAtStr != "" {
-		timestamp, err := utils.ByteSlicetoUnix([]byte(announceAtStr))
+		timestamp, err := utils.ParseTime(announceAtStr)
 		if err != nil {
 			return nil, err
 		}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
@@ -83,11 +82,11 @@ func putForm(oldPayload *dto.Event) (dto.UpdateEvent, error) {
 				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Starts At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&startAtStr),
 			huh.NewInput().
 				Title("Ends At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&endAtStr),
 			huh.NewConfirm().
 				Title("All day event?").
