@@ -3,9 +3,9 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
-	"log"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
@@ -500,7 +500,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message":  "Position updated successfully",
+		"message": "Position updated successfully",
 	})
 }
 
