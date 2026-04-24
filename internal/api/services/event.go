@@ -4,11 +4,13 @@ package services
 import (
 	"context"
 
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 )
 
 type EventsServicer interface {
-	Service[dbmodels.Event, string, dbmodels.CreateEventParams, dbmodels.UpdateEventParams]
+	Service[domain.Event, string, domain.Event, domain.UpdateEvent]
 }
 
 type EventsService struct {
@@ -22,24 +24,24 @@ func NewEventsService(q *dbmodels.Queries) *EventsService {
 	return &EventsService{q: q}
 }
 
-func (s *EventsService) Get(ctx context.Context, uuid string) (dbmodels.Event, error) {
+func (s *EventsService) Get(ctx context.Context, uuid string) (domain.Event, error) {
 	event, err := s.q.GetEvent(ctx, uuid)
 	if err != nil {
-		return dbmodels.Event{}, err
+		return domain.Event{}, err
 	}
-	return event, nil
+	return store.EventDBToDomain(event), nil
 }
 
-func (s *EventsService) Create(ctx context.Context, params dbmodels.CreateEventParams) error {
-	if err := s.q.CreateEvent(ctx, params); err != nil {
+func (s *EventsService) Create(ctx context.Context, params domain.Event) error {
+	dbParams := store.EventDomainToDB(params)
+	if err := s.q.CreateEvent(ctx, dbParams); err != nil {
 		return err
 	}
 	return nil
 }
 
-// TODO: Move filters to their own file or module or something
 type EventFilter interface {
-	Apply(events []dbmodels.Event) []dbmodels.Event
+	Apply(events []domain.Event) []domain.Event
 }
 
 type HostFilter struct {
@@ -49,12 +51,12 @@ type HostFilter struct {
 // Ensure HostFilter implements EventFilter
 var _ EventFilter = (*HostFilter)(nil)
 
-func (f *HostFilter) Apply(events []dbmodels.Event) []dbmodels.Event {
+func (f *HostFilter) Apply(events []domain.Event) []domain.Event {
 	if f.Host == "" {
 		return events
 	}
 
-	filtered := make([]dbmodels.Event, 0)
+	filtered := make([]domain.Event, 0)
 	for _, event := range events {
 		if event.Host == f.Host {
 			filtered = append(filtered, event)
@@ -63,13 +65,17 @@ func (f *HostFilter) Apply(events []dbmodels.Event) []dbmodels.Event {
 	return filtered
 }
 
-func (s *EventsService) List(ctx context.Context, filters ...any) ([]dbmodels.Event, error) {
+func (s *EventsService) List(ctx context.Context, filters ...any) ([]domain.Event, error) {
 	events, err := s.q.GetEvents(ctx)
 	if err != nil {
 		return nil, err
 	}
+	domainEvents := make([]domain.Event, len(events))
+	for i, event := range events {
+		domainEvents[i] = store.EventDBToDomain(event)
+	}
 
-	result := events
+	result := domainEvents
 	for _, filter := range filters {
 		if eventFilter, ok := filter.(EventFilter); ok {
 			result = eventFilter.Apply(result)
@@ -79,9 +85,10 @@ func (s *EventsService) List(ctx context.Context, filters ...any) ([]dbmodels.Ev
 	return result, nil
 }
 
-func (s *EventsService) Update(ctx context.Context, uuid string, params dbmodels.UpdateEventParams) error {
-	params.Uuid = uuid
-	if err := s.q.UpdateEvent(ctx, params); err != nil {
+func (s *EventsService) Update(ctx context.Context, uuid string, params domain.UpdateEvent) error {
+	dbParams := store.UpdateEventDomainToDB(params)
+	dbParams.Uuid = uuid
+	if err := s.q.UpdateEvent(ctx, dbParams); err != nil {
 		return err
 	}
 	return nil

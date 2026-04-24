@@ -3,11 +3,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,7 +28,7 @@ func NewEventHandler(eventService services.EventsServicer) *EventsHandler {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Event ID"
-//	@Success		200 {object} dbmodels.Event "Event details"
+//	@Success		200 {object} dto.Event "Event details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events/{id} [get]
@@ -53,7 +52,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, event)
+	c.JSON(http.StatusOK, dto.EventDomainToDto(&event))
 }
 
 // CreateEvent godoc
@@ -63,39 +62,33 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 //	@Tags			Events
 //	@Accept			json
 //	@Produce		json
-//	@Param			body body dbmodels.CreateEventParams true "Event data"
+//	@Param			body body dto.Event true "Event data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events [post]
 func (h *EventsHandler) CreateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.CreateEventParams
+	var body dto.Event
 
-	if err := c.ShouldBindJSON(&params); err != nil {
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if params.Location == "" || params.Host == "" {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Location and Host are required fields",
-		})
-		return
-	}
-
-	err := h.eventsService.Create(ctx, params)
+	err := h.eventsService.Create(ctx, body.ToDomain())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
 		})
 		return
 	}
+	// TODO: Get event and return it here. Issue is that the generated sqlc func
+	// isn't returning the resource, so the service isn't either.
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event created successfully",
-		"uuid":    params.Uuid,
 	})
 }
 
@@ -107,7 +100,7 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			host query string false "Filter by host"
-//	@Success		200 {array} dbmodels.Event "List of events"
+//	@Success		200 {array} dto.Event "List of events"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events [get]
 func (h *EventsHandler) GetEvents(c *gin.Context) {
@@ -126,7 +119,12 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, events)
+
+	dtoEvents := make([]dto.Event, len(events))
+	for i, event := range events {
+		dtoEvents[i] = dto.EventDomainToDto(&event)
+	}
+	c.JSON(http.StatusOK, dtoEvents)
 }
 
 // UpdateEvent godoc
@@ -137,7 +135,7 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Accept			json
 //		@Produce		json
 //	 	@Param			id path string true "Event ID"
-//	 	@Param			body body dbmodels.UpdateEventParams true "Updated event data"
+//	 	@Param			body body dto.UpdateEvent true "Updated event data"
 //		@Success		200 {object} map[string]string "Success message"
 //		@Failure		400 {object} map[string]string
 //		@Failure		404 {object} map[string]string
@@ -145,27 +143,23 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 //		@Router			/v1/events/{id} [put]
 func (h *EventsHandler) UpdateEvent(c *gin.Context) {
 	ctx := c.Request.Context()
-	var params dbmodels.UpdateEventParams
+	var body dto.UpdateEvent
 	id := c.Param("id")
-
-	fmt.Println("UPDATE:", id)
-	if err := c.ShouldBindJSON(&params); err != nil {
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
-	if err := h.eventsService.Update(ctx, id, params); err != nil {
-		error := fmt.Sprint("Failed to update event: ", err, " | ", ctx, " | ", id, " | ", params)
+	if err := h.eventsService.Update(ctx, id, body.ToDomain()); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": error,
+			"error": err.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Event updated successfully",
-		"uuid":    params.Uuid,
 	})
 }
 
