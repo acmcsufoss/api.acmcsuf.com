@@ -73,6 +73,7 @@ func (s *BoardService) ListOfficers(ctx context.Context, filters ...any) ([]doma
 		return nil, err
 	}
 
+	// TODO: these filters should probably operate on domain models
 	result := officers
 	for _, filter := range filters {
 		if officerFilter, ok := filter.(OfficerFilter); ok {
