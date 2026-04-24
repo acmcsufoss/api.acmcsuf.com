@@ -139,7 +139,7 @@ func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.
 func (s *BoardService) CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error) {
 	dbTier, err := s.q.CreateTier(ctx, store.TierDomainToDB(params))
 	if err != nil {
-		return domain.Tier{}, nil
+		return domain.Tier{}, err
 	}
 	return store.TierDBToDomain(dbTier), nil
 }
