@@ -148,7 +148,7 @@ func (s *BoardService) UpdateTier(ctx context.Context, tierName int64,
 	params domain.UpdateTier) error {
 	dbParams := store.UpdateTierDomainToDB(params)
 	dbParams.Tier = tierName
-	return s.q.UpdateTier(ctx, store.UpdateTierDomainToDB(params))
+	return s.q.UpdateTier(ctx, dbParams)
 }
 
 func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
@@ -198,14 +198,7 @@ func (s *BoardService) UpdatePosition(ctx context.Context, params domain.UpdateP
 	return s.q.UpdatePosition(ctx, store.UpdatePositionDomainToDB(params))
 }
 
-/*
-	type DeletePositionParams struct {
-		OfficerID string
-		Semester  string
-		Tier      int64
-	}
-*/
-func (s *BoardService) DeletePosition(ctx context.Context, arg domain.Position) error {
+func (s *BoardService) DeletePosition(ctx context.Context, arg domain.DeletePosition) error {
 	return s.q.DeletePosition(ctx, dbmodels.DeletePositionParams{
 		OfficerID: arg.OfficerID,
 		Semester:  arg.Semester,
