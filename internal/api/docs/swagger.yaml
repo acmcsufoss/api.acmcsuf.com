@@ -16,44 +16,6 @@ definitions:
       uuid:
         type: string
     type: object
-  dbmodels.CreatePositionParams:
-    properties:
-      fullName:
-        type: string
-      oid:
-        type: string
-      semester:
-        type: string
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.CreateTierParams:
-    properties:
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      tindex:
-        $ref: '#/definitions/sql.NullInt64'
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.DeletePositionParams:
-    properties:
-      oid:
-        type: string
-      semester:
-        type: string
-      tier:
-        format: int64
-        type: integer
-    type: object
   dbmodels.Event:
     properties:
       endAt:
@@ -71,34 +33,6 @@ definitions:
       uuid:
         type: string
     type: object
-  dbmodels.Position:
-    properties:
-      fullName:
-        type: string
-      oid:
-        type: string
-      semester:
-        type: string
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.Tier:
-    properties:
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      tindex:
-        $ref: '#/definitions/sql.NullInt64'
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
   dbmodels.UpdateEventParams:
     properties:
       endAt:
@@ -114,34 +48,6 @@ definitions:
       uuid:
         type: string
     type: object
-  dbmodels.UpdatePositionParams:
-    properties:
-      fullName:
-        type: string
-      oid:
-        type: string
-      semester:
-        type: string
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.UpdateTierParams:
-    properties:
-      team:
-        $ref: '#/definitions/sql.NullString'
-      tier:
-        format: int64
-        type: integer
-      tindex:
-        $ref: '#/definitions/sql.NullInt64'
-      title:
-        $ref: '#/definitions/sql.NullString'
-    type: object
   dto.Announcement:
     properties:
       announce_at:
@@ -155,6 +61,15 @@ definitions:
       visibility:
         type: string
     type: object
+  dto.DeletePosition:
+    properties:
+      officer_id:
+        type: string
+      semester:
+        type: string
+      tier:
+        type: integer
+    type: object
   dto.Officer:
     properties:
       discord:
@@ -166,6 +81,32 @@ definitions:
       picture:
         type: string
       uuid:
+        type: string
+    type: object
+  dto.Position:
+    properties:
+      full_name:
+        type: string
+      officer_id:
+        type: string
+      semester:
+        type: string
+      team:
+        type: string
+      tier:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.Tier:
+    properties:
+      t_index:
+        type: integer
+      team:
+        type: string
+      tier:
+        type: integer
+      title:
         type: string
     type: object
   dto.UpdateAnnouncement:
@@ -190,6 +131,30 @@ definitions:
       github:
         type: string
       picture:
+        type: string
+    type: object
+  dto.UpdatePosition:
+    properties:
+      full_name:
+        type: string
+      officer_id:
+        type: string
+      semester:
+        type: string
+      team:
+        type: string
+      tier:
+        type: integer
+      title:
+        type: string
+    type: object
+  dto.UpdateTier:
+    properties:
+      t_index:
+        type: integer
+      team:
+        type: string
+      title:
         type: string
     type: object
   sql.NullBool:
@@ -550,7 +515,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.DeletePositionParams'
+          $ref: '#/definitions/dto.DeletePosition'
       produces:
       - application/json
       responses:
@@ -592,7 +557,7 @@ paths:
           description: List of positions
           schema:
             items:
-              $ref: '#/definitions/dbmodels.Position'
+              $ref: '#/definitions/dto.Position'
             type: array
         "500":
           description: Internal Server Error
@@ -613,7 +578,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.CreatePositionParams'
+          $ref: '#/definitions/dto.Position'
       produces:
       - application/json
       responses:
@@ -647,7 +612,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.UpdatePositionParams'
+          $ref: '#/definitions/dto.UpdatePosition'
       produces:
       - application/json
       responses:
@@ -695,7 +660,7 @@ paths:
         "200":
           description: Position details
           schema:
-            $ref: '#/definitions/dbmodels.Position'
+            $ref: '#/definitions/dto.Position'
         "404":
           description: Not Found
           schema:
@@ -723,7 +688,7 @@ paths:
           description: List of tiers
           schema:
             items:
-              $ref: '#/definitions/dbmodels.Tier'
+              $ref: '#/definitions/dto.Tier'
             type: array
         "500":
           description: Internal Server Error
@@ -744,7 +709,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.CreateTierParams'
+          $ref: '#/definitions/dto.Tier'
       produces:
       - application/json
       responses:
@@ -768,7 +733,7 @@ paths:
       summary: Creates a new tier
       tags:
       - Board
-  /v1/board/tiers/{id}:
+  /v1/board/tiers/{tier}:
     delete:
       consumes:
       - application/json
@@ -776,7 +741,7 @@ paths:
       parameters:
       - description: Tier number
         in: path
-        name: id
+        name: tier
         required: true
         type: integer
       produces:
@@ -816,7 +781,7 @@ paths:
       parameters:
       - description: Tier number
         in: path
-        name: id
+        name: tier
         required: true
         type: integer
       produces:
@@ -825,7 +790,7 @@ paths:
         "200":
           description: Tier details
           schema:
-            $ref: '#/definitions/dbmodels.Tier'
+            $ref: '#/definitions/dto.Tier'
         "400":
           description: Bad Request
           schema:
@@ -854,7 +819,7 @@ paths:
       parameters:
       - description: Tier number
         in: path
-        name: id
+        name: tier
         required: true
         type: integer
       - description: Updated tier data
@@ -862,7 +827,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.UpdateTierParams'
+          $ref: '#/definitions/dto.UpdateTier'
       produces:
       - application/json
       responses:
