@@ -119,7 +119,12 @@ func (h *EventsHandler) GetEvents(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, events)
+
+	dtoEvents := make([]dto.Event, len(events))
+	for i, event := range events {
+		dtoEvents[i] = dto.EventDomainToDto(&event)
+	}
+	c.JSON(http.StatusOK, dtoEvents)
 }
 
 // UpdateEvent godoc
