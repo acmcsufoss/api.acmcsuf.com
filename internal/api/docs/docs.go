@@ -1055,7 +1055,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/dbmodels.Event"
+                                "$ref": "#/definitions/dto.Event"
                             }
                         }
                     },
@@ -1089,7 +1089,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.CreateEventParams"
+                            "$ref": "#/definitions/dto.Event"
                         }
                     }
                 ],
@@ -1148,7 +1148,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Event details",
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.Event"
+                            "$ref": "#/definitions/dto.Event"
                         }
                     },
                     "404": {
@@ -1197,7 +1197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dbmodels.UpdateEventParams"
+                            "$ref": "#/definitions/dto.UpdateEvent"
                         }
                     }
                 ],
@@ -1294,31 +1294,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dbmodels.CreateEventParams": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "isAllDay": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "startAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.CreatePositionParams": {
             "type": "object",
             "properties": {
@@ -1376,31 +1351,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dbmodels.Event": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "isAllDay": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "startAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dbmodels.Position": {
             "type": "object",
             "properties": {
@@ -1440,29 +1390,6 @@ const docTemplate = `{
                 },
                 "title": {
                     "$ref": "#/definitions/sql.NullString"
-                }
-            }
-        },
-        "dbmodels.UpdateEventParams": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "host": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "isAllDay": {
-                    "$ref": "#/definitions/sql.NullBool"
-                },
-                "location": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "startAt": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "uuid": {
-                    "type": "string"
                 }
             }
         },
@@ -1528,6 +1455,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.Event": {
+            "type": "object",
+            "properties": {
+                "end_at": {
+                    "type": "integer"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "integer"
+                },
+                "uuid": {
+                    "type": "string"
+                }
+            }
+        },
         "dto.Officer": {
             "type": "object",
             "properties": {
@@ -1568,6 +1518,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateEvent": {
+            "type": "object",
+            "properties": {
+                "end_at": {
+                    "type": "integer"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.UpdateOfficer": {
             "type": "object",
             "properties": {
@@ -1582,18 +1552,6 @@ const docTemplate = `{
                 },
                 "picture": {
                     "type": "string"
-                }
-            }
-        },
-        "sql.NullBool": {
-            "type": "object",
-            "properties": {
-                "bool": {
-                    "type": "boolean"
-                },
-                "valid": {
-                    "description": "Valid is true if Bool is not NULL",
-                    "type": "boolean"
                 }
             }
         },

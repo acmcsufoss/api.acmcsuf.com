@@ -1,21 +1,4 @@
 definitions:
-  dbmodels.CreateEventParams:
-    properties:
-      endAt:
-        format: int64
-        type: integer
-      host:
-        type: string
-      isAllDay:
-        type: boolean
-      location:
-        type: string
-      startAt:
-        format: int64
-        type: integer
-      uuid:
-        type: string
-    type: object
   dbmodels.CreatePositionParams:
     properties:
       fullName:
@@ -54,23 +37,6 @@ definitions:
         format: int64
         type: integer
     type: object
-  dbmodels.Event:
-    properties:
-      endAt:
-        format: int64
-        type: integer
-      host:
-        type: string
-      isAllDay:
-        type: boolean
-      location:
-        type: string
-      startAt:
-        format: int64
-        type: integer
-      uuid:
-        type: string
-    type: object
   dbmodels.Position:
     properties:
       fullName:
@@ -98,21 +64,6 @@ definitions:
         $ref: '#/definitions/sql.NullInt64'
       title:
         $ref: '#/definitions/sql.NullString'
-    type: object
-  dbmodels.UpdateEventParams:
-    properties:
-      endAt:
-        $ref: '#/definitions/sql.NullInt64'
-      host:
-        $ref: '#/definitions/sql.NullString'
-      isAllDay:
-        $ref: '#/definitions/sql.NullBool'
-      location:
-        $ref: '#/definitions/sql.NullString'
-      startAt:
-        $ref: '#/definitions/sql.NullInt64'
-      uuid:
-        type: string
     type: object
   dbmodels.UpdatePositionParams:
     properties:
@@ -155,6 +106,21 @@ definitions:
       visibility:
         type: string
     type: object
+  dto.Event:
+    properties:
+      end_at:
+        type: integer
+      host:
+        type: string
+      is_all_day:
+        type: boolean
+      location:
+        type: string
+      start_at:
+        type: integer
+      uuid:
+        type: string
+    type: object
   dto.Officer:
     properties:
       discord:
@@ -181,6 +147,19 @@ definitions:
       visibility:
         type: string
     type: object
+  dto.UpdateEvent:
+    properties:
+      end_at:
+        type: integer
+      host:
+        type: string
+      is_all_day:
+        type: boolean
+      location:
+        type: string
+      start_at:
+        type: integer
+    type: object
   dto.UpdateOfficer:
     properties:
       discord:
@@ -191,14 +170,6 @@ definitions:
         type: string
       picture:
         type: string
-    type: object
-  sql.NullBool:
-    properties:
-      bool:
-        type: boolean
-      valid:
-        description: Valid is true if Bool is not NULL
-        type: boolean
     type: object
   sql.NullInt64:
     properties:
@@ -910,7 +881,7 @@ paths:
           description: List of events
           schema:
             items:
-              $ref: '#/definitions/dbmodels.Event'
+              $ref: '#/definitions/dto.Event'
             type: array
         "500":
           description: Internal Server Error
@@ -931,7 +902,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.CreateEventParams'
+          $ref: '#/definitions/dto.Event'
       produces:
       - application/json
       responses:
@@ -1006,7 +977,7 @@ paths:
         "200":
           description: Event details
           schema:
-            $ref: '#/definitions/dbmodels.Event'
+            $ref: '#/definitions/dto.Event'
         "404":
           description: Not Found
           schema:
@@ -1037,7 +1008,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/dbmodels.UpdateEventParams'
+          $ref: '#/definitions/dto.UpdateEvent'
       produces:
       - application/json
       responses:
