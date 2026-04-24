@@ -377,7 +377,7 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Success		200 {array} dbmodels.Position "List of positions"
+//	@Success		200 {array} dto.Position "List of positions"
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions [get]
 func (h *BoardHandler) GetPositions(c *gin.Context) {
@@ -391,6 +391,10 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 		return
 	}
 
+	dtoPositions := make([]dto.Position, len(positions))
+	for i, pos := range positions {
+		dtoPositions[i] = dto.PositionDomainToDto(&pos)
+	}
 	c.JSON(http.StatusOK, positions)
 }
 
@@ -402,7 +406,7 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer full name"
-//	@Success		200 {object} dbmodels.Position "Position details"
+//	@Success		200 {object} dto.Position "Position details"
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/positions/{id} [get]

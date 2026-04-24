@@ -129,7 +129,7 @@ func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.
 		}
 	}
 
-	domainTiers := make([]domain.Tier, len(tiers))
+	domainTiers := make([]domain.Tier, len(result))
 	for i, tier := range result {
 		domainTiers[i] = store.TierDBToDomain(tier)
 	}
@@ -157,11 +157,15 @@ func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 
 // ==== Position Methods =======================================================
 
-func (s *BoardService) GetPosition(ctx context.Context, oid string) (dbmodels.Position, error) {
-	return s.q.GetPosition(ctx, oid)
+func (s *BoardService) GetPosition(ctx context.Context, oid string) (domain.Position, error) {
+	dbPosition, err := s.q.GetPosition(ctx, oid)
+	if err != nil {
+		return domain.Position{}, nil
+	}
+	return store.PositionDBToDomain(dbPosition), nil
 }
 
-func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dbmodels.Position, error) {
+func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]domain.Position, error) {
 	positions, err := s.q.GetPositions(ctx)
 	if err != nil {
 		return nil, err
@@ -174,7 +178,11 @@ func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dbm
 		}
 	}
 
-	return result, nil
+	domainPositions := make([]domain.Position, len(result))
+	for i, pos := range positions {
+		domainPositions[i] = store.PositionDBToDomain(pos)
+	}
+	return domainPositions, nil
 }
 
 func (s *BoardService) CreatePosition(ctx context.Context, params dbmodels.CreatePositionParams) error {
