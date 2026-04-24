@@ -3,7 +3,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/services"

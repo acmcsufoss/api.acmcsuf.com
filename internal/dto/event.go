@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"time"
-
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/domain"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
