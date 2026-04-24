@@ -430,7 +430,7 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, position)
+	c.JSON(http.StatusOK, dto.PositionDomainToDto(&position))
 }
 
 // CreatePosition godoc
