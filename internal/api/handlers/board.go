@@ -263,7 +263,7 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			body body dto.Tier true "Tier data"
-//	@Success		200 {object} map[string]interface{} "Success message with tier number"
+//	@Success		200 {object} map[string]interface{} "Success message with created tier"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/tiers [post]
