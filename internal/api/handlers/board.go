@@ -113,10 +113,8 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Officer created successfully",
-		"uuid":    body.Uuid,
-	})
+	// TODO: update service to return domain model and return DTO here
+	c.JSON(http.StatusOK, body.Uuid)
 }
 
 // UpdateOfficer godoc
@@ -152,10 +150,8 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Officer updated successfully",
-		"uuid":    id,
-	})
+	// TODO: update service to return domain model and return DTO here
+	c.JSON(http.StatusOK, id)
 }
 
 // DeleteOfficer godoc
@@ -166,7 +162,7 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
-//	@Success		200 {object} map[string]string "Success message"
+//	@Success		204
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/board/officers/{id} [delete]
@@ -181,9 +177,7 @@ func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Officer deleted successfully",
-	})
+	c.Status(http.StatusNoContent)
 }
 
 // GetTiers godoc
