@@ -3,6 +3,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,10 +28,10 @@ func NewBoardHandler(boardService services.BoardServicer) *BoardHandler {
 //	@Tags			Board
 //	@Accept			json
 //	@Produce		json
-//	@Param			id path string true "Officer UUID"
-//	@Success		200 {object} dto.Officer "Officer details"
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Param			id path string true "Officer ID"
+//	@Success		200 {object} dto.Officer "Created officer"
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/officers/{id} [get]
 func (h *BoardHandler) GetOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -40,13 +41,15 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "Officer not found",
+			c.JSON(http.StatusNotFound, dto.Error{
+				Code:    dto.ErrOfficerNotFound,
+				Message: fmt.Sprintf("officer with id '%s' not found", id),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve officer",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: fmt.Sprintf("unknown server error while getting officer"),
 		})
 		return
 	}
@@ -63,15 +66,16 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200 {array} dto.Officer "List of officers"
-//	@Failure		500 {object} map[string]string
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/officers [get]
 func (h *BoardHandler) GetOfficers(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	officers, err := h.boardService.ListOfficers(ctx)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve officers",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "unknwon error while trying to retrieve officers",
 		})
 		return
 	}
@@ -92,23 +96,25 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 //	@Produce		json
 //	@Param			body body dto.Officer true "Officer data"
 //	@Success		200 {object} map[string]interface{} "Success message with UUID"
-//	@Failure		400 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/officers [post]
 func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Officer
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "invalid request JSON body",
 		})
 		return
 	}
 
 	domainModel := body.ToDomain()
 	if err := h.boardService.CreateOfficer(ctx, domainModel); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create officer. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "unknown error while creating officer",
 		})
 		return
 	}
@@ -127,25 +133,27 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 //	@Param			id path string true "Officer UUID"
 //	@Param			body body dto.UpdateOfficer true "Updated officer data"
 //	@Success		200 {object} map[string]string "Success message"
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/officers/{id} [put]
 func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 	var body dto.UpdateOfficer
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "invalid request JSON body (read the docs bud)",
 		})
 		return
 	}
 
 	domainModel := body.ToDomain()
 	if err := h.boardService.UpdateOfficer(ctx, id, domainModel); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to update officer. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to update officer. " + err.Error(),
 		})
 		return
 	}
@@ -163,16 +171,17 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 //	@Produce		json
 //	@Param			id path string true "Officer UUID"
 //	@Success		204
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/officers/{id} [delete]
 func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
 	id := c.Param("id")
 
 	if err := h.boardService.DeleteOfficer(ctx, id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to delete officer",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "unknown error while trying to delete officer",
 		})
 		return
 	}
@@ -188,15 +197,16 @@ func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200 {array} dto.Tier "List of tiers"
-//	@Failure		500 {object} map[string]string
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/tiers [get]
 func (h *BoardHandler) GetTiers(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	tiers, err := h.boardService.ListTiers(ctx)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve tiers",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "unknown error while trying to get tiers",
 		})
 		return
 	}
@@ -217,16 +227,17 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 //	@Produce		json
 //	@Param			tier path int true "Tier number"
 //	@Success		200 {object} dto.Tier "Tier details"
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/tiers/{tier} [get]
 func (h *BoardHandler) GetTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid tier number",
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid tier number",
 		})
 		log.Println(err)
 		return
@@ -235,13 +246,15 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 	tier, err := h.boardService.GetTier(ctx, tierName)
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "Tier not found",
+			c.JSON(http.StatusNotFound, dto.Error{
+				Code:    dto.ErrTierNotFound,
+				Message: fmt.Sprintf("tier with number '%d' not found", tierName),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve tier",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to retrieve tier",
 		})
 		return
 	}
@@ -258,23 +271,25 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 //	@Produce		json
 //	@Param			body body dto.Tier true "Tier data"
 //	@Success		200 {object} map[string]interface{} "Success message with created tier"
-//	@Failure		400 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/tiers [post]
 func (h *BoardHandler) CreateTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Tier
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
 	tier, err := h.boardService.CreateTier(ctx, body.ToDomain())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create tier. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to create tier. " + err.Error(),
 		})
 		return
 	}
@@ -292,31 +307,34 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 //	@Param			tier path int true "Tier number"
 //	@Param			body body dto.UpdateTier true "Updated tier data"
 //	@Success		200 {object} map[string]string "Success message"
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/tiers/{tier} [put]
 func (h *BoardHandler) UpdateTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.UpdateTier
 	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid tier number",
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid tier number",
 		})
 		return
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
 	if err := h.boardService.UpdateTier(ctx, tierName, body.ToDomain()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to update tier. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to update tier. " + err.Error(),
 		})
 		return
 	}
@@ -333,23 +351,25 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 //	@Produce		json
 //	@Param			tier path int true "Tier number"
 //	@Success		204
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/tiers/{tier} [delete]
 func (h *BoardHandler) DeleteTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	tierName, err := strconv.ParseInt(c.Param("tier"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid tier number",
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid tier number",
 		})
 		return
 	}
 
 	if err := h.boardService.DeleteTier(ctx, tierName); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to delete tier",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to delete tier",
 		})
 		return
 	}
@@ -365,15 +385,16 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Success		200 {array} dto.Position "List of positions"
-//	@Failure		500 {object} map[string]string
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/positions [get]
 func (h *BoardHandler) GetPositions(c *gin.Context) {
 	ctx := c.Request.Context()
 
 	positions, err := h.boardService.ListPositions(ctx)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve positions",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to retrieve positions",
 		})
 		return
 	}
@@ -394,8 +415,8 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 //	@Produce		json
 //	@Param			id path string true "Officer full name"
 //	@Success		200 {object} dto.Position "Position details"
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/positions/{id} [get]
 func (h *BoardHandler) GetPosition(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -405,13 +426,15 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 
 	if err != nil {
 		if err.Error() == "sql: no rows in result set" {
-			c.JSON(http.StatusNotFound, gin.H{
-				"error": "Position not found",
+			c.JSON(http.StatusNotFound, dto.Error{
+				Code:    dto.ErrPositionNotFound,
+				Message: fmt.Sprintf("position with id '%s' not found", id),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to retrieve position",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to retrieve position",
 		})
 		return
 	}
@@ -428,23 +451,25 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 //	@Produce		json
 //	@Param			body body dto.Position true "Position data"
 //	@Success		200 {object} map[string]interface{} "Success message"
-//	@Failure		400 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/positions [post]
 func (h *BoardHandler) CreatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Position
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
 	position, err := h.boardService.CreatePosition(ctx, body.ToDomain())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to create position. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to create position. " + err.Error(),
 		})
 		return
 	}
@@ -461,23 +486,25 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 //	@Produce		json
 //	@Param			body body dto.UpdatePosition true "Updated position data (must include oid, semester, tier)"
 //	@Success		200 {object} map[string]string "Success message"
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/positions [put]
 func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.UpdatePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
 	if err := h.boardService.UpdatePosition(ctx, body.ToDomain()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to update position. " + err.Error(),
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to update position. " + err.Error(),
 		})
 		return
 	}
@@ -497,23 +524,25 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Produce		json
 //	@Param			body body dto.DeletePosition true "Position identifier"
 //	@Success		204
-//	@Failure		400 {object} map[string]string
-//	@Failure		404 {object} map[string]string
-//	@Failure		500 {object} map[string]string
+//	@Failure		400 {object} dto.Error
+//	@Failure		404 {object} dto.Error
+//	@Failure		500 {object} dto.Error
 //	@Router			/v1/board/positions [delete]
 func (h *BoardHandler) DeletePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.DeletePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body. " + err.Error(),
+		c.JSON(http.StatusBadRequest, dto.Error{
+			Code:    dto.ErrBadRequestBody,
+			Message: "Invalid request body. " + err.Error(),
 		})
 		return
 	}
 
 	if err := h.boardService.DeletePosition(ctx, body.ToDomain()); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to delete position",
+		c.JSON(http.StatusInternalServerError, dto.Error{
+			Code:    dto.ErrUnknown,
+			Message: "Failed to delete position",
 		})
 		return
 	}
