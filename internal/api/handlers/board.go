@@ -279,10 +279,7 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Tier created successfully",
-		"tier":    dto.TierDomainToDto(&tier),
-	})
+	c.JSON(http.StatusOK, dto.TierDomainToDto(&tier))
 }
 
 // UpdateTier godoc
@@ -324,10 +321,7 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Tier updated successfully",
-		"tier":    tierName,
-	})
+	c.JSON(http.StatusOK, tierName)
 }
 
 // DeleteTier godoc
@@ -338,7 +332,7 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			tier path int true "Tier number"
-//	@Success		200 {object} map[string]string "Success message"
+//	@Success		204
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -360,9 +354,7 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Tier deleted successfully",
-	})
+	c.Status(http.StatusNoContent)
 }
 
 // GetPositions godoc
@@ -457,10 +449,7 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":  "Position created successfully",
-		"position": dto.PositionDomainToDto(&position),
-	})
+	c.JSON(http.StatusOK, dto.PositionDomainToDto(&position))
 }
 
 // UpdatePosition godoc
@@ -493,6 +482,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 		return
 	}
 
+	// TODO: service should return model to return
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Position updated successfully",
 	})
@@ -506,7 +496,7 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			body body dto.DeletePosition true "Position identifier"
-//	@Success		200 {object} map[string]string "Success message"
+//	@Success		204
 //	@Failure		400 {object} map[string]string
 //	@Failure		404 {object} map[string]string
 //	@Failure		500 {object} map[string]string
@@ -528,7 +518,5 @@ func (h *BoardHandler) DeletePosition(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Position deleted successfully",
-	})
+	c.Status(http.StatusNoContent)
 }
