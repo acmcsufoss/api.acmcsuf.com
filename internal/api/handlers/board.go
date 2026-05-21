@@ -47,6 +47,7 @@ func (h *BoardHandler) GetOfficer(c *gin.Context) {
 			})
 			return
 		}
+		log.Println("error getting officer:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: fmt.Sprintf("unknown server error while getting officer"),
@@ -73,6 +74,7 @@ func (h *BoardHandler) GetOfficers(c *gin.Context) {
 
 	officers, err := h.boardService.ListOfficers(ctx)
 	if err != nil {
+		log.Println("error listing officers:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "unknwon error while trying to retrieve officers",
@@ -103,6 +105,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Officer
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request JSON body for CreateOfficer:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
 			Message: "invalid request JSON body",
@@ -112,6 +115,7 @@ func (h *BoardHandler) CreateOfficer(c *gin.Context) {
 
 	domainModel := body.ToDomain()
 	if err := h.boardService.CreateOfficer(ctx, domainModel); err != nil {
+		log.Println("error creating officer:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "unknown error while creating officer",
@@ -142,6 +146,7 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 	id := c.Param("id")
 	var body dto.UpdateOfficer
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request JSON body for UpdateOfficer:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
 			Message: "invalid request JSON body (read the docs bud)",
@@ -151,9 +156,10 @@ func (h *BoardHandler) UpdateOfficer(c *gin.Context) {
 
 	domainModel := body.ToDomain()
 	if err := h.boardService.UpdateOfficer(ctx, id, domainModel); err != nil {
+		log.Println("error updating officer:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
-			Message: "Failed to update officer. " + err.Error(),
+			Message: "Failed to update officer",
 		})
 		return
 	}
@@ -179,6 +185,7 @@ func (h *BoardHandler) DeleteOfficer(c *gin.Context) {
 	id := c.Param("id")
 
 	if err := h.boardService.DeleteOfficer(ctx, id); err != nil {
+		log.Println("error deleting officer:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "unknown error while trying to delete officer",
@@ -204,6 +211,7 @@ func (h *BoardHandler) GetTiers(c *gin.Context) {
 
 	tiers, err := h.boardService.ListTiers(ctx)
 	if err != nil {
+		log.Println("error getting tiers:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "unknown error while trying to get tiers",
@@ -252,6 +260,7 @@ func (h *BoardHandler) GetTier(c *gin.Context) {
 			})
 			return
 		}
+		log.Println("error getting tier:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "Failed to retrieve tier",
@@ -278,18 +287,20 @@ func (h *BoardHandler) CreateTier(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Tier
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request body for CreateTier:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
-			Message: "Invalid request body. " + err.Error(),
+			Message: "Invalid request body",
 		})
 		return
 	}
 
 	tier, err := h.boardService.CreateTier(ctx, body.ToDomain())
 	if err != nil {
+		log.Println("error creating tier:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
-			Message: "Failed to create tier. " + err.Error(),
+			Message: "Failed to create tier",
 		})
 		return
 	}
@@ -324,17 +335,19 @@ func (h *BoardHandler) UpdateTier(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request body for UpdateTier:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
-			Message: "Invalid request body. " + err.Error(),
+			Message: "Invalid request body",
 		})
 		return
 	}
 
 	if err := h.boardService.UpdateTier(ctx, tierName, body.ToDomain()); err != nil {
+		log.Println("error updating tier:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
-			Message: "Failed to update tier. " + err.Error(),
+			Message: "Failed to update tier",
 		})
 		return
 	}
@@ -367,6 +380,7 @@ func (h *BoardHandler) DeleteTier(c *gin.Context) {
 	}
 
 	if err := h.boardService.DeleteTier(ctx, tierName); err != nil {
+		log.Println("error deleting tier:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "Failed to delete tier",
@@ -392,6 +406,7 @@ func (h *BoardHandler) GetPositions(c *gin.Context) {
 
 	positions, err := h.boardService.ListPositions(ctx)
 	if err != nil {
+		log.Println("error getting positions:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "Failed to retrieve positions",
@@ -432,6 +447,7 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 			})
 			return
 		}
+		log.Println("error getting position:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "Failed to retrieve position",
@@ -458,18 +474,20 @@ func (h *BoardHandler) CreatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.Position
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request body for CreatePosition:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
-			Message: "Invalid request body. " + err.Error(),
+			Message: "Invalid request body",
 		})
 		return
 	}
 
 	position, err := h.boardService.CreatePosition(ctx, body.ToDomain())
 	if err != nil {
+		log.Println("error creating position:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
-			Message: "Failed to create position. " + err.Error(),
+			Message: "Failed to create position",
 		})
 		return
 	}
@@ -494,17 +512,19 @@ func (h *BoardHandler) UpdatePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.UpdatePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request body for UpdatePosition:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
-			Message: "Invalid request body. " + err.Error(),
+			Message: "Invalid request body",
 		})
 		return
 	}
 
 	if err := h.boardService.UpdatePosition(ctx, body.ToDomain()); err != nil {
+		log.Println("error updating position:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
-			Message: "Failed to update position. " + err.Error(),
+			Message: "Failed to update position",
 		})
 		return
 	}
@@ -532,14 +552,16 @@ func (h *BoardHandler) DeletePosition(c *gin.Context) {
 	ctx := c.Request.Context()
 	var body dto.DeletePosition
 	if err := c.ShouldBindJSON(&body); err != nil {
+		log.Println("invalid request body for DeletePosition:", err)
 		c.JSON(http.StatusBadRequest, dto.Error{
 			Code:    dto.ErrBadRequestBody,
-			Message: "Invalid request body. " + err.Error(),
+			Message: "Invalid request body",
 		})
 		return
 	}
 
 	if err := h.boardService.DeletePosition(ctx, body.ToDomain()); err != nil {
+		log.Println("error deleting position:", err)
 		c.JSON(http.StatusInternalServerError, dto.Error{
 			Code:    dto.ErrUnknown,
 			Message: "Failed to delete position",
