@@ -15,7 +15,6 @@ func OfficerDomainToDB(officer domain.Officer) dbmodels.CreateOfficerParams {
 
 func UpdateOfficerDomainToDB(officer domain.UpdateOfficer) dbmodels.UpdateOfficerParams {
 	return dbmodels.UpdateOfficerParams{
-		Uuid:     officer.Uuid,
 		FullName: stringValue(officer.FullName),
 		Picture:  stringToNullString(officer.Picture),
 		Github:   stringToNullString(officer.Github),
@@ -77,41 +76,41 @@ func TierDBToDomain(tier dbmodels.Tier) domain.Tier {
 
 func PositionDomainToDB(position domain.Position) dbmodels.CreatePositionParams {
 	return dbmodels.CreatePositionParams{
-		Oid:      position.Oid,
-		Semester: position.Semester,
-		Tier:     int64(position.Tier),
-		FullName: position.FullName,
-		Title:    stringToNullString(position.Title),
-		Team:     stringToNullString(position.Team),
+		OfficerID: position.OfficerID,
+		Semester:  position.Semester,
+		Tier:      int64(position.Tier),
+		FullName:  position.FullName,
+		Title:     stringToNullString(position.Title),
+		Team:      stringToNullString(position.Team),
 	}
 }
 
 func UpdatePositionDomainToDB(position domain.UpdatePosition) dbmodels.UpdatePositionParams {
 	return dbmodels.UpdatePositionParams{
-		Oid:      position.Oid,
-		Semester: position.Semester,
-		Tier:     int64(position.Tier),
-		FullName: position.FullName,
-		Title:    stringToNullString(position.Title),
-		Team:     stringToNullString(position.Team),
+		OfficerID: position.OfficerID,
+		Semester:  position.Semester,
+		Tier:      int64(position.Tier),
+		FullName:  position.FullName,
+		Title:     stringToNullString(position.Title),
+		Team:      stringToNullString(position.Team),
 	}
 }
 
-func DeletePositionDomainToDB(position domain.Position) dbmodels.DeletePositionParams {
+func DeletePositionDomainToDB(position domain.DeletePosition) dbmodels.DeletePositionParams {
 	return dbmodels.DeletePositionParams{
-		Oid:      position.Oid,
-		Semester: position.Semester,
-		Tier:     int64(position.Tier),
+		OfficerID: position.OfficerID,
+		Semester:  position.Semester,
+		Tier:      position.Tier,
 	}
 }
 
 func PositionDBToDomain(position dbmodels.Position) domain.Position {
 	return domain.Position{
-		Oid:      position.Oid,
-		Semester: position.Semester,
-		Tier:     int(position.Tier),
-		FullName: position.FullName,
-		Title:    nullStringPtr(position.Title),
-		Team:     nullStringPtr(position.Team),
+		OfficerID: position.OfficerID,
+		Semester:  position.Semester,
+		Tier:      position.Tier,
+		FullName:  position.FullName,
+		Title:     nullStringPtr(position.Title),
+		Team:      nullStringPtr(position.Team),
 	}
 }

@@ -55,7 +55,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 			board.GET("/officers/:id", bh.GetOfficer)
 
 			board.GET("/tiers", bh.GetTiers)
-			board.GET("/tiers/:id", bh.GetTier)
+			board.GET("/tiers/:tier", bh.GetTier)
 
 			board.GET("/positions", bh.GetPositions)
 			board.GET("/positions/:id", bh.GetPosition)
@@ -83,8 +83,8 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 			// Tiers
 			board.POST("/tiers", bh.CreateTier)
-			board.PUT("/tiers/:id", bh.UpdateTier)
-			board.DELETE("/tiers/:id", bh.DeleteTier)
+			board.PUT("/tiers/:tier", bh.UpdateTier)
+			board.DELETE("/tiers/:tier", bh.DeleteTier)
 
 			// Positions
 			board.POST("/positions", bh.CreatePosition)

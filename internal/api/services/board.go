@@ -17,18 +17,18 @@ type BoardServicer interface {
 	DeleteOfficer(ctx context.Context, id string) error
 
 	// Tier methods
-	GetTier(ctx context.Context, tierName int64) (dbmodels.Tier, error)
-	ListTiers(ctx context.Context, filters ...any) ([]dbmodels.Tier, error)
-	CreateTier(ctx context.Context, params dbmodels.CreateTierParams) error
-	UpdateTier(ctx context.Context, params dbmodels.UpdateTierParams) error
+	GetTier(ctx context.Context, tierName int64) (domain.Tier, error)
+	ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error)
+	CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error)
+	UpdateTier(ctx context.Context, tierName int64, params domain.UpdateTier) error
 	DeleteTier(ctx context.Context, tierName int64) error
 
 	// Position methods
-	GetPosition(ctx context.Context, oid string) (dbmodels.Position, error)
-	ListPositions(ctx context.Context, filters ...any) ([]dbmodels.Position, error)
-	CreatePosition(ctx context.Context, params dbmodels.CreatePositionParams) error
-	UpdatePosition(ctx context.Context, params dbmodels.UpdatePositionParams) error
-	DeletePosition(ctx context.Context, arg dbmodels.DeletePositionParams) error
+	GetPosition(ctx context.Context, oid string) (domain.Position, error)
+	ListPositions(ctx context.Context, filters ...any) ([]domain.Position, error)
+	CreatePosition(ctx context.Context, params domain.Position) (domain.Position, error)
+	UpdatePosition(ctx context.Context, params domain.UpdatePosition) error
+	DeletePosition(ctx context.Context, arg domain.DeletePosition) error
 }
 
 type BoardService struct {
@@ -55,7 +55,8 @@ type PositionFilter interface {
 	Apply(positions []dbmodels.Position) []dbmodels.Position
 }
 
-// Officer Methods
+// ==== Officer Methods ========================================================
+
 func (s *BoardService) GetOfficer(ctx context.Context, uuid string) (domain.Officer, error) {
 	row, err := s.q.GetOfficer(ctx, uuid)
 	if err != nil {
@@ -96,7 +97,6 @@ func (s *BoardService) CreateOfficer(ctx context.Context, officer domain.Officer
 
 func (s *BoardService) UpdateOfficer(ctx context.Context, uuid string,
 	updateOfficer domain.UpdateOfficer) error {
-	// NOTE: domain.UpdateOfficer has a uuid field, do we need the seperate function param here?
 	dbParams := store.UpdateOfficerDomainToDB(updateOfficer)
 	dbParams.Uuid = uuid
 	return s.q.UpdateOfficer(ctx, dbParams)
@@ -106,12 +106,17 @@ func (s *BoardService) DeleteOfficer(ctx context.Context, uuid string) error {
 	return s.q.DeleteOfficer(ctx, uuid)
 }
 
-// Tier Methods
-func (s *BoardService) GetTier(ctx context.Context, tierName int64) (dbmodels.Tier, error) {
-	return s.q.GetTier(ctx, tierName)
+// ==== Tier Methods ===========================================================
+
+func (s *BoardService) GetTier(ctx context.Context, tierName int64) (domain.Tier, error) {
+	dbTier, err := s.q.GetTier(ctx, tierName)
+	if err != nil {
+		return domain.Tier{}, err
+	}
+	return store.TierDBToDomain(dbTier), nil
 }
 
-func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]dbmodels.Tier, error) {
+func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]domain.Tier, error) {
 	tiers, err := s.q.GetTiers(ctx)
 	if err != nil {
 		return nil, err
@@ -124,28 +129,43 @@ func (s *BoardService) ListTiers(ctx context.Context, filters ...any) ([]dbmodel
 		}
 	}
 
-	return result, nil
+	domainTiers := make([]domain.Tier, len(result))
+	for i, tier := range result {
+		domainTiers[i] = store.TierDBToDomain(tier)
+	}
+	return domainTiers, nil
 }
 
-func (s *BoardService) CreateTier(ctx context.Context, params dbmodels.CreateTierParams) error {
-	_, err := s.q.CreateTier(ctx, params)
-	return err
+func (s *BoardService) CreateTier(ctx context.Context, params domain.Tier) (domain.Tier, error) {
+	dbTier, err := s.q.CreateTier(ctx, store.TierDomainToDB(params))
+	if err != nil {
+		return domain.Tier{}, err
+	}
+	return store.TierDBToDomain(dbTier), nil
 }
 
-func (s *BoardService) UpdateTier(ctx context.Context, params dbmodels.UpdateTierParams) error {
-	return s.q.UpdateTier(ctx, params)
+func (s *BoardService) UpdateTier(ctx context.Context, tierName int64,
+	params domain.UpdateTier) error {
+	dbParams := store.UpdateTierDomainToDB(params)
+	dbParams.Tier = tierName
+	return s.q.UpdateTier(ctx, dbParams)
 }
 
 func (s *BoardService) DeleteTier(ctx context.Context, tierName int64) error {
 	return s.q.DeleteTier(ctx, tierName)
 }
 
-// Position Methods
-func (s *BoardService) GetPosition(ctx context.Context, oid string) (dbmodels.Position, error) {
-	return s.q.GetPosition(ctx, oid)
+// ==== Position Methods =======================================================
+
+func (s *BoardService) GetPosition(ctx context.Context, oid string) (domain.Position, error) {
+	dbPosition, err := s.q.GetPosition(ctx, oid)
+	if err != nil {
+		return domain.Position{}, err
+	}
+	return store.PositionDBToDomain(dbPosition), nil
 }
 
-func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dbmodels.Position, error) {
+func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]domain.Position, error) {
 	positions, err := s.q.GetPositions(ctx)
 	if err != nil {
 		return nil, err
@@ -158,18 +178,26 @@ func (s *BoardService) ListPositions(ctx context.Context, filters ...any) ([]dbm
 		}
 	}
 
-	return result, nil
+	domainPositions := make([]domain.Position, len(result))
+	for i, pos := range result {
+		domainPositions[i] = store.PositionDBToDomain(pos)
+	}
+	return domainPositions, nil
 }
 
-func (s *BoardService) CreatePosition(ctx context.Context, params dbmodels.CreatePositionParams) error {
-	_, err := s.q.CreatePosition(ctx, params)
-	return err
+func (s *BoardService) CreatePosition(ctx context.Context,
+	params domain.Position) (domain.Position, error) {
+	dbPosition, err := s.q.CreatePosition(ctx, store.PositionDomainToDB(params))
+	if err != nil {
+		return domain.Position{}, err
+	}
+	return store.PositionDBToDomain(dbPosition), nil
 }
 
-func (s *BoardService) UpdatePosition(ctx context.Context, params dbmodels.UpdatePositionParams) error {
-	return s.q.UpdatePosition(ctx, params)
+func (s *BoardService) UpdatePosition(ctx context.Context, params domain.UpdatePosition) error {
+	return s.q.UpdatePosition(ctx, store.UpdatePositionDomainToDB(params))
 }
 
-func (s *BoardService) DeletePosition(ctx context.Context, arg dbmodels.DeletePositionParams) error {
-	return s.q.DeletePosition(ctx, arg)
+func (s *BoardService) DeletePosition(ctx context.Context, arg domain.DeletePosition) error {
+	return s.q.DeletePosition(ctx, store.DeletePositionDomainToDB(arg))
 }

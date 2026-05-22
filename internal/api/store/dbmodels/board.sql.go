@@ -54,7 +54,7 @@ func (q *Queries) CreateOfficer(ctx context.Context, arg CreateOfficerParams) (O
 const createPosition = `-- name: CreatePosition :one
 INSERT INTO
 position (
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
@@ -63,21 +63,21 @@ position (
 )
 VALUES
 (?, ?, ?, ?, ?, ?)
-RETURNING oid, semester, tier, full_name, title, team
+RETURNING officer_id, semester, tier, full_name, title, team
 `
 
 type CreatePositionParams struct {
-	Oid      string
-	Semester string
-	Tier     int64
-	FullName string
-	Title    sql.NullString
-	Team     sql.NullString
+	OfficerID string
+	Semester  string
+	Tier      int64
+	FullName  string
+	Title     sql.NullString
+	Team      sql.NullString
 }
 
 func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) (Position, error) {
 	row := q.db.QueryRowContext(ctx, createPosition,
-		arg.Oid,
+		arg.OfficerID,
 		arg.Semester,
 		arg.Tier,
 		arg.FullName,
@@ -86,7 +86,7 @@ func (q *Queries) CreatePosition(ctx context.Context, arg CreatePositionParams) 
 	)
 	var i Position
 	err := row.Scan(
-		&i.Oid,
+		&i.OfficerID,
 		&i.Semester,
 		&i.Tier,
 		&i.FullName,
@@ -146,19 +146,19 @@ func (q *Queries) DeleteOfficer(ctx context.Context, uuid string) error {
 const deletePosition = `-- name: DeletePosition :exec
 DELETE FROM position
 WHERE
-    oid = ?
+    officer_id = ?
     AND semester = ?
     AND tier = ?
 `
 
 type DeletePositionParams struct {
-	Oid      string
-	Semester string
-	Tier     int64
+	OfficerID string
+	Semester  string
+	Tier      int64
 }
 
 func (q *Queries) DeletePosition(ctx context.Context, arg DeletePositionParams) error {
-	_, err := q.db.ExecContext(ctx, deletePosition, arg.Oid, arg.Semester, arg.Tier)
+	_, err := q.db.ExecContext(ctx, deletePosition, arg.OfficerID, arg.Semester, arg.Tier)
 	return err
 }
 
@@ -245,7 +245,7 @@ func (q *Queries) GetOfficers(ctx context.Context) ([]Officer, error) {
 
 const getPosition = `-- name: GetPosition :one
 SELECT
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
@@ -254,14 +254,14 @@ SELECT
 FROM
     position
 WHERE
-    oid = ?
+    officer_id = ?
 `
 
-func (q *Queries) GetPosition(ctx context.Context, oid string) (Position, error) {
-	row := q.db.QueryRowContext(ctx, getPosition, oid)
+func (q *Queries) GetPosition(ctx context.Context, officerID string) (Position, error) {
+	row := q.db.QueryRowContext(ctx, getPosition, officerID)
 	var i Position
 	err := row.Scan(
-		&i.Oid,
+		&i.OfficerID,
 		&i.Semester,
 		&i.Tier,
 		&i.FullName,
@@ -273,7 +273,7 @@ func (q *Queries) GetPosition(ctx context.Context, oid string) (Position, error)
 
 const getPositions = `-- name: GetPositions :many
 SELECT
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
@@ -293,7 +293,7 @@ func (q *Queries) GetPositions(ctx context.Context) ([]Position, error) {
 	for rows.Next() {
 		var i Position
 		if err := rows.Scan(
-			&i.Oid,
+			&i.OfficerID,
 			&i.Semester,
 			&i.Tier,
 			&i.FullName,
@@ -416,18 +416,18 @@ SET
     title = COALESCE(?2, title),
     team = COALESCE(?3, team)
 WHERE
-    oid = ?4
+    officer_id = ?4
     AND semester = ?5
     AND tier = ?6
 `
 
 type UpdatePositionParams struct {
-	FullName string
-	Title    sql.NullString
-	Team     sql.NullString
-	Oid      string
-	Semester string
-	Tier     int64
+	FullName  string
+	Title     sql.NullString
+	Team      sql.NullString
+	OfficerID string
+	Semester  string
+	Tier      int64
 }
 
 func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) error {
@@ -435,7 +435,7 @@ func (q *Queries) UpdatePosition(ctx context.Context, arg UpdatePositionParams) 
 		arg.FullName,
 		arg.Title,
 		arg.Team,
-		arg.Oid,
+		arg.OfficerID,
 		arg.Semester,
 		arg.Tier,
 	)
