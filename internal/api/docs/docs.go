@@ -813,7 +813,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success message with tier number",
+                        "description": "Success message with created tier",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
