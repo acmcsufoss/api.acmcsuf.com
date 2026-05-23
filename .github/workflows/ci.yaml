@@ -29,10 +29,6 @@ jobs:
         if: steps.filter.outputs.source_code == 'true'
         uses: DeterminateSystems/nix-installer-action@main
         
-      - name: Cache Nix
-        if: steps.filter.outputs.source_code == 'true'
-        uses: DeterminateSystems/magic-nix-cache-action@main
-
       - name: CI
         run: |
           nix develop .#ci --command bash -c '
