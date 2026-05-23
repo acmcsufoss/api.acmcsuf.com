@@ -33,26 +33,13 @@ jobs:
         if: steps.filter.outputs.source_code == 'true'
         uses: DeterminateSystems/magic-nix-cache-action@main
 
-      - name: Format check
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c bash -c "make fmt && git diff --exit-code"
-
-      - name: Check
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c make check
-
-      - name: Sql check
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c make check-sql
-
-      - name: Build
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c make build
-
-      - name: Generated files check
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c bash -c "make generate && git diff --exit-code"
-
-      - name: Test
-        if: steps.filter.outputs.source_code == 'true'
-        run: nix develop .#ci -c make test
+      - name: CI
+        run: |
+          nix develop .#ci --command bash -c '
+            make fmt && git diff --exit-code
+            make check
+            make check-sql
+            make build
+            make generate && git diff --exit-code
+            make test
+          '
