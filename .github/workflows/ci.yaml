@@ -28,6 +28,10 @@ jobs:
       - name: Install Nix
         if: steps.filter.outputs.source_code == 'true'
         uses: DeterminateSystems/nix-installer-action@main
+        
+      - name: Cache Nix
+        if: steps.filter.outputs.source_code == 'true'
+        uses: DeterminateSystems/magic-nix-cache-action@main
 
       - name: Format check
         if: steps.filter.outputs.source_code == 'true'
