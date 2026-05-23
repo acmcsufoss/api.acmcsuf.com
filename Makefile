@@ -1,5 +1,7 @@
 .DEFAULT_GOAL := build
 
+#test
+
 BIN_DIR := bin
 API_NAME := acmcsuf-api
 CLI_NAME := acmcsuf-cli
