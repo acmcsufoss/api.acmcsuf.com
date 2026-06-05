@@ -1,4 +1,4 @@
-package linter 
+package linter
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 )
 
 func Lint(rule lintRule) {
-	
+
 	os.Chdir(rule.path)
 
 	err := filepath.Walk(".", func(path string, info fs.FileInfo, err error) error {
@@ -39,7 +39,7 @@ func Lint(rule lintRule) {
 
 				importedModule, _ := strconv.Unquote(x.Path.Value)
 
-				if  slices.Contains(rule.badImports, importedModule) {
+				if slices.Contains(rule.badImports, importedModule) {
 					log.Println(errors.New("Bad import found: " + importedModule + " in " + rule.path + path))
 					os.Exit(1)
 				}
