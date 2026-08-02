@@ -51,10 +51,12 @@ func (e UpdateEvent) ToDomain() domain.UpdateEvent {
 		Host:     e.Host,
 	}
 	if e.StartAt != nil {
-		*d.StartAt = utils.UnixToTime(*e.StartAt)
+		startAt := utils.UnixToTime(*e.StartAt)
+		d.StartAt = &startAt
 	}
 	if e.EndAt != nil {
-		*d.EndAt = utils.UnixToTime(*e.EndAt)
+		endAt := utils.UnixToTime(*e.EndAt)
+		d.EndAt = &endAt
 	}
 	return d
 }
