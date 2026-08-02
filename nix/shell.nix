@@ -14,6 +14,7 @@
   go-tools,
   sqlite,
   sqlite-web,
+  flyctl,
   isCI ? false,
   full ? false,
 }: let
@@ -36,6 +37,7 @@ in
         sqlite
         cobra-cli
         delve # Go debugger
+        flyctl
       ]
       # Heavyweight or rarely used tools go here
       ++ lib.optionals full [
