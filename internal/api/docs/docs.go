@@ -1095,7 +1095,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success message with UUID",
+                        "description": "Success message",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true

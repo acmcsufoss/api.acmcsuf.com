@@ -907,7 +907,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Success message with UUID
+          description: Success message
           schema:
             additionalProperties: true
             type: object

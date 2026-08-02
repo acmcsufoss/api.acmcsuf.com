@@ -63,7 +63,7 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			body body dto.Event true "Event data"
-//	@Success		200 {object} map[string]interface{} "Success message with UUID"
+//	@Success		200 {object} map[string]any "Success message"
 //	@Failure		400 {object} map[string]string
 //	@Failure		500 {object} map[string]string
 //	@Router			/v1/events [post]
