@@ -1294,79 +1294,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dbmodels.CreateEventParams": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "isAllDay": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "startAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.Event": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "host": {
-                    "type": "string"
-                },
-                "isAllDay": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "startAt": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
-        "dbmodels.UpdateEventParams": {
-            "type": "object",
-            "properties": {
-                "endAt": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "host": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "isAllDay": {
-                    "$ref": "#/definitions/sql.NullBool"
-                },
-                "location": {
-                    "$ref": "#/definitions/sql.NullString"
-                },
-                "startAt": {
-                    "$ref": "#/definitions/sql.NullInt64"
-                },
-                "uuid": {
-                    "type": "string"
-                }
-            }
-        },
         "dto.Announcement": {
             "type": "object",
             "properties": {
@@ -1398,6 +1325,29 @@ const docTemplate = `{
                 },
                 "tier": {
                     "type": "integer"
+                }
+            }
+        },
+        "dto.Event": {
+            "type": "object",
+            "properties": {
+                "end_at": {
+                    "type": "integer"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "integer"
+                },
+                "uuid": {
+                    "type": "string"
                 }
             }
         },
@@ -1481,6 +1431,26 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.UpdateEvent": {
+            "type": "object",
+            "properties": {
+                "end_at": {
+                    "type": "integer"
+                },
+                "host": {
+                    "type": "string"
+                },
+                "is_all_day": {
+                    "type": "boolean"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "start_at": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.UpdateOfficer": {
             "type": "object",
             "properties": {
@@ -1532,31 +1502,6 @@ const docTemplate = `{
                 },
                 "title": {
                     "type": "string"
-                }
-            }
-        },
-        "sql.NullInt64": {
-            "type": "object",
-            "properties": {
-                "int64": {
-                    "type": "integer",
-                    "format": "int64"
-                },
-                "valid": {
-                    "description": "Valid is true if Int64 is not NULL",
-                    "type": "boolean"
-                }
-            }
-        },
-        "sql.NullString": {
-            "type": "object",
-            "properties": {
-                "string": {
-                    "type": "string"
-                },
-                "valid": {
-                    "description": "Valid is true if String is not NULL",
-                    "type": "boolean"
                 }
             }
         }
