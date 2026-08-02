@@ -34,7 +34,6 @@ func TierDomainToDto(t *domain.Tier) Tier {
 }
 
 type UpdateTier struct {
-	Tier   int     `json:"tier"`
 	Title  *string `json:"title"`
 	Tindex *int    `json:"t_index"`
 	Team   *string `json:"team"`
@@ -46,7 +45,6 @@ func (t *UpdateTier) ToDomain() domain.UpdateTier {
 	}
 
 	return domain.UpdateTier{
-		Tier:   t.Tier,
 		Title:  t.Title,
 		Tindex: t.Tindex,
 		Team:   t.Team,

@@ -34,12 +34,12 @@ type Officer struct {
 }
 
 type Position struct {
-	Oid      string
-	Semester string
-	Tier     int64
-	FullName string
-	Title    sql.NullString
-	Team     sql.NullString
+	OfficerID string
+	Semester  string
+	Tier      int64
+	FullName  string
+	Title     sql.NullString
+	Team      sql.NullString
 }
 
 type Tier struct {

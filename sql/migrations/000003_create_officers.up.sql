@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS tier (
 );
 
 CREATE TABLE IF NOT EXISTS position (
-    oid VARCHAR(4) NOT NULL,
+    officer_id VARCHAR(4) NOT NULL,
     semester VARCHAR(3) NOT NULL,
     tier INTEGER NOT NULL,
     full_name VARCHAR(30) NOT NULL,
     title VARCHAR(40),
     team VARCHAR(20),
-    PRIMARY KEY (oid, semester, tier),
-    CONSTRAINT fk_officer FOREIGN KEY (oid) REFERENCES officer (uuid),
+    PRIMARY KEY (officer_id, semester, tier),
+    CONSTRAINT fk_officer FOREIGN KEY (officer_id) REFERENCES officer (uuid),
     CONSTRAINT fk_tier FOREIGN KEY (tier) REFERENCES tier (tier)
 );

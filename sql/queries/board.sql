@@ -26,7 +26,7 @@ RETURNING *;
 -- name: CreatePosition :one
 INSERT INTO
 position (
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
@@ -61,7 +61,7 @@ WHERE
 
 -- name: GetPosition :one
 SELECT
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
@@ -70,7 +70,7 @@ SELECT
 FROM
     position
 WHERE
-    oid = ?;
+    officer_id = ?;
 
 -- NOTE: Had to declare above table as :one, may need to change later to :many
 
@@ -100,7 +100,7 @@ SET
     title = COALESCE(:title, title),
     team = COALESCE(:team, team)
 WHERE
-    oid = :oid
+    officer_id = :officer_id
     AND semester = :semester
     AND tier = :tier;
 
@@ -115,7 +115,7 @@ WHERE tier = ?;
 -- name: DeletePosition :exec
 DELETE FROM position
 WHERE
-    oid = ?
+    officer_id = ?
     AND semester = ?
     AND tier = ?;
 
@@ -142,7 +142,7 @@ ORDER BY
 
 -- name: GetPositions :many
 SELECT
-    oid,
+    officer_id,
     semester,
     tier,
     full_name,
