@@ -10,6 +10,7 @@ type Config struct {
 	Env             string
 	Port            string
 	DatabaseURL     string
+	DatabaseToken   string
 	TrustedProxies  []string
 	AllowedOrigins  []string
 	GuildID         string
@@ -27,6 +28,7 @@ func Load() *Config {
 		GuildID:        utils.GetEnv("GUILD_ID", "710225099923521558"), // acmcsuf's GuildID
 
 		// Sensitive (no default)
+		DatabaseToken:   os.Getenv("DATABASE_TOKEN"),
 		DiscordBotToken: os.Getenv("DISCORD_BOT_TOKEN"),
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -66,8 +67,8 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			redirectURI := fmt.Sprintf("http://localhost%s", redirectAddr)
 			const scope = "identify"
 
-			tokenChan := make(chan string)
-			errChan := make(chan error)
+			tokenChan := make(chan string, 1)
+			errChan := make(chan error, 1)
 			mux := http.NewServeMux()
 			server := &http.Server{Addr: redirectAddr, Handler: mux}
 			mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -96,11 +97,13 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 
 				if resp.StatusCode != http.StatusOK {
 					errChan <- fmt.Errorf("discord API error: %s", string(respBody))
+					return
 				}
 
 				var tokenResp TokenResponse
 				if err := json.Unmarshal(respBody, &tokenResp); err != nil {
 					errChan <- fmt.Errorf("JSON parse error: %w", err)
+					return
 				}
 
 				// save token to disk HERE >:)
@@ -110,9 +113,14 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 				tokenChan <- tokenResp.AccessToken
 			})
 
+			listener, err := net.Listen("tcp", redirectAddr)
+			if err != nil {
+				return nil, fmt.Errorf("failed to start OAuth callback server on %s: %w", redirectURI, err)
+			}
+
 			// So server doesn't block
 			go func() {
-				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+				if err := server.Serve(listener); err != nil && err != http.ErrServerClosed {
 					errChan <- err
 				}
 			}()
@@ -130,7 +138,10 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			u.RawQuery = params.Encode()
 			fmt.Println("Opening browser to:", u.String())
 			// TODO: "Press enter to open the following link in your browser"
-			browser.OpenURL(u.String())
+			if err := browser.OpenURL(u.String()); err != nil {
+				server.Shutdown(context.Background())
+				return nil, fmt.Errorf("failed to open browser: %w", err)
+			}
 
 			// Block until we get a token or err
 			select {

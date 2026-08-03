@@ -13,6 +13,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/mattn/go-sqlite3"
+	turso "turso.tech/database/tursogo-serverless"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/config"
 	mw "github.com/acmcsufoss/api.acmcsuf.com/internal/api/middleware"
@@ -26,7 +27,7 @@ import (
 func Run(ctx context.Context) {
 	cfg := config.Load()
 
-	db, closer, err := NewDB(ctx, cfg.DatabaseURL)
+	db, closer, err := NewDB(ctx, cfg.DatabaseURL, cfg.DatabaseToken)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,7 +65,7 @@ func Run(ctx context.Context) {
 	go func() {
 		serverAddr := ":" + cfg.Port
 		// if cfg.Env == "development" {
-			// this binds the server to the loopback interface in dev mode for security reasons
+		// this binds the server to the loopback interface in dev mode for security reasons
 		// 	serverAddr = "localhost:" + cfg.Port
 		// }
 
@@ -79,11 +80,8 @@ func Run(ctx context.Context) {
 	log.Println("\x1b[32mServer shut down.\x1b[0m")
 }
 
-func NewDB(ctx context.Context, url string) (*sql.DB, func(), error) {
-	db, err := sql.Open("sqlite3", url)
-	if err != nil {
-		return nil, nil, fmt.Errorf("error opening SQLite database: %v", err)
-	}
+func NewDB(ctx context.Context, url string, authToken string) (*sql.DB, func(), error) {
+	db := sql.OpenDB(turso.NewConnector(url, authToken))
 
 	if err := db.PingContext(ctx); err != nil {
 		return nil, nil, fmt.Errorf("error connecting to database: %v", err)

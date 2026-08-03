@@ -15,8 +15,8 @@ RUN mkdir -p /app/data
 WORKDIR /app
 COPY --from=builder /usr/src/app/sql/migrations ./sql/migrations
 ENV DATABASE_URL=file:/app/data/acmcsuf.db?cache=shared&mode=rwc
-ENV GIN_MODE=debug
-ENV ENV=development
+ENV GIN_MODE=release
+ENV ENV=production
 ENV PORT=80
 EXPOSE 80
 CMD ["run-app"]

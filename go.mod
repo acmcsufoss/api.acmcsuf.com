@@ -15,6 +15,7 @@ require (
 	github.com/swaggo/swag v1.16.6
 	github.com/tidwall/pretty v1.2.1
 	golang.org/x/time v0.14.0
+	turso.tech/database/tursogo-serverless v0.0.0-20260801055145-e99973a43e90
 )
 
 require (

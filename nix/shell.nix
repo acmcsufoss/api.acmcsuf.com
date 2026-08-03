@@ -15,6 +15,7 @@
   sqlite,
   sqlite-web,
   flyctl,
+  turso-cli,
   isCI ? false,
   full ? false,
 }: let
@@ -38,6 +39,7 @@ in
         cobra-cli
         delve # Go debugger
         flyctl
+        turso-cli
       ]
       # Heavyweight or rarely used tools go here
       ++ lib.optionals full [
