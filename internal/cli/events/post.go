@@ -10,10 +10,10 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -51,8 +51,8 @@ func postEvent(cfg *config.Config) {
 	}
 }
 
-func postForm() (*dbmodels.CreateEventParams, error) {
-	var payload dbmodels.CreateEventParams
+func postForm() (dto.Event, error) {
+	var payload dto.Event
 	var err error
 	var (
 		startAtStr string
@@ -71,14 +71,12 @@ func postForm() (*dbmodels.CreateEventParams, error) {
 				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Starts At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
-					"Example: \x1b[93m01/02/06 03:04PM\x1b[0m").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&startAtStr).
 				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Ends At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
-					"Example: \x1b[93m01/02/06 04:04PM\x1b[0m").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&endAtStr).
 				Validate(forms.ValidateNonEmpty()),
 			huh.NewConfirm().
@@ -91,17 +89,17 @@ func postForm() (*dbmodels.CreateEventParams, error) {
 		),
 	)
 	if err = form.Run(); err != nil {
-		return nil, err
+		return dto.Event{}, err
 	}
 
-	payload.StartAt, err = utils.ByteSlicetoUnix([]byte(startAtStr))
+	payload.StartAt, err = utils.ParseTime(startAtStr)
 	if err != nil {
-		return nil, err
+		return dto.Event{}, err
 	}
-	payload.EndAt, err = utils.ByteSlicetoUnix([]byte(endAtStr))
+	payload.EndAt, err = utils.ParseTime(endAtStr)
 	if err != nil {
-		return nil, err
+		return dto.Event{}, err
 	}
 
-	return &payload, nil
+	return payload, nil
 }

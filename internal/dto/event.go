@@ -14,11 +14,7 @@ type Event struct {
 	Host     string `json:"host"`
 }
 
-func (e *Event) ToDomain() domain.Event {
-	if e == nil {
-		return domain.Event{}
-	}
-
+func (e Event) ToDomain() domain.Event {
 	return domain.Event{
 		Uuid:     e.Uuid,
 		Location: e.Location,
@@ -41,10 +37,26 @@ func EventDomainToDto(e *domain.Event) Event {
 }
 
 type UpdateEvent struct {
-	Uuid     string  `json:"uuid"`
 	Location *string `json:"location"`
 	StartAt  *int64  `json:"start_at"`
 	EndAt    *int64  `json:"end_at"`
 	IsAllDay *bool   `json:"is_all_day"`
 	Host     *string `json:"host"`
+}
+
+func (e UpdateEvent) ToDomain() domain.UpdateEvent {
+	d := domain.UpdateEvent{
+		Location: e.Location,
+		IsAllDay: e.IsAllDay,
+		Host:     e.Host,
+	}
+	if e.StartAt != nil {
+		startAt := utils.UnixToTime(*e.StartAt)
+		d.StartAt = &startAt
+	}
+	if e.EndAt != nil {
+		endAt := utils.UnixToTime(*e.EndAt)
+		d.EndAt = &endAt
+	}
+	return d
 }

@@ -10,10 +10,10 @@ import (
 	"github.com/charmbracelet/huh"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/forms"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/dto"
 	"github.com/acmcsufoss/api.acmcsuf.com/utils"
 )
 
@@ -35,7 +35,7 @@ func init() {
 func putEvents(id string, cfg *config.Config) {
 	resourceURL := config.GetBaseURL(cfg).JoinPath("v1", "events", id)
 
-	var oldPayload dbmodels.CreateEventParams
+	var oldPayload dto.Event
 	if body, err := client.SendRequestAndReadResponse(resourceURL, false, http.MethodGet, nil); err != nil {
 		fmt.Fprintln(os.Stderr, "Error:", err)
 		if body != nil {
@@ -63,13 +63,13 @@ func putEvents(id string, cfg *config.Config) {
 	}
 }
 
-func putForm(oldPayload *dbmodels.CreateEventParams) (*dbmodels.UpdateEventParams, error) {
-	var payload dbmodels.UpdateEventParams
+func putForm(oldPayload *dto.Event) (dto.UpdateEvent, error) {
+	var payload dto.UpdateEvent
 	var err error
 	var (
 		locationStr string = oldPayload.Location
-		startAtStr  string
-		endAtStr    string
+		startAtStr  string = utils.FormatUnix(oldPayload.StartAt)
+		endAtStr    string = utils.FormatUnix(oldPayload.EndAt)
 		isAllDay    bool   = oldPayload.IsAllDay
 		hostStr     string = oldPayload.Host
 	)
@@ -82,13 +82,11 @@ func putForm(oldPayload *dbmodels.CreateEventParams) (*dbmodels.UpdateEventParam
 				Validate(forms.ValidateNonEmpty()),
 			huh.NewInput().
 				Title("Starts At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
-					"Leave empty to keep existing value").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&startAtStr),
 			huh.NewInput().
 				Title("Ends At\n"+
-					"Format:  \x1b[93mMM/DD/YY HH:MM[PM | AM]\x1b[0m\n"+
-					"Leave empty to keep existing value").
+					"Format: \x1b[93m01/02/06 03:04PM\x1b[0m").
 				Value(&endAtStr),
 			huh.NewConfirm().
 				Title("All day event?").
@@ -100,27 +98,22 @@ func putForm(oldPayload *dbmodels.CreateEventParams) (*dbmodels.UpdateEventParam
 		),
 	)
 	if err = form.Run(); err != nil {
-		return nil, err
+		return dto.UpdateEvent{}, err
 	}
 
-	payload.Uuid = oldPayload.Uuid
-	payload.Location = utils.StringtoNullString(locationStr)
-	payload.IsAllDay = utils.BooltoNullBool(isAllDay)
-	payload.Host = utils.StringtoNullString(hostStr)
-	if startAtStr != "" {
-		timestamp, err := utils.ByteSlicetoUnix([]byte(startAtStr))
-		if err != nil {
-			return nil, err
-		}
-		payload.StartAt = utils.Int64toNullInt64(timestamp)
+	payload.Location = forms.NonEmptyPtr(locationStr)
+	startUnix, err := utils.ParseTime(startAtStr)
+	if err != nil {
+		return dto.UpdateEvent{}, err
 	}
-	if endAtStr != "" {
-		timestamp, err := utils.ByteSlicetoUnix([]byte(endAtStr))
-		if err != nil {
-			return nil, err
-		}
-		payload.EndAt = utils.Int64toNullInt64(timestamp)
+	payload.StartAt = &startUnix
+	endUnix, err := utils.ParseTime(endAtStr)
+	if err != nil {
+		return dto.UpdateEvent{}, err
 	}
+	payload.EndAt = &endUnix
+	payload.IsAllDay = &isAllDay
+	payload.Host = &hostStr
 
-	return &payload, nil
+	return payload, nil
 }

@@ -14,7 +14,6 @@ type Event struct {
 }
 
 type UpdateEvent struct {
-	Uuid     string
 	Location *string
 	StartAt  *time.Time
 	EndAt    *time.Time

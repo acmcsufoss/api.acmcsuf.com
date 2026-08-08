@@ -9,7 +9,7 @@
 CREATE TABLE IF NOT EXISTS event (
     uuid TEXT PRIMARY KEY,
     location TEXT NOT NULL,
-    start_at INTEGER NOT NULL, -- Start time in UTC milliseconds.
+    start_at INTEGER NOT NULL, -- Start time in UTC seconds.
     end_at INTEGER NOT NULL,
     is_all_day BOOLEAN NOT NULL,
     host TEXT NOT NULL -- Accepts team ID or plain text.

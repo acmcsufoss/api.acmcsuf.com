@@ -88,7 +88,7 @@ func postForm() (*dto.Announcement, error) {
 		return nil, err
 	}
 
-	payload.AnnounceAt, err = utils.ByteSlicetoUnix([]byte(announceAtStr))
+	payload.AnnounceAt, err = utils.ParseTime(announceAtStr)
 	if err != nil {
 		return nil, err
 	}
