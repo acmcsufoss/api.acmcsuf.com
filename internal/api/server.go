@@ -64,7 +64,7 @@ func Run(ctx context.Context) {
 	go func() {
 		serverAddr := ":" + cfg.Port
 		// if cfg.Env == "development" {
-			// this binds the server to the loopback interface in dev mode for security reasons
+		// this binds the server to the loopback interface in dev mode for security reasons
 		// 	serverAddr = "localhost:" + cfg.Port
 		// }
 
