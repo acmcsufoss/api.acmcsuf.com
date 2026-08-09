@@ -29,8 +29,6 @@ const (
 
 var Version = "dev"
 
-var overrides *config.ConfigOverrides
-
 var rootCmd = &cobra.Command{
 	Use:   os.Args[0],
 	Short: "A CLI tool to help manage the API of the CSUF ACM website",
@@ -38,34 +36,22 @@ var rootCmd = &cobra.Command{
 
 // init() is a special function that always gets run before main
 func init() {
-	overrides = &config.ConfigOverrides{
-		Host: "",
-		Port: "",
-	}
-
-	var err error
-	config.Cfg, err = config.Load(overrides)
-	if err != nil {
-		fmt.Printf("failed to load config: %s", err)
-		return
-	}
-
 	rootCmd.AddCommand(events.CLIEvents)
 	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
 	rootCmd.AddCommand(config.ConfigCmd)
 
-	rootCmd.PersistentFlags().String("host", "", "API server hostname (overrides config)")
-	rootCmd.PersistentFlags().String("port", "", "API server port (overrides config)")
+	rootCmd.PersistentFlags().String("api-url", "", "API base URL (overrides config)")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		overrides = &config.ConfigOverrides{
-			Host: cmd.Flag("host").Value.String(),
-			Port: cmd.Flag("port").Value.String(),
-		}
-		config.Cfg, err = config.Load(overrides)
+		apiURL, err := cmd.Flags().GetString("api-url")
 		if err != nil {
-			return fmt.Errorf("failed to load config: %w", err)
+			return fmt.Errorf("failed to read API URL flag: %w", err)
+		}
+
+		config.Cfg, err = config.Load(apiURL)
+		if err != nil {
+			return fmt.Errorf("failed to load API configuration: %w", err)
 		}
 
 		url := config.GetBaseURL(config.Cfg).JoinPath("health")

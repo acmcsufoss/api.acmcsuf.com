@@ -59,7 +59,20 @@ Use "acmcsuf-cli [command] --help" for more information about a command.
 ```
 
 #### Configuring the CLI
-The CLI's auth-related configuration is currently handled via environment variables similarly to the API. Other settings can be configured by modifiying the config file, located at `~/.config/acmcsuf-cli/config.json`.
+The CLI's auth-related configuration is currently handled via environment variables similarly to the API. Other settings can be configured by modifying `~/.config/acmcsuf-cli/config.json`:
+
+```json
+{
+  "api_url": "http://localhost:8080",
+  "log_level": "info"
+}
+```
+
+Override the configured API for one command with `--api-url`, for example:
+
+```sh
+acmcsuf-cli events post --api-url https://api-acmcsuf-com-black-wind-9210.fly.dev
+```
 
 ### Other useful commands from the Makefile
 
