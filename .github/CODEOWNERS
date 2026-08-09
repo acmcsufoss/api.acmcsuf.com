@@ -2,7 +2,7 @@
 
 *.nix          @thejolman
 /.github/      @thejolman
-/internal/api/ @thejolman
+/internal/api/ @thejolman  @lecodyy
 
 *.sql          @sidvasu
 /internal/db/  @sidvasu
