@@ -8,8 +8,9 @@ import (
 )
 
 var ConfigCmd = &cobra.Command{
-	Use:   "config <subcommand>",
-	Short: "Manage this tool's persistent configuration.",
+	Use:               "config <subcommand>",
+	Short:             "Manage this tool's persistent configuration.",
+	PersistentPreRunE: func(cmd *cobra.Command, args []string) error { return nil },
 }
 
 func init() {
