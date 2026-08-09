@@ -1,7 +1,13 @@
-```
+# Useful docker commands
+
+```sh
+# build
+docker build -t acmcsuf-api:latest .
+
+# run
 docker run --rm \
 --name acmcsuf-api \
---mount type=volume,source=sqlite-data,target=/app/data \
+--mount type=volume,source=sqlite_data,target=/app/data \
 -p 8080:80 \
 acmcsuf-api:latest
 
