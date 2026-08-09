@@ -1,8 +1,8 @@
-*              @GaballaGit @sidvasu  # current team leads
+*              @thejolman  @lecodyy  # current team leads
 
 *.nix          @thejolman
 /.github/      @thejolman
-/internal/api/ @thejolman  @lecodyy
+/internal/api/ @thejolman
 
 *.sql          @sidvasu
 /internal/db/  @sidvasu
