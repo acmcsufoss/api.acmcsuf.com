@@ -13,6 +13,8 @@ primary_region = 'lax'
 [env]
   PORT = '8080'
   DATABASE_URL= 'file:/app/data/acmcsuf.db?cache=shared&mode=rwc'
+  GIN_MODE = 'debug'
+  ENV = 'development'
 
 [http_service]
   internal_port = 8080
