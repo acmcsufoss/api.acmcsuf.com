@@ -12,6 +12,7 @@ primary_region = 'lax'
 
 [env]
   PORT = '8080'
+  DATABASE_URL= 'file:/app/data/acmcsuf.db?cache=shared&mode=rwc'
 
 [http_service]
   internal_port = 8080
@@ -22,6 +23,10 @@ primary_region = 'lax'
   processes = ['app']
 
 [[vm]]
-  memory = '1gb'
+  memory = '256m'
   cpu_kind = 'shared'
   cpus = 1
+
+[mounts]
+  source = "sqlite_data"
+  destination = "/app/data"
