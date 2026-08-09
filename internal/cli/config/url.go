@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// Intended to be used with .JoinPath() to construct URLs with configured host:port
+// Intended to be used with .JoinPath() to construct URLs
 func GetBaseURL(cfg *Config) *url.URL {
 	apiURL, _ := url.Parse(cfg.APIURL)
 	return apiURL
