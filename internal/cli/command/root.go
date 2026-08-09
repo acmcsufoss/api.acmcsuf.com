@@ -1,4 +1,4 @@
-package cli
+package command
 
 import (
 	"context"
@@ -9,11 +9,11 @@ import (
 	"github.com/charmbracelet/fang"
 	"github.com/spf13/cobra"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/announcements"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/announcements"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/events"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/officers"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/events"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/officers"
 )
 
 type exitCode int
