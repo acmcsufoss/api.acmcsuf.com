@@ -17,8 +17,5 @@ RUN apt-get update \
     && mkdir -p /app/data
 WORKDIR /app
 COPY --from=builder /usr/src/app/sql/migrations ./sql/migrations
-ENV GIN_MODE=debug
-ENV ENV=development
-ENV PORT=80
-EXPOSE 80
+EXPOSE 8080
 CMD ["run-app"]
