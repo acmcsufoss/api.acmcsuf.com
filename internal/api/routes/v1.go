@@ -24,7 +24,7 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 
 	var botSession *discordgo.Session
 	var err error
-	if cfg.DiscordBotToken != "" {
+	if cfg.DiscordBotToken != "" && cfg.Env != "development" {
 		botSession, err = discordgo.New("Bot " + cfg.DiscordBotToken)
 		if err != nil {
 			log.Fatalf("%v", err)
