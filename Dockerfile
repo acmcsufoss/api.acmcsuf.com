@@ -11,7 +11,10 @@ RUN go build -v -o /run-app ./cmd/acmcsuf-api
 FROM debian:bookworm
 
 COPY --from=builder /run-app /usr/local/bin/
-RUN mkdir -p /app/data
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /app/data
 WORKDIR /app
 COPY --from=builder /usr/src/app/sql/migrations ./sql/migrations
 ENV GIN_MODE=debug
