@@ -55,6 +55,9 @@ check-sql: ## Lint all sql files
 fix-sql: ## Fix all sql files
 	sqlfluff fix --dialect sqlite
 
+linter:
+	go run cmd/linter/main.go
+
 release: ## Create a new release tag
 	@echo "Current version: $(VERSION)"
 	@read -p "Enter new version (e.g., v0.2.0): " version; \
@@ -69,4 +72,4 @@ clean: ## Clean up binaries and build artifacts
 help: ## Display this help screen
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate
+.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate linter
