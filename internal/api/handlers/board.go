@@ -430,6 +430,13 @@ func (h *BoardHandler) GetPosition(c *gin.Context) {
 		return
 	}
 
+	if position.IsZero() {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Position not found",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, dto.PositionDomainToDto(&position))
 }
 
