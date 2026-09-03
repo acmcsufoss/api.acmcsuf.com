@@ -25,6 +25,10 @@ func (t *Tier) ToDomain() domain.Tier {
 }
 
 func TierDomainToDto(t *domain.Tier) Tier {
+	if t == nil {
+		return Tier{}
+	}
+
 	return Tier{
 		Tier:   t.Tier,
 		Title:  t.Title,
