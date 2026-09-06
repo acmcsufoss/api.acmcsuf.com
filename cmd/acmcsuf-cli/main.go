@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli"
+	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command"
 )
 
 func main() {
-	exitCode := cli.Execute()
+	exitCode := command.Execute()
 	os.Exit(int(exitCode))
 }
