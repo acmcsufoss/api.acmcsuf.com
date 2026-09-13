@@ -19,3 +19,7 @@ type UpdateAnnouncement struct {
 	DiscordChannelID *string
 	DiscordMessageID *string
 }
+
+func (a Announcement) IsZero() bool {
+	return a.Uuid == ""
+}

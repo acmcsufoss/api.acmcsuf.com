@@ -37,6 +37,10 @@ jobs:
         if: steps.filter.outputs.source_code == 'true'
         run: nix develop .#ci -c make check
 
+      - name: Nilaway check
+        if: steps.filter.outputs.source_code == 'true'
+        run: nix develop .#ci -c make nilaway
+
       - name: Sql check
         if: steps.filter.outputs.source_code == 'true'
         run: nix develop .#ci -c make check-sql

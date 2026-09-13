@@ -46,6 +46,9 @@ fmt: ## Format all go files
 check: ## Run static analysis on all go files
 	staticcheck -f stylish ./...
 
+nilaway: ## Runs nilaway which checks for potential nil references at run time
+	nilaway -include-pkgs="github.com/acmcsufoss/api.acmcsuf.com" ./...
+
 test: check ## Run all tests
 	go test ./...
 
@@ -69,4 +72,4 @@ clean: ## Clean up binaries and build artifacts
 help: ## Display this help screen
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: help fmt run build all api cli check test check-sql fix-sql clean release generate
+.PHONY: help fmt run build all api cli check nilaway test check-sql fix-sql clean release generate
