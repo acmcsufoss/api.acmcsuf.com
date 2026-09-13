@@ -33,6 +33,10 @@ jobs:
         if: steps.filter.outputs.source_code == 'true'
         run: nix develop .#ci -c bash -c "make fmt && git diff --exit-code"
 
+      - name: Linter check
+        if: steps.filter.outputs.source_code == 'true'
+        run: nix develop .#ci -c make linter
+
       - name: Check
         if: steps.filter.outputs.source_code == 'true'
         run: nix develop .#ci -c make check
