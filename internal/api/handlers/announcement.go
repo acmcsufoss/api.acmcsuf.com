@@ -52,6 +52,13 @@ func (h *AnnouncementHandler) GetAnnouncement(c *gin.Context) {
 		return
 	}
 
+	if announcement.IsZero() {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Announcement not found",
+		})
+		return
+	}
+
 	// NOTE: We won't have to do this once implement domain models
 	dtoA := dto.AnnouncementDomainToDto(&announcement)
 

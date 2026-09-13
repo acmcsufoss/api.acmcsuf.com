@@ -14,6 +14,10 @@ type Position struct {
 }
 
 func PositionDomainToDto(p *domain.Position) Position {
+	if p == nil {
+		return Position{}
+	}
+
 	return Position{
 		OfficerID: p.OfficerID,
 		Semester:  p.Semester,

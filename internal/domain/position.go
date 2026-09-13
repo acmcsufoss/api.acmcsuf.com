@@ -23,3 +23,7 @@ type DeletePosition struct {
 	Semester  string
 	Tier      int64
 }
+
+func (p Position) IsZero() bool {
+	return p.OfficerID == ""
+}

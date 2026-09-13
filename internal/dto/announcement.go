@@ -28,6 +28,10 @@ func (a *Announcement) ToDomain() domain.Announcement {
 }
 
 func AnnouncementDomainToDto(a *domain.Announcement) Announcement {
+	if a == nil {
+		return Announcement{}
+	}
+
 	return Announcement{
 		Uuid:             a.Uuid,
 		Visibility:       a.Visibility,

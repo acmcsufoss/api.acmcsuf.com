@@ -26,6 +26,10 @@ func (e Event) ToDomain() domain.Event {
 }
 
 func EventDomainToDto(e *domain.Event) Event {
+	if e == nil {
+		return Event{}
+	}
+
 	return Event{
 		Uuid:     e.Uuid,
 		Location: e.Location,

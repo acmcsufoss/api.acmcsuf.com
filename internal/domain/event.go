@@ -20,3 +20,7 @@ type UpdateEvent struct {
 	IsAllDay *bool
 	Host     *string
 }
+
+func (e Event) IsZero() bool {
+	return e.Uuid == ""
+}

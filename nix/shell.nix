@@ -14,6 +14,7 @@
   go-tools,
   sqlite,
   sqlite-web,
+  nilaway,
   isCI ? false,
   full ? false,
 }: let
@@ -28,6 +29,7 @@ in
         sqlfluff # SQL linter
         gnumake
         go-swag
+        nilaway
       ]
       # Dev tools not required in CI go here
       ++ lib.optionals (!isCI) [

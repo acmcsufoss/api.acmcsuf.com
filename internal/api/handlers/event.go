@@ -52,6 +52,13 @@ func (h *EventsHandler) GetEvent(c *gin.Context) {
 		return
 	}
 
+	if event.IsZero() {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Event not found",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, dto.EventDomainToDto(&event))
 }
 

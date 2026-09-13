@@ -126,7 +126,11 @@ func NewRequestWithAuth(method, targetURL string, body io.Reader) (*http.Request
 			params.Add("response_type", "code")
 
 			baseURL := "https://discord.com/oauth2/authorize"
-			u, _ := url.Parse(baseURL)
+			u, err := url.Parse(baseURL)
+			if err != nil {
+				server.Shutdown(context.Background())
+				return nil, fmt.Errorf("failed to parse authorize URL: %w", err)
+			}
 			u.RawQuery = params.Encode()
 			fmt.Println("Opening browser to:", u.String())
 			// TODO: "Press enter to open the following link in your browser"
