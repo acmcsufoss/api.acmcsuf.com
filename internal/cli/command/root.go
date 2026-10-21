@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/client"
-	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/announcements"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/events"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/command/officers"
 	"github.com/acmcsufoss/api.acmcsuf.com/internal/cli/config"
@@ -51,7 +50,6 @@ func init() {
 	}
 
 	rootCmd.AddCommand(events.CLIEvents)
-	rootCmd.AddCommand(announcements.CLIAnnouncements)
 	rootCmd.AddCommand(officers.CLIOfficers)
 	rootCmd.AddCommand(config.ConfigCmd)
 
