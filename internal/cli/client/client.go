@@ -32,9 +32,10 @@ func SendRequestAndReadResponse(url *url.URL, enableAuth bool, method string, bo
 	if err != nil {
 		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
-	if res.StatusCode != http.StatusOK {
+	if res.StatusCode < 200 || res.StatusCode > 299 {
 		return data, fmt.Errorf("HTTP %s", res.Status)
 	}
+
 	return data, nil
 }
 
