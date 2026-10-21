@@ -85,18 +85,17 @@ func (h *EventsHandler) CreateEvent(c *gin.Context) {
 		return
 	}
 
-	err := h.eventsService.Create(ctx, body.ToDomain())
+	event := body.ToDomain()
+	err := h.eventsService.Create(ctx, event)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Failed to create event. " + err.Error(),
 		})
 		return
 	}
-	// TODO: Get event and return it here. Issue is that the generated sqlc func
-	// isn't returning the resource, so the service isn't either.
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Event created successfully",
-	})
+
+	c.JSON(http.StatusOK, dto.EventDomainToDto(&event))
+
 }
 
 // GetEvents godoc
