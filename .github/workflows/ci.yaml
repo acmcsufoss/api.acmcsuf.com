@@ -26,7 +26,7 @@ jobs:
               - "Makefile"
 
       - name: Diff Check
-        run: git diff main --check
+        run: git diff origin/main --check
 
       - name: Install Nix
         if: steps.filter.outputs.source_code == 'true'
