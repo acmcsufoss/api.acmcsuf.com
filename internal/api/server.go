@@ -52,14 +52,13 @@ func Run(ctx context.Context) {
 	// Now we init services & gin router, and then start the server
 	queries := dbmodels.New(db)
 	eventsService := services.NewEventsService(queries)
-	announcementService := services.NewAnnouncementService(queries)
 	boardService := services.NewBoardService(queries, db)
 	router := gin.Default()
 	router.Use(mw.Cors(), mw.Ratelimiter())
 
 	router.SetTrustedProxies(cfg.TrustedProxies)
 	routes.SetupRoot(router)
-	routes.SetupV1(router, eventsService, announcementService, boardService)
+	routes.SetupV1(router, eventsService, boardService)
 
 	go func() {
 		serverAddr := ":" + cfg.Port
