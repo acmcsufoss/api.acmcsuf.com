@@ -1,13 +1,14 @@
 package main
 
 import (
-	"crypto/rand"
-	"fmt"
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"encoding/json"
-	"os"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -16,26 +17,26 @@ import "github.com/acmcsufoss/api.acmcsuf.com/internal/api/store/dbmodels"
 
 type Role struct {
 	Title string `json:"title"`
-	Tier int64 `json:"tier"`
+	Tier  int64  `json:"tier"`
 }
 
 type Tier struct {
-	ID int `json:"id"`
+	ID    int `json:"id"`
 	Index int `json:"index"`
 }
 
 type Member struct {
-	FullName string `json:"fullName"`
-	Picture string `json:"picture"`
+	FullName  string            `json:"fullName"`
+	Picture   string            `json:"picture"`
 	Positions map[string][]Role `json:"positions"`
-	Discord string `json:"discord"` 
-	Github string `json:"github"`
+	Discord   string            `json:"discord"`
+	Github    string            `json:"github"`
 }
 
 func toNullString(s string) sql.NullString {
 	return sql.NullString{
 		String: s,
-		Valid: s != "",
+		Valid:  s != "",
 	}
 }
 
@@ -55,7 +56,6 @@ func toNullInt64(val int) sql.NullInt64 {
 	}
 }
 
-
 func generateUUID() (string, error) {
 	uuid := make([]byte, 16)
 	_, err := rand.Read(uuid)
@@ -72,20 +72,35 @@ func generateUUID() (string, error) {
 		uuid[0:4], uuid[4:6], uuid[6:8], uuid[8:10], uuid[10:16]), nil
 }
 
+// Helper function to fetch remote JSON files over HTTP
+func fetchJSON(url string) ([]byte, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	return io.ReadAll(resp.Body)
+}
+
 func main() {
 	ctx := context.Background()
 
-	jsonPath := "officers.json"
-	jsonPath2 := "tiers.json"
+	officersURL := "https://raw.githubusercontent.com/acmcsufoss/acmcsuf.com/main/src/lib/public/board/data/officers.json"
+	tiersURL := "https://raw.githubusercontent.com/acmcsufoss/acmcsuf.com/main/src/lib/public/board/data/tiers.json"
 
-	fileBytes, err := os.ReadFile(jsonPath)
+	fileBytes, err := fetchJSON(officersURL)
 	if err != nil {
-		log.Fatalf("Error to read JSON: %v", err)
+		log.Fatalf("Error reading officers JSON from URL: %v", err)
 	}
 
-	fBytes, err := os.ReadFile(jsonPath2)
+	fBytes, err := fetchJSON(tiersURL)
 	if err != nil {
-		log.Fatalf("Error to read JSON: %v", err)
+		log.Fatalf("Error reading tiers JSON from URL: %v", err)
 	}
 
 	var tiers map[string]Tier
@@ -106,25 +121,20 @@ func main() {
 
 	queries := dbmodels.New(db)
 
-	// 3. Create a transaction for performance safety and rollback security
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Fatalf("Failed to begin db transaction: %v", err)
 	}
-	defer tx.Rollback() // Automatically rolls back if an error stops code execution early
+	defer tx.Rollback()
 
-	// Bind sqlc queries to work scoped inside this specific transaction context
 	qtx := queries.WithTx(tx)
 
-	// 4. Main processor loop
 	for _, m := range members {
-		// Generate an officer UUID if one doesn't exist natively in the JSON
 		officerUUID, err := generateUUID()
 		if err != nil {
 			log.Fatalf("Failed to generate native cryptographic UUID: %v", err)
 		}
 
-		// Prepare params for CreateOfficer method
 		officerParams := dbmodels.CreateOfficerParams{
 			Uuid:     officerUUID,
 			FullName: m.FullName,
@@ -133,28 +143,22 @@ func main() {
 			Discord:  toNullString(m.Discord),
 		}
 
-		// Insert Officer record via sqlc 
 		_, err = qtx.CreateOfficer(ctx, officerParams)
 		if err != nil {
 			log.Fatalf("Failed creating officer %s: %v", m.FullName, err)
 		}
 
-		// Iterate through the nested Positions map: map[string][]Role
-		// semester key is "F25", "S26", etc.
 		for semester, roles := range m.Positions {
 			for _, r := range roles {
-				
-				// Prepare params for CreatePosition method
 				positionParams := dbmodels.CreatePositionParams{
 					OfficerID: officerUUID,
 					Semester:  semester,
 					Tier:      r.Tier,
 					FullName:  m.FullName,
 					Title:     toNullString(r.Title),
-					Team:      sql.NullString{Valid: false}, // Set true if JSON provides team details
+					Team:      sql.NullString{Valid: false},
 				}
 
-				// Insert Position record via sqlc
 				_, err := qtx.CreatePosition(ctx, positionParams)
 				if err != nil {
 					log.Fatalf("Failed creating position for officer %s: %v", m.FullName, err)
@@ -164,7 +168,6 @@ func main() {
 	}
 
 	for tierName, t := range tiers {
-
 		tierParams := dbmodels.CreateTierParams{
 			Tier:   int64(t.ID),
 			Title:  toNullString(tierName),
@@ -174,17 +177,13 @@ func main() {
 
 		_, err := qtx.CreateTier(ctx, tierParams)
 		if err != nil {
-			log.Fatalf("Failed creating position for tier %s: %v", tierName, err)
+			log.Fatalf("Failed creating tier %s: %v", tierName, err)
 		}
-
 	}
 
-	// 5. Safely save all elements to the database file at once
 	if err := tx.Commit(); err != nil {
 		log.Fatalf("Transaction commit failed: %v", err)
 	}
 
-
-	log.Println("Successfully integrated JSON into SQLite via sqlc!")
-	
+	log.Println("Successfully integrated JSON into SQLite via sqlc from remote URLs!")
 }
