@@ -25,6 +25,9 @@ jobs:
               - "go.sum"
               - "Makefile"
 
+      - name: Diff Check
+        run: git diff main --check
+
       - name: Install Nix
         if: steps.filter.outputs.source_code == 'true'
         uses: DeterminateSystems/nix-installer-action@main
