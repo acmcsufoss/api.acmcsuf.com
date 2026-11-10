@@ -6,7 +6,7 @@ This directory contains JSON payloads for testing the ACM CSUF API endpoints.
 
 Fixtures are named using the pattern: `{resource}_{action}_{variant}.json`
 
-- `resource`: The API resource (event, announcement, officer, tier, position)
+- `resource`: The API resource (event, officer, tier, position)
 - `action`: The operation (create, update, delete)
 - `variant`: Optional descriptor for the specific test case
 
@@ -22,17 +22,6 @@ Fixtures are named using the pattern: `{resource}_{action}_{variant}.json`
 - `event_update_partial.json` - Partial update (location and all_day status)
 - `event_update_location.json` - Update only the location field
 - `event_update_full.json` - Full update with all fields
-
-## Announcements
-
-### Create Operations
-- `announcement_create_basic.json` - Basic announcement with Discord integration
-- `announcement_create.json` - Public announcement with full Discord details
-- `announcement_create_private.json` - Private announcement for officers
-- `announcement_create_no_discord.json` - Website-only announcement without Discord
-
-### Update Operations
-- `announcement_update.json` - Update announcement visibility and Discord info
 
 ## Board Members
 
@@ -125,15 +114,6 @@ xh GET :8080/v1/events
 
 # Filter events by host
 xh GET :8080/v1/events host==ACM
-
-# Create an announcement
-xh POST :8080/v1/announcements < fixtures/announcement_create.json
-
-# Update an announcement
-xh PUT :8080/v1/announcements/spring-kickoff-2024 < fixtures/announcement_update.json
-
-# Delete an announcement
-xh DELETE :8080/v1/announcements/spring-kickoff-2024
 
 # Create an officer
 xh POST :8080/v1/board/officers < fixtures/officer_create.json

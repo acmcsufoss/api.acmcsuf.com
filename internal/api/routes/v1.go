@@ -15,7 +15,7 @@ import (
 )
 
 func SetupV1(router *gin.Engine, eventService services.EventsServicer,
-	announcementService services.AnnouncementServicer, boardService services.BoardServicer) {
+	boardService services.BoardServicer) {
 
 	cfg := config.Load()
 	if cfg.DiscordBotToken == "" && cfg.Env != "development" {
@@ -37,7 +37,6 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	}
 
 	eh := handlers.NewEventHandler(eventService)
-	ah := handlers.NewAnnouncementHandler(announcementService)
 	bh := handlers.NewBoardHandler(boardService)
 
 	v1 := router.Group("/v1")
@@ -45,9 +44,6 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 	{
 		v1.GET("/events", eh.GetEvents)
 		v1.GET("/events/:id", eh.GetEvent)
-
-		v1.GET("/announcements", ah.GetAnnouncements)
-		v1.GET("/announcements/:id", ah.GetAnnouncement)
 
 		board := v1.Group("/board")
 		{
@@ -69,10 +65,6 @@ func SetupV1(router *gin.Engine, eventService services.EventsServicer,
 		protected.POST("/events", eh.CreateEvent)
 		protected.PUT("/events/:id", eh.UpdateEvent)
 		protected.DELETE("/events/:id", eh.DeleteEvent)
-
-		protected.POST("/announcements", ah.CreateAnnouncement)
-		protected.PUT("/announcements/:id", ah.UpdateAnnouncement)
-		protected.DELETE("/announcements/:id", ah.DeleteAnnouncement)
 
 		board := protected.Group("/board")
 		{

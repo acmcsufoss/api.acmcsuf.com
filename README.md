@@ -1,6 +1,6 @@
 # api.acmcsuf.com
 
-ACM at CSUF club API for managing events, announcements, forms, and other services! Keep reading for information on setting up this project locally, and see the [contributor guide](./docs/CONTRIBUTING.md) and [`docs/`](./docs) for more information on using and contributing to this project.
+ACM at CSUF club API for managing events, forms, and other services! Keep reading for information on setting up this project locally, and see the [contributor guide](./docs/CONTRIBUTING.md) and [`docs/`](./docs) for more information on using and contributing to this project.
 
 ---
 
@@ -45,7 +45,6 @@ Usage:
   acmcsuf-cli [command]
 
 Available Commands:
-  announcements Manage ACM CSUF's Announcements
   completion    Generate the autocompletion script for the specified shell
   events        A command to manage events.
   help          Help about any command

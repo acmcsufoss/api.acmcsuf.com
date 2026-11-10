@@ -8,14 +8,6 @@ import (
 	"database/sql"
 )
 
-type Announcement struct {
-	Uuid             string
-	Visibility       string
-	AnnounceAt       int64
-	DiscordChannelID sql.NullString
-	DiscordMessageID sql.NullString
-}
-
 type Event struct {
 	Uuid     string
 	Location string
