@@ -9,26 +9,17 @@ import (
 )
 
 type Config struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
+	APIURL   string `json:"api_url"`
 	LogLevel string `json:"log_level"`
 }
 
-// Subset of Config struct that can be overridden with command line flags
-type ConfigOverrides struct {
-	Host string
-	Port string
-}
-
 var defaultConfig = Config{
-	Host:     "localhost",
-	Port:     "8080",
+	APIURL:   "http://localhost:8080",
 	LogLevel: "info",
 }
 
 // Global config variable
 var Cfg *Config
-var CfgOverride ConfigOverrides
 
 func init() {
 	Cfg = &Config{}
@@ -37,12 +28,11 @@ func init() {
 // Loads config with three layers of precedence
 // 1. Start with default config
 // 2. Load values from config file if present
-// 3. Provide any overrides passed in through command line flags (if any)
-func Load(overrides *ConfigOverrides) (*Config, error) {
+// 3. Apply the API URL override passed on the command line (if any)
+func Load(apiURLOverride string) (*Config, error) {
 	// Load default config
 	cfg := &Config{
-		Host:     defaultConfig.Host,
-		Port:     defaultConfig.Port,
+		APIURL:   defaultConfig.APIURL,
 		LogLevel: defaultConfig.LogLevel,
 	}
 
@@ -59,13 +49,15 @@ func Load(overrides *ConfigOverrides) (*Config, error) {
 		}
 	}
 
-	// Override with args passed with command line args
-	if overrides.Host != "" {
-		cfg.Host = overrides.Host
+	if apiURLOverride != "" {
+		cfg.APIURL = apiURLOverride
 	}
-	if overrides.Port != "" {
-		cfg.Port = overrides.Port
+
+	apiURL, err := NormalizeAPIURL(cfg.APIURL)
+	if err != nil {
+		return nil, err
 	}
+	cfg.APIURL = apiURL
 
 	return cfg, nil
 }
