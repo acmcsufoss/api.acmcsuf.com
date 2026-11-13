@@ -1,8 +1,8 @@
 {
-  "uuid": "workshop-intro-to-git",
-  "location": "CS-408",
-  "start_at": 1712851200000,
-  "end_at": 1712858400000,
+  "uuid": "oss-stats-sprint",
+  "location": "LH-403B",
+  "start_at": 1792105200000,
+  "end_at": 1792110600000,
   "is_all_day": false,
-  "host": "ACM"
+  "host": "Adam and Evan"
 }
